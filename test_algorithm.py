@@ -39,8 +39,8 @@ def create_edges(num_groups, num_topics, num_tutors, group_capacities, group_wei
 
     return all_edges
 
-def test_01_tutors_can_not_be_assigned_more_teams_that_their_capacities():
-    """Testing that tutors are not assigned more teams than the their capacities"""
+def test_01_more_teams_than_tutors_without_enough_capacity_but_tutors_do_not_exceed_their_capacities():
+    """Testing that not every team is assigned to a tutor if they do not have enough capacity."""
     num_groups = 3
     num_topics = 6
     num_tutors = 2
@@ -50,9 +50,8 @@ def test_01_tutors_can_not_be_assigned_more_teams_that_their_capacities():
        [4, 4, 4, 1, 2, 3],
        [1, 4, 2, 4, 3, 4]
     ]
-    tutor_capacities = [3, 2]  # Capacities of tutors p1 and p2
+    tutor_capacities = [1, 1]  # Capacities of tutors p1 and p2
     tutor_weights = [1, 1]     # Weights of tutors p1 and p2
-    # Capacities and weights of topics for each tutor
     topic_capacities = [
        [3, 3, 0, 0, 0, 0],  # Capacities of topics for tutor p1
        [0, 0, 3, 3, 3, 3]   # Capacities of topics for tutor p2
@@ -65,6 +64,93 @@ def test_01_tutors_can_not_be_assigned_more_teams_that_their_capacities():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     _teams, _topics, tutors = run_algorithm(edges)
-    assert len(tutors["p1"]) <= 3
+    assert len(tutors["p1"]) <= 1
+    assert len(tutors["p2"]) <= 1
+
+def test_02_more_teams_than_tutors_but_with_enough_capacity_but_tutors_do_not_exceed_their_capacities():
+    """Testing that teams are distributed in both tutors."""
+    num_groups = 3
+    num_topics = 6
+    num_tutors = 2
+    group_capacities = [1, 1, 1]
+    group_weights = [
+       [1, 2, 3, 4, 4, 4],
+       [4, 4, 4, 1, 2, 3],
+       [1, 4, 2, 4, 3, 4]
+    ]
+    tutor_capacities = [1, 2]
+    tutor_weights = [1, 1]
+    topic_capacities = [
+       [3, 3, 0, 0, 0, 0],
+       [0, 0, 3, 3, 3, 3]
+    ]
+    topic_weights = [
+       [1, 1, 0, 0, 0, 0],
+       [0, 0, 1, 1, 1, 1]
+    ]
+    edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
+                group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
+
+    _teams, _topics, tutors = run_algorithm(edges)
+    assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 2
-    
+
+def test_03_equal_teams_and_tutors_but_tutors_do_not_exceed_their_capacities():
+    """Testing that teams are distributed in all tutors."""
+    num_groups = 3
+    num_topics = 6
+    num_tutors = 3
+    group_capacities = [1, 1, 1]
+    group_weights = [
+       [1, 2, 3, 4, 4, 4],
+       [4, 4, 4, 1, 2, 3],
+       [1, 4, 2, 4, 3, 4]
+    ]
+    tutor_capacities = [1, 1, 1]
+    tutor_weights = [1, 1, 1]
+    topic_capacities = [
+       [3, 3, 0, 0, 0, 0],
+       [0, 0, 3, 3, 3, 3],
+       [0, 0, 3, 3, 3, 3]
+    ]
+    topic_weights = [
+       [1, 1, 0, 0, 0, 0],
+       [0, 0, 1, 1, 1, 1],
+       [0, 0, 1, 1, 1, 1]
+    ]
+    edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
+                group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
+
+    _teams, _topics, tutors = run_algorithm(edges)
+    assert len(tutors["p1"]) <= 1
+    assert len(tutors["p2"]) <= 1
+    assert len(tutors["p3"]) <= 1
+
+def test_03_more_tutors_than_teams_but_tutors_do_not_exceed_their_capacities():
+    """Testing that teams are distributed in tutors."""
+    num_groups = 2
+    num_topics = 6
+    num_tutors = 3
+    group_capacities = [1, 1]
+    group_weights = [
+       [1, 2, 3, 4, 4, 4],
+       [4, 4, 4, 1, 2, 3],
+    ]
+    tutor_capacities = [1, 1, 1]
+    tutor_weights = [1, 1, 1]
+    topic_capacities = [
+       [3, 3, 0, 0, 0, 0],
+       [0, 0, 3, 3, 3, 3],
+       [0, 0, 3, 3, 3, 3]
+    ]
+    topic_weights = [
+       [1, 1, 0, 0, 0, 0],
+       [0, 0, 1, 1, 1, 1],
+       [0, 0, 1, 1, 1, 1]
+    ]
+    edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
+                group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
+
+    _teams, _topics, tutors = run_algorithm(edges)
+    for tutor, _ in tutors.items():
+        assert len(tutors[tutor]) <= 1
