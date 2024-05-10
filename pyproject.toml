@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "assignment-service"
+version = "0.1.0"
+description = "An assignment service to solve assignment problems"
+authors = ["celedituro <cdituro@fi.uba.ar>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+networkx = "^3.3"
+numpy = "^1.26.4"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
