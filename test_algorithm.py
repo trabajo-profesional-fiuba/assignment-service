@@ -39,8 +39,8 @@ def create_edges(num_groups, num_topics, num_tutors, group_capacities, group_wei
 
     return all_edges
 
-def test_01_more_teams_than_tutors_without_enough_capacity_but_tutors_do_not_exceed_their_capacities():
-    """Testing that not every team is assigned to a tutor if they do not have enough capacity."""
+def test_01_more_teams_than_tutors_without_enough_capacity_so_there_are_teams_without_tutor():
+    """Testing that tutors do not get all teams in order not to exceed their capacities."""
     num_groups = 3
     num_topics = 6
     num_tutors = 2
@@ -67,8 +67,8 @@ def test_01_more_teams_than_tutors_without_enough_capacity_but_tutors_do_not_exc
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 1
 
-def test_02_more_teams_than_tutors_but_with_enough_capacity_but_tutors_do_not_exceed_their_capacities():
-    """Testing that teams are distributed in both tutors."""
+def test_02_more_teams_than_tutors_but_with_enough_capacity_so_all_teams_are_assigned_to_a_tutor():
+    """Testing that tutors get all teams without exceeding their capacities."""
     num_groups = 3
     num_topics = 6
     num_tutors = 2
@@ -96,7 +96,7 @@ def test_02_more_teams_than_tutors_but_with_enough_capacity_but_tutors_do_not_ex
     assert len(tutors["p2"]) <= 2
 
 def test_03_equal_teams_and_tutors_but_tutors_do_not_exceed_their_capacities():
-    """Testing that teams are distributed in all tutors."""
+    """Testing that tutors get all teams without exceeding their capacities."""
     num_groups = 3
     num_topics = 6
     num_tutors = 3
@@ -127,7 +127,7 @@ def test_03_equal_teams_and_tutors_but_tutors_do_not_exceed_their_capacities():
     assert len(tutors["p3"]) <= 1
 
 def test_04_more_tutors_than_teams_but_tutors_do_not_exceed_their_capacities():
-    """Testing that teams are distributed in tutors."""
+    """Testing that teams are distributed between tutors in order not to exceed their capacities."""
     num_groups = 2
     num_topics = 6
     num_tutors = 3
@@ -156,7 +156,8 @@ def test_04_more_tutors_than_teams_but_tutors_do_not_exceed_their_capacities():
         assert len(tutors[tutor]) <= 1
 
 def test_05_equal_teams_and_topics_so_every_team_is_assigned_to_one_topic():
-    """Testing all teams are assigned to one topic."""
+    """Testing all teams are assigned to one topic when there are enough tutors with
+    enough capacities."""
     num_groups = 2
     num_topics = 2
     num_tutors = 2
@@ -179,11 +180,61 @@ def test_05_equal_teams_and_topics_so_every_team_is_assigned_to_one_topic():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     teams, _topics, _tutors = run_algorithm(edges)
-    all_topics = ["t1", "t2"]
-    for _team, topic in teams.items():
-        assert topic in all_topics, True
+    assert len(teams.items()) == 2
 
-def test_06_teams_with_same_preferences_and_weights_are_assigned_to_the_same_topic():
+def test_06_more_teams_than_topics_but_tutors_with_enough_capacity_so_every_team_is_assigned_to_one_topic():
+    """Testing all teams are assigned to one topic when there are more teams than topics 
+    but tutors with enough capacities."""
+    num_groups = 2
+    num_topics = 1
+    num_tutors = 2
+    group_capacities = [1, 1]
+    group_weights = [
+       [1],
+       [4],
+    ]
+    tutor_capacities = [1, 1]
+    tutor_weights = [1, 1]
+    topic_capacities = [
+       [1],
+       [1]
+    ]
+    topic_weights = [
+       [1],
+       [1]
+    ]
+    edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
+                group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
+
+    teams, _topics, _tutors = run_algorithm(edges)
+    assert len(teams.items()) == 2
+
+def test_07_more_teams_than_topics_and_tutors_but_tutor_with_enough_capacity_so_every_team_is_assigned_to_one_topic():
+    """Testing all teams are assigned to one topic when there are more teams than topics and tutors 
+    but tutor with enough capacity."""
+    num_groups = 2
+    num_topics = 1
+    num_tutors = 1
+    group_capacities = [1, 1]
+    group_weights = [
+       [1],
+       [4],
+    ]
+    tutor_capacities = [2]
+    tutor_weights = [1]
+    topic_capacities = [
+       [2],
+    ]
+    topic_weights = [
+       [1],
+    ]
+    edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
+                group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
+
+    teams, _topics, _tutors = run_algorithm(edges)
+    assert len(teams.items()) == 2
+
+def test_08_teams_with_same_preferences_and_weights_are_assigned_to_the_same_topic():
     """Testing teams with same preferences and weights are assigned to the same topic since 
     it is assigned to tutors that has enough capacity."""
     num_groups = 2
@@ -210,7 +261,7 @@ def test_06_teams_with_same_preferences_and_weights_are_assigned_to_the_same_top
     teams, _topics, _tutors = run_algorithm(edges)
     assert teams["g1"] == teams["g2"]
 
-def test_07_teams_with_same_preferences_but_tutor_capacity_for_topic_is_not_enough_so_are_not_assigned_to_the_same_topic():
+def test_09_teams_with_same_preferences_but_tutor_capacity_for_topic_is_not_enough_so_are_not_assigned_to_the_same_topic():
     """Testing teams with same preferences and weights are not assigned to the same topic which 
     is assigned to only one tutor and this tutor does not have enough capacity."""
     num_groups = 2
@@ -237,7 +288,7 @@ def test_07_teams_with_same_preferences_but_tutor_capacity_for_topic_is_not_enou
     teams, _topics, _tutors = run_algorithm(edges)
     assert teams["g1"] != teams["g2"]
 
-def test_08_more_topics_than_teams_but_just_one_topic_is_assigned_to_each_team():
+def test_10_more_topics_than_teams_but_just_one_topic_is_assigned_to_each_team():
     """Testing only one topic is assigned to every team when there are more teams than topics."""
     num_groups = 2
     num_topics = 4
@@ -267,7 +318,7 @@ def test_08_more_topics_than_teams_but_just_one_topic_is_assigned_to_each_team()
     not_assigned_topics = all_topics
     assert len(not_assigned_topics) > 0
 
-def test_08_two_teams_with_different_preferences_can_not_be_assigned_a_topic_with_low_preference():
+def test_11_two_teams_with_different_preferences_can_not_be_assigned_a_topic_with_low_preference():
     """Testing two teams with different preferences and can not be assigned 
     a topic with low preference."""
     num_groups = 2
@@ -295,7 +346,7 @@ def test_08_two_teams_with_different_preferences_can_not_be_assigned_a_topic_wit
     assert teams["g1"] == "t1"
     assert teams["g2"] == "t2"
 
-def test_09_more_teams_with_different_preferences_can_not_be_assigned_a_topic_with_low_preference():
+def test_12_more_teams_with_different_preferences_can_not_be_assigned_a_topic_with_low_preference():
     """Testing a team can not be assigned a topic with low preference if the topic that
     it was chosen is available."""
     num_groups = 3
@@ -324,3 +375,4 @@ def test_09_more_teams_with_different_preferences_can_not_be_assigned_a_topic_wi
     assert teams["g1"] == "t1"
     assert teams["g2"] == "t2"
     assert teams["g3"] == "t3"
+    
