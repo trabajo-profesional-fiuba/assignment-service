@@ -224,8 +224,8 @@ def test_07_teams_with_same_preferences_but_tutor_capacity_for_topic_is_not_enou
     tutor_capacities = [1, 1]
     tutor_weights = [1, 1]
     topic_capacities = [
-       [1, 0], # tutors as rows
-       [0, 1], # topics as columns
+       [1, 0],
+       [0, 1],
     ]
     topic_weights = [
        [1, 1],
@@ -250,8 +250,8 @@ def test_08_more_topics_than_teams_but_just_one_topic_is_assigned_to_each_team()
     tutor_capacities = [2, 2]
     tutor_weights = [1, 1]
     topic_capacities = [
-       [1, 0, 1, 0], # tutors as rows
-       [0, 1, 1, 0], # topics as columns
+       [1, 0, 1, 0],
+       [0, 1, 1, 0],
     ]
     topic_weights = [
        [1, 1, 1, 1],
@@ -266,3 +266,61 @@ def test_08_more_topics_than_teams_but_just_one_topic_is_assigned_to_each_team()
     all_topics.remove(teams["g2"])
     not_assigned_topics = all_topics
     assert len(not_assigned_topics) > 0
+
+def test_08_two_teams_with_different_preferences_can_not_be_assigned_a_topic_with_low_preference():
+    """Testing two teams with different preferences and can not be assigned 
+    a topic with low preference."""
+    num_groups = 2
+    num_topics = 3
+    num_tutors = 2
+    group_capacities = [1, 1]
+    group_weights = [
+       [1, 2, 3], # g1 preferences: t1, t2, t3
+       [2, 1, 3], # g2 preferences: t2, t1, t3
+    ]
+    tutor_capacities = [1, 1]
+    tutor_weights = [1, 1]
+    topic_capacities = [
+       [1, 1, 1],
+       [1, 1, 1],
+    ]
+    topic_weights = [
+       [1, 1, 1],
+       [1, 1, 1],
+    ]
+    edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
+                group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
+
+    teams, _topics, _tutors = run_algorithm(edges)
+    assert teams["g1"] == "t1"
+    assert teams["g2"] == "t2"
+
+def test_09_more_teams_with_different_preferences_can_not_be_assigned_a_topic_with_low_preference():
+    """Testing a team can not be assigned a topic with low preference if the topic that
+    it was chosen is available."""
+    num_groups = 3
+    num_topics = 3
+    num_tutors = 2
+    group_capacities = [1, 1, 1]
+    group_weights = [
+       [1, 2, 3], # g1 preferences: t1, t2, t3
+       [2, 1, 3], # g2 preferences: t2, t1, t3
+       [3, 2, 1]  # g3 preferences: t3, t2, t1
+    ]
+    tutor_capacities = [2, 1]
+    tutor_weights = [1, 1]
+    topic_capacities = [
+       [1, 1, 1],
+       [1, 1, 1],
+    ]
+    topic_weights = [
+       [1, 1, 1],
+       [1, 1, 1],
+    ]
+    edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
+                group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
+
+    teams, _topics, _tutors = run_algorithm(edges)
+    assert teams["g1"] == "t1"
+    assert teams["g2"] == "t2"
+    assert teams["g3"] == "t3"
