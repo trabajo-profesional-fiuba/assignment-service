@@ -1,55 +1,70 @@
 """Module testing max flow min cost algorithm results."""
 from algorithm import run_algorithm
 
-def test_01():
-    """Verifies that tutors can not be assigned more teams than the teams that they can take."""
-    # Edges from groups nodes to topics nodes
-    group1_t1 = ("g1", "t1", {"capacity": 1, "weight": 1})
-    group1_t2 = ("g1", "t2", {"capacity": 1, "weight": 2})
-    group1_t3 = ("g1", "t3", {"capacity": 1, "weight": 3})
-    group1_t4 = ("g1", "t4", {"capacity": 1, "weight": 4})
-    group1_t5 = ("g1", "t5", {"capacity": 1, "weight": 4})
-    group1_t6 = ("g1", "t6", {"capacity": 1, "weight": 4})
+def create_edges(num_groups, num_topics, num_tutors, group_capacities, group_weights,
+                 tutor_capacities, tutor_weights, topic_capacities, topic_weights):
+    """Creates edges."""
 
-    group2_t1 = ("g2", "t1", {"capacity": 1, "weight": 4})
-    group2_t2 = ("g2", "t2", {"capacity": 1, "weight": 4})
-    group2_t3 = ("g2", "t3", {"capacity": 1, "weight": 4})
-    group2_t4 = ("g2", "t4", {"capacity": 1, "weight": 1})
-    group2_t5 = ("g2", "t5", {"capacity": 1, "weight": 2})
-    group2_t6 = ("g2", "t6", {"capacity": 1, "weight": 3})
+    # Define groups, topics, and tutors
+    groups = [f"g{i}" for i in range(1, num_groups + 1)]
+    topics = [f"t{j}" for j in range(1, num_topics + 1)]
+    tutors = [f"p{k}" for k in range(1, num_tutors + 1)]
 
-    group3_t1 = ("g3", "t1", {"capacity": 1, "weight": 1})
-    group3_t2 = ("g3", "t2", {"capacity": 1, "weight": 4})
-    group3_t3 = ("g3", "t3", {"capacity": 1, "weight": 2})
-    group3_t4 = ("g3", "t4", {"capacity": 1, "weight": 4})
-    group3_t5 = ("g3", "t5", {"capacity": 1, "weight": 3})
-    group3_t6 = ("g3", "t6", {"capacity": 1, "weight": 4})
+    # Define edges from groups to topics
+    group_topic_edges = []
+    for i, group in enumerate(groups):
+        for j, topic in enumerate(topics):
+            weight = group_weights[i][j]
+            group_topic_edges.append((group, topic,
+                                      {"capacity": group_capacities[i], "weight": weight}))
 
-    # Edges from source node (s) to groups nodes
-    s_group1 = ("s", "g1", {"capacity": 1, "weight": 1})
-    s_group2 = ("s", "g2", {"capacity": 1, "weight": 1})
-    s_group3 = ("s", "g3", {"capacity": 1, "weight": 1})
+    # Define edges from source to groups
+    source_group_edges = [("s", group, {"capacity": 1, "weight": 1}) for group in groups]
 
-    # Edges from topics nodes to tutors nodes
-    t1_p1 = ("t1", "p1", {"capacity": 3, "weight": 1})
-    t2_p1 = ("t2", "p1", {"capacity": 3, "weight": 1})
-    t3_p2 = ("t3", "p2", {"capacity": 3, "weight": 1})
-    t4_p2 = ("t4", "p2", {"capacity": 3, "weight": 1})
-    t5_p2 = ("t5", "p2", {"capacity": 3, "weight": 1})
-    t6_p2 = ("t6", "p2", {"capacity": 3, "weight": 1})
+    # Define edges from topics to tutors
+    topic_tutor_edges = []
+    for j, tutor in enumerate(tutors):
+        for k, topic in enumerate(topics):
+            capacity = topic_capacities[j][k]
+            weight = topic_weights[j][k]
+            if (capacity > 0 and weight > 0):
+                topic_tutor_edges.append((topic, tutor, {"capacity": capacity, "weight": weight}))
 
-    # Edges from tutors nodes to sink node (t)
-    p1_t = ("p1", "t", {"capacity": 3, "weight": 1})
-    p2_t = ("p2", "t", {"capacity": 2, "weight": 1})
+    # Define edges from tutors to sink
+    tutor_sink_edges = [(tutor, "t", {"capacity": tutor_capacities[i],
+                        "weight": tutor_weights[i]}) for i, tutor in enumerate(tutors)]
 
-    example_edges = [group1_t1,group1_t2,group1_t3,group1_t4,group1_t5,group1_t6,
-            group2_t1,group2_t2,group2_t3,group2_t4,group2_t5,group2_t6,
-            group3_t1,group3_t2,group3_t3,group3_t4,group3_t5,group3_t6,
-            s_group1,s_group2,s_group3,
-            t1_p1,t2_p1,t3_p2,t4_p2,t5_p2,t6_p2,
-            p1_t,p2_t]
+    # Combine all edges into one list
+    all_edges = group_topic_edges + source_group_edges + topic_tutor_edges + tutor_sink_edges
 
-    _, _, tutors = run_algorithm(example_edges)
+    return all_edges
 
+def test_01_tutors_can_not_be_assigned_more_teams_that_their_capacities():
+    """Testing that tutors are not assigned more teams than the their capacities"""
+    num_groups = 3
+    num_topics = 6
+    num_tutors = 2
+    group_capacities = [1, 1, 1]
+    group_weights = [
+       [1, 2, 3, 4, 4, 4],
+       [4, 4, 4, 1, 2, 3],
+       [1, 4, 2, 4, 3, 4]
+    ]
+    tutor_capacities = [3, 2]  # Capacities of tutors p1 and p2
+    tutor_weights = [1, 1]     # Weights of tutors p1 and p2
+    # Capacities and weights of topics for each tutor
+    topic_capacities = [
+       [3, 3, 0, 0, 0, 0],  # Capacities of topics for tutor p1
+       [0, 0, 3, 3, 3, 3]   # Capacities of topics for tutor p2
+    ]
+    topic_weights = [
+       [1, 1, 0, 0, 0, 0],  # Weights of topics for tutor p1
+       [0, 0, 1, 1, 1, 1]   # Weights of topics for tutor p2
+    ]
+    edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
+                group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
+
+    _teams, _topics, tutors = run_algorithm(edges)
     assert len(tutors["p1"]) <= 3
     assert len(tutors["p2"]) <= 2
+    

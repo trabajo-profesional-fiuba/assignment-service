@@ -21,9 +21,9 @@ def solve(graph: nx.DiGraph):
     result = nx.max_flow_min_cost(graph, "s", "t")
     return result
 
-def is_team_or_topic(string: str, id: str):
+def is_team_or_topic(string: str, identifier: str):
     """Returns if the string represents a team or a topic."""
-    return string.startswith(id)
+    return string.startswith(identifier)
 
 def get_teams_from(result: {}):
     """Returns a dictionary with teams and assigned topic."""
