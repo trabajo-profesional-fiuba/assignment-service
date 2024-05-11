@@ -1,8 +1,11 @@
-import numpy as np
+"""Module providing helpers function to create different use cases for testing."""
+
+import numpy as np # pylint: disable=E0401
 
 def create_edges(num_groups, num_topics, num_tutors, group_capacities, group_weights,
                  tutor_capacities, tutor_weights, topic_capacities, topic_weights):
-    """Creates edges."""
+    """Creates edges to create a digraph. The edges are from source node to teams nodes, from teams
+    nodes to topic nodes, from topics nodes to tutors nodes, and from tutors nodes to sink node """
 
     # Define groups, topics, and tutors
     groups = [f"g{i}" for i in range(1, num_groups + 1)]
@@ -35,7 +38,6 @@ def create_edges(num_groups, num_topics, num_tutors, group_capacities, group_wei
 
     # Combine all edges into one list
     all_edges = group_topic_edges + source_group_edges + topic_tutor_edges + tutor_sink_edges
-
     return all_edges
 
 def create_matrix(rows: int, columns: int, is_weight: bool, def_value: int):
@@ -44,7 +46,8 @@ def create_matrix(rows: int, columns: int, is_weight: bool, def_value: int):
     if is_weight:
         for row in range(rows):
             random_col = np.random.randint(columns)  # Select a random column
-            matrix[row, random_col] = np.random.choice([1, 2, 3])  # Set randomly 1, 2 o 3 in that column
+            # Set randomly 1, 2 o 3 in that column
+            matrix[row, random_col] = np.random.choice([1, 2, 3])
     return matrix
 
 def create_vector(columns: int, def_value: int):

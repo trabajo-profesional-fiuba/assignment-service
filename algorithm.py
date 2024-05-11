@@ -1,8 +1,7 @@
 """Module providing the assignment algorithm that solves the assignment 
 of teams to topics and tutors."""
 
-# pylint: disable=E0401
-import networkx as nx
+import networkx as nx # pylint: disable=E0401
 
 TEAM_ID = "g"
 TOPIC_ID = "t"
