@@ -1,6 +1,6 @@
 """Module testing logical of max flow min cost algorithm."""
 from helper import create_edges
-from algorithm import run_algorithm
+from algorithm import max_flow_min_cost
 
 def test_01_more_teams_than_tutors_without_enough_capacity_so_there_are_teams_without_tutor():
     """Testing that tutors do not get all teams in order not to exceed their capacities."""
@@ -26,7 +26,7 @@ def test_01_more_teams_than_tutors_without_enough_capacity_so_there_are_teams_wi
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    _teams, _topics, tutors = run_algorithm(edges)
+    _teams, _topics, tutors = max_flow_min_cost(edges)
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 1
 
@@ -54,7 +54,7 @@ def test_02_more_teams_than_tutors_but_with_enough_capacity_so_all_teams_are_ass
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    _teams, _topics, tutors = run_algorithm(edges)
+    _teams, _topics, tutors = max_flow_min_cost(edges)
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 2
 
@@ -84,7 +84,7 @@ def test_03_equal_teams_and_tutors_but_tutors_do_not_exceed_their_capacities():
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    _teams, _topics, tutors = run_algorithm(edges)
+    _teams, _topics, tutors = max_flow_min_cost(edges)
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 1
     assert len(tutors["p3"]) <= 1
@@ -114,7 +114,7 @@ def test_04_more_tutors_than_teams_but_tutors_do_not_exceed_their_capacities():
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    _teams, _topics, tutors = run_algorithm(edges)
+    _teams, _topics, tutors = max_flow_min_cost(edges)
     for tutor, _ in tutors.items():
         assert len(tutors[tutor]) <= 1
 
@@ -142,7 +142,7 @@ def test_05_equal_teams_and_topics_so_every_team_is_assigned_to_one_topic():
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     assert len(teams.items()) == 2
 
 def test_06_more_teams_than_topics_but_tutors_with_enough_capacity_so_every_team_is_assigned_to_one_topic():
@@ -169,7 +169,7 @@ def test_06_more_teams_than_topics_but_tutors_with_enough_capacity_so_every_team
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     assert len(teams.items()) == 2
 
 def test_07_more_teams_than_topics_and_tutors_but_tutor_with_enough_capacity_so_every_team_is_assigned_to_one_topic():
@@ -194,7 +194,7 @@ def test_07_more_teams_than_topics_and_tutors_but_tutor_with_enough_capacity_so_
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     assert len(teams.items()) == 2
 
 def test_08_more_topics_than_teams_but_just_one_topic_is_assigned_to_each_team():
@@ -220,7 +220,7 @@ def test_08_more_topics_than_teams_but_just_one_topic_is_assigned_to_each_team()
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     all_topics = ["t1", "t2", "t3", "t4"]
     all_topics.remove(teams["g1"])
     all_topics.remove(teams["g2"])
@@ -251,7 +251,7 @@ def test_09_teams_with_same_preferences_and_weights_and_tutors_with_capacity_are
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     assert teams["g1"] == teams["g2"]
 
 def test_10_teams_with_same_preferences_but_tutor_capacity_for_topic_is_not_enough_so_are_not_assigned_to_the_same_topic():
@@ -278,7 +278,7 @@ def test_10_teams_with_same_preferences_but_tutor_capacity_for_topic_is_not_enou
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     assert teams["g1"] != teams["g2"]
 
 def test_11_two_teams_with_different_preferences_can_not_be_assigned_a_topic_with_low_preference():
@@ -305,7 +305,7 @@ def test_11_two_teams_with_different_preferences_can_not_be_assigned_a_topic_wit
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     assert teams["g1"] == "t1"
     assert teams["g2"] == "t2"
 
@@ -334,7 +334,7 @@ def test_12_more_teams_with_different_preferences_can_not_be_assigned_a_topic_wi
     edges = create_edges(num_groups, num_topics, num_tutors, group_capacities,
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     assert teams["g1"] == "t1"
     assert teams["g2"] == "t2"
     assert teams["g3"] == "t3"

@@ -67,7 +67,7 @@ def show_results(teams: {}, topics: {}):
     for team, topic in teams.items():
         print("Group", team , "has topic" , topic, "and its tutor is", topics[topic]) # pylint: disable=line-too-long
 
-def run_algorithm(edges: []):
+def max_flow_min_cost(edges: []):
     """Runs the assignment algorithm."""
     graph = create_graph(edges)
     result = solve(graph)

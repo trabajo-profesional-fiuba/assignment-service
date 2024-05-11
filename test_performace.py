@@ -1,9 +1,9 @@
 """Module testing performance and scalability of max flow min cost algorithm."""
 import time
 from helper import create_edges, create_matrix, create_vector
-from algorithm import run_algorithm
+from algorithm import max_flow_min_cost
 
-def test_01_scalability_with_four_teams_and_topics():
+def test_01_four_teams_and_topics():
     """Testing if the algorithm is overhead with four teams and topics."""
     num_groups = 4
     num_topics = 4
@@ -18,12 +18,12 @@ def test_01_scalability_with_four_teams_and_topics():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     start_time = time.time()
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     end_time = time.time()
     assert len(teams.items()) > 0
     print("Test 01 - Execution time:", end_time - start_time, "seconds")
 
-def test_02_scalability_with_ten_teams_and_topics():
+def test_02_ten_teams_and_topics():
     """Testing if the algorithm is overhead with ten teams and topics."""
     num_groups = 10
     num_topics = 10
@@ -38,12 +38,12 @@ def test_02_scalability_with_ten_teams_and_topics():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     start_time = time.time()
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     end_time = time.time()
     assert len(teams.items()) > 0
     print("Test 02 - Execution time:", end_time - start_time, "seconds")
 
-def test_03_scalability_with_twenty_teams_and_topics():
+def test_03_twenty_teams_and_topics():
     """Testing if the algorithm is overhead with twenty teams and topics."""
     num_groups = 20
     num_topics = 20
@@ -58,7 +58,7 @@ def test_03_scalability_with_twenty_teams_and_topics():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     start_time = time.time()
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     end_time = time.time()
     assert len(teams.items()) > 0
     print("Test 03 - Execution time:", end_time - start_time, "seconds")
@@ -78,7 +78,7 @@ def test_04_forty_teams_more_than_topics_and_tutors():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     start_time = time.time()
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     end_time = time.time()
     assert len(teams.items()) > 0
     print("Test 04 - Execution time:", end_time - start_time, "seconds")
@@ -98,7 +98,7 @@ def test_05_eighty_teams_more_than_topics_and_tutors():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     start_time = time.time()
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     end_time = time.time()
     assert len(teams.items()) > 0
     print("Test 05 - Execution time:", end_time - start_time, "seconds")
@@ -118,7 +118,7 @@ def test_06_one_hundred_and_sixty_teams_more_than_topics_and_tutors():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     start_time = time.time()
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     end_time = time.time()
     assert len(teams.items()) > 0
     print("Test 06 - Execution time:", end_time - start_time, "seconds")
@@ -138,14 +138,14 @@ def test_07_three_hundred_and_twenty_teams_more_than_topics_and_tutors():
                 group_weights, tutor_capacities, tutor_weights, topic_capacities, topic_weights)
 
     start_time = time.time()
-    teams, _topics, _tutors = run_algorithm(edges)
+    teams, _topics, _tutors = max_flow_min_cost(edges)
     end_time = time.time()
     assert len(teams.items()) > 0
     print("Test 07 - Execution time:", end_time - start_time, "seconds")
 
-test_01_scalability_with_four_teams_and_topics()
-test_02_scalability_with_ten_teams_and_topics()
-test_03_scalability_with_twenty_teams_and_topics()
+test_01_four_teams_and_topics()
+test_02_ten_teams_and_topics()
+test_03_twenty_teams_and_topics()
 test_04_forty_teams_more_than_topics_and_tutors()
 test_05_eighty_teams_more_than_topics_and_tutors()
 test_06_one_hundred_and_sixty_teams_more_than_topics_and_tutors()
