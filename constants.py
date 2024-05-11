@@ -1,0 +1,5 @@
+TEAM_ID = "g"
+TOPIC_ID = "t"
+TUTOR_ID = "p"
+SOURCE_NODE_ID = "s"
+SINK_NODE_ID = "t"

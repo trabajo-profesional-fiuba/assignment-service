@@ -1,6 +1,7 @@
 """Module providing helpers function to create different use cases for testing."""
 
 import numpy as np # pylint: disable=E0401
+from constants import TEAM_ID, TOPIC_ID, TUTOR_ID, SOURCE_NODE_ID, SINK_NODE_ID
 
 def get_entity(entity_id: str, num_entities: int):
     """Define a group of entities. An entity can be a team, a topic or a tutor."""
@@ -8,14 +9,14 @@ def get_entity(entity_id: str, num_entities: int):
 
 def get_all_entities(num_teams: int, num_topics: int, num_tutors: int):
     """Define groups, topics, and tutors."""
-    teams = get_entity("g", num_teams)
-    topics = get_entity("t", num_topics)
-    tutors = get_entity("p", num_tutors)
+    teams = get_entity(TEAM_ID, num_teams)
+    topics = get_entity(TOPIC_ID, num_topics)
+    tutors = get_entity(TUTOR_ID, num_tutors)
     return teams, topics, tutors
 
 def get_source_teams_edges(teams):
     """Define edges from source to groups."""
-    return [("s", team, {"capacity": 1, "weight": 1}) for team in teams]
+    return [(SOURCE_NODE_ID, team, {"capacity": 1, "weight": 1}) for team in teams]
 
 def get_teams_topics_edges(teams, topics, team_weights, team_capacities: []):
     """Define edges from groups to topics."""
@@ -40,7 +41,7 @@ def get_topics_tutors_edges(topics, tutors, topic_capacities, topic_weights):
 
 def get_tutors_sink_edges(tutors, tutor_capacities, tutor_weights):
     """Define edges from tutors to sink."""
-    tutor_sink_edges = [(tutor, "t", {"capacity": tutor_capacities[i],
+    tutor_sink_edges = [(tutor, SINK_NODE_ID, {"capacity": tutor_capacities[i],
                         "weight": tutor_weights[i]}) for i, tutor in enumerate(tutors)]
     return tutor_sink_edges
 

@@ -2,9 +2,7 @@
 of teams to topics and tutors."""
 
 import networkx as nx # pylint: disable=E0401
-
-TEAM_ID = "g"
-TOPIC_ID = "t"
+from constants import TEAM_ID, TOPIC_ID, SOURCE_NODE_ID, SINK_NODE_ID
 
 def create_graph(edges: []):
     """Creates a digraph with edge costs and capacities. 
@@ -17,30 +15,38 @@ def solve(graph: nx.DiGraph):
     """Finds a maximum flow from s to t whose total cost is minimized.
     Returns a dictionary of dictionaries keyed by nodes such that flowDict[u][v]
     is the flow edge (u, v)."""
-    result = nx.max_flow_min_cost(graph, "s", "t")
+    result = nx.max_flow_min_cost(graph, SOURCE_NODE_ID, SINK_NODE_ID)
     return result
 
 def is_team_or_topic(string: str, identifier: str):
     """Returns if the string represents a team or a topic."""
     return string.startswith(identifier)
 
+def topic_is_assigned(value: bool):
+    """Returns if the topic was assigned to the team."""
+    return value == 1
+
 def get_teams_from(result: {}):
     """Returns a dictionary with teams and assigned topic."""
     teams = {}
     for key, value in result.items():
         if is_team_or_topic(key, TEAM_ID):
-            for topic, is_assigned in value.items():
-                if is_assigned == 1:
+            for topic, topic_value in value.items():
+                if topic_is_assigned(topic_value):
                     teams[key] = topic
     return teams
+
+def tutor_is_assigned(value: bool):
+    """Returns if the tutor was assigned to the topic."""
+    return value > 0
 
 def get_topics_from(result: {}):
     """Returns a dictionary with topics and assigned tutor."""
     topics = {}
     for key, value in result.items():
         if is_team_or_topic(key, TOPIC_ID):
-            for tutor, is_assigned in value.items():
-                if is_assigned > 0:
+            for tutor, tutor_value in value.items():
+                if tutor_is_assigned(tutor_value):
                     topics[key] = tutor
     return topics
 
@@ -61,11 +67,6 @@ def get_results(result: {}):
     topics = get_topics_from(result)
     tutors = get_tutors_from(topics, teams)
     return teams, topics, tutors
-
-def show_results(teams: {}, topics: {}):
-    """Prints assignment results."""
-    for team, topic in teams.items():
-        print("Group", team , "has topic" , topic, "and its tutor is", topics[topic]) # pylint: disable=line-too-long
 
 def max_flow_min_cost(edges: []):
     """Runs the assignment algorithm."""
