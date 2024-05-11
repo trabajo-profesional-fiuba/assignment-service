@@ -63,7 +63,7 @@ def test_03_twenty_teams_and_topics():
     assert len(teams.items()) > 0
     print("Test 03 - Execution time:", end_time - start_time, "seconds")
 
-def test_04_forty_teams_more_than_topics_and_tutors():
+def test_04_forty_teams_and_topics():
     """Testing if the algorithm is overhead with forty teams and topics."""
     num_groups = 40
     num_topics = 40
@@ -83,7 +83,7 @@ def test_04_forty_teams_more_than_topics_and_tutors():
     assert len(teams.items()) > 0
     print("Test 04 - Execution time:", end_time - start_time, "seconds")
 
-def test_05_eighty_teams_more_than_topics_and_tutors():
+def test_05_eighty_teams_and_topics():
     """Testing if the algorithm is overhead with eighty teams and topics."""
     num_groups = 80
     num_topics = 80
@@ -103,7 +103,7 @@ def test_05_eighty_teams_more_than_topics_and_tutors():
     assert len(teams.items()) > 0
     print("Test 05 - Execution time:", end_time - start_time, "seconds")
 
-def test_06_one_hundred_and_sixty_teams_more_than_topics_and_tutors():
+def test_06_one_hundred_and_sixty_teams_and_topics():
     """Testing if the algorithm is overhead with one hundred and sixty teams and topics."""
     num_groups = 160
     num_topics = 160
@@ -123,7 +123,7 @@ def test_06_one_hundred_and_sixty_teams_more_than_topics_and_tutors():
     assert len(teams.items()) > 0
     print("Test 06 - Execution time:", end_time - start_time, "seconds")
 
-def test_07_three_hundred_and_twenty_teams_more_than_topics_and_tutors():
+def test_07_three_hundred_and_twenty_teams_and_topics():
     """Testing if the algorithm is overhead with three hundred and twenty teams and topics."""
     num_groups = 320
     num_topics = 320
@@ -146,7 +146,7 @@ def test_07_three_hundred_and_twenty_teams_more_than_topics_and_tutors():
 test_01_four_teams_and_topics()
 test_02_ten_teams_and_topics()
 test_03_twenty_teams_and_topics()
-test_04_forty_teams_more_than_topics_and_tutors()
-test_05_eighty_teams_more_than_topics_and_tutors()
-test_06_one_hundred_and_sixty_teams_more_than_topics_and_tutors()
-test_07_three_hundred_and_twenty_teams_more_than_topics_and_tutors()
+test_04_forty_teams_and_topics()
+test_05_eighty_teams_and_topics()
+test_06_one_hundred_and_sixty_teams_and_topics()
+test_07_three_hundred_and_twenty_teams_and_topics()
