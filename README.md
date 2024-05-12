@@ -25,3 +25,11 @@ To execute the program using Poetry, run the following command in your terminal:
 ```bash
 poetry run python main.py
 ```
+
+### Tests
+
+To run tests using Poetry, run the following command in your terminal:
+
+```bash
+poetry run pytest
+```
