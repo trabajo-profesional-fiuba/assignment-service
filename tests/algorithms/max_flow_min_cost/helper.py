@@ -13,7 +13,7 @@ def create_topics(num_topics: int):
    return [Topic(f"t{i}") for i in range(1, num_topics + 1)]
 
 def create_tutors(num_tutors: int, team_capacities: list, topics_capacities, topics_weights):
-   return [Tutor(f"p{i}", team_capacities[i-1], topics_capacities[i-1], topics_weights[i-1]) for i in range(1, num_tutors + 1)]
+   return [Tutor(f"p{i}", team_capacities[i-1], {"capacities":topics_capacities[i-1] , "weights": topics_weights[i-1]}) for i in range(1, num_tutors + 1)]
 
 def create_matrix(rows: int, columns: int, is_weight: bool, def_value: int):
     """Creates a random weight matrix"""

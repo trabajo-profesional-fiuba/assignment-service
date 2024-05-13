@@ -28,8 +28,8 @@ class MaxFlowMinCostSolver():
         topic_tutor_edges = []
         for j, tutor in enumerate(self._tutors):
             for k, topic in enumerate(self._topics):
-                capacity = tutor.topics_capacities[k]
-                weight = tutor.topics_weights[k]
+                capacity = tutor.topics["capacities"][k]
+                weight = tutor.topics["weights"][k]
                 if (capacity > 0 and weight > 0):
                     topic_tutor_edges.append((topic.id, tutor.id, {"capacity": capacity, "weight": weight}))
         return topic_tutor_edges
