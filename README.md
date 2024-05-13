@@ -33,3 +33,11 @@ To run tests using Poetry, run the following command in your terminal:
 ```bash
 poetry run pytest
 ```
+
+### Format
+
+To format code using Poetry, run the following command in your terminal:
+
+```bash
+poetry run flake8
+```
