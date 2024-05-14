@@ -7,6 +7,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+numpy = "^1.26.4"
+pulp = "^2.8.0"
+scipy = "^1.13.0"
+pytest = "^8.2.0"
 
 
 [build-system]
