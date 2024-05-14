@@ -1,6 +1,6 @@
 import time
 
-from src.algorithms.simplex_solver import simplex
+from src.algorithms.simplex_solver import SimplexSolver
 from test.simplex.helper import create_vector, get_all_entities, get_teams_topics, get_topics, get_topics_tutors
 
 
@@ -19,8 +19,8 @@ def test_01_four_teams_and_topics():
     topics_c = get_topics(topics, topic_capacities)
 
     start_time = time.time()
-    teams_topics_tutors = simplex(team_topic, topic_tutor, topics_c)
-    simplex(team_topic, topic_tutor, topics_c)
+    solver = SimplexSolver(None, team_topic, topic_tutor, None)
+    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)  # Run the optimization
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print("[TEST] 01 - Execution time:", end_time - start_time, "seconds")
@@ -39,8 +39,8 @@ def test_02_ten_teams_and_topics():
     topics_c = get_topics(topics, topic_capacities)
 
     start_time = time.time()
-    teams_topics_tutors = simplex(team_topic, topic_tutor, topics_c)
-    simplex(team_topic, topic_tutor, topics_c)
+    solver = SimplexSolver(None, team_topic, topic_tutor, None)
+    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)  # Run the optimization
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print("[TEST] 02 - Execution time:", end_time - start_time, "seconds")
@@ -59,8 +59,8 @@ def test_03_twenty_teams_and_topics():
     topics_c = get_topics(topics, topic_capacities)
 
     start_time = time.time()
-    teams_topics_tutors = simplex(team_topic, topic_tutor, topics_c)
-    simplex(team_topic, topic_tutor, topics_c)
+    solver = SimplexSolver(None, team_topic, topic_tutor, None)
+    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)  # Run the optimization
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print("[TEST] 03 - Execution time:", end_time - start_time, "seconds")
@@ -78,8 +78,8 @@ def test_04_test_forty_teams_and_topics():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities) # pylint: disable=line-too-long
     topics_c = get_topics(topics, topic_capacities)
     start_time = time.time()
-    teams_topics_tutors = simplex(team_topic, topic_tutor, topics_c)
-    simplex(team_topic, topic_tutor, topics_c)
+    solver = SimplexSolver(None, team_topic, topic_tutor, None)
+    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)  # Run the optimization
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print("[TEST] 04 - Execution time:", end_time - start_time, "seconds")
@@ -97,8 +97,8 @@ def test_05_eighty_teams_and_topics():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities) # pylint: disable=line-too-long
     topics_c = get_topics(topics, topic_capacities)
     start_time = time.time()
-    teams_topics_tutors = simplex(team_topic, topic_tutor, topics_c)
-    simplex(team_topic, topic_tutor, topics_c)
+    solver = SimplexSolver(None, team_topic, topic_tutor, None)
+    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)  # Run the optimization
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print("[TEST] 05 - Execution time:", end_time - start_time, "seconds")
