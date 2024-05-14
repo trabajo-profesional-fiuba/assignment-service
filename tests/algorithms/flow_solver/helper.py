@@ -6,19 +6,19 @@ from src.model.group import Group
 from src.model.tutor import Tutor
 from src.model.topic import Topic
 
-def create_groups(num_groups: int, weights):
-   return [Group(f"g{i}", weights[i-1]) for i in range(1, num_groups + 1)]
+def create_groups(num_groups: int, costs):
+   return [Group(f"g{i}", costs[i-1]) for i in range(1, num_groups + 1)]
 
 def create_topics(num_topics: int):
    return [Topic(f"t{i}") for i in range(1, num_topics + 1)]
 
-def create_tutors(num_tutors: int, team_capacities: list, topics_capacities, topics_weights):
-   return [Tutor(f"p{i}", team_capacities[i-1], {"capacities":topics_capacities[i-1] , "weights": topics_weights[i-1]}) for i in range(1, num_tutors + 1)]
+def create_tutors(num_tutors: int, team_capacities: list, topics_capacities, topics_costs):
+   return [Tutor(f"p{i}", team_capacities[i-1], {"capacities":topics_capacities[i-1] , "costs": topics_costs[i-1]}) for i in range(1, num_tutors + 1)]
 
-def create_matrix(rows: int, columns: int, is_weight: bool, def_value: int):
-    """Creates a random weight matrix"""
+def create_matrix(rows: int, columns: int, is_cost: bool, def_value: int):
+    """Creates a random cost matrix"""
     matrix = np.full((rows, columns), def_value)  # Set all values in default value
-    if is_weight:
+    if is_cost:
         for row in range(rows):
             random_col = np.random.randint(columns)  # Select a random column
             # Set randomly 1, 2 o 3 in that column

@@ -4,7 +4,7 @@ of groups to topics and tutors."""
 import networkx as nx
 from constants import GROUP_ID, TOPIC_ID, SOURCE_NODE_ID, SINK_NODE_ID
 
-class MaxFlowMinCostSolver():
+class TopicTutorAssignmentFlowSolver():
     def __init__(self, groups: list, topics: list, tutors: list):
         self._groups = groups
         self._topics = topics
@@ -12,7 +12,7 @@ class MaxFlowMinCostSolver():
     
     def create_source_groups_edges(self):
         """Define edges from source to groups."""
-        return [(SOURCE_NODE_ID, group.id, {"capacity": 1, "weight": 1}) for group in self._groups]
+        return [(SOURCE_NODE_ID, group.id, {"capacity": 1, "cost": 1}) for group in self._groups]
 
     def create_groups_topics_edges(self):
         """Define edges from groups to topics."""
@@ -20,7 +20,7 @@ class MaxFlowMinCostSolver():
         for i, group in enumerate(self._groups):
             for j, topic in enumerate(self._topics):
                 team_topic_edges.append((group.id, topic.id,
-                    {"capacity": 1, "weight": group.weights[j]}))
+                    {"capacity": 1, "weight": group.costs[j]}))
         return team_topic_edges
 
     def create_topics_tutors_edges(self):
@@ -29,9 +29,9 @@ class MaxFlowMinCostSolver():
         for j, tutor in enumerate(self._tutors):
             for k, topic in enumerate(self._topics):
                 capacity = tutor.topics["capacities"][k]
-                weight = tutor.topics["weights"][k]
-                if (capacity > 0 and weight > 0):
-                    topic_tutor_edges.append((topic.id, tutor.id, {"capacity": capacity, "weight": weight}))
+                cost = tutor.topics["costs"][k]
+                if (capacity > 0 and cost > 0):
+                    topic_tutor_edges.append((topic.id, tutor.id, {"capacity": capacity, "weight": cost}))
         return topic_tutor_edges
 
     def create_tutors_sink_edges(self):
