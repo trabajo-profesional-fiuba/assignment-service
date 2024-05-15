@@ -1,18 +1,18 @@
 """Module providing helpers function to create different use cases for testing."""
 
 import numpy as np
-from constants import GROUP_ID, TOPIC_ID, TUTOR_ID, SOURCE_NODE_ID, SINK_NODE_ID
+from constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.model.group import Group
 from src.model.tutor import Tutor
 from src.model.topic import Topic
 
 
 def create_groups(num_groups: int, costs):
-    return [Group(f"g{i}", costs[i - 1]) for i in range(1, num_groups + 1)]
+    return [Group(f"{GROUP_ID}{i}", costs[i - 1]) for i in range(1, num_groups + 1)]
 
 
 def create_topics(num_topics: int):
-    return [Topic(f"t{i}") for i in range(1, num_topics + 1)]
+    return [Topic(f"{TOPIC_ID}{i}") for i in range(1, num_topics + 1)]
 
 
 def create_tutors(
@@ -20,7 +20,7 @@ def create_tutors(
 ):
     return [
         Tutor(
-            f"p{i}",
+            f"{TUTOR_ID}{i}",
             team_capacities[i - 1],
             {"capacities": topics_capacities[i - 1], "costs": topics_costs[i - 1]},
         )

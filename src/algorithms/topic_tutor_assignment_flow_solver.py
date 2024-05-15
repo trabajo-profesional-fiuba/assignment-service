@@ -1,4 +1,4 @@
-"""Module providing the assignment algorithm that solves the assignment 
+"""Module providing the assignment algorithm that solves the assignment
 of groups to topics and tutors."""
 
 import networkx as nx
@@ -52,8 +52,8 @@ class TopicTutorAssignmentFlowSolver:
     def create_edges(self):
         """Creates edges to create a digraph.
         The edges are from source node to groups nodes, from groups
-        nodes to topic nodes, from topics nodes to tutors nodes, and from tutors nodes to sink node.
-        """
+        nodes to topic nodes, from topics nodes to tutors nodes, and
+        from tutors nodes to sink node."""
         team_topic_edges = self.create_groups_topics_edges()
         source_groups_edges = self.create_source_groups_edges()
         topic_tutor_edges = self.create_topics_tutors_edges()
