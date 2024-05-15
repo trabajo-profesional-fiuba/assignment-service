@@ -1,4 +1,4 @@
-TEAM_ID = "g"
+GROUP_ID = "g"
 TOPIC_ID = "t"
 TUTOR_ID = "p"
 SOURCE_NODE_ID = "s"
