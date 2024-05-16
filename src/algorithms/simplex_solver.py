@@ -85,15 +85,12 @@ class SimplexSolver:
         """
         prob.solve(PULP_CBC_CMD(msg=0))
 
-        print("\nPRINTING SOLVE",prob,"\n")
-
         result_variables = []
 
         for var in prob.variables():
             if var.varValue == 1:
                 result_variables.append(var.name)
         
-        print(result_variables)
         return result_variables
 
     def _get_results(self, result):
