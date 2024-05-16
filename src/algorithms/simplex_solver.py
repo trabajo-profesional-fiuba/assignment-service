@@ -62,7 +62,7 @@ class SimplexSolver:
         Add constraints for group assignments.
         """
         for i, group in enumerate(groups, 1):
-            prob += lpSum(assignment_vars[(i, topic, professor[0])] for topic in group[1] for professor in professors if topic in professor[2]) == 1
+            prob += lpSum(assignment_vars[(i, topic, professor[0])] for topic in group[1] for professor in professors if topic in professor[2]) <= 1
 
     def _add_topic_capacity_constraints(self, prob, topics, groups, professors, assignment_vars):
         """
@@ -84,15 +84,19 @@ class SimplexSolver:
         Solve the optimization problem.
         """
         prob.solve(PULP_CBC_CMD(msg=0))
+
+        print("\nPRINTING SOLVE",prob,"\n")
+
         result_variables = []
 
         for var in prob.variables():
             if var.varValue == 1:
                 result_variables.append(var.name)
         
+        print(result_variables)
         return result_variables
 
-    def _get_results(self, result: {}):
+    def _get_results(self, result):
         """Returns algorithm results."""
         original_dict = {}
         pattern = re.compile(r'Asignación_(\d+)_(\w+)_(\w+)')
