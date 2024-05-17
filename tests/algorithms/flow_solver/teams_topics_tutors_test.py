@@ -1,6 +1,6 @@
 """Module testing logic, performance and scalability of max flow min cost algorithm
 when assigning topics and tutors to groups."""
-
+import pytest
 import time
 from tests.algorithms.flow_solver.helper import (
     create_groups,
