@@ -2,6 +2,10 @@ name: Unit testing in Python
 run-name: Unit test excecution by @${{ github.actor }}
 on: 
   workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        description: 'token from codecov page' 
+        required: true
   workflow_dispatch:
 
 jobs:
