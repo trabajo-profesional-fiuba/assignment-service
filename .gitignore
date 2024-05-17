@@ -1,2 +1,11 @@
-__pycache__
-.pytest_cache
+# Python
+__pycache__/
+*.py[cod]
+
+# Poetry
+/.venv/
+/.pytest_cache/
+/poetry.lock
+
+# vscode
+.vscode

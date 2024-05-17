@@ -15,8 +15,16 @@ black = "^24.4.2"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
 
+[tool.pytest.ini_options]
+addopts = "-v"
+testpaths = ["tests"]
+python_files = ["*_test.py"]
+
+[virtualenvs]
+create = true
+in-project = true
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
 
