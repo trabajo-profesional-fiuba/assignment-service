@@ -1,11 +1,30 @@
-#name: PR Continuos Integration
-#on:
-#  pull_request:
-#
-#jobs:
-    # build
-    # check branches
-    # check assignee
-    # run test
-    # run perfomance test
+name: PR Continuos Integration
+on:
+    pull_request:
+      types: [opened]
+    workflow_dispatch:
+
+jobs:
+    check_branches:
+      if: ${{contains(github.event.pull_request.base.ref, 'main')  && contains(github.event.pull_request.head.ref, 'main')}}
+      runs-on: ubuntu-latest
+      steps: 
+        - name: PR branches validations
+          run: echo "Branches are correct"
+    
+    build:
+      needs: check_branches
+      uses: ./.github/workflows/build.yml
+
+    test:
+      needs: [check_branches,build]
+      uses: ./.github/workflows/tests.yml
+      secrets:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    performance:
+      needs: [check_branches,build]
+      uses: ./.github/workflows/integration.yml
+      secrets:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
