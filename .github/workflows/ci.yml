@@ -1,6 +1,8 @@
 name: Continous Integration
 run-name: CI trigger @${{ github.actor }}
-on: push
+on: 
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
