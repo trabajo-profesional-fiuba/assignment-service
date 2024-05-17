@@ -1,0 +1,11 @@
+name: Continous Integration
+run-name: CI trigger @${{ github.actor }}
+on: push
+
+jobs:
+  build:
+    uses: ./.github\workflows\build.yml
+  
+  test:
+    needs: build
+    uses: ./.github\workflows\tests.yml
