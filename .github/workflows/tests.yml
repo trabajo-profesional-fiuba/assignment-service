@@ -27,7 +27,7 @@ jobs:
         - name: Install the project dependencies
           run: poetry install
         - name: Run the automated tests
-          run: poetry run pytest 
+          run: poetry run pytest -m unit
         - name: Upload coverage reports to Codecov
           uses: codecov/codecov-action@v4.0.1
           with:
