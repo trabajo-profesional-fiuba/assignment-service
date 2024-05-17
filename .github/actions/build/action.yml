@@ -5,18 +5,22 @@ runs:
   using: "composite"
   steps:
     - name: Install Python
+      shell: bash
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     
     - name: Install poetry
+      shell: bash
       uses: abatilo/actions-poetry@v2
     
     - name: Define a cache for the virtual environment based on the dependencies lock file
+      shell: bash
       uses: actions/cache@v3
       with:
         path: ./.venv
         key: venv-${{ hashFiles('poetry.lock') }}
     
     - name: Install the project dependencies
+      shell: bash
       run: poetry install
