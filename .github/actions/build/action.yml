@@ -4,17 +4,20 @@ description: 'This action yml builds and install necesessary python things, it a
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4
     - name: Install Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11' 
+      shell: bash
     - name: Install poetry
       uses: abatilo/actions-poetry@v2
+      shell: bash
     - uses: actions/cache@v3
       name: Define a cache for the virtual environment based on the dependencies lock file
       with:
         path: ./.venv
         key: venv-${{ hashFiles('poetry.lock') }}
+      shell: bash
     - name: Install the project dependencies
       run: poetry install
+      shell: bash
