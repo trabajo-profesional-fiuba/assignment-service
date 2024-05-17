@@ -1,0 +1,11 @@
+#name: PR Continuos Integration
+#on:
+#  pull_request:
+#
+#jobs:
+    # build
+    # check branches
+    # check assignee
+    # run test
+    # run perfomance test
+
