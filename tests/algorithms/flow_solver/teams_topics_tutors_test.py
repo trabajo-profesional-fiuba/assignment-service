@@ -15,6 +15,7 @@ from src.algorithms.topic_tutor_assignment_flow_solver import (
 
 
 # ------------ Logic Tests ------------
+@pytest.mark.unit
 def test_more_groups_than_tutors_without_enough_capacity():
     """Testing that tutors do not get all groups in order not to exceed their
     capacities."""
@@ -43,7 +44,7 @@ def test_more_groups_than_tutors_without_enough_capacity():
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 1
 
-
+@pytest.mark.unit
 def test_more_groups_than_tutors_but_with_enough_capacity():
     """Testing that tutors get all groups without exceeding their capacities."""
     group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
@@ -61,7 +62,7 @@ def test_more_groups_than_tutors_but_with_enough_capacity():
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 2
 
-
+@pytest.mark.unit
 def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities():
     """Testing that tutors get all groups without exceeding their capacities."""
     group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
@@ -84,7 +85,7 @@ def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities():
     assert len(tutors["p2"]) <= 1
     assert len(tutors["p3"]) <= 1
 
-
+@pytest.mark.unit
 def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities():
     """Testing that groups are distributed between tutors in order not to exceed their
     capacities."""
@@ -110,7 +111,7 @@ def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities():
     for tutor, _ in tutors.items():
         assert len(tutors[tutor]) <= 1
 
-
+@pytest.mark.unit
 def test_equal_groups_and_topics_so_every_team_is_assigned_to_one_topic():
     """Testing all groups are assigned to one topic when there are enough tutors with
     enough capacities."""
@@ -137,7 +138,7 @@ def test_equal_groups_and_topics_so_every_team_is_assigned_to_one_topic():
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
 
-
+@pytest.mark.unit
 def test_more_groups_than_topics_but_tutors_with_enough_capacity():
     """Testing all groups are assigned to one topic when there are more groups than
     topics but tutors with enough capacities."""
@@ -158,7 +159,7 @@ def test_more_groups_than_topics_but_tutors_with_enough_capacity():
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
 
-
+@pytest.mark.unit
 def test_more_groups_but_tutor_with_enough_capacity():
     """Testing all groups are assigned to one topic when there are more groups than
     topics and tutors but tutor with enough capacity."""
@@ -183,7 +184,7 @@ def test_more_groups_but_tutor_with_enough_capacity():
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
 
-
+@pytest.mark.unit
 def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
     """Testing only one topic is assigned to every team when there are more groups than
     topics."""
@@ -214,7 +215,7 @@ def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
     not_assigned_topics = all_topics
     assert len(not_assigned_topics) > 0
 
-
+@pytest.mark.unit
 def test_groups_with_same_preferences_and_tutors_with_capacity():
     """Testing groups with same preferences and costs are assigned to the same topic
     since it is assigned to tutors that has enough capacity."""
@@ -241,7 +242,7 @@ def test_groups_with_same_preferences_and_tutors_with_capacity():
     groups, _topics, _tutors = solver.solve()
     assert groups["g1"] == groups["g2"]
 
-
+@pytest.mark.unit
 def test_groups_with_same_preferences_but_tutor_capacity_not_enough():
     """Testing groups with same preferences and costs are not assigned
     to the same topic which is assigned to only one tutor and this
@@ -269,7 +270,7 @@ def test_groups_with_same_preferences_but_tutor_capacity_not_enough():
     groups, _topics, _tutors = solver.solve()
     assert groups["g1"] != groups["g2"]
 
-
+@pytest.mark.unit
 def test_two_groups_with_different_preferences():
     """Testing two groups with different preferences and can not be assigned
     a topic with low preference."""
@@ -297,7 +298,7 @@ def test_two_groups_with_different_preferences():
     assert groups["g1"] == "t1"
     assert groups["g2"] == "t2"
 
-
+@pytest.mark.unit
 def test_more_groups_with_different_preferences():
     """Testing a team can not be assigned a topic with low preference if the topic that
     it was chosen is available."""
@@ -329,6 +330,7 @@ def test_more_groups_with_different_preferences():
 
 
 # ------------ Performance and Scalability Tests ------------
+@pytest.mark.performance
 def test_four_groups_and_topics():
     """Testing if the algorithm is overhead with four groups and topics."""
     num_groups = 4
@@ -355,7 +357,7 @@ def test_four_groups_and_topics():
         "seconds",
     )
 
-
+@pytest.mark.performance
 def test_ten_groups_and_topics():
     """Testing if the algorithm is overhead with ten groups and topics."""
     num_groups = 10
@@ -382,7 +384,7 @@ def test_ten_groups_and_topics():
         "seconds",
     )
 
-
+@pytest.mark.performance
 def test_twenty_groups_and_topics():
     """Testing if the algorithm is overhead with twenty groups and topics."""
     num_groups = 20
@@ -409,7 +411,7 @@ def test_twenty_groups_and_topics():
         "seconds",
     )
 
-
+@pytest.mark.performance
 def test_forty_groups_and_topics():
     """Testing if the algorithm is overhead with forty groups and topics."""
     num_groups = 40
@@ -436,7 +438,7 @@ def test_forty_groups_and_topics():
         "seconds",
     )
 
-
+@pytest.mark.performance
 def test_eighty_groups_and_topics():
     """Testing if the algorithm is overhead with eighty groups and topics."""
     num_groups = 80
@@ -463,7 +465,7 @@ def test_eighty_groups_and_topics():
         "seconds",
     )
 
-
+@pytest.mark.performance
 def test_one_hundred_and_sixty_groups_and_topics():
     """Testing if the algorithm is overhead with one hundred and sixty groups
     and topics."""
@@ -491,7 +493,7 @@ def test_one_hundred_and_sixty_groups_and_topics():
         "seconds",
     )
 
-
+@pytest.mark.performance
 def test_three_hundred_and_twenty_groups_and_topics():
     """Testing if the algorithm is overhead with three hundred and twenty groups
     and topics."""
