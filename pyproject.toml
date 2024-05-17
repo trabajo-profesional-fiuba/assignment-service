@@ -17,9 +17,13 @@ pytest = "^8.2.0"
 pytest-cov = "^5.0.0"
 
 [tool.pytest.ini_options]
-addopts = "-v --cov=src tests/ --cov-report=xml"
+addopts = "-v --strict-markers --cov=src tests/ --cov-report=xml"
 testpaths = ["tests"]
 python_files = ["*_test.py"]
+markers = [
+    "unit",
+    "performance",
+]
 
 [virtualenvs]
 create = true

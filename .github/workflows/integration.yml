@@ -1,15 +1,13 @@
-name: Unit testing in Python
-run-name: Unit test excecution by @${{ github.actor }}
+name: Performance testing in Python
 on: 
   workflow_call:
     secrets:
       CODECOV_TOKEN:
         description: 'token from codecov page' 
         required: true
-  workflow_dispatch:
 
 jobs:
-    test:
+    performance_tests:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
@@ -27,7 +25,7 @@ jobs:
         - name: Install the project dependencies
           run: poetry install
         - name: Run the automated tests
-          run: poetry run pytest -m unit
+          run: poetry run pytest -m performance
         - name: Upload coverage reports to Codecov
           uses: codecov/codecov-action@v4.0.1
           with:
