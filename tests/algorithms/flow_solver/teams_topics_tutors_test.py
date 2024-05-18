@@ -10,6 +10,9 @@ from tests.algorithms.flow_solver.helper import TestHelper
 
 
 class TestTeamTopicTutorFlowSolver:
+
+    helper = TestHelper()
+
     # ------------ Logic Tests ------------
     @pytest.mark.unit
     def test_more_groups_than_tutors_without_enough_capacity(self):
@@ -30,10 +33,9 @@ class TestTeamTopicTutorFlowSolver:
         ]
         tutors_capacities = [1, 1]
 
-        helper = TestHelper()
-        groups = helper.create_groups(3, group_costs)
-        topics = helper.create_topics(6)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(3, group_costs)
+        topics = self.helper.create_topics(6)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -49,10 +51,9 @@ class TestTeamTopicTutorFlowSolver:
         topics_tutors_capacities = [[3, 3, 0, 0, 0, 0], [0, 0, 3, 3, 3, 3]]
         topics_tutors_costs = [[1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 1, 1]]
 
-        helper = TestHelper()
-        groups = helper.create_groups(3, group_costs)
-        topics = helper.create_topics(6)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(3, group_costs)
+        topics = self.helper.create_topics(6)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -76,10 +77,9 @@ class TestTeamTopicTutorFlowSolver:
             [0, 0, 1, 1, 1, 1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(3, group_costs)
-        topics = helper.create_topics(6)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(3, group_costs)
+        topics = self.helper.create_topics(6)
+        tutors = self.helper.create_tutors(
             3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -108,10 +108,9 @@ class TestTeamTopicTutorFlowSolver:
             [0, 0, 1, 1, 1, 1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(2, group_costs)
-        topics = helper.create_topics(6)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(6)
+        tutors = self.helper.create_tutors(
             3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -137,10 +136,9 @@ class TestTeamTopicTutorFlowSolver:
             [1, 1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(2, group_costs)
-        topics = helper.create_topics(2)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(2)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -159,10 +157,9 @@ class TestTeamTopicTutorFlowSolver:
         topics_tutors_capacities = [[1], [1]]
         topics_tutors_costs = [[1], [1]]
 
-        helper = TestHelper()
-        groups = helper.create_groups(2, group_costs)
-        topics = helper.create_topics(1)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(1)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -185,10 +182,9 @@ class TestTeamTopicTutorFlowSolver:
             [1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(2, group_costs)
-        topics = helper.create_topics(1)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(1)
+        tutors = self.helper.create_tutors(
             1, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -213,10 +209,9 @@ class TestTeamTopicTutorFlowSolver:
             [1, 1, 1, 1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(2, group_costs)
-        topics = helper.create_topics(4)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(4)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -245,10 +240,9 @@ class TestTeamTopicTutorFlowSolver:
             [1, 1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(2, group_costs)
-        topics = helper.create_topics(2)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(2)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -274,10 +268,9 @@ class TestTeamTopicTutorFlowSolver:
             [1, 1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(2, group_costs)
-        topics = helper.create_topics(2)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(2)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -302,10 +295,9 @@ class TestTeamTopicTutorFlowSolver:
             [1, 1, 1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(2, group_costs)
-        topics = helper.create_topics(3)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(3)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -332,10 +324,9 @@ class TestTeamTopicTutorFlowSolver:
             [1, 1, 1],
         ]
 
-        helper = TestHelper()
-        groups = helper.create_groups(3, group_costs)
-        topics = helper.create_topics(3)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(3, group_costs)
+        topics = self.helper.create_topics(3)
+        tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -352,18 +343,17 @@ class TestTeamTopicTutorFlowSolver:
         num_topics = 4
         num_tutors = 2
 
-        helper = TestHelper()
-        group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
-        tutors_capacities = helper.create_list(num_groups, 2)
-        topics_tutors_capacities = helper.create_matrix(
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
             num_tutors, num_topics, False, 2
         )
-        topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
+        topics_tutors_costs = self.helper.create_matrix(num_tutors, num_topics, False, 1)
 
         start_time = time.time()
-        groups = helper.create_groups(num_groups, group_costs)
-        topics = helper.create_topics(num_topics)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -383,18 +373,17 @@ class TestTeamTopicTutorFlowSolver:
         num_topics = 10
         num_tutors = 5
 
-        helper = TestHelper()
-        group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
-        tutors_capacities = helper.create_list(num_groups, 2)
-        topics_tutors_capacities = helper.create_matrix(
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
             num_tutors, num_topics, False, 2
         )
-        topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
+        topics_tutors_costs = self.helper.create_matrix(num_tutors, num_topics, False, 1)
 
         start_time = time.time()
-        groups = helper.create_groups(num_groups, group_costs)
-        topics = helper.create_topics(num_topics)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -414,18 +403,17 @@ class TestTeamTopicTutorFlowSolver:
         num_topics = 20
         num_tutors = 10
 
-        helper = TestHelper()
-        group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
-        tutors_capacities = helper.create_list(num_groups, 2)
-        topics_tutors_capacities = helper.create_matrix(
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
             num_tutors, num_topics, False, 2
         )
-        topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
+        topics_tutors_costs = self.helper.create_matrix(num_tutors, num_topics, False, 1)
 
         start_time = time.time()
-        groups = helper.create_groups(num_groups, group_costs)
-        topics = helper.create_topics(num_topics)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -445,18 +433,17 @@ class TestTeamTopicTutorFlowSolver:
         num_topics = 40
         num_tutors = 20
 
-        helper = TestHelper()
-        group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
-        tutors_capacities = helper.create_list(num_groups, 2)
-        topics_tutors_capacities = helper.create_matrix(
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
             num_tutors, num_topics, False, 2
         )
-        topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
+        topics_tutors_costs = self.helper.create_matrix(num_tutors, num_topics, False, 1)
 
         start_time = time.time()
-        groups = helper.create_groups(num_groups, group_costs)
-        topics = helper.create_topics(num_topics)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -476,18 +463,17 @@ class TestTeamTopicTutorFlowSolver:
         num_topics = 80
         num_tutors = 40
 
-        helper = TestHelper()
-        group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
-        tutors_capacities = helper.create_list(num_groups, 2)
-        topics_tutors_capacities = helper.create_matrix(
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
             num_tutors, num_topics, False, 2
         )
-        topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
+        topics_tutors_costs = self.helper.create_matrix(num_tutors, num_topics, False, 1)
 
         start_time = time.time()
-        groups = helper.create_groups(num_groups, group_costs)
-        topics = helper.create_topics(num_topics)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -508,18 +494,17 @@ class TestTeamTopicTutorFlowSolver:
         num_topics = 160
         num_tutors = 80
 
-        helper = TestHelper()
-        group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
-        tutors_capacities = helper.create_list(num_groups, 2)
-        topics_tutors_capacities = helper.create_matrix(
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
             num_tutors, num_topics, False, 2
         )
-        topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
+        topics_tutors_costs = self.helper.create_matrix(num_tutors, num_topics, False, 1)
 
         start_time = time.time()
-        groups = helper.create_groups(num_groups, group_costs)
-        topics = helper.create_topics(num_topics)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -540,18 +525,17 @@ class TestTeamTopicTutorFlowSolver:
         num_topics = 320
         num_tutors = 160
 
-        helper = TestHelper()
-        group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
-        tutors_capacities = helper.create_list(num_groups, 2)
-        topics_tutors_capacities = helper.create_matrix(
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
             num_tutors, num_topics, False, 2
         )
-        topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
+        topics_tutors_costs = self.helper.create_matrix(num_tutors, num_topics, False, 1)
 
         start_time = time.time()
-        groups = helper.create_groups(num_groups, group_costs)
-        topics = helper.create_topics(num_topics)
-        tutors = helper.create_tutors(
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
