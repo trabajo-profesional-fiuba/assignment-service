@@ -86,6 +86,38 @@ pycodestyle = ">=2.11.0,<2.12.0"
 pyflakes = ">=3.2.0,<3.3.0"
 
 [[package]]
+name = "gurobipy"
+version = "11.0.2"
+description = "Python interface to Gurobi"
+optional = false
+python-versions = "*"
+files = [
+    {file = "gurobipy-11.0.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:8cb711a7939a21eccbbc67ad8a8753c7e2088c8c0977d2a55c28e8270d3d809d"},
+    {file = "gurobipy-11.0.2-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:0719a99e04e9c0dd1cacc207a944c08283b9944fdc34781c1c4cb47736ae887d"},
+    {file = "gurobipy-11.0.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:164e72462c2f1a705fcec73acc060aa639e745827bfe877714ff7b2ccabc5237"},
+    {file = "gurobipy-11.0.2-cp310-cp310-win_amd64.whl", hash = "sha256:e8f55baf0d729216214501d1804fdf00666d08b1556c100739c6a4a0664fda32"},
+    {file = "gurobipy-11.0.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:8ce0da6aca97ba9208e490c4d502d42be25dd3b5897c0b710773481c27ae0dae"},
+    {file = "gurobipy-11.0.2-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:871e818026c8f288d7440fcd4b842becdf1006f43495fc4f6e3ec6d9b8ba3d7a"},
+    {file = "gurobipy-11.0.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:86265b7a9a8f3e531c1bbee6e61c1e7d0b68264e976795b4cf7aec68b9e66eb8"},
+    {file = "gurobipy-11.0.2-cp311-cp311-win_amd64.whl", hash = "sha256:7ba7f42ba747232734e17b92d3ae5a9e9a3743c5a98266650a62d2d57a28ec05"},
+    {file = "gurobipy-11.0.2-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:1f9278e27d8252a3a8f23ce7d86ea064f7a15ac6cf9d9b475e2e08ca0c764513"},
+    {file = "gurobipy-11.0.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:c45511ef28b3a92b32b727d2b518a02a567babcb98f9581147f8f6f4328f5a9d"},
+    {file = "gurobipy-11.0.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:8223474cd7cb5f584889638f4252ce9ea8eb6cf5a4290ac0e0a5ee83aba36312"},
+    {file = "gurobipy-11.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:dadb47c6e666cebbaf42860918e0160b6311b6f50ed41d456f0393b39c1fe6be"},
+    {file = "gurobipy-11.0.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:69a1307e23cbd2a43ba132980224f3c055d000bf85cf371e1c2603fa5847e64f"},
+    {file = "gurobipy-11.0.2-cp38-cp38-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:db65add62cdb564fe42a2f6f8d6a0538c72796c9513b319f4052a112ba135fd7"},
+    {file = "gurobipy-11.0.2-cp38-cp38-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:1ee7a02cd9ffba6e19e63d5057aa51aec2595a33a842f45c5d1e75eb81408891"},
+    {file = "gurobipy-11.0.2-cp38-cp38-win_amd64.whl", hash = "sha256:8847c9ce93cbe835dbfdba0f87d3f3f1ab24326b3c456c8f12fd0fac706ca752"},
+    {file = "gurobipy-11.0.2-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:3f3b17df755f59dc2429637d7ae80914738776f0a3b86e6fe962239e340a3750"},
+    {file = "gurobipy-11.0.2-cp39-cp39-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:81b32041d94ac5890ccad67d319cfd555ada91201b85b417c105ca14a66c32ca"},
+    {file = "gurobipy-11.0.2-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:45c3f49c6abcbc0dc849dc4cbccdef0b1076dabf4c6171cb8ab72186c64ae8c3"},
+    {file = "gurobipy-11.0.2-cp39-cp39-win_amd64.whl", hash = "sha256:0de0bd4b94579f002e60f59f13fd7fe799914ded483448e4198472be4bbba971"},
+]
+
+[package.extras]
+matrixapi = ["numpy", "scipy"]
+
+[[package]]
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
@@ -276,7 +308,49 @@ pluggy = ">=1.5,<2.0"
 [package.extras]
 dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
+[[package]]
+name = "scipy"
+version = "1.13.0"
+description = "Fundamental algorithms for scientific computing in Python"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "scipy-1.13.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ba419578ab343a4e0a77c0ef82f088238a93eef141b2b8017e46149776dfad4d"},
+    {file = "scipy-1.13.0-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:22789b56a999265431c417d462e5b7f2b487e831ca7bef5edeb56efe4c93f86e"},
+    {file = "scipy-1.13.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:05f1432ba070e90d42d7fd836462c50bf98bd08bed0aa616c359eed8a04e3922"},
+    {file = "scipy-1.13.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b8434f6f3fa49f631fae84afee424e2483289dfc30a47755b4b4e6b07b2633a4"},
+    {file = "scipy-1.13.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:dcbb9ea49b0167de4167c40eeee6e167caeef11effb0670b554d10b1e693a8b9"},
+    {file = "scipy-1.13.0-cp310-cp310-win_amd64.whl", hash = "sha256:1d2f7bb14c178f8b13ebae93f67e42b0a6b0fc50eba1cd8021c9b6e08e8fb1cd"},
+    {file = "scipy-1.13.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:0fbcf8abaf5aa2dc8d6400566c1a727aed338b5fe880cde64907596a89d576fa"},
+    {file = "scipy-1.13.0-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:5e4a756355522eb60fcd61f8372ac2549073c8788f6114449b37e9e8104f15a5"},
+    {file = "scipy-1.13.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b5acd8e1dbd8dbe38d0004b1497019b2dbbc3d70691e65d69615f8a7292865d7"},
+    {file = "scipy-1.13.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9ff7dad5d24a8045d836671e082a490848e8639cabb3dbdacb29f943a678683d"},
+    {file = "scipy-1.13.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:4dca18c3ffee287ddd3bc8f1dabaf45f5305c5afc9f8ab9cbfab855e70b2df5c"},
+    {file = "scipy-1.13.0-cp311-cp311-win_amd64.whl", hash = "sha256:a2f471de4d01200718b2b8927f7d76b5d9bde18047ea0fa8bd15c5ba3f26a1d6"},
+    {file = "scipy-1.13.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:d0de696f589681c2802f9090fff730c218f7c51ff49bf252b6a97ec4a5d19e8b"},
+    {file = "scipy-1.13.0-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:b2a3ff461ec4756b7e8e42e1c681077349a038f0686132d623fa404c0bee2551"},
+    {file = "scipy-1.13.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6bf9fe63e7a4bf01d3645b13ff2aa6dea023d38993f42aaac81a18b1bda7a82a"},
+    {file = "scipy-1.13.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1e7626dfd91cdea5714f343ce1176b6c4745155d234f1033584154f60ef1ff42"},
+    {file = "scipy-1.13.0-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:109d391d720fcebf2fbe008621952b08e52907cf4c8c7efc7376822151820820"},
+    {file = "scipy-1.13.0-cp312-cp312-win_amd64.whl", hash = "sha256:8930ae3ea371d6b91c203b1032b9600d69c568e537b7988a3073dfe4d4774f21"},
+    {file = "scipy-1.13.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5407708195cb38d70fd2d6bb04b1b9dd5c92297d86e9f9daae1576bd9e06f602"},
+    {file = "scipy-1.13.0-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:ac38c4c92951ac0f729c4c48c9e13eb3675d9986cc0c83943784d7390d540c78"},
+    {file = "scipy-1.13.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:09c74543c4fbeb67af6ce457f6a6a28e5d3739a87f62412e4a16e46f164f0ae5"},
+    {file = "scipy-1.13.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:28e286bf9ac422d6beb559bc61312c348ca9b0f0dae0d7c5afde7f722d6ea13d"},
+    {file = "scipy-1.13.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:33fde20efc380bd23a78a4d26d59fc8704e9b5fd9b08841693eb46716ba13d86"},
+    {file = "scipy-1.13.0-cp39-cp39-win_amd64.whl", hash = "sha256:45c08bec71d3546d606989ba6e7daa6f0992918171e2a6f7fbedfa7361c2de1e"},
+    {file = "scipy-1.13.0.tar.gz", hash = "sha256:58569af537ea29d3f78e5abd18398459f195546bb3be23d16677fb26616cc11e"},
+]
+
+[package.dependencies]
+numpy = ">=1.22.4,<2.3"
+
+[package.extras]
+dev = ["cython-lint (>=0.12.2)", "doit (>=0.36.0)", "mypy", "pycodestyle", "pydevtool", "rich-click", "ruff", "types-psutil", "typing_extensions"]
+doc = ["jupyterlite-pyodide-kernel", "jupyterlite-sphinx (>=0.12.0)", "jupytext", "matplotlib (>=3.5)", "myst-nb", "numpydoc", "pooch", "pydata-sphinx-theme (>=0.15.2)", "sphinx (>=5.0.0)", "sphinx-design (>=0.4.0)"]
+test = ["array-api-strict", "asv", "gmpy2", "hypothesis (>=6.30)", "mpmath", "pooch", "pytest", "pytest-cov", "pytest-timeout", "pytest-xdist", "scikit-umfpack", "threadpoolctl"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c943fc27551a3ae04dba120291424bb752705c3c43ba4f1a2745f9c4f8541355"
+content-hash = "f1d38212d4cbeb4dff11b76df908061b3b562211f4c623d64ddea33f337d06af"

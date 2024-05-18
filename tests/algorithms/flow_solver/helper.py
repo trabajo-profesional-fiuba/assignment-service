@@ -2,8 +2,9 @@
 
 import numpy as np
 from constants import GROUP_ID, TOPIC_ID, TUTOR_ID
-from src.model.group import Group
-from src.model.tutor import Tutor
+
+from src.model.tutor.tutor import Tutor
+from src.model.group.group import Group
 from src.model.topic import Topic
 
 
