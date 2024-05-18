@@ -2,6 +2,7 @@ name: PR Continuos Integration
 on:
     pull_request:
       types: [opened]
+    workflow_dispatch:
 
 jobs:
     check_branches:
