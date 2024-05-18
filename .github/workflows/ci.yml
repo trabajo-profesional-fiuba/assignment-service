@@ -2,7 +2,11 @@ name: Continous Integration
 run-name: CI trigger @${{ github.actor }}
 on: 
   push:
-  workflow_dispatch:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        description: 'token from codecov page' 
+        required: true
 
 jobs:
   build:
