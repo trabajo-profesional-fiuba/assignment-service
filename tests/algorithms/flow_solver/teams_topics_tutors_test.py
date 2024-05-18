@@ -1,5 +1,6 @@
 """Module testing logic, performance and scalability of max flow min cost algorithm
 when assigning topics and tutors to groups."""
+
 import pytest
 import time
 from tests.algorithms.flow_solver.helper import (
@@ -44,6 +45,7 @@ def test_more_groups_than_tutors_without_enough_capacity():
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 1
 
+
 @pytest.mark.unit
 def test_more_groups_than_tutors_but_with_enough_capacity():
     """Testing that tutors get all groups without exceeding their capacities."""
@@ -61,6 +63,7 @@ def test_more_groups_than_tutors_but_with_enough_capacity():
     _groups, _topics, tutors = solver.solve()
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 2
+
 
 @pytest.mark.unit
 def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities():
@@ -84,6 +87,7 @@ def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities():
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 1
     assert len(tutors["p3"]) <= 1
+
 
 @pytest.mark.unit
 def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities():
@@ -110,6 +114,7 @@ def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities():
     _groups, _topics, tutors = solver.solve()
     for tutor, _ in tutors.items():
         assert len(tutors[tutor]) <= 1
+
 
 @pytest.mark.unit
 def test_equal_groups_and_topics_so_every_team_is_assigned_to_one_topic():
@@ -138,6 +143,7 @@ def test_equal_groups_and_topics_so_every_team_is_assigned_to_one_topic():
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
 
+
 @pytest.mark.unit
 def test_more_groups_than_topics_but_tutors_with_enough_capacity():
     """Testing all groups are assigned to one topic when there are more groups than
@@ -158,6 +164,7 @@ def test_more_groups_than_topics_but_tutors_with_enough_capacity():
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
+
 
 @pytest.mark.unit
 def test_more_groups_but_tutor_with_enough_capacity():
@@ -183,6 +190,7 @@ def test_more_groups_but_tutor_with_enough_capacity():
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
+
 
 @pytest.mark.unit
 def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
@@ -215,6 +223,7 @@ def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
     not_assigned_topics = all_topics
     assert len(not_assigned_topics) > 0
 
+
 @pytest.mark.unit
 def test_groups_with_same_preferences_and_tutors_with_capacity():
     """Testing groups with same preferences and costs are assigned to the same topic
@@ -241,6 +250,7 @@ def test_groups_with_same_preferences_and_tutors_with_capacity():
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert groups["g1"] == groups["g2"]
+
 
 @pytest.mark.unit
 def test_groups_with_same_preferences_but_tutor_capacity_not_enough():
@@ -270,6 +280,7 @@ def test_groups_with_same_preferences_but_tutor_capacity_not_enough():
     groups, _topics, _tutors = solver.solve()
     assert groups["g1"] != groups["g2"]
 
+
 @pytest.mark.unit
 def test_two_groups_with_different_preferences():
     """Testing two groups with different preferences and can not be assigned
@@ -297,6 +308,7 @@ def test_two_groups_with_different_preferences():
     groups, _topics, _tutors = solver.solve()
     assert groups["g1"] == "t1"
     assert groups["g2"] == "t2"
+
 
 @pytest.mark.unit
 def test_more_groups_with_different_preferences():
@@ -357,6 +369,7 @@ def test_four_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_ten_groups_and_topics():
     """Testing if the algorithm is overhead with ten groups and topics."""
@@ -383,6 +396,7 @@ def test_ten_groups_and_topics():
         end_time - start_time,
         "seconds",
     )
+
 
 @pytest.mark.performance
 def test_twenty_groups_and_topics():
@@ -411,6 +425,7 @@ def test_twenty_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_forty_groups_and_topics():
     """Testing if the algorithm is overhead with forty groups and topics."""
@@ -437,6 +452,7 @@ def test_forty_groups_and_topics():
         end_time - start_time,
         "seconds",
     )
+
 
 @pytest.mark.performance
 def test_eighty_groups_and_topics():
@@ -465,6 +481,7 @@ def test_eighty_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_one_hundred_and_sixty_groups_and_topics():
     """Testing if the algorithm is overhead with one hundred and sixty groups
@@ -492,6 +509,7 @@ def test_one_hundred_and_sixty_groups_and_topics():
         end_time - start_time,
         "seconds",
     )
+
 
 @pytest.mark.performance
 def test_three_hundred_and_twenty_groups_and_topics():
