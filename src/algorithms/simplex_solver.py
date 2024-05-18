@@ -12,7 +12,7 @@ class SimplexSolver:
         """
         Solve the simplex optimization problem.
         """
-        prob = self._create_optimization_problem(groups, professors, topics)
+        prob = self._create_optimization_problem()
         assignment_vars = self._create_decision_variables(groups, professors, topics)
         self._add_objective_function(prob, assignment_vars, groups, professors, topics)
         self._add_constraints(prob, assignment_vars, groups, professors, topics)
@@ -21,7 +21,7 @@ class SimplexSolver:
 
         return result
 
-    def _create_optimization_problem(self, groups, professors, topics):
+    def _create_optimization_problem(self):
         """
         Create the optimization problem.
         """

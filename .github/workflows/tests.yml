@@ -1,0 +1,34 @@
+name: Unit testing in Python
+run-name: Unit test excecution by @${{ github.actor }}
+on: 
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        description: 'token from codecov page' 
+        required: true
+  workflow_dispatch:
+
+jobs:
+    test:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - name: Install Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: '3.11' 
+        - name: Install poetry
+          uses: abatilo/actions-poetry@v2
+        - uses: actions/cache@v3
+          name: Define a cache for the virtual environment based on the dependencies lock file
+          with:
+            path: ./.venv
+            key: venv-${{ hashFiles('poetry.lock') }}
+        - name: Install the project dependencies
+          run: poetry install
+        - name: Run the automated tests
+          run: poetry run pytest -m unit
+        - name: Upload coverage reports to Codecov
+          uses: codecov/codecov-action@v4.0.1
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }}

@@ -13,9 +13,25 @@ networkx = "^3.3"
 numpy = "^1.26.4"
 pylint = "^3.1.0"
 pulp = "^2.8.0"
+flake8 = "^7.0.0"
+black = "^24.4.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
+pytest-cov = "^5.0.0"
+
+[tool.pytest.ini_options]
+addopts = "-v --strict-markers --cov=src tests/ --cov-report=xml"
+testpaths = ["tests"]
+python_files = ["*_test.py"]
+markers = [
+    "unit",
+    "performance",
+]
+
+[virtualenvs]
+create = true
+in-project = true
 
 [build-system]
 requires = ["poetry-core"]
