@@ -1,17 +1,12 @@
 """Module testing logic, performance and scalability of max flow min cost algorithm
 when assigning topics and tutors to groups."""
+
 import pytest
 import time
-from tests.algorithms.flow_solver.helper import (
-    create_groups,
-    create_topics,
-    create_tutors,
-    create_matrix,
-    create_vector,
-)
 from src.algorithms.topic_tutor_assignment_flow_solver import (
     TopicTutorAssignmentFlowSolver,
 )
+from tests.algorithms.flow_solver.helper import TestHelper
 
 
 # ------------ Logic Tests ------------
@@ -34,15 +29,17 @@ def test_more_groups_than_tutors_without_enough_capacity():
     ]
     tutors_capacities = [1, 1]
 
-    groups = create_groups(3, group_costs)
-    topics = create_topics(6)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(3, group_costs)
+    topics = helper.create_topics(6)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     _groups, _topics, tutors = solver.solve()
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 1
+
 
 @pytest.mark.unit
 def test_more_groups_than_tutors_but_with_enough_capacity():
@@ -52,15 +49,17 @@ def test_more_groups_than_tutors_but_with_enough_capacity():
     topics_tutors_capacities = [[3, 3, 0, 0, 0, 0], [0, 0, 3, 3, 3, 3]]
     topics_tutors_costs = [[1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 1, 1]]
 
-    groups = create_groups(3, group_costs)
-    topics = create_topics(6)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(3, group_costs)
+    topics = helper.create_topics(6)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     _groups, _topics, tutors = solver.solve()
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 2
+
 
 @pytest.mark.unit
 def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities():
@@ -74,9 +73,10 @@ def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities():
     ]
     topics_tutors_costs = [[1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 1, 1], [0, 0, 1, 1, 1, 1]]
 
-    groups = create_groups(3, group_costs)
-    topics = create_topics(6)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(3, group_costs)
+    topics = helper.create_topics(6)
+    tutors = helper.create_tutors(
         3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -84,6 +84,7 @@ def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities():
     assert len(tutors["p1"]) <= 1
     assert len(tutors["p2"]) <= 1
     assert len(tutors["p3"]) <= 1
+
 
 @pytest.mark.unit
 def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities():
@@ -101,15 +102,17 @@ def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities():
     ]
     topics_tutors_costs = [[1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 1, 1], [0, 0, 1, 1, 1, 1]]
 
-    groups = create_groups(2, group_costs)
-    topics = create_topics(6)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(2, group_costs)
+    topics = helper.create_topics(6)
+    tutors = helper.create_tutors(
         3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     _groups, _topics, tutors = solver.solve()
     for tutor, _ in tutors.items():
         assert len(tutors[tutor]) <= 1
+
 
 @pytest.mark.unit
 def test_equal_groups_and_topics_so_every_team_is_assigned_to_one_topic():
@@ -129,14 +132,16 @@ def test_equal_groups_and_topics_so_every_team_is_assigned_to_one_topic():
         [1, 1],
     ]
 
-    groups = create_groups(2, group_costs)
-    topics = create_topics(2)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(2, group_costs)
+    topics = helper.create_topics(2)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
+
 
 @pytest.mark.unit
 def test_more_groups_than_topics_but_tutors_with_enough_capacity():
@@ -150,14 +155,16 @@ def test_more_groups_than_topics_but_tutors_with_enough_capacity():
     topics_tutors_capacities = [[1], [1]]
     topics_tutors_costs = [[1], [1]]
 
-    groups = create_groups(2, group_costs)
-    topics = create_topics(1)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(2, group_costs)
+    topics = helper.create_topics(1)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
+
 
 @pytest.mark.unit
 def test_more_groups_but_tutor_with_enough_capacity():
@@ -175,14 +182,16 @@ def test_more_groups_but_tutor_with_enough_capacity():
         [1],
     ]
 
-    groups = create_groups(2, group_costs)
-    topics = create_topics(1)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(2, group_costs)
+    topics = helper.create_topics(1)
+    tutors = helper.create_tutors(
         1, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert len(groups.items()) == 2
+
 
 @pytest.mark.unit
 def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
@@ -202,9 +211,10 @@ def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
         [1, 1, 1, 1],
     ]
 
-    groups = create_groups(2, group_costs)
-    topics = create_topics(4)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(2, group_costs)
+    topics = helper.create_topics(4)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -214,6 +224,7 @@ def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
     all_topics.remove(groups["g2"])
     not_assigned_topics = all_topics
     assert len(not_assigned_topics) > 0
+
 
 @pytest.mark.unit
 def test_groups_with_same_preferences_and_tutors_with_capacity():
@@ -233,14 +244,16 @@ def test_groups_with_same_preferences_and_tutors_with_capacity():
         [1, 1],
     ]
 
-    groups = create_groups(2, group_costs)
-    topics = create_topics(2)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(2, group_costs)
+    topics = helper.create_topics(2)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert groups["g1"] == groups["g2"]
+
 
 @pytest.mark.unit
 def test_groups_with_same_preferences_but_tutor_capacity_not_enough():
@@ -261,14 +274,16 @@ def test_groups_with_same_preferences_but_tutor_capacity_not_enough():
         [1, 1],
     ]
 
-    groups = create_groups(2, group_costs)
-    topics = create_topics(2)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(2, group_costs)
+    topics = helper.create_topics(2)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert groups["g1"] != groups["g2"]
+
 
 @pytest.mark.unit
 def test_two_groups_with_different_preferences():
@@ -288,15 +303,17 @@ def test_two_groups_with_different_preferences():
         [1, 1, 1],
     ]
 
-    groups = create_groups(2, group_costs)
-    topics = create_topics(3)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(2, group_costs)
+    topics = helper.create_topics(3)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     groups, _topics, _tutors = solver.solve()
     assert groups["g1"] == "t1"
     assert groups["g2"] == "t2"
+
 
 @pytest.mark.unit
 def test_more_groups_with_different_preferences():
@@ -317,9 +334,10 @@ def test_more_groups_with_different_preferences():
         [1, 1, 1],
     ]
 
-    groups = create_groups(3, group_costs)
-    topics = create_topics(3)
-    tutors = create_tutors(
+    helper = TestHelper()
+    groups = helper.create_groups(3, group_costs)
+    topics = helper.create_topics(3)
+    tutors = helper.create_tutors(
         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -336,15 +354,17 @@ def test_four_groups_and_topics():
     num_groups = 4
     num_topics = 4
     num_tutors = 2
-    group_costs = create_matrix(num_groups, num_topics, True, 4)
-    tutors_capacities = create_vector(num_groups, 2)
-    topics_tutors_capacities = create_matrix(num_tutors, num_topics, False, 2)
-    topics_tutors_costs = create_matrix(num_tutors, num_topics, False, 1)
+
+    helper = TestHelper()
+    group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
+    tutors_capacities = helper.create_list(num_groups, 2)
+    topics_tutors_capacities = helper.create_matrix(num_tutors, num_topics, False, 2)
+    topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
 
     start_time = time.time()
-    groups = create_groups(num_groups, group_costs)
-    topics = create_topics(num_topics)
-    tutors = create_tutors(
+    groups = helper.create_groups(num_groups, group_costs)
+    topics = helper.create_topics(num_topics)
+    tutors = helper.create_tutors(
         num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -357,21 +377,24 @@ def test_four_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_ten_groups_and_topics():
     """Testing if the algorithm is overhead with ten groups and topics."""
     num_groups = 10
     num_topics = 10
     num_tutors = 5
-    group_costs = create_matrix(num_groups, num_topics, True, 4)
-    tutors_capacities = create_vector(num_groups, 2)
-    topics_tutors_capacities = create_matrix(num_tutors, num_topics, False, 2)
-    topics_tutors_costs = create_matrix(num_tutors, num_topics, False, 1)
+
+    helper = TestHelper()
+    group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
+    tutors_capacities = helper.create_list(num_groups, 2)
+    topics_tutors_capacities = helper.create_matrix(num_tutors, num_topics, False, 2)
+    topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
 
     start_time = time.time()
-    groups = create_groups(num_groups, group_costs)
-    topics = create_topics(num_topics)
-    tutors = create_tutors(
+    groups = helper.create_groups(num_groups, group_costs)
+    topics = helper.create_topics(num_topics)
+    tutors = helper.create_tutors(
         num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -384,21 +407,24 @@ def test_ten_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_twenty_groups_and_topics():
     """Testing if the algorithm is overhead with twenty groups and topics."""
     num_groups = 20
     num_topics = 20
     num_tutors = 10
-    group_costs = create_matrix(num_groups, num_topics, True, 4)
-    tutors_capacities = create_vector(num_groups, 2)
-    topics_tutors_capacities = create_matrix(num_tutors, num_topics, False, 2)
-    topics_tutors_costs = create_matrix(num_tutors, num_topics, False, 1)
+
+    helper = TestHelper()
+    group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
+    tutors_capacities = helper.create_list(num_groups, 2)
+    topics_tutors_capacities = helper.create_matrix(num_tutors, num_topics, False, 2)
+    topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
 
     start_time = time.time()
-    groups = create_groups(num_groups, group_costs)
-    topics = create_topics(num_topics)
-    tutors = create_tutors(
+    groups = helper.create_groups(num_groups, group_costs)
+    topics = helper.create_topics(num_topics)
+    tutors = helper.create_tutors(
         num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -411,21 +437,24 @@ def test_twenty_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_forty_groups_and_topics():
     """Testing if the algorithm is overhead with forty groups and topics."""
     num_groups = 40
     num_topics = 40
     num_tutors = 20
-    group_costs = create_matrix(num_groups, num_topics, True, 4)
-    tutors_capacities = create_vector(num_groups, 2)
-    topics_tutors_capacities = create_matrix(num_tutors, num_topics, False, 2)
-    topics_tutors_costs = create_matrix(num_tutors, num_topics, False, 1)
+
+    helper = TestHelper()
+    group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
+    tutors_capacities = helper.create_list(num_groups, 2)
+    topics_tutors_capacities = helper.create_matrix(num_tutors, num_topics, False, 2)
+    topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
 
     start_time = time.time()
-    groups = create_groups(num_groups, group_costs)
-    topics = create_topics(num_topics)
-    tutors = create_tutors(
+    groups = helper.create_groups(num_groups, group_costs)
+    topics = helper.create_topics(num_topics)
+    tutors = helper.create_tutors(
         num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -438,21 +467,24 @@ def test_forty_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_eighty_groups_and_topics():
     """Testing if the algorithm is overhead with eighty groups and topics."""
     num_groups = 80
     num_topics = 80
     num_tutors = 40
-    group_costs = create_matrix(num_groups, num_topics, True, 4)
-    tutors_capacities = create_vector(num_groups, 2)
-    topics_tutors_capacities = create_matrix(num_tutors, num_topics, False, 2)
-    topics_tutors_costs = create_matrix(num_tutors, num_topics, False, 1)
+
+    helper = TestHelper()
+    group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
+    tutors_capacities = helper.create_list(num_groups, 2)
+    topics_tutors_capacities = helper.create_matrix(num_tutors, num_topics, False, 2)
+    topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
 
     start_time = time.time()
-    groups = create_groups(num_groups, group_costs)
-    topics = create_topics(num_topics)
-    tutors = create_tutors(
+    groups = helper.create_groups(num_groups, group_costs)
+    topics = helper.create_topics(num_topics)
+    tutors = helper.create_tutors(
         num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -465,6 +497,7 @@ def test_eighty_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_one_hundred_and_sixty_groups_and_topics():
     """Testing if the algorithm is overhead with one hundred and sixty groups
@@ -472,15 +505,17 @@ def test_one_hundred_and_sixty_groups_and_topics():
     num_groups = 160
     num_topics = 160
     num_tutors = 80
-    group_costs = create_matrix(num_groups, num_topics, True, 4)
-    tutors_capacities = create_vector(num_groups, 2)
-    topics_tutors_capacities = create_matrix(num_tutors, num_topics, False, 2)
-    topics_tutors_costs = create_matrix(num_tutors, num_topics, False, 1)
+
+    helper = TestHelper()
+    group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
+    tutors_capacities = helper.create_list(num_groups, 2)
+    topics_tutors_capacities = helper.create_matrix(num_tutors, num_topics, False, 2)
+    topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
 
     start_time = time.time()
-    groups = create_groups(num_groups, group_costs)
-    topics = create_topics(num_topics)
-    tutors = create_tutors(
+    groups = helper.create_groups(num_groups, group_costs)
+    topics = helper.create_topics(num_topics)
+    tutors = helper.create_tutors(
         num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
@@ -493,6 +528,7 @@ def test_one_hundred_and_sixty_groups_and_topics():
         "seconds",
     )
 
+
 @pytest.mark.performance
 def test_three_hundred_and_twenty_groups_and_topics():
     """Testing if the algorithm is overhead with three hundred and twenty groups
@@ -500,15 +536,17 @@ def test_three_hundred_and_twenty_groups_and_topics():
     num_groups = 320
     num_topics = 320
     num_tutors = 160
-    group_costs = create_matrix(num_groups, num_topics, True, 4)
-    tutors_capacities = create_vector(num_groups, 2)
-    topics_tutors_capacities = create_matrix(num_tutors, num_topics, False, 2)
-    topics_tutors_costs = create_matrix(num_tutors, num_topics, False, 1)
+
+    helper = TestHelper()
+    group_costs = helper.create_matrix(num_groups, num_topics, True, 4)
+    tutors_capacities = helper.create_list(num_groups, 2)
+    topics_tutors_capacities = helper.create_matrix(num_tutors, num_topics, False, 2)
+    topics_tutors_costs = helper.create_matrix(num_tutors, num_topics, False, 1)
 
     start_time = time.time()
-    groups = create_groups(num_groups, group_costs)
-    topics = create_topics(num_topics)
-    tutors = create_tutors(
+    groups = helper.create_groups(num_groups, group_costs)
+    topics = helper.create_topics(num_topics)
+    tutors = helper.create_tutors(
         num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     )
     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
