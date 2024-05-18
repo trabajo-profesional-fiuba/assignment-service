@@ -2,7 +2,6 @@
 
 [![codecov](https://codecov.io/gh/trabajo-profesional-fiuba/assignment-service/graph/badge.svg?token=88MT80VD78)](https://codecov.io/gh/trabajo-profesional-fiuba/assignment-service)
 
-
 An assignment service designed to solve assignment problems such as:
 
 - Assign people or person to an incomplete team of students.
