@@ -6,13 +6,17 @@ on:
 
 jobs:
     check_branches:
-      if: ${{ ! (contains(github.event.pull_request.base.ref, 'main') && startsWith(github.event.pull_request.head.ref, 'feat/')) }}
       runs-on: ubuntu-latest
       steps: 
-        - name: PR branches validation failed
+        - name: PR branches validation
           run: |
-            echo "Branches are NOT correct. Base branch should be 'main' and head branch should start with 'feat/'"
-            exit 1     
+            if [[ "${{ github.event.pull_request.base.ref }}" == "main" && "${{ github.event.pull_request.head.ref }}" == feat/* ]]; then
+              echo "Branches are correct"
+              exit 0
+            else
+              echo "Error: Branch names are not correct."
+              exit 1
+            fi     
     ci:
       needs: [check_branches]
       uses: ./.github/workflows/ci.yml
