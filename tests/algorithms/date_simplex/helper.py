@@ -3,7 +3,6 @@
 from src.model.group.simplex_group import SimplexGroup
 from src.model.tutor.simplex_tutor import SimplexTutor
 from src.model.utils.evaluator import Evaluator
-import math
 
 
 class TestSimplexHelper:
@@ -18,7 +17,7 @@ class TestSimplexHelper:
         Returns: a list of groups with their ids and available dates.
         """
         return [
-            SimplexGroup((f"g{i}"), available_dates, (f"t{(math.ceil(i/2))}"))
+            SimplexGroup((f"g{i}"), available_dates, (f"t{(i % 4)+1}"))
             for i in range(1, num_groups + 1)
         ]
 
