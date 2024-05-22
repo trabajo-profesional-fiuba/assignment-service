@@ -24,7 +24,7 @@ class TopicTutorAssignmentFlowSolver:
         for i, group in enumerate(self._groups):
             for j, topic in enumerate(self._topics):
                 team_topic_edges.append(
-                    (group.id, topic.id, {"capacity": 1, "weight": group.costs[j]})
+                    (group.id, topic.id, {"capacity": 1, "weight": group.cost_of(j)})
                 )
         return team_topic_edges
 

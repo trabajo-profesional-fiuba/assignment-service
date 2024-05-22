@@ -2,7 +2,7 @@
 
 import numpy as np
 from constants import GROUP_ID, TOPIC_ID, TUTOR_ID
-from src.model.group import Group
+from src.model.group.initial_state_group import InitialStateGroup
 from src.model.tutor import Tutor
 from src.model.topic import Topic
 
@@ -20,7 +20,7 @@ class TestHelper:
 
         Returns: a list of groups with their ids and costs.
         """
-        return [Group(f"{GROUP_ID}{i}", costs[i - 1]) for i in range(1, num_groups + 1)]
+        return [InitialStateGroup(f"{GROUP_ID}{i}", costs[i - 1]) for i in range(1, num_groups + 1)]
 
     def create_topics(self, num_topics: int):
         """
