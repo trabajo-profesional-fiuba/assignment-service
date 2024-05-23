@@ -2,25 +2,42 @@
 
 import numpy as np
 from constants import GROUP_ID, TOPIC_ID, TUTOR_ID
-from src.model.group import Group
+from src.model.group.initial_state_group import InitialStateGroup
 from src.model.tutor import Tutor
 from src.model.topic import Topic
 
 
 class TestHelper:
 
-    def create_groups(self, num_groups: int, costs):
+    def create_topics_for_groups(costs: list):
+        """
+        Creates a dict of topics with its given costs assigned by the group.
+
+        Args:
+            - costs: list of topics costs assigned by the group ordered by topic id.
+
+        Returns a dict of topics with their ids as keys ans its costs as values.
+        """
+        return {
+            Topic(f"{TOPIC_ID}{i}"): topic_cost for i, topic_cost in enumerate(costs)
+        }
+
+    def create_groups(self, num_groups: int, topics):
         """
         Creates a list of groups.
 
         Args:
             - num_groups: number of groups to create.
-            - costs: matrix of costs associated with each group for each topic.
+            - topics: matrix of topics associated with each group.
                      Rows represents groups and columns represents topics.
+                     Topics are ordered by preference.
 
-        Returns: a list of groups with their ids and costs.
+        Returns: a list of groups with their ids and topics ordered by preference.
         """
-        return [Group(f"{GROUP_ID}{i}", costs[i - 1]) for i in range(1, num_groups + 1)]
+        return [
+            InitialStateGroup(f"{GROUP_ID}{i}", topics[i - 1])
+            for i in range(1, num_groups + 1)
+        ]
 
     def create_topics(self, num_topics: int):
         """
