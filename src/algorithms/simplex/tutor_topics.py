@@ -2,12 +2,10 @@ from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CM
 import re
 
 
-class SimplexSolver:
-    def __init__(self, dates, groups, tutors, external_professors=None):
-        self._dates = dates
+class TopicTutorAssignmentSimplexSolver:
+    def __init__(self, groups, tutors):
         self._groups = groups
         self._tutors = tutors
-        self._external_professors = external_professors
 
     def solve_simplex(self, groups, professors, topics):
         """

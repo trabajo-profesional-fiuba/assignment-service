@@ -10,7 +10,7 @@ from tests.algorithms.flow_solver.helper import (
     create_matrix,
     create_vector,
 )
-from src.algorithms.topic_tutor_assignment_flow_solver import (
+from src.algorithms.flow.topic_tutor import (
     TopicTutorAssignmentFlowSolver,
 )
 
@@ -364,7 +364,7 @@ def test_four_groups_and_topics():
     end_time = time.time()
     assert len(groups.items()) > 0
     print(
-        "4 groups, 4 topics, 2 tutors - Execution time:",
+        "[flow solver]: 4 groups, 4 topics, 2 tutors - Execution time:",
         end_time - start_time,
         "seconds",
     )
@@ -392,7 +392,7 @@ def test_ten_groups_and_topics():
     end_time = time.time()
     assert len(groups.items()) > 0
     print(
-        "10 groups, 10 topics, 5 tutors - Execution time:",
+        "[flow solver]: 10 groups, 10 topics, 5 tutors - Execution time:",
         end_time - start_time,
         "seconds",
     )
@@ -420,7 +420,7 @@ def test_twenty_groups_and_topics():
     end_time = time.time()
     assert len(groups.items()) > 0
     print(
-        "20 groups, 20 topics, 10 tutors - Execution time:",
+        "[flow solver]: 20 groups, 20 topics, 10 tutors - Execution time:",
         end_time - start_time,
         "seconds",
     )
@@ -448,7 +448,7 @@ def test_forty_groups_and_topics():
     end_time = time.time()
     assert len(groups.items()) > 0
     print(
-        "40 groups, 40 topics, 20 tutors - Execution time:",
+        "[flow solver]: 40 groups, 40 topics, 20 tutors - Execution time:",
         end_time - start_time,
         "seconds",
     )
@@ -476,7 +476,7 @@ def test_eighty_groups_and_topics():
     end_time = time.time()
     assert len(groups.items()) > 0
     print(
-        "80 groups, 80 topics, 40 tutors - Execution time:",
+        "[flow solver]: 80 groups, 80 topics, 40 tutors - Execution time:",
         end_time - start_time,
         "seconds",
     )
@@ -505,7 +505,7 @@ def test_one_hundred_and_sixty_groups_and_topics():
     end_time = time.time()
     assert len(groups.items()) > 0
     print(
-        "160 groups, 160 topics, 80 tutors - Execution time:",
+        "[flow solver]: 160 groups, 160 topics, 80 tutors - Execution time:",
         end_time - start_time,
         "seconds",
     )
@@ -534,7 +534,7 @@ def test_three_hundred_and_twenty_groups_and_topics():
     end_time = time.time()
     assert len(groups.items()) > 0
     print(
-        "320 groups, 320 topics, 160 tutors - Execution time:",
+        "[flow solver]: 320 groups, 320 topics, 160 tutors - Execution time:",
         end_time - start_time,
         "seconds",
     )
