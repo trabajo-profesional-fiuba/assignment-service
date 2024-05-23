@@ -1,23 +1,52 @@
-from .group import Group
+from .base_group import BaseGroup
+from ..topic import Topic
+from ..tutor import Tutor
 
 
-class InitialStateGroup(Group):
+class InitialStateGroup(BaseGroup):
 
-    def __init__(self, id: str, topics: list):
-        """When _ is used, that means is a private attribute"""
+    def __init__(self, id: str, topics: dict):
+        """
+        Initializes the class with an id and a dict of topics.
+
+        Args:
+            id: The unique identifier for the instance.
+            topics: The dict of topics ordered by preference.
+
+        Attributes:
+            _topics: Stores the topics ordered by preference.
+            _tutor: Initially set to None, this will hold the
+            tutor assigned to the group.
+        """
         super().__init__(id)
         self._topics = topics
         self._tutor = None
 
     @property
     def topics(self):
-        "Returns the preferable topics ."
+        """
+        Gets the dict of topics and its given preferences.
+
+        Returns a dict with topics.
+        """
         return self._topics
 
-    def cost_of(self, topic_id: int):
-        "Returns the cost of a topic."
-        return self.topics[topic_id]
+    def cost_of(self, topic: Topic):
+        """
+        Calculates the cost of a given topic based on the group's preferences.
 
-    def assign_tutor(self, tutor_id: str):
-        "Sets the tutor_id of the group."
-        self._tutor = tutor_id
+        Args:
+            - topic: The topic for which the cost is calculated.
+
+        Returns the group's cost for the given topic.
+        """
+        return self.topics[topic.id]
+
+    def assign_tutor(self, tutor: Tutor):
+        """
+        Assigns a tutor to the group.
+
+        Args:
+            tutor: The tutor to be assigned to the group.
+        """
+        self._tutor = tutor

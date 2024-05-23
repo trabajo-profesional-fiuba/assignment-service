@@ -3,6 +3,7 @@ of groups to topics and tutors."""
 
 import networkx as nx
 from constants import GROUP_ID, TOPIC_ID, SOURCE_NODE_ID, SINK_NODE_ID
+from ..model.topic import Topic
 
 
 class TopicTutorAssignmentFlowSolver:
@@ -24,7 +25,11 @@ class TopicTutorAssignmentFlowSolver:
         for i, group in enumerate(self._groups):
             for j, topic in enumerate(self._topics):
                 team_topic_edges.append(
-                    (group.id, topic.id, {"capacity": 1, "weight": group.cost_of(j)})
+                    (
+                        group.id,
+                        topic.id,
+                        {"capacity": 1, "weight": group.cost_of(Topic(j))},
+                    )
                 )
         return team_topic_edges
 

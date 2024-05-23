@@ -1,4 +1,4 @@
-class Group:
+class BaseGroup:
 
     def __init__(self, id: str):
         """When _ is used, that means is a private attribute"""
