@@ -4,12 +4,19 @@ import pytest
 import time
 
 from src.algorithms.simplex.tutor_topics import TopicTutorAssignmentSimplexSolver
-from tests.algorithms.simplex.helper import (
+from tests.algorithms.flow.helper import (
+    create_groups,
+    create_topics,
+    create_tutors,
+    create_matrix,
     create_vector,
-    get_all_entities,
+)
+from tests.algorithms.simplex.helper import (
     get_teams_topics,
-    get_topics,
     get_topics_tutors,
+    get_topics,
+    create_vector,
+    get_all_entities
 )
 
 
@@ -28,9 +35,8 @@ def test_more_teams_than_tutors_without_enough_capacity():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
     topics_c = get_topics(topics, topic_capacities)
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
-
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     assert len(teams_topics_tutors.items()) == 2
 
 
@@ -48,10 +54,8 @@ def test_more_teams_than_tutors_but_with_enough_capacity_all_teams_are_assigned(
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
     topics_c = get_topics(topics, topic_capacities)
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
-
-    # Improve assert to be more accurate and avoid edge cases
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     assert len(teams_topics_tutors.items()) == 3
 
 
@@ -69,10 +73,8 @@ def test_equal_teams_and_tutors_but_tutors_do_not_exceed_their_capacities():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
     topics_c = get_topics(topics, topic_capacities)
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
-
-    # Improve assert to be more accurate and avoid edge cases
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     assert len(teams_topics_tutors.items()) == 3
 
 
@@ -89,10 +91,8 @@ def test_more_tutors_than_groups_tutors_dont_exceed_their_capacities():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
     topics_c = get_topics(topics, topic_capacities)
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
-
-    # Improve assert to be more accurate and avoid edge cases
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     assert {1: {"t1": "p2"}, 2: {"t2": "p1"}, 3: {"t3": "p4"}} == teams_topics_tutors
 
 
@@ -111,10 +111,8 @@ def test_more_groups_than_topics_but_tutors_with_enough_capacity():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
     topics_c = get_topics(topics, topic_capacities)
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
-
-    # Improve assert to be more accurate and avoid edge cases
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     assert {1: {"t1": "p2"}, 2: {"t1": "p3"}, 3: {"t1": "p1"}} == teams_topics_tutors
 
 
@@ -133,10 +131,8 @@ def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
     topics_c = get_topics(topics, topic_capacities)
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
-
-    # Improve assert to be more accurate and avoid edge cases
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     assert {1: {"t2": "p2"}, 2: {"t1": "p1"}, 3: {"t3": "p3"}} == teams_topics_tutors
 
 
@@ -156,8 +152,8 @@ def test_four_teams_and_topics():
     topics_c = get_topics(topics, topic_capacities)
 
     start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print(
@@ -182,8 +178,8 @@ def test_ten_teams_and_topics():
     topics_c = get_topics(topics, topic_capacities)
 
     start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print(
@@ -208,8 +204,8 @@ def test_twenty_teams_and_topics():
     topics_c = get_topics(topics, topic_capacities)
 
     start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print(
@@ -233,8 +229,8 @@ def test_test_forty_teams_and_topics():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
     topics_c = get_topics(topics, topic_capacities)
     start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print(
@@ -258,8 +254,8 @@ def test_eighty_teams_and_topics():
     topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
     topics_c = get_topics(topics, topic_capacities)
     start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor)
-    teams_topics_tutors = solver.solve_simplex(team_topic, topic_tutor, topics_c)
+    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
+    teams_topics_tutors = solver.solve_simplex()
     end_time = time.time()
     assert len(teams_topics_tutors.items()) > 0
     print(
