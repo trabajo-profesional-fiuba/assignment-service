@@ -19,7 +19,8 @@ class DateEvaluatorsLPSolver:
                 group_date = group.evaluation_date
                 if (
                     evaluator.id != group.tutor_id
-                ) and group_date in evaluator.available_dates:
+                    and group_date in evaluator.available_dates
+                ):
                     var_name = f"assign_{group.id}_{group_date}_{evaluator.id}"
                     self._decision_variables[(group.id, group_date, evaluator.id)] = (
                         self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
@@ -34,26 +35,32 @@ class DateEvaluatorsLPSolver:
                         )
 
     def groups_assignment_restriction(self):
-        """Cada grupo se debe asignar entre 1 y 4 veces"""
+        """Cada grupo se debe asignar entre 2 (si es posible) y 4 veces"""
         for group in self._groups:
+            available_evaluators = sum(
+                1
+                for evaluator in self._evaluators
+                if group.evaluation_date in evaluator.available_dates
+            )
+            min_evaluators = min(2, available_evaluators)
             self._model.addCons(
                 scip.quicksum(
                     self._decision_variables[var]
                     for var in self._decision_variables
-                    if var[0] == group._id
+                    if var[0] == group.id
                 )
                 <= 4,
-                name=f"max_assign_{group._id}",
+                name=f"max_assign_{group.id}",
             )
 
             self._model.addCons(
                 scip.quicksum(
                     self._decision_variables[var]
                     for var in self._decision_variables
-                    if var[0] == group._id
+                    if var[0] == group.id
                 )
-                >= 1,
-                name=f"min_assign_{group._id}",
+                >= min_evaluators,
+                name=f"min_assign_{group.id}",
             )
 
     def evaluator_day_minimization_restriction(self):
@@ -111,7 +118,7 @@ class DateEvaluatorsLPSolver:
                 self._evaluator_day_vars[(evaluator_id, date)]
                 for (evaluator_id, date) in self._evaluator_day_vars
             ),
-            "maximize",
+            "minimize",
         )
 
     def solve(self):
@@ -121,7 +128,6 @@ class DateEvaluatorsLPSolver:
         self.evaluator_group_assignment_restriction()
         self.define_objective()
 
-        # Resolver el modelo
         self._model.optimize()
 
         print("Estado:", self._model.getStatus())
