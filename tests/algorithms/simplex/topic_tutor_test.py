@@ -1,10 +1,18 @@
-"""Module testing logical of simplex algorithm."""
+"""Module testing logic, performance and scalability of max flow min cost algorithm
+when assigning topics and tutors to groups."""
 
 import pytest
 import time
 
 from src.algorithms.simplex.tutor_topics import TopicTutorAssignmentSimplexSolver
-from tests.algorithms.simplex.helper import create_vector, get_all_entities, get_teams_topics, get_topics_tutors, get_topics
+from tests.algorithms.simplex.helper import (
+    create_vector,
+    get_all_entities,
+    get_teams_topics,
+    get_topics_tutors,
+    get_topics,
+)
+
 
 # ------------ Logic Tests ------------
 @pytest.mark.unit
