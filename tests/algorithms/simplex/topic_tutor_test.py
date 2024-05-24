@@ -4,21 +4,7 @@ import pytest
 import time
 
 from src.algorithms.simplex.tutor_topics import TopicTutorAssignmentSimplexSolver
-from tests.algorithms.flow.helper import (
-    create_groups,
-    create_topics,
-    create_tutors,
-    create_matrix,
-    create_vector,
-)
-from tests.algorithms.simplex.helper import (
-    get_teams_topics,
-    get_topics_tutors,
-    get_topics,
-    create_vector,
-    get_all_entities
-)
-
+from tests.algorithms.simplex.helper import create_vector, get_all_entities, get_teams_topics, get_topics_tutors, get_topics
 
 # ------------ Logic Tests ------------
 @pytest.mark.unit
