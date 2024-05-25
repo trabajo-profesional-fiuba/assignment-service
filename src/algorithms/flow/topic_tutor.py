@@ -41,12 +41,11 @@ class TopicTutorAssignmentFlowSolver:
         topic_tutor_edges = []
         for j, tutor in enumerate(self._tutors):
             for k, topic in enumerate(self._topics):
-                capacity = tutor.topics["capacities"][k]
-                cost = tutor.topics["costs"][k]
-                if capacity > 0 and cost > 0:
-                    topic_tutor_edges.append(
-                        (topic.id, tutor.id, {"capacity": capacity, "weight": cost})
-                    )
+                topic_tutor_edges.append(
+                    (topic.id, tutor.id, 
+                    {"capacity": tutor.capacity_of(Topic(f"{TOPIC_ID}{k}")),
+                    "weight": tutor.cost_of(Topic(f"{TOPIC_ID}{k}"))})
+                )
         return topic_tutor_edges
 
     def create_tutors_sink_edges(self):
