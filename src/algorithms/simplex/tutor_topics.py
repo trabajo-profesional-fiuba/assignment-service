@@ -39,7 +39,7 @@ class TopicTutorAssignmentSimplexSolver:
 
         Returns an instance of the optimization problem.
         """
-        return LpProblem("Group Assignment", LpMaximize)
+        return LpProblem("GroupAssignment", LpMaximize)
 
     def _add_objective_function(self, prob, assignment_vars):
         """
