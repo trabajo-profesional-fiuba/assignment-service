@@ -21,17 +21,17 @@ class TopicTutorAssignmentFlowSolver:
 
     def create_groups_topics_edges(self):
         """Define edges from groups to topics."""
-        team_topic_edges = []
+        group_topic_edges = []
         for i, group in enumerate(self._groups):
             for j, topic in enumerate(self._topics):
-                team_topic_edges.append(
+                group_topic_edges.append(
                     (
                         group.id,
                         topic.id,
-                        {"capacity": 1, "weight": group.cost_of(Topic(j))},
+                        {"capacity": 1, "weight": group.cost_of(Topic(f"{TOPIC_ID}{j}"))},
                     )
                 )
-        return team_topic_edges
+        return group_topic_edges
 
     def create_topics_tutors_edges(self):
         """Define edges from topics to tutors."""
@@ -59,12 +59,12 @@ class TopicTutorAssignmentFlowSolver:
         The edges are from source node to groups nodes, from groups
         nodes to topic nodes, from topics nodes to tutors nodes, and
         from tutors nodes to sink node."""
-        team_topic_edges = self.create_groups_topics_edges()
+        group_topic_edges = self.create_groups_topics_edges()
         source_groups_edges = self.create_source_groups_edges()
         topic_tutor_edges = self.create_topics_tutors_edges()
         tutor_sink_edges = self.create_tutors_sink_edges()
         return (
-            team_topic_edges
+            group_topic_edges
             + source_groups_edges
             + topic_tutor_edges
             + tutor_sink_edges
@@ -77,19 +77,19 @@ class TopicTutorAssignmentFlowSolver:
         graph.add_edges_from(edges)
         return graph
 
-    def is_team_or_topic(self, string: str, identifier: str):
-        """Returns if the string represents a team or a topic."""
+    def is_group_or_topic(self, string: str, identifier: str):
+        """Returns if the string represents a group or a topic."""
         return string.startswith(identifier)
 
     def topic_is_assigned(self, value: bool):
-        """Returns if the topic was assigned to the team."""
+        """Returns if the topic was assigned to the group."""
         return value == 1
 
     def get_groups_from(self, result: {}):
-        """Returns a dictionary with groups and assigned topic."""
+        """Returns a dictionary with groups as keys and assigned topic as values."""
         groups = {}
         for key, value in result.items():
-            if self.is_team_or_topic(key, GROUP_ID):
+            if self.is_group_or_topic(key, GROUP_ID):
                 for topic, topic_value in value.items():
                     if self.topic_is_assigned(topic_value):
                         groups[key] = topic
@@ -100,23 +100,23 @@ class TopicTutorAssignmentFlowSolver:
         return value > 0
 
     def get_topics_from(self, result: {}):
-        """Returns a dictionary with topics and assigned tutor."""
+        """Returns a dictionary with topics as keys and assigned tutor as values."""
         topics = {}
         for key, value in result.items():
-            if self.is_team_or_topic(key, TOPIC_ID):
+            if self.is_group_or_topic(key, TOPIC_ID):
                 for tutor, tutor_value in value.items():
                     if self.tutor_is_assigned(tutor_value):
                         topics[key] = tutor
         return topics
 
     def get_tutors_from(self, topics: {}, groups: {}):
-        """Returns a dictionary with tutors and assigned groups."""
+        """Returns a dictionary with tutors as keys and assigned groups as values."""
         tutors = {}
         for topic, tutor in topics.items():
             assigned_groups = []
-            for team, value in groups.items():
+            for group, value in groups.items():
                 if value == topic:
-                    assigned_groups.append(team)
+                    assigned_groups.append(group)
             tutors[tutor] = assigned_groups
         return tutors
 

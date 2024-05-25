@@ -30,7 +30,6 @@ class TestHelper:
             - num_groups: number of groups to create.
             - topics: matrix of topics associated with each group.
                      Rows represents groups and columns represents topics.
-                     Topics are ordered by preference.
 
         Returns: a list of groups with their ids and topics ordered by preference.
         """
@@ -51,14 +50,14 @@ class TestHelper:
         return [Topic(f"{TOPIC_ID}{i}") for i in range(1, num_topics + 1)]
 
     def create_tutors(
-        self, num_tutors: int, team_capacities: list, topics_capacities, topics_costs
+        self, num_tutors: int, group_capacities: list, topics_capacities, topics_costs
     ):
         """
         Creates a list of tutors.
 
         Args:
             - num_tutors: number of tutors to create.
-            - team_capacities: list of number of teams a tutor can take per topic.
+            - group_capacities: list of number of groups a tutor can take per topic.
             - topics_capacities: matrix indicating the number of topics each tutor
                                  can handle. Rows represents tutors and columns
                                  represents topics.
@@ -66,13 +65,13 @@ class TestHelper:
                             each tutor. Rows represents tutors and columns
                             represents topics.
 
-        Returns: a list of tutors with their ids, team capacities, and topics
+        Returns: a list of tutors with their ids, group capacities, and topics
         capacities and costs.
         """
         return [
             Tutor(
                 f"{TUTOR_ID}{i}",
-                team_capacities[i - 1],
+                group_capacities[i - 1],
                 {"capacities": topics_capacities[i - 1], "costs": topics_costs[i - 1]},
             )
             for i in range(1, num_tutors + 1)
@@ -112,3 +111,70 @@ class TestHelper:
         # Set all values in default value
         vector = np.full(length, def_value)
         return vector
+    
+    def get_tutors_workload(self, tutors: list, result: dict):
+        counters = {tutor.id: 0 for tutor in tutors}
+        for topic_tutor in result.values():
+            for tutor_id in topic_tutor.values():
+                counters[tutor_id] += 1
+        return counters
+    
+    def get_assigned_groups_by_tutors(self, data: dict):
+        """
+        Get a list of groups associated with each tutor from a given dictionary.
+
+        Args:
+            data (dict): A dictionary where keys are groups and values are dictionaries representing the association 
+                        between topics and tutors for each group.
+
+        Returns:
+            dict: A dictionary where keys are topics and values are lists of groups associated with each topic.
+
+        Example:
+            >>> data = {
+            ...     1: {"t1": "p2"},
+            ...     2: {"t2": "p1"},
+            ...     3: {"t3": "p4"}
+            ... }
+            >>> get_groups_by_tutor(data)
+            {'p1': [2], 'p2': [1], 'p4': [3]}
+        """
+        topic_groups = {}
+        for group, topics_tutors in data.items():
+            for topic, tutor in topics_tutors.items():
+                if tutor not in topic_groups:
+                    topic_groups[tutor] = []
+                topic_groups[tutor].append(group)
+        return topic_groups
+    
+    def get_assigned_topics_by_groups(self, data: dict):
+        """
+        Get a dictionary with groups as keys and assigned topics as values.
+
+        Args:
+            data (dict): A dictionary where keys are groups and values are dictionaries representing the association 
+                        between topics and tutors for each group.
+
+        Returns:
+            dict: A dictionary where keys are groups and values are lists of assigned topics for each group.
+
+        Example:
+            >>> data = {
+            ...     1: {"t1": "p2"},
+            ...     2: {"t2": "p1"},
+            ...     3: {"t3": "p4"}
+            ... }
+            >>> get_groups_assigned_topics(data)
+            {1: ['t1'], 2: ['t2'], 3: ['t3']}
+        """
+        groups_assigned_topics = {}
+        for group, topics_tutors in data.items():
+            assigned_topics = []
+            for topic, tutor in topics_tutors.items():
+                assigned_topics.append(topic)
+            groups_assigned_topics[group] = assigned_topics
+        return groups_assigned_topics
+
+
+
+

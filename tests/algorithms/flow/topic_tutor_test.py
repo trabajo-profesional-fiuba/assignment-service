@@ -6,10 +6,10 @@ import time
 from src.algorithms.flow.topic_tutor import (
     TopicTutorAssignmentFlowSolver,
 )
-from tests.algorithms.flow.helper import TestHelper
+from tests.algorithms.helper import TestHelper
 
 
-class TestTeamTopicTutorFlowSolver:
+class TestGroupTopicTutorFlowSolver:
 
     helper = TestHelper()
 
@@ -56,8 +56,10 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         _groups, _topics, tutors = solver.solve()
+
         assert len(tutors["p1"]) <= 1
         assert len(tutors["p2"]) <= 2
 
@@ -82,8 +84,10 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         _groups, _topics, tutors = solver.solve()
+
         assert len(tutors["p1"]) <= 1
         assert len(tutors["p2"]) <= 1
         assert len(tutors["p3"]) <= 1
@@ -113,13 +117,15 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         _groups, _topics, tutors = solver.solve()
+
         for tutor, _ in tutors.items():
             assert len(tutors[tutor]) <= 1
 
     @pytest.mark.unit
-    def test_equal_groups_and_topics_so_every_team_is_assigned_to_one_topic(self):
+    def test_equal_groups_and_topics_so_every_group_is_assigned_to_one_topic(self):
         """Testing all groups are assigned to one topic when there are enough
         tutors with enough capacities."""
         group_costs = [
@@ -141,8 +147,10 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         groups, _topics, _tutors = solver.solve()
+
         assert len(groups.items()) == 2
 
     @pytest.mark.unit
@@ -162,8 +170,10 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         groups, _topics, _tutors = solver.solve()
+
         assert len(groups.items()) == 2
 
     @pytest.mark.unit
@@ -192,8 +202,8 @@ class TestTeamTopicTutorFlowSolver:
         assert len(groups.items()) == 2
 
     @pytest.mark.unit
-    def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team(self):
-        """Testing only one topic is assigned to every team when there are more
+    def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_group(self):
+        """Testing only one topic is assigned to every group when there are more
         groups than topics."""
         group_costs = [
             [1, 2, 1, 2],
@@ -214,8 +224,10 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         groups, _topics, _tutors = solver.solve()
+
         all_topics = ["t1", "t2", "t3", "t4"]
         all_topics.remove(groups["g1"])
         all_topics.remove(groups["g2"])
@@ -245,8 +257,10 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         groups, _topics, _tutors = solver.solve()
+
         assert groups["g1"] == groups["g2"]
 
     @pytest.mark.unit
@@ -273,10 +287,13 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         groups, _topics, _tutors = solver.solve()
+
         assert groups["g1"] != groups["g2"]
 
+    # ------------ Quality Tests ------------
     @pytest.mark.unit
     def test_two_groups_with_different_preferences(self):
         """Testing two groups with different preferences and can not be assigned
@@ -300,14 +317,16 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         groups, _topics, _tutors = solver.solve()
+
         assert groups["g1"] == "t1"
         assert groups["g2"] == "t2"
 
     @pytest.mark.unit
     def test_more_groups_with_different_preferences(self):
-        """Testing a team can not be assigned a topic with low preference if
+        """Testing a group can not be assigned a topic with low preference if
         the topic that it was chosen is available."""
         group_costs = [
             [1, 2, 3],  # g1 preferences: t1, t2, t3
@@ -329,8 +348,10 @@ class TestTeamTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         groups, _topics, _tutors = solver.solve()
+
         assert groups["g1"] == "t1"
         assert groups["g2"] == "t2"
         assert groups["g3"] == "t3"
@@ -352,15 +373,17 @@ class TestTeamTopicTutorFlowSolver:
             num_tutors, num_topics, False, 1
         )
 
-        start_time = time.time()
         groups = self.helper.create_groups(num_groups, group_costs)
         topics = self.helper.create_topics(num_topics)
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        start_time = time.time()
         groups, _topics, _tutors = solver.solve()
         end_time = time.time()
+
         assert len(groups.items()) > 0
         print(
             "4 groups, 4 topics, 2 tutors - Execution time:",
@@ -384,15 +407,17 @@ class TestTeamTopicTutorFlowSolver:
             num_tutors, num_topics, False, 1
         )
 
-        start_time = time.time()
         groups = self.helper.create_groups(num_groups, group_costs)
         topics = self.helper.create_topics(num_topics)
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        start_time = time.time()
         groups, _topics, _tutors = solver.solve()
         end_time = time.time()
+        
         assert len(groups.items()) > 0
         print(
             "10 groups, 10 topics, 5 tutors - Execution time:",
@@ -416,15 +441,17 @@ class TestTeamTopicTutorFlowSolver:
             num_tutors, num_topics, False, 1
         )
 
-        start_time = time.time()
         groups = self.helper.create_groups(num_groups, group_costs)
         topics = self.helper.create_topics(num_topics)
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        start_time = time.time()
         groups, _topics, _tutors = solver.solve()
         end_time = time.time()
+
         assert len(groups.items()) > 0
         print(
             "20 groups, 20 topics, 10 tutors - Execution time:",
@@ -448,15 +475,17 @@ class TestTeamTopicTutorFlowSolver:
             num_tutors, num_topics, False, 1
         )
 
-        start_time = time.time()
         groups = self.helper.create_groups(num_groups, group_costs)
         topics = self.helper.create_topics(num_topics)
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        start_time = time.time()
         groups, _topics, _tutors = solver.solve()
         end_time = time.time()
+
         assert len(groups.items()) > 0
         print(
             "40 groups, 40 topics, 20 tutors - Execution time:",
@@ -480,15 +509,17 @@ class TestTeamTopicTutorFlowSolver:
             num_tutors, num_topics, False, 1
         )
 
-        start_time = time.time()
         groups = self.helper.create_groups(num_groups, group_costs)
         topics = self.helper.create_topics(num_topics)
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        start_time = time.time()
         groups, _topics, _tutors = solver.solve()
         end_time = time.time()
+
         assert len(groups.items()) > 0
         print(
             "80 groups, 80 topics, 40 tutors - Execution time:",
@@ -513,15 +544,17 @@ class TestTeamTopicTutorFlowSolver:
             num_tutors, num_topics, False, 1
         )
 
-        start_time = time.time()
         groups = self.helper.create_groups(num_groups, group_costs)
         topics = self.helper.create_topics(num_topics)
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        start_time = time.time()
         groups, _topics, _tutors = solver.solve()
         end_time = time.time()
+
         assert len(groups.items()) > 0
         print(
             "160 groups, 160 topics, 80 tutors - Execution time:",
@@ -546,15 +579,17 @@ class TestTeamTopicTutorFlowSolver:
             num_tutors, num_topics, False, 1
         )
 
-        start_time = time.time()
         groups = self.helper.create_groups(num_groups, group_costs)
         topics = self.helper.create_topics(num_topics)
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        start_time = time.time()
         groups, _topics, _tutors = solver.solve()
         end_time = time.time()
+
         assert len(groups.items()) > 0
         print(
             "320 groups, 320 topics, 160 tutors - Execution time:",

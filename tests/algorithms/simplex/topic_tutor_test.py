@@ -5,255 +5,350 @@ import pytest
 import time
 
 from src.algorithms.simplex.tutor_topics import TopicTutorAssignmentSimplexSolver
-from tests.algorithms.simplex.helper import (
-    create_vector,
-    get_all_entities,
-    get_teams_topics,
-    get_topics_tutors,
-    get_topics,
-)
+from tests.algorithms.helper import TestHelper
 
 
-# ------------ Logic Tests ------------
-@pytest.mark.unit
-def test_more_teams_than_tutors_without_enough_capacity():
-    """Testing that tutors dont get all teams so they not to exceed their capacities."""
-    num_groups = 3
-    num_topics = 6
-    num_tutors = 2
-    tutor_capacities = create_vector(num_tutors, 1)
-    topic_capacities = create_vector(num_topics, 1)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
+class TestGroupTopicTutorSimplexSolver:
 
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
+    helper = TestHelper()
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    assert len(teams_topics_tutors.items()) == 2
+    # ------------ Logic Tests ------------
+    @pytest.mark.unit
+    def test_more_groups_than_tutors_without_enough_capacity(self):
+        """Testing that tutors dont get all groups so they dont to exceed their capacities."""
+        group_costs = [
+            [1, 2, 3, 4, 4, 4],  # groups as rows
+            [4, 4, 4, 1, 2, 3],  # topics as columns
+            [1, 4, 2, 4, 3, 4],
+        ]
+        topics_tutors_capacities = [
+            [3, 3, 0, 0, 0, 0],  # tutors as rows
+            [0, 0, 3, 3, 3, 3],  # topics as columns
+        ]
+        topics_tutors_costs = [
+            [1, 1, 0, 0, 0, 0],  # tutors as rows
+            [0, 0, 1, 1, 1, 1],  # topics as columns
+        ]
+        tutors_capacities = [1, 1]
 
+        groups = self.helper.create_groups(3, group_costs)
+        topics = self.helper.create_topics(6)
+        tutors = self.helper.create_tutors(
+            2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
+        
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        result = solver.solve_simplex()
 
-@pytest.mark.unit
-def test_more_teams_than_tutors_but_with_enough_capacity_all_teams_are_assigned():
-    """Testing that tutors get all teams without exceeding their capacities."""
-    num_groups = 3
-    num_topics = 6
-    num_tutors = 2
-    tutor_capacities = [1, 2]
-    topic_capacities = create_vector(num_topics, 1)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
+        assert len(result.items()) == 2
 
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
+    @pytest.mark.unit
+    def test_more_groups_than_tutors_but_with_enough_capacity_all_groups_are_assigned(self):
+        """Testing that tutors get all groups without exceeding their capacities."""
+        group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
+        tutors_capacities = [1, 2]
+        topics_tutors_capacities = [[3, 3, 0, 0, 0, 0], [0, 0, 3, 3, 3, 3]]
+        topics_tutors_costs = [[1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 1, 1]]
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    assert len(teams_topics_tutors.items()) == 3
+        groups = self.helper.create_groups(3, group_costs)
+        topics = self.helper.create_topics(6)
+        tutors = self.helper.create_tutors(
+            2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-
-@pytest.mark.unit
-def test_equal_teams_and_tutors_but_tutors_do_not_exceed_their_capacities():
-    """Testing that tutors get all teams without exceeding their capacities."""
-    num_groups = 3
-    num_topics = 6
-    num_tutors = 3
-    tutor_capacities = create_vector(num_tutors, 1)
-    topic_capacities = create_vector(num_topics, 1)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
-
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
-
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    assert len(teams_topics_tutors.items()) == 3
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        result = solver.solve_simplex()
+        
+        assert len(result.items()) == 3
 
 
-@pytest.mark.unit
-def test_more_tutors_than_groups_tutors_dont_exceed_their_capacities():
-    num_groups = 3
-    num_topics = 6
-    num_tutors = 6
-    tutor_capacities = create_vector(num_tutors, 1)
-    topic_capacities = create_vector(num_topics, 1)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
+    @pytest.mark.unit
+    def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities(self):
+        """Testing that tutors get all groups without exceeding their capacities."""
+        group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
+        tutors_capacities = [1, 1, 1]
+        topics_tutors_capacities = [
+            [3, 3, 0, 0, 0, 0],
+            [0, 0, 3, 3, 3, 3],
+            [0, 0, 3, 3, 3, 3],
+        ]
+        topics_tutors_costs = [
+            [1, 1, 0, 0, 0, 0],
+            [0, 0, 1, 1, 1, 1],
+            [0, 0, 1, 1, 1, 1],
+        ]
 
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
+        groups = self.helper.create_groups(3, group_costs)
+        topics = self.helper.create_topics(6)
+        tutors = self.helper.create_tutors(
+            3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    assert {1: {"t1": "p2"}, 2: {"t2": "p1"}, 3: {"t3": "p4"}} == teams_topics_tutors
-
-
-@pytest.mark.unit
-def test_more_groups_than_topics_but_tutors_with_enough_capacity():
-    """Testing all groups are assigned to one topic when there are more groups than
-    topics but tutors with enough capacities."""
-    num_groups = 3
-    num_topics = 1
-    num_tutors = 3
-    tutor_capacities = create_vector(num_tutors, 1)
-    topic_capacities = create_vector(1, 3)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
-
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
-
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    assert {1: {"t1": "p2"}, 2: {"t1": "p3"}, 3: {"t1": "p1"}} == teams_topics_tutors
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        result = solver.solve_simplex()
+        
+        assert len(result.items()) == 3
 
 
-@pytest.mark.unit
-def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_team():
-    """Testing only one topic is assigned to every team when there are more groups than
-    topics."""
-    num_groups = 3
-    num_topics = 4
-    num_tutors = 3
-    tutor_capacities = create_vector(num_tutors, 1)
-    topic_capacities = create_vector(num_topics, 1)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
+    @pytest.mark.unit
+    def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities(self):
+        """Testing that groups are distributed between tutors in order not
+        to exceed their capacities."""
+        group_costs = [
+            [1, 2, 3, 4, 4, 4],
+            [4, 4, 4, 1, 2, 3],
+        ]
+        tutors_capacities = [1, 1, 1]
+        topics_tutors_capacities = [
+            [3, 3, 0, 0, 0, 0],
+            [0, 0, 3, 3, 3, 3],
+            [0, 0, 3, 3, 3, 3],
+        ]
+        topics_tutors_costs = [
+            [1, 1, 0, 0, 0, 0],
+            [0, 0, 1, 1, 1, 1],
+            [0, 0, 1, 1, 1, 1],
+        ]
 
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(6)
+        tutors = self.helper.create_tutors(
+            3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    assert {1: {"t2": "p2"}, 2: {"t1": "p1"}, 3: {"t3": "p3"}} == teams_topics_tutors
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        result = solver.solve_simplex()
+        
+        tutor_groups = self.helper.get_assigned_groups_by_tutors(result)
+        for tutor, groups in tutor_groups.items():
+            assert len(groups) <= 1
 
+    @pytest.mark.unit
+    def test_more_groups_than_topics_but_tutors_with_enough_capacity(self):
+        """Testing all groups are assigned to one topic when there are more groups than
+        topics but tutors with enough capacities."""
+        group_costs = [
+            [1],
+            [4],
+        ]
+        tutors_capacities = [1, 1]
+        topics_tutors_capacities = [[1], [1]]
+        topics_tutors_costs = [[1], [1]]
 
-# ------------ Performance and Scalability Tests ------------
-@pytest.mark.performance
-def test_four_teams_and_topics():
-    """Testing if the algorithm is overhead with four teams and topics."""
-    num_groups = 4
-    num_topics = 4
-    num_tutors = 2
-    tutor_capacities = create_vector(num_groups, 2)
-    topic_capacities = create_vector(num_topics, 2)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(1)
+        tutors = self.helper.create_tutors(
+            2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        result = solver.solve_simplex()
+        
+        group_topics = self.helper.get_assigned_groups_by_tutors(result)
+        assert len(group_topics.items()) == 2
 
-    start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    end_time = time.time()
-    assert len(teams_topics_tutors.items()) > 0
-    print(
-        "[simplex solver]: 4 groups, 4 topics, 2 tutors - Execution time:",
-        end_time - start_time,
-        "seconds",
-    )
+    @pytest.mark.unit
+    def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_group(self):
+        """Testing only one topic is assigned to every group when there are more
+        groups than topics."""
+        group_costs = [
+            [1, 2, 1, 2],
+            [1, 2, 1, 2],
+        ]
+        tutors_capacities = [2, 2]
+        topics_tutors_capacities = [
+            [1, 0, 1, 0],
+            [0, 1, 1, 0],
+        ]
+        topics_tutors_costs = [
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+        ]
 
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(4)
+        tutors = self.helper.create_tutors(
+            2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-@pytest.mark.performance
-def test_ten_teams_and_topics():
-    """Testing if the algorithm is overhead with ten teams and topics."""
-    num_groups = 10
-    num_topics = 10
-    num_tutors = 5
-    tutor_capacities = create_vector(num_groups, 2)
-    topic_capacities = create_vector(num_topics, 2)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        result = solver.solve_simplex()
+        
+        group_topics = self.helper.get_assigned_topics_by_groups(result)
+        for group, topics in group_topics.items():
+            assert len(topics) == 1
 
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
+    # ------------ Performance and Scalability Tests ------------
+    @pytest.mark.performance
+    def test_four_groups_and_topics(self):
+        """Testing if the algorithm is overhead with four groups and topics."""
+        num_groups = 4
+        num_topics = 4
+        num_tutors = 2
 
-    start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    end_time = time.time()
-    assert len(teams_topics_tutors.items()) > 0
-    print(
-        "[simplex solver]: 10 groups, 10 topics, 5 tutors - Execution time:",
-        end_time - start_time,
-        "seconds",
-    )
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
+            num_tutors, num_topics, False, 2
+        )
+        topics_tutors_costs = self.helper.create_matrix(
+            num_tutors, num_topics, False, 1
+        )
 
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
+            num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-@pytest.mark.performance
-def test_twenty_teams_and_topics():
-    """Testing if the algorithm is overhead with twenty teams and topics."""
-    num_groups = 20
-    num_topics = 20
-    num_tutors = 10
-    tutor_capacities = create_vector(num_groups, 2)
-    topic_capacities = create_vector(num_topics, 2)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
-
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
-
-    start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    end_time = time.time()
-    assert len(teams_topics_tutors.items()) > 0
-    print(
-        "[simplex solver]: 20 groups, 20 topics, 10 tutors - Execution time:",
-        end_time - start_time,
-        "seconds",
-    )
-
-
-@pytest.mark.performance
-def test_test_forty_teams_and_topics():
-    """Testing if the algorithm is overhead with forty teams and topics."""
-    num_groups = 40
-    num_topics = 40
-    num_tutors = 20
-    tutor_capacities = create_vector(num_groups, 2)
-    topic_capacities = create_vector(num_topics, 2)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
-
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
-    start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    end_time = time.time()
-    assert len(teams_topics_tutors.items()) > 0
-    print(
-        "[simplex solver]: 40 groups, 40 topics, 20 tutors - Execution time:",
-        end_time - start_time,
-        "seconds",
-    )
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        start_time = time.time()
+        result = solver.solve_simplex()
+        end_time = time.time()
+        
+        assert len(result.items()) > 0
+        print(
+            "[simplex solver]: 4 groups, 4 topics, 2 tutors - Execution time:",
+            end_time - start_time,
+            "seconds",
+        )
 
 
-@pytest.mark.performance
-def test_eighty_teams_and_topics():
-    """Testing if the algorithm is overhead with eighty teams and topics."""
-    num_groups = 80
-    num_topics = 80
-    num_tutors = 40
-    tutor_capacities = create_vector(num_groups, 2)
-    topic_capacities = create_vector(num_topics, 2)
-    teams, topics, tutors = get_all_entities(num_groups, num_topics, num_tutors)
+    @pytest.mark.performance
+    def test_ten_groups_and_topics(self):
+        """Testing if the algorithm is overhead with ten groups and topics."""
+        num_groups = 10
+        num_topics = 10
+        num_tutors = 5
 
-    team_topic = get_teams_topics(teams, topics)
-    topic_tutor = get_topics_tutors(topics, tutors, tutor_capacities)
-    topics_c = get_topics(topics, topic_capacities)
-    start_time = time.time()
-    solver = TopicTutorAssignmentSimplexSolver(team_topic, topic_tutor, topics_c)
-    teams_topics_tutors = solver.solve_simplex()
-    end_time = time.time()
-    assert len(teams_topics_tutors.items()) > 0
-    print(
-        "[simplex solver]: 80 groups, 80 topics, 4 tutors - Execution time:",
-        end_time - start_time,
-        "seconds",
-    )
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
+            num_tutors, num_topics, False, 2
+        )
+        topics_tutors_costs = self.helper.create_matrix(
+            num_tutors, num_topics, False, 1
+        )
+
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
+            num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
+
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        start_time = time.time()
+        result = solver.solve_simplex()
+        end_time = time.time()
+        
+        assert len(result.items()) > 0
+        print(
+            "[simplex solver]: 10 groups, 10 topics, 5 tutors - Execution time:",
+            end_time - start_time,
+            "seconds",
+        )
+
+
+    @pytest.mark.performance
+    def test_twenty_groups_and_topics(self):
+        """Testing if the algorithm is overhead with twenty groups and topics."""
+        num_groups = 20
+        num_topics = 20
+        num_tutors = 10
+
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
+            num_tutors, num_topics, False, 2
+        )
+        topics_tutors_costs = self.helper.create_matrix(
+            num_tutors, num_topics, False, 1
+        )
+
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
+            num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
+
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        start_time = time.time()
+        result = solver.solve_simplex()
+        end_time = time.time()
+        
+        assert len(result.items()) > 0
+        print(
+            "[simplex solver]: 20 groups, 20 topics, 10 tutors - Execution time:",
+            end_time - start_time,
+            "seconds",
+        )
+
+
+    @pytest.mark.performance
+    def test_test_forty_groups_and_topics(self):
+        """Testing if the algorithm is overhead with forty groups and topics."""
+        num_groups = 40
+        num_topics = 40
+        num_tutors = 20
+
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
+            num_tutors, num_topics, False, 2
+        )
+        topics_tutors_costs = self.helper.create_matrix(
+            num_tutors, num_topics, False, 1
+        )
+
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
+            num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
+        
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        start_time = time.time()
+        result = solver.solve_simplex()
+        end_time = time.time()
+        
+        assert len(result.items()) > 0
+        print(
+            "[simplex solver]: 40 groups, 40 topics, 20 tutors - Execution time:",
+            end_time - start_time,
+            "seconds",
+        )
+
+
+    @pytest.mark.performance
+    def test_eighty_groups_and_topics(self):
+        """Testing if the algorithm is overhead with eighty groups and topics."""
+        num_groups = 80
+        num_topics = 80
+        num_tutors = 40
+
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
+            num_tutors, num_topics, False, 2
+        )
+        topics_tutors_costs = self.helper.create_matrix(
+            num_tutors, num_topics, False, 1
+        )
+
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
+            num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
+        
+        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        start_time = time.time()
+        result = solver.solve_simplex()
+        end_time = time.time()
+        
+        assert len(result.items()) > 0
+        print(
+            "[simplex solver]: 80 groups, 80 topics, 4 tutors - Execution time:",
+            end_time - start_time,
+            "seconds",
+        )
