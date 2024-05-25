@@ -1,7 +1,8 @@
 """Module providing helpers function to create different use cases for testing."""
 
-from src.model.group.simplex_group import SimplexGroup
-from src.model.tutor.simplex_tutor import SimplexTutor
+from src.model.group.final_state_group import FinalStateGroup
+from src.model.tutor.final_state_tutor import FinalStateTutor
+from src.model.utils.date import Date
 from src.model.utils.evaluator import Evaluator
 
 
@@ -17,20 +18,27 @@ class TestSimplexHelper:
         Returns: a list of groups with their ids and available dates.
         """
         return [
-            SimplexGroup((f"g{i}"), available_dates, (f"t{(i % 4)+1}"))
+            FinalStateGroup((f"g{i}"), available_dates, (f"t{(i % 4)+1}"))
             for i in range(1, num_groups + 1)
         ]
 
-    def create_dates(self, num_dates: int):
+    def create_dates(self, num_weeks: int, days_per_week: list, hours_per_day: list):
         """
         Creates a list of dates.
 
         Args:
-            - num_dates: number of dates to create.
+            - num_weeks: number of weeks to create dates for.
+            - days_per_week: list of days in a week (e.g., ["Monday", "Tuesday", ...]).
+            - hours_per_day: list of hours in a day (instances of Hour enum).
 
-        Returns: a list of dates.
+        Returns: a list of Date objects.
         """
-        return [(f"date{i}") for i in range(1, num_dates + 1)]
+        dates = []
+        for week in range(1, num_weeks + 1):
+            for day in days_per_week:
+                date = Date(day=day, week=week, hours=hours_per_day)
+                dates.append(date)
+        return dates
 
     def create_tutors(self, num_tutors: int, available_dates: list):
         """
@@ -43,7 +51,7 @@ class TestSimplexHelper:
         Returns: a list of tutors with their with their ids and available dates.
         """
         return [
-            SimplexTutor(
+            FinalStateTutor(
                 f"t{i}",
                 available_dates,
             )

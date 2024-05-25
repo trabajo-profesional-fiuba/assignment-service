@@ -1,7 +1,7 @@
 from .tutor import Tutor
 
 
-class SimplexTutor(Tutor):
+class FinalStateTutor(Tutor):
 
     def __init__(self, id, available_dates):
         super().__init__(id, 0, 0)
