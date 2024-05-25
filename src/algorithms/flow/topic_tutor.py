@@ -2,9 +2,8 @@
 of groups to topics and tutors."""
 
 import networkx as nx
-from constants import GROUP_ID, TOPIC_ID, SOURCE_NODE_ID, SINK_NODE_ID
 from src.model.topic import Topic
-
+from src.constants import TOPIC_ID, SOURCE_NODE_ID, SINK_NODE_ID
 
 class TopicTutorAssignmentFlowSolver:
     def __init__(self, groups: list, topics: list, tutors: list):
@@ -77,60 +76,9 @@ class TopicTutorAssignmentFlowSolver:
         graph.add_edges_from(edges)
         return graph
 
-    def is_group_or_topic(self, string: str, identifier: str):
-        """Returns if the string represents a group or a topic."""
-        return string.startswith(identifier)
-
-    def topic_is_assigned(self, value: bool):
-        """Returns if the topic was assigned to the group."""
-        return value == 1
-
-    def get_groups_from(self, result: {}):
-        """Returns a dictionary with groups as keys and assigned topic as values."""
-        groups = {}
-        for key, value in result.items():
-            if self.is_group_or_topic(key, GROUP_ID):
-                for topic, topic_value in value.items():
-                    if self.topic_is_assigned(topic_value):
-                        groups[key] = topic
-        return groups
-
-    def tutor_is_assigned(self, value: bool):
-        """Returns if the tutor was assigned to the topic."""
-        return value > 0
-
-    def get_topics_from(self, result: {}):
-        """Returns a dictionary with topics as keys and assigned tutor as values."""
-        topics = {}
-        for key, value in result.items():
-            if self.is_group_or_topic(key, TOPIC_ID):
-                for tutor, tutor_value in value.items():
-                    if self.tutor_is_assigned(tutor_value):
-                        topics[key] = tutor
-        return topics
-
-    def get_tutors_from(self, topics: {}, groups: {}):
-        """Returns a dictionary with tutors as keys and assigned groups as values."""
-        tutors = {}
-        for topic, tutor in topics.items():
-            assigned_groups = []
-            for group, value in groups.items():
-                if value == topic:
-                    assigned_groups.append(group)
-            tutors[tutor] = assigned_groups
-        return tutors
-
-    def get_results(self, result: {}):
-        """Returns algorithm results."""
-        groups = self.get_groups_from(result)
-        topics = self.get_topics_from(result)
-        tutors = self.get_tutors_from(topics, groups)
-        return groups, topics, tutors
-
     def solve(self):
         """Runs the assignment algorithm."""
         edges = self.create_edges()
         graph = self.create_graph(edges)
         result = nx.max_flow_min_cost(graph, SOURCE_NODE_ID, SINK_NODE_ID)
-        groups, topics, tutors = self.get_results(result)
-        return groups, topics, tutors
+        return result

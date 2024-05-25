@@ -1,7 +1,7 @@
 """Module providing helpers function to create different use cases for testing."""
 
 import numpy as np
-from constants import GROUP_ID, TOPIC_ID, TUTOR_ID
+from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.model.group.initial_state_group import InitialStateGroup
 from src.model.tutor import Tutor
 from src.model.topic import Topic
