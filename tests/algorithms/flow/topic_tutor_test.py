@@ -7,13 +7,13 @@ from src.algorithms.flow.topic_tutor import (
     TopicTutorAssignmentFlowSolver,
 )
 from tests.algorithms.helper import TestHelper
-from src.model.formatter.flow_formatter import FlowResultFormatter
+from src.model.formatter.formatter import ResultFormatter
 
 
 class TestGroupTopicTutorFlowSolver:
 
     helper = TestHelper()
-    formatter = FlowResultFormatter()
+    formatter = ResultFormatter()
 
     # ------------ Logic Tests ------------
     @pytest.mark.unit
@@ -43,10 +43,11 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        tutors = self.formatter.get_tutors_groups(result)
 
-        assert len(tutors["p1"]) <= 1
-        assert len(tutors["p2"]) <= 1
+        formatted_result = self.formatter.format_result(result)
+        tutors_groups = self.helper.get_tutors_groups(formatted_result)
+        assert len(tutors_groups["p1"]) <= 1
+        assert len(tutors_groups["p2"]) <= 1
 
     @pytest.mark.unit
     def test_more_groups_than_tutors_but_with_enough_capacity(self):
@@ -64,10 +65,11 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        tutors = self.formatter.get_tutors_groups(result)
 
-        assert len(tutors["p1"]) <= 1
-        assert len(tutors["p2"]) <= 2
+        formatted_result = self.formatter.format_result(result)
+        tutors_groups = self.helper.get_tutors_groups(formatted_result)
+        assert len(tutors_groups["p1"]) <= 1
+        assert len(tutors_groups["p2"]) <= 2
 
     @pytest.mark.unit
     def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities(self):
@@ -93,11 +95,12 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        tutors = self.formatter.get_tutors_groups(result)
 
-        assert len(tutors["p1"]) <= 1
-        assert len(tutors["p2"]) <= 1
-        assert len(tutors["p3"]) <= 1
+        formatted_result = self.formatter.format_result(result)
+        tutors_groups = self.helper.get_tutors_groups(formatted_result)
+        assert len(tutors_groups["p1"]) <= 1
+        assert len(tutors_groups["p2"]) <= 1
+        assert len(tutors_groups["p3"]) <= 1
 
     @pytest.mark.unit
     def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities(self):
@@ -127,10 +130,11 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        tutors = self.formatter.get_tutors_groups(result)
 
-        for tutor, _ in tutors.items():
-            assert len(tutors[tutor]) <= 1
+        formatted_result = self.formatter.format_result(result)
+        tutors_groups = self.helper.get_tutors_groups(formatted_result)
+        for tutor, groups in tutors_groups.items():
+            assert len(groups) <= 1
 
     @pytest.mark.unit
     def test_equal_groups_and_topics_so_every_group_is_assigned_to_one_topic(self):
@@ -158,9 +162,10 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) == 2
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert len(groups_topics.items()) == 2
 
     @pytest.mark.unit
     def test_more_groups_than_topics_but_tutors_with_enough_capacity(self):
@@ -182,9 +187,10 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) == 2
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert len(groups_topics.items()) == 2
 
     @pytest.mark.unit
     def test_more_groups_but_tutor_with_enough_capacity(self):
@@ -210,9 +216,10 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) == 2
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert len(groups_topics.items()) == 2
 
     @pytest.mark.unit
     def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_group(self):
@@ -240,11 +247,13 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        groups = self.formatter.get_groups_topics(result)
+
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
 
         all_topics = ["t1", "t2", "t3", "t4"]
-        all_topics.remove(groups["g1"])
-        all_topics.remove(groups["g2"])
+        all_topics.remove(groups_topics["g1"][0])
+        all_topics.remove(groups_topics["g2"][0])
         not_assigned_topics = all_topics
         assert len(not_assigned_topics) > 0
 
@@ -274,9 +283,10 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert groups["g1"] == groups["g2"]
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert groups_topics["g1"][0] == groups_topics["g2"][0]
 
     @pytest.mark.unit
     def test_groups_with_same_preferences_but_tutor_capacity_not_enough(self):
@@ -305,9 +315,10 @@ class TestGroupTopicTutorFlowSolver:
 
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert groups["g1"] != groups["g2"]
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert groups_topics["g1"][0] != groups_topics["g2"][0]
 
     # # ------------ Quality Tests ------------
     # @pytest.mark.unit
@@ -334,11 +345,14 @@ class TestGroupTopicTutorFlowSolver:
     #         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     #     )
 
-    #     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
-    #     groups, _topics, _tutors = solver.solve()
+    # solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+    # result = solver.solve()
 
-    #     assert groups["g1"] == "t1"
-    #     assert groups["g2"] == "t2"
+    # formatted_result = self.formatter.format_result(result)
+    # groups_topics = self.helper.get_groups_topics(formatted_result)
+
+    #     assert groups_topics["g1"] == "t1"
+    #     assert groups_topics["g2"] == "t2"
 
     # @pytest.mark.unit
     # def test_more_groups_with_different_preferences(self):
@@ -365,13 +379,15 @@ class TestGroupTopicTutorFlowSolver:
     #         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
     #     )
 
-    #     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+    # solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
     # result = solver.solve()
-    # groups = self.formatter.get_groups_topics(result)
 
-    #     assert groups["g1"] == "t1"
-    #     assert groups["g2"] == "t2"
-    #     assert groups["g3"] == "t3"
+    # formatted_result = self.formatter.format_result(result)
+    # groups_topics = self.helper.get_groups_topics(formatted_result)
+
+    #     assert groups_topics["g1"] == "t1"
+    #     assert groups_topics["g2"] == "t2"
+    #     assert groups_topics["g3"] == "t3"
 
     # ------------ Performance and Scalability Tests ------------
     @pytest.mark.performance
@@ -400,9 +416,10 @@ class TestGroupTopicTutorFlowSolver:
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) > 0
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert len(groups_topics.items()) > 0
         print(
             "4 groups, 4 topics, 2 tutors - Execution time:",
             end_time - start_time,
@@ -435,9 +452,10 @@ class TestGroupTopicTutorFlowSolver:
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) > 0
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert len(groups_topics.items()) > 0
         print(
             "10 groups, 10 topics, 5 tutors - Execution time:",
             end_time - start_time,
@@ -470,9 +488,10 @@ class TestGroupTopicTutorFlowSolver:
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) > 0
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert len(groups_topics.items()) > 0
         print(
             "20 groups, 20 topics, 10 tutors - Execution time:",
             end_time - start_time,
@@ -505,9 +524,10 @@ class TestGroupTopicTutorFlowSolver:
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) > 0
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert len(groups_topics.items()) > 0
         print(
             "40 groups, 40 topics, 20 tutors - Execution time:",
             end_time - start_time,
@@ -540,9 +560,10 @@ class TestGroupTopicTutorFlowSolver:
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) > 0
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+        assert len(groups_topics.items()) > 0
         print(
             "80 groups, 80 topics, 40 tutors - Execution time:",
             end_time - start_time,
@@ -576,48 +597,51 @@ class TestGroupTopicTutorFlowSolver:
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
-        groups = self.formatter.get_groups_topics(result)
 
-        assert len(groups.items()) > 0
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+
+        assert len(groups_topics.items()) > 0
         print(
             "160 groups, 160 topics, 80 tutors - Execution time:",
             end_time - start_time,
             "seconds",
         )
 
-    # @pytest.mark.performance
-    # def test_three_hundred_and_twenty_groups_and_topics(self):
-    #     """Testing if the algorithm is overhead with three hundred and twenty groups
-    #     and topics."""
-    #     num_groups = 320
-    #     num_topics = 320
-    #     num_tutors = 160
+    @pytest.mark.performance
+    def test_three_hundred_and_twenty_groups_and_topics(self):
+        """Testing if the algorithm is overhead with three hundred and twenty groups
+        and topics."""
+        num_groups = 320
+        num_topics = 320
+        num_tutors = 160
 
-    #     group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
-    #     tutors_capacities = self.helper.create_list(num_groups, 2)
-    #     topics_tutors_capacities = self.helper.create_matrix(
-    #         num_tutors, num_topics, False, 2
-    #     )
-    #     topics_tutors_costs = self.helper.create_matrix(
-    #         num_tutors, num_topics, False, 1
-    #     )
+        group_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+        tutors_capacities = self.helper.create_list(num_groups, 2)
+        topics_tutors_capacities = self.helper.create_matrix(
+            num_tutors, num_topics, False, 2
+        )
+        topics_tutors_costs = self.helper.create_matrix(
+            num_tutors, num_topics, False, 1
+        )
 
-    #     groups = self.helper.create_groups(num_groups, group_costs)
-    #     topics = self.helper.create_topics(num_topics)
-    #     tutors = self.helper.create_tutors(
-    #         num_tutors, tutors_capacities, topics_tutors_capacities,
-    #         topics_tutors_costs
-    #     )
+        groups = self.helper.create_groups(num_groups, group_costs)
+        topics = self.helper.create_topics(num_topics)
+        tutors = self.helper.create_tutors(
+            num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-    #     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
-    #     start_time = time.time()
-    #     result = solver.solve()
-    #     end_time = time.time()
-    #     groups = self.formatter.get_groups_topics(result)
+        solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        start_time = time.time()
+        result = solver.solve()
+        end_time = time.time()
 
-    #     assert len(groups.items()) > 0
-    #     print(
-    #         "320 groups, 320 topics, 160 tutors - Execution time:",
-    #         end_time - start_time,
-    #         "seconds",
-    #     )
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
+
+        assert len(groups_topics.items()) > 0
+        print(
+            "320 groups, 320 topics, 160 tutors - Execution time:",
+            end_time - start_time,
+            "seconds",
+        )

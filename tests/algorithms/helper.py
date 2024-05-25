@@ -111,3 +111,41 @@ class TestHelper:
         # Set all values in default value
         vector = np.full(length, def_value)
         return vector
+
+    def get_tutors_groups(self, result):
+        """
+        Constructs a dictionary with tutors as keys and the groups assigned to
+        each tutor as values.
+
+        Args:
+            result (list of tuples): The standardized result containing tuples
+            (group, topic, tutor).
+
+        Returns a dictionary where keys are tutors and values are lists of
+        groups assigned to each tutor.
+        """
+        tutors_assignments = {}
+        for group, topic, tutor in result:
+            if tutor not in tutors_assignments:
+                tutors_assignments[tutor] = []
+            tutors_assignments[tutor].append(group)
+        return tutors_assignments
+
+    def get_groups_topics(self, result):
+        """
+        Constructs a dictionary with groups as keys and the topics assigned
+        to each group as values.
+
+        Args:
+            result (list of tuples): The standardized result containing tuples
+            (group, topic, tutor).
+
+        Returns a dictionary where keys are groups and values are lists of
+        topics assigned to each group.
+        """
+        groups_topics = {}
+        for group, topic, tutor in result:
+            if group not in groups_topics:
+                groups_topics[group] = []
+            groups_topics[group].append(topic)
+        return groups_topics

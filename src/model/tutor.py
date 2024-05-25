@@ -1,5 +1,6 @@
 from src.model.topic import Topic
 
+
 class Tutor:
 
     def __init__(self, id: str, capacity: int, topics: dict):
@@ -18,11 +19,11 @@ class Tutor:
     @property
     def topics(self):
         return self._topics
-    
+
     def cost_of(self, topic: Topic):
         id = int(topic.id[1:])
         return self._topics["costs"][id - 1]
-    
+
     def capacity_of(self, topic: Topic):
         id = int(topic.id[1:])
         return self._topics["capacities"][id - 1]

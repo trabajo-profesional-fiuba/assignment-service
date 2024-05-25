@@ -6,13 +6,13 @@ import time
 
 from src.algorithms.simplex.tutor_topics import TopicTutorAssignmentSimplexSolver
 from tests.algorithms.helper import TestHelper
-from src.model.formatter.simplex_formatter import SimplexResultFormatter
+from src.model.formatter.formatter import ResultFormatter
 
 
 class TestGroupTopicTutorSimplexSolver:
 
     helper = TestHelper()
-    formatter = SimplexResultFormatter()
+    formatter = ResultFormatter()
 
     # ------------ Logic Tests ------------
     @pytest.mark.unit
@@ -42,8 +42,9 @@ class TestGroupTopicTutorSimplexSolver:
 
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
-        groups_topics = self.formatter.get_tutors_groups(result)
 
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) == 2
 
     @pytest.mark.unit
@@ -64,8 +65,9 @@ class TestGroupTopicTutorSimplexSolver:
 
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
-        groups_topics = self.formatter.get_groups_topics(result)
 
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) == 3
 
     @pytest.mark.unit
@@ -93,7 +95,8 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
-        groups_topics = self.formatter.get_tutors_groups(result)
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) == 3
 
     @pytest.mark.unit
@@ -124,8 +127,8 @@ class TestGroupTopicTutorSimplexSolver:
 
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
-
-        tutors_groups = self.formatter.get_tutors_groups(result)
+        formatted_result = self.formatter.format_result(result)
+        tutors_groups = self.helper.get_tutors_groups(formatted_result)
         for tutor, groups in tutors_groups.items():
             assert len(groups) <= 1
 
@@ -150,7 +153,8 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
-        groups_topics = self.formatter.get_groups_topics(result)
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) == 2
 
     @pytest.mark.unit
@@ -180,7 +184,8 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
-        groups_topics = self.formatter.get_groups_topics(result)
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         for group, topics in groups_topics.items():
             assert len(topics) == 1
 
@@ -210,9 +215,10 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
-        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
 
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 4 groups, 4 topics, 2 tutors - Execution time:",
@@ -245,9 +251,10 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
-        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
 
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 10 groups, 10 topics, 5 tutors - Execution time:",
@@ -280,9 +287,10 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
-        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
 
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 20 groups, 20 topics, 10 tutors - Execution time:",
@@ -315,9 +323,10 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
-        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
 
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 40 groups, 40 topics, 20 tutors - Execution time:",
@@ -350,9 +359,10 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
-        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
 
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
         assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 80 groups, 80 topics, 4 tutors - Execution time:",

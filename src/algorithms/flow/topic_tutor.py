@@ -42,9 +42,14 @@ class TopicTutorAssignmentFlowSolver:
         for j, tutor in enumerate(self._tutors):
             for k, topic in enumerate(self._topics):
                 topic_tutor_edges.append(
-                    (topic.id, tutor.id, 
-                    {"capacity": tutor.capacity_of(Topic(f"{TOPIC_ID}{k}")),
-                    "weight": tutor.cost_of(Topic(f"{TOPIC_ID}{k}"))})
+                    (
+                        topic.id,
+                        tutor.id,
+                        {
+                            "capacity": tutor.capacity_of(Topic(f"{TOPIC_ID}{k}")),
+                            "weight": tutor.cost_of(Topic(f"{TOPIC_ID}{k}")),
+                        },
+                    )
                 )
         return topic_tutor_edges
 

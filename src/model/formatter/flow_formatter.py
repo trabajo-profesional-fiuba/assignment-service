@@ -13,13 +13,13 @@ class FlowResultFormatter:
         """Returns if the topic was assigned to the group."""
         return value == 1
 
-    def get_groups_topics(self, result: dict):
+    def __get_groups_topics(self, result: dict):
         """Returns a dictionary with groups as keys and assigned topic as values."""
         groups = {}
         for key, value in result.items():
             if self.__is_group_or_topic(key, GROUP_ID):
-                for topic, topic_value in value.items():
-                    if self.__topic_is_assigned(topic_value):
+                for topic, assigned in value.items():
+                    if self.__topic_is_assigned(assigned):
                         groups[key] = topic
         return groups
 
@@ -27,7 +27,7 @@ class FlowResultFormatter:
         """Returns if the tutor was assigned to the topic."""
         return value > 0
 
-    def get_topics_tutors(self, result: dict):
+    def __get_topics_tutors(self, result: dict):
         """Returns a dictionary with topics as keys and assigned tutor as values."""
         topics = {}
         for key, value in result.items():
@@ -37,20 +37,19 @@ class FlowResultFormatter:
                         topics[key] = tutor
         return topics
 
-    def __get_tutors(self, topics: dict, groups: dict):
-        """Returns a dictionary with tutors as keys and assigned groups as values."""
-        tutors = {}
-        for topic, tutor in topics.items():
-            assigned_groups = []
-            for group, value in groups.items():
-                if value == topic:
-                    assigned_groups.append(group)
-            tutors[tutor] = assigned_groups
-        return tutors
+    def get_result(self, result):
+        """
+        Formats the flow algorithm result into a standardized structure.
 
-    def get_tutors_groups(self, result: dict):
-        """Returns algorithm results."""
-        groups = self.get_groups_topics(result)
-        topics = self.get_topics_tutors(result)
-        tutors = self.__get_tutors(topics, groups)
-        return tutors
+        Processes the result dictionary and extracts assignments where the value is 1,
+        and adds them to the standardized result as tuples (group, topic, tutor).
+        """
+        groups_topics = self.__get_groups_topics(result)
+        topics_tutors = self.__get_topics_tutors(result)
+        assignments = []
+
+        for group, topic in groups_topics.items():
+            if topic in topics_tutors:
+                tutor = topics_tutors[topic]
+                assignments.append((group, topic, tutor))
+        return assignments
