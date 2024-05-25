@@ -6,16 +6,19 @@ import time
 
 from src.algorithms.simplex.tutor_topics import TopicTutorAssignmentSimplexSolver
 from tests.algorithms.helper import TestHelper
+from src.model.formatter.simplex_formatter import SimplexResultFormatter
 
 
 class TestGroupTopicTutorSimplexSolver:
 
     helper = TestHelper()
+    formatter = SimplexResultFormatter()
 
     # ------------ Logic Tests ------------
     @pytest.mark.unit
     def test_more_groups_than_tutors_without_enough_capacity(self):
-        """Testing that tutors dont get all groups so they dont to exceed their capacities."""
+        """Testing that tutors dont get all groups so they dont to
+        exceed their capacities."""
         group_costs = [
             [1, 2, 3, 4, 4, 4],  # groups as rows
             [4, 4, 4, 1, 2, 3],  # topics as columns
@@ -36,14 +39,17 @@ class TestGroupTopicTutorSimplexSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
-        
+
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
+        groups_topics = self.formatter.get_tutors_groups(result)
 
-        assert len(result.items()) == 2
+        assert len(groups_topics.items()) == 2
 
     @pytest.mark.unit
-    def test_more_groups_than_tutors_but_with_enough_capacity_all_groups_are_assigned(self):
+    def test_more_groups_than_tutors_but_with_enough_capacity_all_groups_are_assigned(
+        self,
+    ):
         """Testing that tutors get all groups without exceeding their capacities."""
         group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
         tutors_capacities = [1, 2]
@@ -58,9 +64,9 @@ class TestGroupTopicTutorSimplexSolver:
 
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
-        
-        assert len(result.items()) == 3
+        groups_topics = self.formatter.get_groups_topics(result)
 
+        assert len(groups_topics.items()) == 3
 
     @pytest.mark.unit
     def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities(self):
@@ -86,9 +92,9 @@ class TestGroupTopicTutorSimplexSolver:
 
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
-        
-        assert len(result.items()) == 3
 
+        groups_topics = self.formatter.get_tutors_groups(result)
+        assert len(groups_topics.items()) == 3
 
     @pytest.mark.unit
     def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities(self):
@@ -118,9 +124,9 @@ class TestGroupTopicTutorSimplexSolver:
 
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
-        
-        tutor_groups = self.helper.get_assigned_groups_by_tutors(result)
-        for tutor, groups in tutor_groups.items():
+
+        tutors_groups = self.formatter.get_tutors_groups(result)
+        for tutor, groups in tutors_groups.items():
             assert len(groups) <= 1
 
     @pytest.mark.unit
@@ -143,9 +149,9 @@ class TestGroupTopicTutorSimplexSolver:
 
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
-        
-        group_topics = self.helper.get_assigned_groups_by_tutors(result)
-        assert len(group_topics.items()) == 2
+
+        groups_topics = self.formatter.get_groups_topics(result)
+        assert len(groups_topics.items()) == 2
 
     @pytest.mark.unit
     def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_group(self):
@@ -173,9 +179,9 @@ class TestGroupTopicTutorSimplexSolver:
 
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         result = solver.solve_simplex()
-        
-        group_topics = self.helper.get_assigned_topics_by_groups(result)
-        for group, topics in group_topics.items():
+
+        groups_topics = self.formatter.get_groups_topics(result)
+        for group, topics in groups_topics.items():
             assert len(topics) == 1
 
     # ------------ Performance and Scalability Tests ------------
@@ -204,15 +210,15 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
+        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
-        
-        assert len(result.items()) > 0
+
+        assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 4 groups, 4 topics, 2 tutors - Execution time:",
             end_time - start_time,
             "seconds",
         )
-
 
     @pytest.mark.performance
     def test_ten_groups_and_topics(self):
@@ -239,15 +245,15 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
+        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
-        
-        assert len(result.items()) > 0
+
+        assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 10 groups, 10 topics, 5 tutors - Execution time:",
             end_time - start_time,
             "seconds",
         )
-
 
     @pytest.mark.performance
     def test_twenty_groups_and_topics(self):
@@ -274,15 +280,15 @@ class TestGroupTopicTutorSimplexSolver:
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
+        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
-        
-        assert len(result.items()) > 0
+
+        assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 20 groups, 20 topics, 10 tutors - Execution time:",
             end_time - start_time,
             "seconds",
         )
-
 
     @pytest.mark.performance
     def test_test_forty_groups_and_topics(self):
@@ -305,19 +311,19 @@ class TestGroupTopicTutorSimplexSolver:
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
-        
+
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
+        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
-        
-        assert len(result.items()) > 0
+
+        assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 40 groups, 40 topics, 20 tutors - Execution time:",
             end_time - start_time,
             "seconds",
         )
-
 
     @pytest.mark.performance
     def test_eighty_groups_and_topics(self):
@@ -340,13 +346,14 @@ class TestGroupTopicTutorSimplexSolver:
         tutors = self.helper.create_tutors(
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
-        
+
         solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
+        groups_topics = self.formatter.get_tutors_groups(result)
         end_time = time.time()
-        
-        assert len(result.items()) > 0
+
+        assert len(groups_topics.items()) > 0
         print(
             "[simplex solver]: 80 groups, 80 topics, 4 tutors - Execution time:",
             end_time - start_time,

@@ -7,12 +7,13 @@ from src.algorithms.flow.topic_tutor import (
     TopicTutorAssignmentFlowSolver,
 )
 from tests.algorithms.helper import TestHelper
-from src.model.formatter import ResultFormatter
+from src.model.formatter.flow_formatter import FlowResultFormatter
+
 
 class TestGroupTopicTutorFlowSolver:
 
     helper = TestHelper()
-    formatter = ResultFormatter()
+    formatter = FlowResultFormatter()
 
     # ------------ Logic Tests ------------
     @pytest.mark.unit
@@ -39,11 +40,11 @@ class TestGroupTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
-        
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
         tutors = self.formatter.get_tutors_groups(result)
-        
+
         assert len(tutors["p1"]) <= 1
         assert len(tutors["p2"]) <= 1
 
@@ -64,7 +65,7 @@ class TestGroupTopicTutorFlowSolver:
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
         tutors = self.formatter.get_tutors_groups(result)
-        
+
         assert len(tutors["p1"]) <= 1
         assert len(tutors["p2"]) <= 2
 
@@ -182,7 +183,7 @@ class TestGroupTopicTutorFlowSolver:
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
         groups = self.formatter.get_groups_topics(result)
-        
+
         assert len(groups.items()) == 2
 
     @pytest.mark.unit
@@ -206,11 +207,11 @@ class TestGroupTopicTutorFlowSolver:
         tutors = self.helper.create_tutors(
             1, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
-        
+
         solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
         result = solver.solve()
         groups = self.formatter.get_groups_topics(result)
-        
+
         assert len(groups.items()) == 2
 
     @pytest.mark.unit
@@ -365,8 +366,8 @@ class TestGroupTopicTutorFlowSolver:
     #     )
 
     #     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
-        # result = solver.solve()
-        # groups = self.formatter.get_groups_topics(result)
+    # result = solver.solve()
+    # groups = self.formatter.get_groups_topics(result)
 
     #     assert groups["g1"] == "t1"
     #     assert groups["g2"] == "t2"
@@ -435,7 +436,7 @@ class TestGroupTopicTutorFlowSolver:
         result = solver.solve()
         end_time = time.time()
         groups = self.formatter.get_groups_topics(result)
-        
+
         assert len(groups.items()) > 0
         print(
             "10 groups, 10 topics, 5 tutors - Execution time:",
@@ -604,7 +605,8 @@ class TestGroupTopicTutorFlowSolver:
     #     groups = self.helper.create_groups(num_groups, group_costs)
     #     topics = self.helper.create_topics(num_topics)
     #     tutors = self.helper.create_tutors(
-    #         num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+    #         num_tutors, tutors_capacities, topics_tutors_capacities,
+    #         topics_tutors_costs
     #     )
 
     #     solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)

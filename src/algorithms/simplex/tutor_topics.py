@@ -1,5 +1,4 @@
 from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CMD
-import re
 
 
 class TopicTutorAssignmentSimplexSolver:
@@ -15,7 +14,7 @@ class TopicTutorAssignmentSimplexSolver:
         self._groups = groups
         self._topics = topics
         self._tutors = tutors
-    
+
     def _create_decision_variables(self):
         """
         Create decision variables.
@@ -41,7 +40,7 @@ class TopicTutorAssignmentSimplexSolver:
         Returns an instance of the optimization problem.
         """
         return LpProblem("Group Assignment", LpMaximize)
-    
+
     def _add_objective_function(self, prob, assignment_vars):
         """
         Add the objective function to the optimization problem.
@@ -105,12 +104,9 @@ class TopicTutorAssignmentSimplexSolver:
         """
         for topic in self._topics:
             for i in range(1, len(self._groups) + 1):
-                prob += (
-                    lpSum(
-                        assignment_vars[(i, topic.id, tutor.id)]
-                        for tutor in self._tutors
-                    ) <= self._groups[i-1].cost_of(topic)
-                )
+                prob += lpSum(
+                    assignment_vars[(i, topic.id, tutor.id)] for tutor in self._tutors
+                ) <= self._groups[i - 1].cost_of(topic)
 
     def _add_tutor_capacity_constraints(self, prob, assignment_vars):
         """
@@ -121,9 +117,7 @@ class TopicTutorAssignmentSimplexSolver:
             - assignment_vars: Assignment variables.
         """
         for tutor in self._tutors:
-            assigned_topics = [
-                topic.id for topic in self._topics
-            ]
+            assigned_topics = [topic.id for topic in self._topics]
             prob += (
                 lpSum(
                     assignment_vars[(i, topic, tutor.id)]
@@ -151,29 +145,7 @@ class TopicTutorAssignmentSimplexSolver:
                 result_variables.append(var.name)
 
         return result_variables
-    
-    def _get_results(self, result):
-        """
-        Returns algorithm results.
 
-        Args:
-            - result: List of selected variables.
-
-        Returns a dictionary that represents the assignment results.
-        """
-        original_dict = {}
-        pattern = re.compile(r"Assignment_(\d+)_(\w+)_(\w+)")
-        for var_name in result:
-            match = pattern.match(var_name)
-            if match:
-                i, topic, tutor = match.groups()
-                i = int(i)
-                if i not in original_dict:
-                    original_dict[i] = {}
-                original_dict[i][topic] = tutor
-
-        return original_dict
-    
     def solve_simplex(self):
         """
         Solve the optimization problem using the simplex method.
@@ -190,7 +162,5 @@ class TopicTutorAssignmentSimplexSolver:
         prob = self._create_optimization_problem()
         self._add_objective_function(prob, assignment_vars)
         self._add_constraints(prob, assignment_vars)
-        result_variables = self._solve_optimization_problem(prob)
-
-        result = self._get_results(result_variables)
+        result = self._solve_optimization_problem(prob)
         return result

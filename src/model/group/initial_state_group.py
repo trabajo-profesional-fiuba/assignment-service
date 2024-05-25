@@ -41,7 +41,7 @@ class InitialStateGroup(BaseGroup):
         Returns the group's cost for the given topic.
         """
         id = int(topic.id[1:])
-        return self._topics[id-1]
+        return self._topics[id - 1]
 
     def assign_tutor(self, tutor: Tutor):
         """

@@ -5,6 +5,7 @@ import networkx as nx
 from src.model.topic import Topic
 from src.constants import TOPIC_ID, SOURCE_NODE_ID, SINK_NODE_ID
 
+
 class TopicTutorAssignmentFlowSolver:
     def __init__(self, groups: list, topics: list, tutors: list):
         self._groups = groups
@@ -27,7 +28,10 @@ class TopicTutorAssignmentFlowSolver:
                     (
                         group.id,
                         topic.id,
-                        {"capacity": 1, "weight": group.cost_of(Topic(f"{TOPIC_ID}{j}"))},
+                        {
+                            "capacity": 1,
+                            "weight": group.cost_of(Topic(f"{TOPIC_ID}{j}")),
+                        },
                     )
                 )
         return group_topic_edges
