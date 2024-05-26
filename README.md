@@ -4,7 +4,7 @@
 
 An assignment service designed to solve assignment problems such as:
 
-- Assign people or person to an incomplete team of students.
+- Assign people or person to an incomplete group of students.
 - Assign topic and tutors to groups of students.
 - Assign presentation dates to groups of students.
 

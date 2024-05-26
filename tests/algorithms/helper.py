@@ -1,7 +1,7 @@
 """Module providing helpers function to create different use cases for testing."""
 
 import numpy as np
-from constants import GROUP_ID, TOPIC_ID, TUTOR_ID
+from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.model.group.initial_state_group import InitialStateGroup
 from src.model.tutor import Tutor
 from src.model.topic import Topic
@@ -30,7 +30,6 @@ class TestHelper:
             - num_groups: number of groups to create.
             - topics: matrix of topics associated with each group.
                      Rows represents groups and columns represents topics.
-                     Topics are ordered by preference.
 
         Returns: a list of groups with their ids and topics ordered by preference.
         """
@@ -51,14 +50,14 @@ class TestHelper:
         return [Topic(f"{TOPIC_ID}{i}") for i in range(1, num_topics + 1)]
 
     def create_tutors(
-        self, num_tutors: int, team_capacities: list, topics_capacities, topics_costs
+        self, num_tutors: int, group_capacities: list, topics_capacities, topics_costs
     ):
         """
         Creates a list of tutors.
 
         Args:
             - num_tutors: number of tutors to create.
-            - team_capacities: list of number of teams a tutor can take per topic.
+            - group_capacities: list of number of groups a tutor can take per topic.
             - topics_capacities: matrix indicating the number of topics each tutor
                                  can handle. Rows represents tutors and columns
                                  represents topics.
@@ -66,13 +65,13 @@ class TestHelper:
                             each tutor. Rows represents tutors and columns
                             represents topics.
 
-        Returns: a list of tutors with their ids, team capacities, and topics
+        Returns: a list of tutors with their ids, group capacities, and topics
         capacities and costs.
         """
         return [
             Tutor(
                 f"{TUTOR_ID}{i}",
-                team_capacities[i - 1],
+                group_capacities[i - 1],
                 {"capacities": topics_capacities[i - 1], "costs": topics_costs[i - 1]},
             )
             for i in range(1, num_tutors + 1)
@@ -112,3 +111,41 @@ class TestHelper:
         # Set all values in default value
         vector = np.full(length, def_value)
         return vector
+
+    def get_tutors_groups(self, result):
+        """
+        Constructs a dictionary with tutors as keys and the groups assigned to
+        each tutor as values.
+
+        Args:
+            result (list of tuples): The standardized result containing tuples
+            (group, topic, tutor).
+
+        Returns a dictionary where keys are tutors and values are lists of
+        groups assigned to each tutor.
+        """
+        tutors_assignments = {}
+        for group, topic, tutor in result:
+            if tutor not in tutors_assignments:
+                tutors_assignments[tutor] = []
+            tutors_assignments[tutor].append(group)
+        return tutors_assignments
+
+    def get_groups_topics(self, result):
+        """
+        Constructs a dictionary with groups as keys and the topics assigned
+        to each group as values.
+
+        Args:
+            result (list of tuples): The standardized result containing tuples
+            (group, topic, tutor).
+
+        Returns a dictionary where keys are groups and values are lists of
+        topics assigned to each group.
+        """
+        groups_topics = {}
+        for group, topic, tutor in result:
+            if group not in groups_topics:
+                groups_topics[group] = []
+            groups_topics[group].append(topic)
+        return groups_topics
