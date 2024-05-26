@@ -2,8 +2,7 @@
 of groups to topics and tutors."""
 
 import networkx as nx
-from src.model.topic import Topic
-from src.constants import TOPIC_ID, SOURCE_NODE_ID, SINK_NODE_ID
+from src.constants import SOURCE_NODE_ID, SINK_NODE_ID
 
 
 class TopicTutorAssignmentFlowSolver:
@@ -15,7 +14,7 @@ class TopicTutorAssignmentFlowSolver:
     def create_source_groups_edges(self):
         """Define edges from source to groups."""
         return [
-            (SOURCE_NODE_ID, group.id, {"capacity": 1, "cost": 1})
+            (SOURCE_NODE_ID, group.id, {"capacity": 1, "weight": 1})
             for group in self._groups
         ]
 
@@ -30,7 +29,7 @@ class TopicTutorAssignmentFlowSolver:
                         topic.id,
                         {
                             "capacity": 1,
-                            "weight": group.cost_of(Topic(f"{TOPIC_ID}{j}")),
+                            "weight": group.cost_of(topic),
                         },
                     )
                 )
@@ -46,8 +45,8 @@ class TopicTutorAssignmentFlowSolver:
                         topic.id,
                         tutor.id,
                         {
-                            "capacity": tutor.capacity_of(Topic(f"{TOPIC_ID}{k}")),
-                            "weight": tutor.cost_of(Topic(f"{TOPIC_ID}{k}")),
+                            "capacity": tutor.capacity_of(topic),
+                            "weight": tutor.cost_of(topic),
                         },
                     )
                 )
@@ -88,5 +87,5 @@ class TopicTutorAssignmentFlowSolver:
         """Runs the assignment algorithm."""
         edges = self.create_edges()
         graph = self.create_graph(edges)
-        result = nx.max_flow_min_cost(graph, SOURCE_NODE_ID, SINK_NODE_ID)
-        return result
+        flow_dict = nx.max_flow_min_cost(graph, SOURCE_NODE_ID, SINK_NODE_ID)
+        return flow_dict

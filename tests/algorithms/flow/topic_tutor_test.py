@@ -320,74 +320,74 @@ class TestGroupTopicTutorFlowSolver:
         groups_topics = self.helper.get_groups_topics(formatted_result)
         assert groups_topics["g1"][0] != groups_topics["g2"][0]
 
-    # # ------------ Quality Tests ------------
-    # @pytest.mark.unit
-    # def test_two_groups_with_different_preferences(self):
-    #     """Testing two groups with different preferences and can not be assigned
-    #     a topic with low preference."""
-    #     group_costs = [
-    #         [1, 2, 3],  # g1 preferences: t1, t2, t3
-    #         [2, 1, 3],  # g2 preferences: t2, t1, t3
-    #     ]
-    #     tutors_capacities = [1, 1]
-    #     topics_tutors_capacities = [
-    #         [1, 1, 1],
-    #         [1, 1, 1],
-    #     ]
-    #     topics_tutors_costs = [
-    #         [1, 1, 1],
-    #         [1, 1, 1],
-    #     ]
+    # ------------ Quality Tests ------------
+    @pytest.mark.unit
+    def test_two_groups_with_different_preferences(self):
+        """Testing two groups with different preferences and can not be assigned
+        a topic with low preference."""
+        group_costs = [
+            [1, 2, 3],  # g1 preferences: t1, t2, t3
+            [2, 1, 3],  # g2 preferences: t2, t1, t3
+        ]
+        tutors_capacities = [1, 1]
+        topics_tutors_capacities = [
+            [1, 1, 1],
+            [1, 1, 1],
+        ]
+        topics_tutors_costs = [
+            [1, 1, 1],
+            [1, 1, 1],
+        ]
 
-    #     groups = self.helper.create_groups(2, group_costs)
-    #     topics = self.helper.create_topics(3)
-    #     tutors = self.helper.create_tutors(
-    #         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
-    #     )
+        groups = self.helper.create_groups(2, group_costs)
+        topics = self.helper.create_topics(3)
+        tutors = self.helper.create_tutors(
+            2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-    # solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
-    # result = solver.solve()
+        solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        result = solver.solve()
 
-    # formatted_result = self.formatter.format_result(result)
-    # groups_topics = self.helper.get_groups_topics(formatted_result)
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
 
-    #     assert groups_topics["g1"] == "t1"
-    #     assert groups_topics["g2"] == "t2"
+        assert groups_topics["g1"][0] == "t1"
+        assert groups_topics["g2"][0] == "t2"
 
-    # @pytest.mark.unit
-    # def test_more_groups_with_different_preferences(self):
-    #     """Testing a group can not be assigned a topic with low preference if
-    #     the topic that it was chosen is available."""
-    #     group_costs = [
-    #         [1, 2, 3],  # g1 preferences: t1, t2, t3
-    #         [2, 1, 3],  # g2 preferences: t2, t1, t3
-    #         [3, 2, 1],  # g3 preferences: t3, t2, t1
-    #     ]
-    #     tutors_capacities = [2, 1]
-    #     topics_tutors_capacities = [
-    #         [1, 1, 1],
-    #         [1, 1, 1],
-    #     ]
-    #     topics_tutors_costs = [
-    #         [1, 1, 1],
-    #         [1, 1, 1],
-    #     ]
+    @pytest.mark.unit
+    def test_more_groups_with_different_preferences(self):
+        """Testing a group can not be assigned a topic with low preference if
+        the topic that it was chosen is available."""
+        group_costs = [
+            [1, 2, 3],  # g1 preferences: t1, t2, t3
+            [2, 1, 3],  # g2 preferences: t2, t1, t3
+            [3, 2, 1],  # g3 preferences: t3, t2, t1
+        ]
+        tutors_capacities = [2, 1]
+        topics_tutors_capacities = [
+            [1, 1, 1],
+            [1, 1, 1],
+        ]
+        topics_tutors_costs = [
+            [1, 1, 1],
+            [1, 1, 1],
+        ]
 
-    #     groups = self.helper.create_groups(3, group_costs)
-    #     topics = self.helper.create_topics(3)
-    #     tutors = self.helper.create_tutors(
-    #         2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
-    #     )
+        groups = self.helper.create_groups(3, group_costs)
+        topics = self.helper.create_topics(3)
+        tutors = self.helper.create_tutors(
+            2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+        )
 
-    # solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
-    # result = solver.solve()
+        solver = TopicTutorAssignmentFlowSolver(groups, topics, tutors)
+        result = solver.solve()
 
-    # formatted_result = self.formatter.format_result(result)
-    # groups_topics = self.helper.get_groups_topics(formatted_result)
+        formatted_result = self.formatter.format_result(result)
+        groups_topics = self.helper.get_groups_topics(formatted_result)
 
-    #     assert groups_topics["g1"] == "t1"
-    #     assert groups_topics["g2"] == "t2"
-    #     assert groups_topics["g3"] == "t3"
+        assert groups_topics["g1"][0] == "t1"
+        assert groups_topics["g2"][0] == "t2"
+        assert groups_topics["g3"][0] == "t3"
 
     # ------------ Performance and Scalability Tests ------------
     @pytest.mark.performance
