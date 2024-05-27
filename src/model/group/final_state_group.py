@@ -6,15 +6,22 @@ class FinalStateGroup(Group):
         super().__init__(group_id, 0)
         self._available_dates = available_dates
         self._tutor_id = tutor_id
+        self._possible_evaluation_date = []
         self._evaluation_date = None
 
     def set_evaluation_date(self, date):
         self._evaluation_date = date
 
+    def set_possible_evaluation_date(self, date):
+        self._possible_evaluation_date.append(date)
+
+    @property
+    def possible_evaluation_date(self):
+        return self._possible_evaluation_date
+
     @property
     def available_dates(self):
         return self._available_dates
-
     @property
     def evaluation_date(self):
         return self._evaluation_date
