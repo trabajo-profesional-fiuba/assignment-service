@@ -105,3 +105,47 @@ class TestInputFormatter:
         df = pd.DataFrame(data)
         formatter = InputFormatter(df)
         assert formatter._availability_dates(df.iloc[0]) == []
+
+    @pytest.mark.formatter
+    def test_groups_without_availability_dates(self):
+        data = {
+            "Número de equipo": [1, 2],
+            "Apellido del tutor": ["Smith", "Jones"],
+            "Semana 1/7 [No puedo]": ["Lunes 1/7", "Lunes 1/7"],
+        }
+        df = pd.DataFrame(data)
+
+        formatter = InputFormatter(df)
+        result = formatter.groups()
+
+        assert result[0].id == "g1"
+        assert result[0].available_dates == []
+        assert result[0].tutor_id == "p1"
+
+        assert result[1].id == "g2"
+        assert result[1].available_dates == []
+        assert result[1].tutor_id == "p2"
+
+    @pytest.mark.formatter
+    def test_groups_with_availability_dates(self):
+        data = {
+            "Número de equipo": [1, 2],
+            "Apellido del tutor": ["Smith", "Jones"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7", "Lunes 1/7"],
+        }
+        df = pd.DataFrame(data)
+
+        formatter = InputFormatter(df)
+        result = formatter.groups()
+
+        assert result[0].id == "g1"
+        assert result[0].available_dates[0].week == 1
+        assert result[0].available_dates[0].day == Day.MONDAY
+        assert result[0].available_dates[0].hours == Hour.H_9_10
+        assert result[0].tutor_id == "p1"
+
+        assert result[1].id == "g2"
+        assert result[1].available_dates[0].week == 1
+        assert result[1].available_dates[0].day == Day.MONDAY
+        assert result[1].available_dates[0].hours == Hour.H_9_10
+        assert result[1].tutor_id == "p2"
