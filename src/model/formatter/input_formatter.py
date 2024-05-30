@@ -6,7 +6,7 @@ from src.model.delivery_date.hour import Hour
 from src.model.delivery_date.day import Day
 from src.model.group.final_state_group import FinalStateGroup
 from src.constants import GROUP_ID, TUTOR_ID
-from src.exceptions import TutorNotFound
+from src.exceptions import TutorNotFound, WeekNotFound, DayNotFound, HourNotFound
 
 
 class InputFormatter:
@@ -120,20 +120,83 @@ class InputFormatter:
         days = value.split(",")
         return [day.strip().split(" ")[0].strip() for day in days]
 
+    def create_week(self, week_part):
+        """
+        Retrieves the week part from the WEEKS_DICT.
+
+        Params:
+            - week_part (str): The key for the week part to retrieve.
+
+        Returns:
+            int: The corresponding week part from WEEKS_DICT.
+
+        Raises:
+            WeekNotFound: If the week part is not found in WEEKS_DICT.
+        """
+        try:
+            return self.WEEKS_DICT[week_part]
+        except KeyError:
+            raise WeekNotFound(f"Week '{week_part}' not found in WEEKS_DICT")
+
+    def create_day(self, day):
+        """
+        Retrieves the day from the DAYS_DICT.
+
+        Params:
+            - day (str): The key for the day to retrieve.
+
+        Returns:
+            str: The corresponding day from DAYS_DICT.
+
+        Raises:
+            DayNotFound: If the day is not found in DAYS_DICT.
+        """
+        try:
+            return self.DAYS_DICT[day]
+        except KeyError:
+            raise DayNotFound(f"Day '{day}' not found in DAYS_DICT")
+
+    def create_hour(self, hour_part):
+        """
+        Retrieves the hour part from the HOURS_DICT.
+
+        Params:
+            - hour_part (str): The key for the hour part to retrieve.
+
+        Returns:
+            str: The corresponding hour part from HOURS_DICT.
+
+        Raises:
+            HourNotFound: If the hour part is not found in HOURS_DICT.
+        """
+        try:
+            return self.HOURS_DICT[hour_part]
+        except KeyError:
+            raise HourNotFound(f"Hour part '{hour_part}' not found in HOURS_DICT")
+
     def _create_delivery_date(self, week_part, day, hour_part):
         """
         Creates a DeliveryDate object.
 
         Params:
             - week_part (str): The week part extracted from the column name.
-            . day (str): The day name.
+            - day (str): The day name.
             - hour_part (str): The hour part extracted from the column name.
 
         Returns (DeliveryDate): The DeliveryDate object created from the provided parts.
+
+        Raises:
+            WeekNotFound: If the week part is not found in WEEKS_DICT.
+            DayNotFound: If the day is not found in DAYS_DICT.
+            HourNotFound: If the hour part is not found in HOURS_DICT.
         """
-        return DeliveryDate(
-            self.WEEKS_DICT[week_part], self.DAYS_DICT[day], self.HOURS_DICT[hour_part]
-        )
+        try:
+            week = self.create_week(week_part)
+            day = self.create_day(day)
+            hour = self.create_hour(hour_part)
+            return DeliveryDate(week, day, hour)
+        except (WeekNotFound, DayNotFound, HourNotFound) as e:
+            raise ValueError(f"Failed to create DeliveryDate: {e}")
 
     def _availability_dates(self, row: pd.Series):
         """
