@@ -1,7 +1,7 @@
 from src.model.topic import Topic
 
 
-class Tutor:
+class InitialStateTutor:
 
     def __init__(self, id: str, capacity: int, topics: dict):
         self._id = id

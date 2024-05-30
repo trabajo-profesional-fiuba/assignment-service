@@ -1,5 +1,5 @@
-from src.model.formatter.flow_formatter import FlowResultFormatter
-from src.model.formatter.simplex_formatter import SimplexResultFormatter
+from src.model.formatter.output.flow_formatter import FlowResultFormatter
+from src.model.formatter.output.simplex_formatter import SimplexResultFormatter
 
 
 class ResultFormatter:

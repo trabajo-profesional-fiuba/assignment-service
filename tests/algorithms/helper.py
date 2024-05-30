@@ -3,7 +3,7 @@
 import numpy as np
 from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.model.group.initial_state_group import InitialStateGroup
-from src.model.tutor import Tutor
+from src.model.tutor.initial_state_tutor import InitialStateTutor
 from src.model.topic import Topic
 
 
@@ -69,7 +69,7 @@ class TestHelper:
         capacities and costs.
         """
         return [
-            Tutor(
+            InitialStateTutor(
                 f"{TUTOR_ID}{i}",
                 group_capacities[i - 1],
                 {"capacities": topics_capacities[i - 1], "costs": topics_costs[i - 1]},

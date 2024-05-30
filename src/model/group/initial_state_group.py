@@ -1,6 +1,6 @@
 from src.model.group.base_group import BaseGroup
 from src.model.topic import Topic
-from src.model.tutor import Tutor
+from src.model.tutor.initial_state_tutor import InitialStateTutor
 
 
 class InitialStateGroup(BaseGroup):
@@ -43,7 +43,7 @@ class InitialStateGroup(BaseGroup):
         id = int(topic.id[1:])
         return self._topics[id - 1]
 
-    def assign_tutor(self, tutor: Tutor):
+    def assign_tutor(self, tutor: InitialStateTutor):
         """
         Assigns a tutor to the group.
 

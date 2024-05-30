@@ -1,9 +1,6 @@
-from src.model.group.base_group import BaseGroup
+class FinalStateTutor:
 
-
-class FinalStateGroup(BaseGroup):
-
-    def __init__(self, id: str, available_dates: list, tutor_id: str):
+    def __init__(self, tutor_id: str, available_dates: list):
         """
         Initializes the class with an id and a list of available_dates.
 
@@ -14,9 +11,8 @@ class FinalStateGroup(BaseGroup):
         Attributes:
             _available_dates: Stores the list of `DeliveryDate`.
         """
-        super().__init__(id)
-        self._available_dates = available_dates
         self._tutor_id = tutor_id
+        self._available_dates = available_dates
 
     @property
     def tutor_id(self):
