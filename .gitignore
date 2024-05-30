@@ -16,4 +16,4 @@ coverage.xml
 
 dist/
 dummy.py
-groups_dates.csv
+database/

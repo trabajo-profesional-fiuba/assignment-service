@@ -11,12 +11,12 @@ class FinalStateTutor:
         Attributes:
             _available_dates: Stores the list of `DeliveryDate`.
         """
-        self._tutor_id = tutor_id
+        self._id = tutor_id
         self._available_dates = available_dates
 
     @property
-    def tutor_id(self):
-        return self._tutor_id
+    def id(self):
+        return self._id
 
     @property
     def available_dates(self):
