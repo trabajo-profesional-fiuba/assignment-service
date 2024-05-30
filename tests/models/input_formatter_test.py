@@ -1,8 +1,9 @@
 import pandas as pd
 import pytest
 from src.model.formatter.input_formatter import InputFormatter
-from src.model.day import Day
-from src.model.hour import Hour
+from src.model.delivery_date.day import Day
+from src.model.delivery_date.hour import Hour
+from src.exceptions import TutorNotFound
 
 
 class TestInputFormatter:
@@ -149,3 +150,32 @@ class TestInputFormatter:
         assert result[1].available_dates[0].day == Day.MONDAY
         assert result[1].available_dates[0].hours == Hour.H_9_10
         assert result[1].tutor_id == "p2"
+
+    @pytest.mark.formatter
+    def test_tutor_id_found(self):
+        data = {
+            "Número de equipo": [1, 2],
+            "Apellido del tutor": ["Smith", "Jones"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7", "Lunes 1/7"],
+        }
+        df = pd.DataFrame(data)
+
+        formatter = InputFormatter(df)
+
+        assert formatter._tutor_id("Smith") == "p1"
+        assert formatter._tutor_id("Jones") == "p2"
+
+    @pytest.mark.formatter
+    def test_tutor_id_not_found(self):
+        data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Jones"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        df = pd.DataFrame(data)
+
+        formatter = InputFormatter(df)
+
+        with pytest.raises(TutorNotFound) as err:
+            formatter._tutor_id("Smith")
+        assert str(err.value) == "Tutor Smith not found."

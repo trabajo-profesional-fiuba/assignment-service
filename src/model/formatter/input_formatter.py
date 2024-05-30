@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
 
-from src.model.delivery_date import DeliveryDate
-from src.model.hour import Hour
-from src.model.day import Day
+from src.model.delivery_date.delivery_date import DeliveryDate
+from src.model.delivery_date.hour import Hour
+from src.model.delivery_date.day import Day
 from src.model.group.final_state_group import FinalStateGroup
+from src.constants import GROUP_ID, TUTOR_ID
+from src.exceptions import TutorNotFound
 
 
 class InputFormatter:
@@ -71,7 +73,7 @@ class InputFormatter:
 
         Returns (str): The formatted group identifier.
         """
-        return "g" + str(group_id)
+        return GROUP_ID + str(group_id)
 
     def _tutor_id(self, tutor_surname: str):
         """
@@ -83,14 +85,14 @@ class InputFormatter:
         Returns (str): The formatted tutor identifier.
 
         Raises:
-            - ValueError: If the tutor surname is not found in the DataFrame.
+            - TutorNotFound: If the tutor surname is not found in the DataFrame.
         """
         tutors = self._df["Apellido del tutor"].unique()
         index = np.where(tutors == tutor_surname)[0]
         if len(index) > 0:
-            return "p" + str(index[0] + 1)
+            return TUTOR_ID + str(index[0] + 1)
         else:
-            raise ValueError(f"Tutor '{tutor_surname}' not found.")
+            raise TutorNotFound(f"Tutor {tutor_surname} not found.")
 
     def _extract_week_hour_parts(self, column):
         """
