@@ -77,7 +77,7 @@ class InputFormatter:
         """
         return GROUP_ID + str(group_id)
 
-    def _tutor_id(self, tutor_surname: str, tutor_column: str, df):
+    def _tutor_id(self, tutor_surname: str):
         """
         Generates a tutor identifier.
 
@@ -89,9 +89,9 @@ class InputFormatter:
         Raises:
             - TutorNotFound: If the tutor surname is not found in the DataFrame.
         """
-        tutors = df[tutor_column].unique()
+        tutors = self._tutors_df["Nombre y Apellido"].unique()
         tutors.sort()
-        index = np.where(tutors == tutor_surname)[0]
+        index = np.where([tutor_surname in tutor for tutor in tutors])[0]
         if len(index) > 0:
             return TUTOR_ID + str(index[0] + 1)
         else:
@@ -238,9 +238,7 @@ class InputFormatter:
             lambda x: FinalStateGroup(
                 self._group_id(x["Número de equipo"]),
                 self._availability_dates(x),
-                self._tutor_id(
-                    x["Apellido del tutor"], "Apellido del tutor", self._groups_df
-                ),
+                self._tutor_id(x["Apellido del tutor"]),
             ),
             axis=1,
         )
@@ -259,9 +257,7 @@ class InputFormatter:
         """
         tutors = self._tutors_df.apply(
             lambda x: FinalStateTutor(
-                self._tutor_id(
-                    x["Nombre y Apellido"], "Nombre y Apellido", self._tutors_df
-                ),
+                self._tutor_id(x["Nombre y Apellido"]),
                 self._availability_dates(x),
             ),
             axis=1,
