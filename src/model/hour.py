@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Hour(Enum):
     H_9_10 = 1
     H_10_11 = 2
