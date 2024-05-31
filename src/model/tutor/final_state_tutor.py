@@ -2,6 +2,7 @@ from typing import List
 from src.model.tutor.base_tutor import BaseTutor
 from src.model.delivery_date.delivery_date import DeliveryDate
 
+
 class FinalStateTutor(BaseTutor):
 
     def __init__(self, id: str, available_dates: List[DeliveryDate]) -> None:

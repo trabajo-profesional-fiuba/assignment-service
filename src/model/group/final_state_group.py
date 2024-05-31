@@ -2,9 +2,12 @@ from typing import List
 from src.model.group.base_group import BaseGroup
 from src.model.delivery_date.delivery_date import DeliveryDate
 
+
 class FinalStateGroup(BaseGroup):
 
-    def __init__(self, id: str, available_dates: List[DeliveryDate], tutor_id: str) -> None:
+    def __init__(
+        self, id: str, available_dates: List[DeliveryDate], tutor_id: str
+    ) -> None:
         """
         Initializes the class with an id and a list of available_dates.
 

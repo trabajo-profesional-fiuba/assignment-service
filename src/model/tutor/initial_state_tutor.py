@@ -1,6 +1,7 @@
 from src.model.topic import Topic
 from src.model.tutor.base_tutor import BaseTutor
-from typing import Dict
+from typing import Dict, List
+
 
 class InitialStateTutor(BaseTutor):
     """
