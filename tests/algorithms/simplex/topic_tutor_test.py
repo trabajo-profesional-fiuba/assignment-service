@@ -6,13 +6,13 @@ import time
 
 from src.algorithms.simplex.tutor_topics import TopicTutorAssignmentSimplexSolver
 from tests.algorithms.helper import TestHelper
-from src.model.formatter.output.formatter import ResultFormatter
+from src.model.formatter.output.output_formatter import OutputFormatter
 
 
 class TestGroupTopicTutorSimplexSolver:
 
     helper = TestHelper()
-    formatter = ResultFormatter()
+    formatter = OutputFormatter()
 
     # ------------ Logic Tests ------------
     @pytest.mark.unit
