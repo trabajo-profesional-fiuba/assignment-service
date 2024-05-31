@@ -16,35 +16,52 @@ class DateEvaluatorsLPSolver:
         for group in self._groups:
             for evaluator in self._evaluators:
                 mutual_available_dates = [
-                    (date.day, date.week, hour)
+                    (date.day, date.week, date.hr)
                     for date in group.possible_evaluation_date
-                    for hour in date.hours
-                    if any(e_date.day == date.day and e_date.week == date.week and hour in e_date.hours for e_date in evaluator.available_dates)
+                    for e_date in evaluator.available_dates
+                    if date.day == e_date.day and date.week == e_date.week and date.hr == e_date.hr
                 ]
 
-                if (evaluator.id != group.tutor_id):
+                if evaluator.id != group.tutor_id:
                     for day, week, hour in mutual_available_dates:
-                        var_name = f"assign_{group.id}_{day.name}_{week}_{hour.name}_{evaluator.id}"
+                        var_name = f"assign_{group.id}_{day}_{week}_{hour}_{evaluator.id}"
                         self._decision_variables[(group.id, day, week, hour, evaluator.id)] = self._model.addVar(
                             var_name, vtype="B", obj=0, lb=0, ub=1
                         )
                         if (evaluator.id, day, week) not in self._evaluator_day_vars:
-                            day_var_name = f"day_{evaluator.id}_{day.name}_{week}"
+                            day_var_name = f"day_{evaluator.id}_{day}_{week}"
                             self._evaluator_day_vars[(evaluator.id, day, week)] = self._model.addVar(
                                 day_var_name, vtype="B", obj=0, lb=0, ub=1
                             )
 
     def groups_assignment_restriction(self):
-        """Cada grupo se debe asignar entre 2 (si es posible) y 4 veces"""
+        for group in self._groups:
+            group_date_vars = {}
+            for date in group.possible_evaluation_date:
+                group_date_var = self._model.addVar(f"group_date_{group.id}_{date.day}_{date.week}_{date.hr}", vtype="B", obj=0, lb=0, ub=1)
+                group_date_vars[date] = group_date_var
+                self._model.addCons(
+                    group_date_var
+                    >= scip.quicksum(
+                        self._decision_variables[(group.id, date.day, date.week, date.hr, evaluator.id)]
+                        for evaluator in self._evaluators
+                        if (group.id, date.day, date.week, date.hr, evaluator.id) in self._decision_variables
+                    )
+                    / len(self._evaluators),
+                    name=f"group_date_{group.id}_{date.day}_{date.week}_{date.hr}",
+                )
+            self._model.addCons(
+                scip.quicksum(group_date_vars.values()) == 1,
+                name=f"unique_date_{group.id}",
+            )
         for group in self._groups:
             for date in group.possible_evaluation_date:
-                for hour in date.hours:
-                    available_evaluators = sum(
-                        1
-                        for evaluator in self._evaluators
-                        for date_evaluator in evaluator._available_dates
-                        if date.week == date_evaluator.week and date.day == date_evaluator.day and hour in evaluator.available_dates[evaluator.available_dates.index(date)].hours
-                    )
+                available_evaluators = sum(
+                    1
+                    for evaluator in self._evaluators
+                    for date_evaluator in evaluator.available_dates
+                    if date.week == date_evaluator.week and date.day == date_evaluator.day and date.hr == date_evaluator.hr
+                )
 
             min_evaluators = min(2, available_evaluators)
             self._model.addCons(
@@ -65,18 +82,6 @@ class DateEvaluatorsLPSolver:
                 )
                 >= min_evaluators,
                 name=f"min_assign_{group.id}",
-            )
-
-            self._model.addCons(
-                scip.quicksum(
-                    self._decision_variables[(group.id, date.day, date.week, hour, evaluator.id)]
-                    for date in group.possible_evaluation_date
-                    for hour in date.hours
-                    for evaluator in self._evaluators
-                    if (group.id, date.day, date.week, hour, evaluator.id) in self._decision_variables
-                )
-                >= min_evaluators,
-                name=f"unique_date_hour_{group.id}"
             )
 
     def evaluator_day_minimization_restriction(self):
@@ -104,8 +109,7 @@ class DateEvaluatorsLPSolver:
                     scip.quicksum(
                         self._decision_variables[var]
                         for var in self._decision_variables
-                        if var[2] == week
-                        and var[4] == evaluator.id
+                        if var[2] == week and var[4] == evaluator.id
                     )
                     <= 5,
                     name=f"max_5_groups_week_{evaluator.id}_{week}",
@@ -113,9 +117,10 @@ class DateEvaluatorsLPSolver:
 
     def define_objective(self):
         # Minimizar el número de días que asisten los evaluadores
+        """"""
         self._model.setObjective(
             scip.quicksum(
-                (day.value + week) * self._evaluator_day_vars[(evaluator_id, day, week)]
+                self._evaluator_day_vars[(evaluator_id, day, week)]
                 for (evaluator_id, day, week) in self._evaluator_day_vars
             ),
             "minimize",

@@ -3,12 +3,11 @@ from typing import List, Tuple
 
 from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.tutor import Tutor
-from src.model.utils.date import Date
-from src.model.utils.hour import Hour
+from src.model.utils.date_dto import DateDto
 
 class DateTutorsLPSolver:
 
-    def __init__(self, dates: List[Date], groups: List[FinalStateGroup], tutors: List[Tutor], num_weeks: int):
+    def __init__(self, dates: List[DateDto], groups: List[FinalStateGroup], tutors: List[Tutor], num_weeks: int):
         self._groups = groups
         self._tutors = tutors
         self._available_dates = dates
@@ -22,19 +21,18 @@ class DateTutorsLPSolver:
         for group in self._groups:
             tutor = group.find_tutor(self._tutors)
             mutual_available_dates = [
-                (date.day, date.week, hour)
+                (date.day, date.week, date.hr)
                 for date in self.dates_in_week(group.available_dates, num_week)
-                for hour in date.hours
-                if any(t_date.day == date.day and t_date.week == date.week and hour in t_date.hours for t_date in tutor.available_dates)
+                if any(t_date.day == date.day and t_date.week == date.week and date.hr == t_date.hr for t_date in tutor.available_dates)
             ]
 
             for day, week, hour in mutual_available_dates:
-                var_name = f"assign_{group.id}_{tutor.id}_{day.name}_{week}_{hour.name}"
+                var_name = f"assign_{group.id}_{tutor.id}_{day}_{week}_{hour}"
                 self._decision_variables[(group.id, tutor.id, day, week, hour)] = self._model.addVar(
                     var_name, vtype="B", obj=0, lb=0, ub=1
                 )
                 if (tutor.id, day, week, hour) not in self._tutor_day_vars:
-                    day_var_name = f"day_{tutor.id}_{day.name}_{week}"
+                    day_var_name = f"day_{tutor.id}_{day}_{week}"
                     self._tutor_day_vars[(tutor.id, day, week)] = self._model.addVar(
                         day_var_name, vtype="B", obj=0, lb=0, ub=1
                     )
@@ -42,24 +40,22 @@ class DateTutorsLPSolver:
     def groups_assignment_restriction(self, num_week: int):
         """Cada grupo se debe asignar una sola vez a una fecha y hora específica"""
         for date in self.dates_in_week(self._available_dates, num_week):
-            for hour in date.hours:
-                self._model.addCons(
-                    scip.quicksum(
-                        self._decision_variables[(group.id, tutor.id, date.day, date.week, hour)]
-                        for group in self._groups
-                        for tutor in self._tutors
-                        if (group.id, tutor.id, date.day, date.week, hour) in self._decision_variables
-                    )
-                    <= 1
+            self._model.addCons(
+                scip.quicksum(
+                    self._decision_variables[(group.id, tutor.id, date.day, date.week, date.hr)]
+                    for group in self._groups
+                    for tutor in self._tutors
+                    if (group.id, tutor.id, date.day, date.week, date.hr) in self._decision_variables
                 )
+                <= 1
+            )
         """cada grupo se asigne exactamente una vez a una combinación de fecha y hora."""
         for group in self._groups:
             variables = [
-                self._decision_variables[(group.id, tutor.id, date.day, date.week, hour)]
+                self._decision_variables[(group.id, tutor.id, date.day, date.week, date.hr)]
                 for tutor in self._tutors
                 for date in group.available_dates
-                for hour in date.hours
-                if (group.id, tutor.id, date.day, date.week, hour) in self._decision_variables
+                if (group.id, tutor.id, date.day, date.week, date.hr) in self._decision_variables
             ]
             if variables: 
                 self._model.addCons(
@@ -97,7 +93,7 @@ class DateTutorsLPSolver:
         # Minimizar el número de días que asisten los tutores
         self._model.setObjective(
             scip.quicksum(
-                day.value * self._tutor_day_vars[(tutor_id, day, week)] # Chequear, multiplico por week y day para que se asigne primero y no en las ultimas semanas
+                self._tutor_day_vars[(tutor_id, day, week)] 
                 for (tutor_id, day, week) in self._tutor_day_vars
             ),
             "minimize",
@@ -142,7 +138,7 @@ class DateTutorsLPSolver:
                     print(f"Variable {var} ((Grupo, Tutor, Dia, Semana, Hora): {var}")
                     for group in self._groups:
                         if group.id == var[0]:
-                            group.set_possible_evaluation_date(Date(var[2], var[3], [var[4]]))
+                            group.set_possible_evaluation_date(DateDto(var[3], var[2], var[4]))
                             week_result.append(group)
                             all_results.append(group)
 

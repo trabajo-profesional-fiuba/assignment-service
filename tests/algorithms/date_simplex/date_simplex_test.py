@@ -4,10 +4,8 @@ import time
 
 from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.final_state_tutor import FinalStateTutor
-from src.model.utils.date import Date
-from src.model.utils.day import Day
+from src.model.utils.date_dto import DateDto
 from src.model.utils.evaluator import Evaluator
-from src.model.utils.hour import Hour
 from tests.algorithms.date_simplex.helper import TestSimplexHelper
 
 
@@ -20,9 +18,9 @@ class TestDatesSimplex:
         num_groups = 4
         num_evaluators = 4
         num_tutors = 4
-        num_weeks = 4 
-        days_per_week = [Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY, Day.THURSDAY, Day.FRIDAY]
-        hours_per_day = [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16]
+        num_weeks = 4
+        days_per_week = ["lunes", "martes", "miercoles", "jueves", "viernes"]
+        hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
         start_time = time.time()
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
@@ -52,8 +50,8 @@ class TestDatesSimplex:
         num_tutors = 5
 
         num_weeks = 7  
-        days_per_week = [Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY, Day.THURSDAY, Day.FRIDAY]
-        hours_per_day = [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16, Hour.H_16_17, Hour.H_17_18, Hour.H_18_19, Hour.H_19_20, Hour.H_20_21]
+        days_per_week = ["lunes", "martes", "miercoles", "jueves", "viernes"]
+        hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
         start_time = time.time()
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
@@ -83,8 +81,8 @@ class TestDatesSimplex:
         num_tutors = 5
 
         num_weeks = 7  
-        days_per_week = [Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY, Day.THURSDAY, Day.FRIDAY]
-        hours_per_day = [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16, Hour.H_16_17, Hour.H_17_18, Hour.H_18_19, Hour.H_19_20, Hour.H_20_21]
+        days_per_week = ["lunes", "martes", "miercoles", "jueves", "viernes"]
+        hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
         start_time = time.time()
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
@@ -114,8 +112,8 @@ class TestDatesSimplex:
     #     num_tutors = 6
 
     #     num_weeks = 7  
-    #     days_per_week = [Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY, Day.THURSDAY, Day.FRIDAY]
-    #     hours_per_day = [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16, Hour.H_16_17, Hour.H_17_18, Hour.H_18_19, Hour.H_19_20, Hour.H_20_21]
+    #     days_per_week = ["lunes", "martes", "miercoles", "jueves", "viernes"]
+    #     hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
     #     start_time = time.time()
     #     dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
@@ -139,38 +137,44 @@ class TestDatesSimplex:
 
     # ------------ Logical Tests ------------
     def test_group_evaluator_assignment_maximization(self):
-        possible_dates = [Date(Day.MONDAY, 1, [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16, Hour.H_16_17, Hour.H_17_18, Hour.H_18_19, Hour.H_19_20, Hour.H_20_21]),
-                          Date(Day.TUESDAY, 2, [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16, Hour.H_16_17, Hour.H_17_18, Hour.H_18_19, Hour.H_19_20, Hour.H_20_21]),
-                          Date(Day.WEDNESDAY, 3, [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16, Hour.H_16_17, Hour.H_17_18, Hour.H_18_19, Hour.H_19_20, Hour.H_20_21]),
-                          Date(Day.WEDNESDAY, 4, [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16, Hour.H_16_17, Hour.H_17_18, Hour.H_18_19, Hour.H_19_20, Hour.H_20_21]),
-                          Date(Day.FRIDAY, 5, [Hour.H_9_10, Hour.H_10_11, Hour.H_11_12, Hour.H_12_13, Hour.H_14_15, Hour.H_15_16, Hour.H_16_17, Hour.H_17_18, Hour.H_18_19, Hour.H_19_20, Hour.H_20_21])]
+        possible_dates = [DateDto( 1,"lunes", 1), DateDto( 1, "lunes",2), DateDto( 1,"lunes", 3), DateDto( 1,"lunes", 4), DateDto( 1, "lunes",5), DateDto( 1, "lunes",6), DateDto( 1,"lunes", 7), DateDto( 1, "lunes",8),
+                          DateDto( 1, "lunes",9), DateDto( 1, "lunes",10), DateDto( 1,"lunes", 11),
+                          DateDto( 2, "martes",1), DateDto( 2, "martes",2), DateDto(2,"martes",  3), DateDto(2,"martes",  4), DateDto(2,"martes",  5), DateDto(2,"martes",  6), DateDto(2,"martes",  7),
+                          DateDto( 2,"martes", 8), DateDto( 2,"martes", 9), DateDto( 2,"martes", 10), DateDto( 2,"martes", 11),
+                          DateDto( 3,"miercoles", 1), DateDto( 3,"miercoles", 2), DateDto( 3,"miercoles", 3), DateDto( 3,"miercoles", 4), DateDto( 3,"miercoles", 5), DateDto( 3,"miercoles", 6), DateDto( 3,"miercoles", 7),
+                          DateDto( 3,"miercoles", 8), DateDto( 3,"miercoles", 9), DateDto( 3,"miercoles", 10), DateDto( 3,"miercoles", 11),
+                          DateDto( 4,"miercoles", 1), DateDto( 4,"miercoles", 2), DateDto( 4,"miercoles", 3), DateDto( 4,"miercoles", 4), DateDto("miercoles", 4, 5), DateDto("miercoles", 4, 6), DateDto("miercoles", 4, 7),
+                          DateDto( 4,"miercoles", 8), DateDto( 4,"miercoles", 9), DateDto( 4,"miercoles", 10), DateDto( 4,"miercoles", 11),
+                          DateDto(5,"friday", 1), DateDto(5,"friday", 2), DateDto(5,"friday", 3), DateDto(5,"friday", 4), DateDto(5,"friday", 5), DateDto(5,"friday", 6), DateDto(5,"friday", 7), DateDto(5,"friday", 8),
+                          DateDto(5,"friday", 9), DateDto(5,"friday", 10), DateDto(5,"friday", 11)]
+        
         groups = [
             FinalStateGroup(
-                group_id="g1", available_dates=[possible_dates[0], possible_dates[1]], tutor_id="t1"
+                group_id="g1", available_dates=possible_dates[0:22], tutor_id="t1"
             ),
             FinalStateGroup(
-                group_id="g2", available_dates=[possible_dates[1], possible_dates[2]], tutor_id="t2"
+                group_id="g2", available_dates=possible_dates[11:33], tutor_id="t2"
             ),
             FinalStateGroup(
-                group_id="g3", available_dates=[possible_dates[2], possible_dates[3]], tutor_id="t3"
+                group_id="g3", available_dates=possible_dates[22:44], tutor_id="t3"
             ),
             FinalStateGroup(
-                group_id="g4", available_dates=[possible_dates[3], possible_dates[4]], tutor_id="t1"
+                group_id="g4", available_dates=possible_dates[33:55], tutor_id="t1"
             ),
             FinalStateGroup(
-                group_id="g5", available_dates=[possible_dates[0], possible_dates[4]], tutor_id="t2"
+                group_id="g5", available_dates=possible_dates[0:11]+possible_dates[44:55], tutor_id="t2"
             ),
         ]
         tutors = [
-            FinalStateTutor(id="t1", available_dates=[possible_dates[0], possible_dates[3], possible_dates[4]]),
-            FinalStateTutor(id="t2", available_dates=[possible_dates[1], possible_dates[2], possible_dates[4]]),
-            FinalStateTutor(id="t3", available_dates=[possible_dates[2], possible_dates[3]]),
+            FinalStateTutor(id="t1", available_dates=possible_dates[0:11]+possible_dates[33:44]+ possible_dates[44:55]) ,
+            FinalStateTutor(id="t2", available_dates=possible_dates[11:22]+possible_dates[22:33]+possible_dates[44:55]),
+            FinalStateTutor(id="t3", available_dates=possible_dates[22:33]+possible_dates[33:44]),
         ]
         evaluators = [
-            Evaluator(id="e1", available_dates=[possible_dates[0], possible_dates[1]]),
-            Evaluator(id="e2", available_dates=[possible_dates[1], possible_dates[2]]),
-            Evaluator(id="e3", available_dates=[possible_dates[2], possible_dates[3]]),
-            Evaluator(id="e4", available_dates=[possible_dates[3], possible_dates[4]]),
+            Evaluator(id="e1", available_dates=possible_dates[0:22]),
+            Evaluator(id="e2", available_dates=possible_dates[11:33]),
+            Evaluator(id="e3", available_dates=possible_dates[22:44]),
+            Evaluator(id="e4", available_dates=possible_dates[33:55]),
         ]
 
         solver = DateTutorsLPSolver(possible_dates, groups, tutors, 5)

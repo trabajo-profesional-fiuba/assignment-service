@@ -2,7 +2,7 @@
 
 from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.final_state_tutor import FinalStateTutor
-from src.model.utils.date import Date
+from src.model.utils.date_dto import DateDto
 from src.model.utils.evaluator import Evaluator
 
 
@@ -36,8 +36,9 @@ class TestSimplexHelper:
         dates = []
         for week in range(1, num_weeks + 1):
             for day in days_per_week:
-                date = Date(day=day, week=week, hours=hours_per_day)
-                dates.append(date)
+                for hour in hours_per_day:
+                    date = DateDto(day=day, week=week, hr=hour)
+                    dates.append(date)
         return dates
 
     def create_tutors(self, num_tutors: int, available_dates: list):
