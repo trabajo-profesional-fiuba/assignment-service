@@ -279,7 +279,7 @@ class TestInputFormatter:
         assert result[0].available_dates[0].week == 1
         assert result[0].available_dates[0].day == Day.MONDAY
         assert result[0].available_dates[0].hour == Hour.H_9_10
-        
+
     @pytest.mark.formatter
     def test_group_and_tutor_tutor_id_found(self):
         groups_data = {
