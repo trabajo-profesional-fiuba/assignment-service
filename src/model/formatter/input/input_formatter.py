@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from typing import List, Tuple
 
 from src.model.delivery_date.delivery_date import DeliveryDate
 from src.model.delivery_date.hour import Hour
@@ -55,7 +56,7 @@ class InputFormatter:
         "20 a 21": Hour.H_20_21,
     }
 
-    def __init__(self, groups_df, tutors_df):
+    def __init__(self, groups_df: pd.DataFrame, tutors_df: pd.DataFrame) -> None:
         """
         Constructs the necessary attributes for the InputFormatter object.
 
@@ -66,7 +67,7 @@ class InputFormatter:
         self._groups_df = groups_df
         self._tutors_df = tutors_df
 
-    def _group_id(self, group_id: int):
+    def _group_id(self, group_id: int) -> str:
         """
         Generates a group identifier.
 
@@ -77,7 +78,7 @@ class InputFormatter:
         """
         return GROUP_ID + str(group_id)
 
-    def _tutor_id(self, tutor_surname: str):
+    def _tutor_id(self, tutor_surname: str) -> str:
         """
         Generates a tutor identifier.
 
@@ -88,6 +89,14 @@ class InputFormatter:
 
         Raises:
             - TutorNotFound: If the tutor surname is not found in the DataFrame.
+
+        This method generates a unique identifier for a tutor based on their surname.
+        It retrieves all unique surnames from the DataFrame, sorts them alphabetically,
+        and then searches for the index of the provided tutor's surname in the sorted
+        list.
+        If the surname is found, the method constructs the tutor identifier by
+        concatenating the constant 'TUTOR_ID' with the index plus one. If the surname
+        is not found, it raises a TutorNotFound exception.
         """
         tutors = self._tutors_df["Nombre y Apellido"].unique()
         tutors.sort()
@@ -97,7 +106,7 @@ class InputFormatter:
         else:
             raise TutorNotFound(f"Tutor '{tutor_surname}' not found.")
 
-    def _extract_week_hour_parts(self, column):
+    def _extract_week_hour_parts(self, column: str) -> Tuple[str, str]:
         """
         Extracts the week part and hour part from a column name.
 
@@ -111,7 +120,7 @@ class InputFormatter:
         hour_part = columns_parts[1].replace("]", "").strip()
         return week_part, hour_part
 
-    def _process_day_values(self, value):
+    def _process_day_values(self, value: str) -> List[str]:
         """
         Processes the day values from a string.
 
@@ -123,7 +132,7 @@ class InputFormatter:
         days = value.split(",")
         return [day.strip().split(" ")[0].strip() for day in days]
 
-    def create_week(self, week_part):
+    def create_week(self, week_part: str) -> int:
         """
         Retrieves the week part from the WEEKS_DICT.
 
@@ -141,7 +150,7 @@ class InputFormatter:
         except KeyError:
             raise WeekNotFound(f"Week '{week_part}' not found in WEEKS_DICT")
 
-    def create_day(self, day):
+    def create_day(self, day: str) -> Day:
         """
         Retrieves the day from the DAYS_DICT.
 
@@ -159,7 +168,7 @@ class InputFormatter:
         except KeyError:
             raise DayNotFound(f"Day '{day}' not found in DAYS_DICT")
 
-    def create_hour(self, hour_part):
+    def create_hour(self, hour_part: str) -> Hour:
         """
         Retrieves the hour part from the HOURS_DICT.
 
@@ -177,7 +186,9 @@ class InputFormatter:
         except KeyError:
             raise HourNotFound(f"Hour part '{hour_part}' not found in HOURS_DICT")
 
-    def _create_delivery_date(self, week_part, day, hour_part):
+    def _create_delivery_date(
+        self, week_part: str, day: str, hour_part: str
+    ) -> DeliveryDate:
         """
         Creates a DeliveryDate object.
 
@@ -201,7 +212,7 @@ class InputFormatter:
         except (WeekNotFound, DayNotFound, HourNotFound) as e:
             raise ValueError(f"Failed to create DeliveryDate: {e}")
 
-    def _availability_dates(self, row: pd.Series):
+    def _availability_dates(self, row: pd.Series) -> List[DeliveryDate]:
         """
         Extracts availability dates from a DataFrame row.
 
@@ -222,7 +233,7 @@ class InputFormatter:
                         )
         return dates
 
-    def groups(self):
+    def groups(self) -> List[FinalStateGroup]:
         """
         Generates a list of `FinalStateGroup` objects from the DataFrame.
 
@@ -244,7 +255,7 @@ class InputFormatter:
         )
         return groups
 
-    def tutors(self):
+    def tutors(self) -> List[FinalStateTutor]:
         """
         Generates a list of `FinalStateTutor` objects from the DataFrame.
 
