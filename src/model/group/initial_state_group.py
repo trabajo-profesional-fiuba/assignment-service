@@ -1,11 +1,11 @@
+from typing import List
 from src.model.group.base_group import BaseGroup
 from src.model.topic import Topic
-from src.model.tutor.initial_state_tutor import InitialStateTutor
 
 
 class InitialStateGroup(BaseGroup):
 
-    def __init__(self, id: str, topics):
+    def __init__(self, id: str, topics: List[Topic]) -> None:
         """
         Initializes the class with an id and a list of topics.
 
@@ -20,18 +20,15 @@ class InitialStateGroup(BaseGroup):
         """
         super().__init__(id)
         self._topics = topics
-        self._tutor = None
 
     @property
-    def topics(self):
+    def topics(self) -> List[Topic]:
         """
-        Gets the dict of topics and its given preferences.
-
-        Returns a dict with topics.
+        Returns a list of topics.
         """
         return self._topics
 
-    def cost_of(self, topic: Topic):
+    def cost_of(self, topic: Topic) -> int:
         """
         Calculates the cost of a given topic.
 
@@ -39,15 +36,10 @@ class InitialStateGroup(BaseGroup):
             - topic: The topic for which the cost is calculated.
 
         Returns the group's cost for the given topic.
+
+        The cost is determined by retrieving the cost value
+        associated with the topic's identifier from the group's
+        list of topics.
         """
         id = int(topic.id[1:])
         return self._topics[id - 1]
-
-    def assign_tutor(self, tutor: InitialStateTutor):
-        """
-        Assigns a tutor to the group.
-
-        Args:
-            tutor: The tutor to be assigned to the group.
-        """
-        self._tutor = tutor

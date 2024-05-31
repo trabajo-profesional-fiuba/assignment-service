@@ -1,9 +1,10 @@
+from typing import List
 from src.model.group.base_group import BaseGroup
-
+from src.model.delivery_date.delivery_date import DeliveryDate
 
 class FinalStateGroup(BaseGroup):
 
-    def __init__(self, id: str, available_dates: list, tutor_id: str):
+    def __init__(self, id: str, available_dates: List[DeliveryDate], tutor_id: str) -> None:
         """
         Initializes the class with an id and a list of available_dates.
 
@@ -19,9 +20,9 @@ class FinalStateGroup(BaseGroup):
         self._tutor_id = tutor_id
 
     @property
-    def tutor_id(self):
+    def tutor_id(self) -> str:
         return self._tutor_id
 
     @property
-    def available_dates(self):
+    def available_dates(self) -> List[DeliveryDate]:
         return self._available_dates

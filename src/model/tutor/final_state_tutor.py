@@ -1,6 +1,10 @@
-class FinalStateTutor:
+from typing import List
+from src.model.tutor.base_tutor import BaseTutor
+from src.model.delivery_date.delivery_date import DeliveryDate
 
-    def __init__(self, tutor_id: str, available_dates: list):
+class FinalStateTutor(BaseTutor):
+
+    def __init__(self, id: str, available_dates: List[DeliveryDate]) -> None:
         """
         Initializes the class with an id and a list of available_dates.
 
@@ -11,13 +15,9 @@ class FinalStateTutor:
         Attributes:
             _available_dates: Stores the list of `DeliveryDate`.
         """
-        self._id = tutor_id
+        super().__init__(id)
         self._available_dates = available_dates
 
     @property
-    def id(self):
-        return self._id
-
-    @property
-    def available_dates(self):
+    def available_dates(self) -> List[DeliveryDate]:
         return self._available_dates
