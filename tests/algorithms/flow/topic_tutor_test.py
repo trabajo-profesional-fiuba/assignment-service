@@ -1,5 +1,5 @@
 """Module testing logic, performance and scalability of max flow min cost algorithm
-when assigning topics and tutors to groups."""
+when assigning topics and tutors to groups.
 
 import pytest
 import time
@@ -18,8 +18,8 @@ class TestGroupTopicTutorFlowSolver:
     # ------------ Logic Tests ------------
     @pytest.mark.unit
     def test_more_groups_than_tutors_without_enough_capacity(self):
-        """Testing that tutors do not get all groups in order not to exceed their
-        capacities."""
+        Testing that tutors do not get all groups in order not to exceed their
+        capacities.
         group_costs = [
             [1, 2, 3, 4, 4, 4],  # groups as rows
             [4, 4, 4, 1, 2, 3],  # topics as columns
@@ -51,7 +51,7 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_more_groups_than_tutors_but_with_enough_capacity(self):
-        """Testing that tutors get all groups without exceeding their capacities."""
+        Testing that tutors get all groups without exceeding their capacities.
         group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
         tutors_capacities = [1, 2]
         topics_tutors_capacities = [[3, 3, 0, 0, 0, 0], [0, 0, 3, 3, 3, 3]]
@@ -73,7 +73,7 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities(self):
-        """Testing that tutors get all groups without exceeding their capacities."""
+        Testing that tutors get all groups without exceeding their capacities.
         group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
         tutors_capacities = [1, 1, 1]
         topics_tutors_capacities = [
@@ -104,8 +104,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities(self):
-        """Testing that groups are distributed between tutors in order not to
-        exceed their capacities."""
+        Testing that groups are distributed between tutors in order not to
+        exceed their capacities.
         group_costs = [
             [1, 2, 3, 4, 4, 4],
             [4, 4, 4, 1, 2, 3],
@@ -138,8 +138,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_equal_groups_and_topics_so_every_group_is_assigned_to_one_topic(self):
-        """Testing all groups are assigned to one topic when there are enough
-        tutors with enough capacities."""
+        Testing all groups are assigned to one topic when there are enough
+        tutors with enough capacities.
         group_costs = [
             [1, 2],
             [4, 4],
@@ -169,8 +169,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_more_groups_than_topics_but_tutors_with_enough_capacity(self):
-        """Testing all groups are assigned to one topic when there are more groups than
-        topics but tutors with enough capacities."""
+        Testing all groups are assigned to one topic when there are more groups than
+        topics but tutors with enough capacities.
         group_costs = [
             [1],
             [4],
@@ -194,8 +194,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_more_groups_but_tutor_with_enough_capacity(self):
-        """Testing all groups are assigned to one topic when there are more groups than
-        topics and tutors but tutor with enough capacity."""
+        Testing all groups are assigned to one topic when there are more groups than
+        topics and tutors but tutor with enough capacity.
         group_costs = [
             [1],
             [4],
@@ -223,8 +223,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_group(self):
-        """Testing only one topic is assigned to every group when there are more
-        groups than topics."""
+        Testing only one topic is assigned to every group when there are more
+        groups than topics.
         group_costs = [
             [1, 2, 1, 2],
             [1, 2, 1, 2],
@@ -259,8 +259,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_groups_with_same_preferences_and_tutors_with_capacity(self):
-        """Testing groups with same preferences and costs are assigned to the same topic
-        since it is assigned to tutors that has enough capacity."""
+        Testing groups with same preferences and costs are assigned to the same topic
+        since it is assigned to tutors that has enough capacity.
         group_costs = [
             [1, 2],
             [1, 2],
@@ -290,9 +290,9 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_groups_with_same_preferences_but_tutor_capacity_not_enough(self):
-        """Testing groups with same preferences and costs are not assigned
+        Testing groups with same preferences and costs are not assigned
         to the same topic which is assigned to only one tutor and this
-        tutor does not have enough capacity."""
+        tutor does not have enough capacity.
         group_costs = [
             [1, 2],
             [1, 2],
@@ -323,8 +323,8 @@ class TestGroupTopicTutorFlowSolver:
     # ------------ Quality Tests ------------
     @pytest.mark.unit
     def test_two_groups_with_different_preferences(self):
-        """Testing two groups with different preferences and can not be assigned
-        a topic with low preference."""
+        Testing two groups with different preferences and can not be assigned
+        a topic with low preference.
         group_costs = [
             [1, 2, 3],  # g1 preferences: t1, t2, t3
             [2, 1, 3],  # g2 preferences: t2, t1, t3
@@ -356,8 +356,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.unit
     def test_more_groups_with_different_preferences(self):
-        """Testing a group can not be assigned a topic with low preference if
-        the topic that it was chosen is available."""
+        Testing a group can not be assigned a topic with low preference if
+        the topic that it was chosen is available.
         group_costs = [
             [1, 2, 3],  # g1 preferences: t1, t2, t3
             [2, 1, 3],  # g2 preferences: t2, t1, t3
@@ -392,7 +392,7 @@ class TestGroupTopicTutorFlowSolver:
     # ------------ Performance and Scalability Tests ------------
     @pytest.mark.performance
     def test_four_groups_and_topics(self):
-        """Testing if the algorithm is overhead with four groups and topics."""
+        Testing if the algorithm is overhead with four groups and topics.
         num_groups = 4
         num_topics = 4
         num_tutors = 2
@@ -428,7 +428,7 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.performance
     def test_ten_groups_and_topics(self):
-        """Testing if the algorithm is overhead with ten groups and topics."""
+        Testing if the algorithm is overhead with ten groups and topics.
         num_groups = 10
         num_topics = 10
         num_tutors = 5
@@ -464,7 +464,7 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.performance
     def test_twenty_groups_and_topics(self):
-        """Testing if the algorithm is overhead with twenty groups and topics."""
+        Testing if the algorithm is overhead with twenty groups and topics.
         num_groups = 20
         num_topics = 20
         num_tutors = 10
@@ -500,7 +500,7 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.performance
     def test_forty_groups_and_topics(self):
-        """Testing if the algorithm is overhead with forty groups and topics."""
+        Testing if the algorithm is overhead with forty groups and topics.
         num_groups = 40
         num_topics = 40
         num_tutors = 20
@@ -536,7 +536,7 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.performance
     def test_eighty_groups_and_topics(self):
-        """Testing if the algorithm is overhead with eighty groups and topics."""
+        Testing if the algorithm is overhead with eighty groups and topics.
         num_groups = 80
         num_topics = 80
         num_tutors = 40
@@ -572,8 +572,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.performance
     def test_one_hundred_and_sixty_groups_and_topics(self):
-        """Testing if the algorithm is overhead with one hundred and sixty groups
-        and topics."""
+        Testing if the algorithm is overhead with one hundred and sixty groups
+        and topics.
         num_groups = 160
         num_topics = 160
         num_tutors = 80
@@ -610,8 +610,8 @@ class TestGroupTopicTutorFlowSolver:
 
     @pytest.mark.performance
     def test_three_hundred_and_twenty_groups_and_topics(self):
-        """Testing if the algorithm is overhead with three hundred and twenty groups
-        and topics."""
+        Testing if the algorithm is overhead with three hundred and twenty groups
+        and topics.
         num_groups = 320
         num_topics = 320
         num_tutors = 160
@@ -645,3 +645,4 @@ class TestGroupTopicTutorFlowSolver:
             end_time - start_time,
             "seconds",
         )
+"""

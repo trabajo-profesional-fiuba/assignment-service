@@ -1,11 +1,10 @@
-from src.model.group.base_group import BaseGroup
 from src.model.topic import Topic
-from src.model.tutor import Tutor
 
 
-class InitialStateGroup(BaseGroup):
 
-    def __init__(self, id: str, topics):
+class InitialStateGroup():
+
+    def __init__(self, topics):
         """
         Initializes the class with an id and a list of topics.
 
@@ -18,9 +17,8 @@ class InitialStateGroup(BaseGroup):
             _tutor: Initially set to None, this will hold the
             tutor assigned to the group.
         """
-        super().__init__(id)
         self._topics = topics
-        self._tutor = None
+
 
     @property
     def topics(self):
@@ -31,7 +29,7 @@ class InitialStateGroup(BaseGroup):
         """
         return self._topics
 
-    def cost_of(self, topic: Topic):
+    def preference_of(self, topic: Topic):
         """
         Calculates the cost of a given topic.
 
@@ -40,14 +38,19 @@ class InitialStateGroup(BaseGroup):
 
         Returns the group's cost for the given topic.
         """
-        id = int(topic.id[1:])
-        return self._topics[id - 1]
+        for t in self._topics:
+            if topic.id == t.id:
+                return t.cost
 
-    def assign_tutor(self, tutor: Tutor):
+
+    def assign(self, tutor: Tutor, group):
         """
         Assigns a tutor to the group.
+        Double-Distpatch is performed
 
         Args:
             tutor: The tutor to be assigned to the group.
         """
-        self._tutor = tutor
+        group.assign_tutor(tutor)
+        
+
