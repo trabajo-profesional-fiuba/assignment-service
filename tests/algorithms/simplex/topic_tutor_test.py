@@ -4,7 +4,7 @@ when assigning topics and tutors to groups.
 import pytest
 import time
 
-from src.algorithms.simplex.tutor_topics import TopicTutorAssignmentSimplexSolver
+from src.algorithms.tutor_topics import TopicTutorAssignmentSimplexSolver
 from tests.algorithms.helper import TestHelper
 from src.model.formatter.formatter import ResultFormatter
 
