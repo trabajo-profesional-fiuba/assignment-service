@@ -49,7 +49,7 @@ class DeliveryFlowSolver(DeliverySolver):
         edges = []
         for date in possible_dates:
             date_label = date.label()
-            edges.append((date, "t", {"capacity": capacity, "cost": 1}))
+            edges.append((date_label, "t", {"capacity": capacity, "cost": 1}))
 
         return edges
 

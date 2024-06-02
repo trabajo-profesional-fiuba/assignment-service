@@ -90,3 +90,23 @@ class TestDeliveryFlowSolver:
         # Assert
 
         assert all(e in result for e in expected_edges)
+
+    @pytest.mark.unit
+    def test_dates_to_sink_edges(self):
+        # Arrange
+        possible_dates = [self.dates[0], self.dates[1],
+                          self.dates[2], self.dates[3]]
+        delivery_flow_solver = DeliveryFlowSolver([], possible_dates, None, [], [])
+        expected_edges = [
+            (self.dates[0].label(), "t", {"capacity": 1, "cost": 1}),
+            (self.dates[1].label(), "t", {"capacity": 1, "cost": 1}),
+            (self.dates[2].label(), "t", {"capacity": 1, "cost": 1}),
+            (self.dates[3].label(), "t", {"capacity": 1, "cost": 1}),
+        ]
+
+        # Act
+        result = delivery_flow_solver._create_sink_edges(possible_dates, 1)
+
+        # Assert
+
+        assert all(e in result for e in expected_edges)
