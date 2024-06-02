@@ -145,3 +145,27 @@ class TestDeliveryFlowSolver:
 
         #Assert
         assert all(graph.has_edge(e[0], e[1]) for e in expected_edges)
+
+    @pytest.mark.unit
+    def test_max_flow_min_cost(self):
+        # Arrange
+        g1 = Group(1, None)
+        g2 = Group(2, None)
+        g3 = Group(3, None)
+
+        g1.add_avaliable_dates([self.dates[0]])
+        g2.add_avaliable_dates([self.dates[1]])
+        g3.add_avaliable_dates([self.dates[3]])
+        groups = [g1, g2, g3]
+
+        possible_dates = [self.dates[0], self.dates[1],
+                          self.dates[2], self.dates[3]]
+
+        delivery_flow_solver = DeliveryFlowSolver(groups, [], None, possible_dates, [])
+        graph = delivery_flow_solver.groups_assigment_flow()
+
+        result = delivery_flow_solver._max_flow_min_cost(graph)
+
+        assert result["1"][self.dates[0].label()] == 1
+        assert result["2"][self.dates[1].label()] == 1
+        assert result["3"][self.dates[3].label()] == 1
