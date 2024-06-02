@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, List, Tuple
+from typing import Dict, list, Tuple
 from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.model.group.initial_state_group import InitialStateGroup
 from src.model.tutor.initial_state_tutor import InitialStateTutor
@@ -8,7 +8,7 @@ from src.model.topic import Topic
 
 class TestHelper:
 
-    def create_topics_for_groups(costs: List[int]) -> Dict[str, int]:
+    def create_topics_for_groups(costs: list[int]) -> Dict[str, int]:
         """
         Creates a dict of topics with its given costs assigned by the group.
 
@@ -22,8 +22,8 @@ class TestHelper:
         }
 
     def create_groups(
-        self, num_groups: int, topics: List[List[int]]
-    ) -> List[InitialStateGroup]:
+        self, num_groups: int, topics: list[list[int]]
+    ) -> list[InitialStateGroup]:
         """
         Creates a list of `InitialStateGroup`.
 
@@ -39,7 +39,7 @@ class TestHelper:
             for i in range(1, num_groups + 1)
         ]
 
-    def create_topics(self, num_topics: int) -> List[Topic]:
+    def create_topics(self, num_topics: int) -> list[Topic]:
         """
         Creates a list of `Topic`.
 
@@ -53,10 +53,10 @@ class TestHelper:
     def create_tutors(
         self,
         num_tutors: int,
-        group_capacities: List[int],
-        topics_capacities: List[List[int]],
-        topics_costs: List[List[int]],
-    ) -> List[InitialStateTutor]:
+        group_capacities: list[int],
+        topics_capacities: list[list[int]],
+        topics_costs: list[list[int]],
+    ) -> list[InitialStateTutor]:
         """
         Creates a list of tutors.
 
@@ -84,7 +84,7 @@ class TestHelper:
 
     def create_matrix(
         self, rows: int, columns: int, is_cost: bool, def_value: int
-    ) -> List[List[int]]:
+    ) -> list[list[int]]:
         """
         Creates a random cost matrix.
 
@@ -105,7 +105,7 @@ class TestHelper:
                 matrix[row, random_col] = np.random.choice([1, 2, 3])
         return matrix
 
-    def create_list(self, length: int, def_value: int) -> List[int]:
+    def create_list(self, length: int, def_value: int) -> list[int]:
         """
         Creates a capacity list.
 

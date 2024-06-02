@@ -4,7 +4,7 @@ of groups to topics and tutors.
 """
 
 import networkx as nx
-from typing import List, Dict, Tuple
+from typing import list, Dict, Tuple
 from src.constants import SOURCE_NODE_ID, SINK_NODE_ID
 from src.model.group.initial_state_group import InitialStateGroup
 from src.model.topic import Topic
@@ -16,36 +16,36 @@ class TopicTutorAssignmentFlowSolver:
     A solver for assigning groups to topics and tutors using a flow-based algorithm.
 
     Attributes:
-        groups (List[InitialStateGroup]): A list of group objects to be assigned.
-        topics (List[Topic]): A list of topic objects to be assigned to groups.
-        tutors (List[InitialStateTutor]): A list of tutor objects to be assigned to
+        groups (list[InitialStateGroup]): A list of group objects to be assigned.
+        topics (list[Topic]): A list of topic objects to be assigned to groups.
+        tutors (list[InitialStateTutor]): A list of tutor objects to be assigned to
         topics.
     """
 
     def __init__(
         self,
-        groups: List[InitialStateGroup],
-        topics: List[Topic],
-        tutors: List[InitialStateTutor],
+        groups: list[InitialStateGroup],
+        topics: list[Topic],
+        tutors: list[InitialStateTutor],
     ) -> None:
         """
         Initializes the solver with the provided groups, topics, and tutors.
 
         Args:
-            groups (List[InitialStateGroup]): The groups to be assigned.
-            topics (List[Topic]): The topics to be assigned to groups.
-            tutors (List[InitialStateTutor]): The tutors to be assigned to topics.
+            groups (list[InitialStateGroup]): The groups to be assigned.
+            topics (list[Topic]): The topics to be assigned to groups.
+            tutors (list[InitialStateTutor]): The tutors to be assigned to topics.
         """
         self._groups = groups
         self._topics = topics
         self._tutors = tutors
 
-    def _create_source_groups_edges(self) -> List[Tuple[str, str, Dict[str, int]]]:
+    def _create_source_groups_edges(self) -> list[Tuple[str, str, Dict[str, int]]]:
         """
         Defines edges from the source node to group nodes.
 
         Returns:
-            List[Tuple[str, str, Dict[str, int]]]: A list of edges with capacities
+            list[Tuple[str, str, Dict[str, int]]]: A list of edges with capacities
             and costs.
         """
         return [
@@ -53,12 +53,12 @@ class TopicTutorAssignmentFlowSolver:
             for group in self._groups
         ]
 
-    def _create_groups_topics_edges(self) -> List[Tuple[str, str, Dict[str, int]]]:
+    def _create_groups_topics_edges(self) -> list[Tuple[str, str, Dict[str, int]]]:
         """
         Defines edges from group nodes to topic nodes.
 
         Returns:
-            List[Tuple[str, str, Dict[str, int]]]: A list of edges with capacities
+            list[Tuple[str, str, Dict[str, int]]]: A list of edges with capacities
             and costs.
         """
         group_topic_edges = []
@@ -76,12 +76,12 @@ class TopicTutorAssignmentFlowSolver:
                 )
         return group_topic_edges
 
-    def _create_topics_tutors_edges(self) -> List[Tuple[str, str, Dict[str, int]]]:
+    def _create_topics_tutors_edges(self) -> list[Tuple[str, str, Dict[str, int]]]:
         """
         Defines edges from topic nodes to tutor nodes.
 
         Returns:
-            List[Tuple[str, str, Dict[str, int]]]: A list of edges with capacities
+            list[Tuple[str, str, Dict[str, int]]]: A list of edges with capacities
             and costs.
         """
         topic_tutor_edges = []
@@ -99,12 +99,12 @@ class TopicTutorAssignmentFlowSolver:
                 )
         return topic_tutor_edges
 
-    def _create_tutors_sink_edges(self) -> List[Tuple[str, str, Dict[str, int]]]:
+    def _create_tutors_sink_edges(self) -> list[Tuple[str, str, Dict[str, int]]]:
         """
         Defines edges from tutor nodes to the sink node.
 
         Returns:
-            List[Tuple[str, str, Dict[str, int]]]: A list of edges with capacities
+            list[Tuple[str, str, Dict[str, int]]]: A list of edges with capacities
             and costs.
         """
         tutor_sink_edges = [
@@ -113,7 +113,7 @@ class TopicTutorAssignmentFlowSolver:
         ]
         return tutor_sink_edges
 
-    def _create_edges(self) -> List[Tuple[str, str, Dict[str, int]]]:
+    def _create_edges(self) -> list[Tuple[str, str, Dict[str, int]]]:
         """
         Creates all the edges needed to construct the digraph.
 
@@ -121,7 +121,7 @@ class TopicTutorAssignmentFlowSolver:
         topic nodes to tutor nodes, and tutor nodes to the sink node.
 
         Returns:
-            List[Tuple[str, str, Dict[str, int]]]: A list of all edges in the graph.
+            list[Tuple[str, str, Dict[str, int]]]: A list of all edges in the graph.
         """
         group_topic_edges = self._create_groups_topics_edges()
         source_groups_edges = self._create_source_groups_edges()
@@ -134,13 +134,13 @@ class TopicTutorAssignmentFlowSolver:
             + tutor_sink_edges
         )
 
-    def _create_graph(self, edges: List[Tuple[str, str, Dict[str, int]]]) -> nx.DiGraph:
+    def _create_graph(self, edges: list[Tuple[str, str, Dict[str, int]]]) -> nx.DiGraph:
         """
         Creates a directed graph (digraph) with the given edges, including costs
         and capacities.
 
         Args:
-            edges (List[Tuple[str, str, Dict[str, int]]]): The edges to add to
+            edges (list[Tuple[str, str, Dict[str, int]]]): The edges to add to
             the graph.
 
         Returns:

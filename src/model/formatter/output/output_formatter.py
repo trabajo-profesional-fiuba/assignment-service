@@ -1,7 +1,7 @@
-from typing import Union, List, Tuple
 from src.model.formatter.output.flow_formatter import FlowOutputFormatter
 from src.model.formatter.output.simplex_formatter import SimplexOutputFormatter
 from src.exceptions import ResultFormatNotFound
+from typing import Tuple, Union
 
 
 class OutputFormatter:
@@ -21,7 +21,7 @@ class OutputFormatter:
         """
         pass
 
-    def format_result(self, result: Union[dict, list]) -> List[Tuple[str, str, str]]:
+    def format_result(self, result: Union[dict, list]) -> list[Tuple[str, str, str]]:
         """
         Formats the algorithm result into a standardized structure.
 

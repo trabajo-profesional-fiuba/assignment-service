@@ -7,9 +7,9 @@ class TopicTutorAssignmentSimplexSolver:
         Constructor of the class.
 
         Args:
-            - groups: List of groups.
-            - tutors: List of tutors.
-            - topics: List of topics.
+            - groups: list of groups.
+            - tutors: list of tutors.
+            - topics: list of topics.
         """
         self._groups = groups
         self._topics = topics
@@ -151,9 +151,9 @@ class TopicTutorAssignmentSimplexSolver:
         Solve the optimization problem using the simplex method.
 
         Args:
-            - groups: List of groups.
-            - tutors: List of tutors.
-            - topics: List of topics.
+            - groups: list of groups.
+            - tutors: list of tutors.
+            - topics: list of topics.
 
         Returns a dictionary that represents the result of the assignment.
         """

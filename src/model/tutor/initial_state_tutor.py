@@ -1,6 +1,6 @@
 from src.model.topic import Topic
 from src.model.tutor.base_tutor import BaseTutor
-from typing import Dict, List
+from typing import Dict, list
 
 
 class InitialStateTutor(BaseTutor):
@@ -13,7 +13,7 @@ class InitialStateTutor(BaseTutor):
         topics (dict): A dictionary containing costs and capacities for each topic.
     """
 
-    def __init__(self, id: str, capacity: int, topics: Dict[str, List[int]]) -> None:
+    def __init__(self, id: str, capacity: int, topics: Dict[str, list[int]]) -> None:
         """
         Initializes an InitialStateTutor object.
 
@@ -32,7 +32,7 @@ class InitialStateTutor(BaseTutor):
         return self._capacity
 
     @property
-    def topics(self) -> Dict[str, List[int]]:
+    def topics(self) -> Dict[str, list[int]]:
         """Returns the topics dictionary containing costs and capacities."""
         return self._topics
 

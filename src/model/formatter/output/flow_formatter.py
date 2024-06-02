@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 from src.constants import GROUP_ID, TOPIC_ID
 
 
@@ -96,7 +96,7 @@ class FlowOutputFormatter:
 
     def get_result(
         self, result: Dict[str, Dict[str, int]]
-    ) -> List[Tuple[str, str, str]]:
+    ) -> list[Tuple[str, str, str]]:
         """
         Formats the flow algorithm result into a standardized structure.
 
@@ -108,7 +108,7 @@ class FlowOutputFormatter:
             algorithm.
 
         Returns:
-            List[Tuple[str, str, str]]: A list of tuples representing the assignments in
+            list[Tuple[str, str, str]]: A list of tuples representing the assignments in
             the format (group, topic, tutor).
         """
         groups_topics = self._get_groups_topics(result)

@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import List, Tuple
+from typing import Tuple
 
 from src.model.delivery_date.delivery_date import DeliveryDate
 from src.model.delivery_date.hour import Hour
@@ -119,7 +119,7 @@ class InputFormatter:
         hour_part = columns_parts[1].replace("]", "").strip()
         return week_part, hour_part
 
-    def _process_day_values(self, value: str) -> List[str]:
+    def _process_day_values(self, value: str) -> list[str]:
         """
         Processes the day values from a string.
 
@@ -211,7 +211,7 @@ class InputFormatter:
         except (WeekNotFound, DayNotFound, HourNotFound) as e:
             raise ValueError(f"Failed to create DeliveryDate: {e}")
 
-    def _availability_dates(self, row: pd.Series) -> List[DeliveryDate]:
+    def _availability_dates(self, row: pd.Series) -> list[DeliveryDate]:
         """
         Extracts availability dates from a DataFrame row.
 
@@ -232,7 +232,7 @@ class InputFormatter:
                         )
         return dates
 
-    def groups(self) -> List[FinalStateGroup]:
+    def groups(self) -> list[FinalStateGroup]:
         """
         Generates a list of `FinalStateGroup` objects from the DataFrame.
 
@@ -254,7 +254,7 @@ class InputFormatter:
         )
         return groups
 
-    def tutors(self) -> List[FinalStateTutor]:
+    def tutors(self) -> list[FinalStateTutor]:
         """
         Generates a list of `FinalStateTutor` objects from the DataFrame.
 

@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple
 
 
 class SimplexOutputFormatter:
@@ -16,7 +16,7 @@ class SimplexOutputFormatter:
         """
         pass
 
-    def get_result(self, result: List[str]) -> List[Tuple[str, str, str]]:
+    def get_result(self, result: list[str]) -> list[Tuple[str, str, str]]:
         """
         Formats the simplex algorithm result into a standardized structure.
 
@@ -25,10 +25,10 @@ class SimplexOutputFormatter:
         as tuples (group, topic, tutor).
 
         Args:
-            result (List[str]): The list of strings representing assignments.
+            result (list[str]): The list of strings representing assignments.
 
         Returns:
-            List[Tuple[str, str, str]]: A list of tuples representing the assignments
+            list[Tuple[str, str, str]]: A list of tuples representing the assignments
             in the format (group, topic, tutor).
         """
         assignments = []
