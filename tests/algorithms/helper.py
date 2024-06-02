@@ -3,7 +3,7 @@
 import numpy as np
 from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.model.group.initial_state_group import InitialStateGroup
-from src.model.tutor import Tutor
+from src.model.tutor.tutor import Tutor
 from src.model.topic import Topic
 
 
