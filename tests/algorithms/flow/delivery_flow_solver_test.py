@@ -198,3 +198,31 @@ class TestDeliveryFlowSolver:
         assert sum(result["2"].values()) == 1
         assert sum(result["3"].values()) == 1
         assert sum(result["4"].values()) == 1
+
+
+    @pytest.mark.unit
+    def test_evaluators_week_days_edges(self):
+        # Arrange
+        evaluators = [
+            Evaluator(1, [self.dates[2], self.dates[3]]),
+            Evaluator(2, [self.dates[1]]),
+            Evaluator(3, [self.dates[0]]),
+        ]
+        delivery_flow_solver = DeliveryFlowSolver([], [],None,  [], [])
+
+        expected_edges = [
+            ("1", "2-1", {"capacity": 5, "cost": 1}),
+            ("2-1", self.dates[2].label(),{"capacity": 1, "cost": 1}),
+            ("2-1", self.dates[3].label(),{"capacity": 1, "cost": 1}),
+            ("2", "1-2", {"capacity": 5, "cost": 1}),
+            ("1-2", self.dates[1].label(),{"capacity": 1, "cost": 1}),
+            ("3", "1-3", {"capacity": 5, "cost": 1}),
+            ("1-3", self.dates[0].label(),{"capacity": 1, "cost": 1}),
+        ]
+
+        # Act
+        result = delivery_flow_solver._create_evaluators_week_edges(evaluators)
+
+        # Assert
+
+        assert all(e in result for e in expected_edges)

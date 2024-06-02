@@ -64,7 +64,7 @@ class DeliveryFlowSolver(DeliverySolver):
             weeks = set(d.week for d in dates)
             for week in weeks:
                 week_edge = (
-                    evaluator.id,
+                    f"{evaluator.id}",
                     f"{week}-{evaluator.id}",
                     {"capacity": 5, "cost": 1},
                 )
@@ -73,7 +73,7 @@ class DeliveryFlowSolver(DeliverySolver):
                     if date.week == week:
                         edge = (
                             f"{week}-{evaluator.id}",
-                            key,
+                            date.label(),
                             {"capacity": 1, "cost": 1},
                         )
                         edges.append(edge)
