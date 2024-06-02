@@ -110,3 +110,38 @@ class TestDeliveryFlowSolver:
         # Assert
 
         assert all(e in result for e in expected_edges)
+
+    @pytest.mark.unit
+    def test_group_graph(self):
+
+        # Arrange
+        g1 = Group(1, None)
+        g2 = Group(2, None)
+        g3 = Group(3, None)
+
+        g1.add_avaliable_dates([self.dates[0], self.dates[1]])
+        g2.add_avaliable_dates([self.dates[2]])
+        g3.add_avaliable_dates([self.dates[3]])
+        groups = [g1, g2, g3]
+        possible_dates = [self.dates[0], self.dates[1],
+                          self.dates[2], self.dates[3]]
+
+        delivery_flow_solver = DeliveryFlowSolver(groups, [], None, possible_dates, [])
+        expected_edges = [
+            ("s", "1"),
+            ("s", "2"),
+            ("s", "3"),
+            ("1", self.dates[0].label()),
+            ("1", self.dates[1].label()),
+            ("2", self.dates[2].label()),
+            ("3", self.dates[3].label()),
+            (self.dates[0].label(), "t"),
+            (self.dates[1].label(), "t"),
+            (self.dates[2].label(), "t"),
+            (self.dates[3].label(), "t"),
+        ]
+        # Act
+        graph = delivery_flow_solver.groups_assigment_flow()
+
+        #Assert
+        assert all(graph.has_edge(e[0], e[1]) for e in expected_edges)
