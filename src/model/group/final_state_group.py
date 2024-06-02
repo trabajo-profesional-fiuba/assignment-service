@@ -1,15 +1,16 @@
 from src.model.utils.delivery_date import DeliveryDate
 
+
 class FinalStateGroup:
 
     def __init__(self, avaliable_dates):
         self._avaliable_dates = avaliable_dates
         self._assigned_dates = []
-    
+
     @property
     def avaliable_dates(self):
         return self._avaliable_dates
-        
+
     def assign(self, date: DeliveryDate, group):
         """
         Assigns a date to the group.
@@ -22,4 +23,3 @@ class FinalStateGroup:
 
     def assign_date(self, date):
         self._assigned_dates.append(date)
-    

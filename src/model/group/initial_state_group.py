@@ -1,7 +1,8 @@
 from src.model.topic import Topic
 from src.model.tutor.tutor import Tutor
 
-class InitialStateGroup():
+
+class InitialStateGroup:
 
     def __init__(self, topics):
         """
@@ -17,7 +18,6 @@ class InitialStateGroup():
             tutor assigned to the group.
         """
         self._topics = topics
-
 
     @property
     def topics(self):
@@ -41,7 +41,6 @@ class InitialStateGroup():
             if topic.id == t.id:
                 return t.cost
 
-
     def assign(self, tutor: Tutor, group):
         """
         Assigns a tutor to the group.
@@ -51,5 +50,3 @@ class InitialStateGroup():
             tutor: The tutor to be assigned to the group.
         """
         group.assign_tutor(tutor)
-        
-

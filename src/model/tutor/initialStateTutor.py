@@ -2,7 +2,7 @@ from src.model.tutor.tutor import Tutor
 
 
 class InitialStateTutor(Tutor):
-    
+
     def __init__(self, id, email, name, global_capacity, topics):
         super().__init__(id, email, name)
         self._topics = topics
@@ -15,7 +15,7 @@ class InitialStateTutor(Tutor):
     @property
     def topics(self):
         return self._topics
-    
+
     def preference_of(self, topic):
         for t in self._topics:
             if topic.id == t.id:
@@ -25,4 +25,3 @@ class InitialStateTutor(Tutor):
         for t in self._topics:
             if topic.id == t.id:
                 return t.capacity
-        
