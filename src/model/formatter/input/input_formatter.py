@@ -78,33 +78,32 @@ class InputFormatter:
         """
         return GROUP_ID + str(group_id)
 
-    def _tutor_id(self, tutor_surname: str) -> str:
+    def _tutor_id(self, tutor_lastname: str) -> str:
         """
-        Generates a tutor identifier.
+        Generates a unique tutor identifier based on their lastname.
 
         Params:
-            - tutor_surname (str): The surname of the tutor.
+            - tutor_lastname (str): The lastname of the tutor.
 
         Returns (str): The formatted tutor identifier.
 
         Raises:
-            - TutorNotFound: If the tutor surname is not found in the DataFrame.
+            - TutorNotFound: If the tutor lastname is not found in the DataFrame.
 
-        This method generates a unique identifier for a tutor based on their surname.
-        It retrieves all unique surnames from the DataFrame, sorts them alphabetically,
-        and then searches for the index of the provided tutor's surname in the sorted
-        list.
-        If the surname is found, the method constructs the tutor identifier by
-        concatenating the constant 'TUTOR_ID' with the index plus one. If the surname
-        is not found, it raises a TutorNotFound exception.
+        This method extracts the last name (assuming the last name is the last word
+        of the full name) from the tutors DataFrame.
+        It converts the last names to lowercase, gets the unique values of the last
+        names, sorts the unique last names alphabetically.
         """
-        tutors = self._tutors_df["Nombre y Apellido"].unique()
+        tutors = self._tutors_df["Nombre y Apellido"].str.split().str[-1].str.strip()
+        tutors = tutors.str.lower()
+        tutors = tutors.unique()
         tutors.sort()
-        index = np.where([tutor_surname in tutor for tutor in tutors])[0]
+        index = np.where([tutor_lastname.lower() in tutor for tutor in tutors])[0]
         if len(index) > 0:
             return TUTOR_ID + str(index[0] + 1)
         else:
-            raise TutorNotFound(f"Tutor '{tutor_surname}' not found.")
+            raise TutorNotFound(f"Tutor '{tutor_lastname}' not found.")
 
     def _extract_week_hour_parts(self, column: str) -> Tuple[str, str]:
         """

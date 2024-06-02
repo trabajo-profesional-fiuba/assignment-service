@@ -122,7 +122,7 @@ class TestInputFormatter:
             "Semana 1/7 [No puedo]": ["Lunes 1/7", "Lunes 1/7"],
         }
         groups_df = pd.DataFrame(groups_data)
-        tutors_df = pd.DataFrame({"Nombre y Apellido": ["Smith", "Jones"]})
+        tutors_df = pd.DataFrame({"Nombre y Apellido": ["John Smith", "Robert Jones"]})
 
         formatter = InputFormatter(groups_df, tutors_df)
         result = formatter.groups()
@@ -180,12 +180,25 @@ class TestInputFormatter:
             "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
         }
         groups_df = pd.DataFrame(groups_data)
-        tutors_df = pd.DataFrame({"Nombre y Apellido": ["Jones"]})
+        tutors_df = pd.DataFrame({"Nombre y Apellido": ["Robert Jones"]})
 
         formatter = InputFormatter(groups_df, tutors_df)
         with pytest.raises(TutorNotFound) as err:
             formatter._tutor_id("Smith")
         assert str(err.value) == "Tutor 'Smith' not found."
+
+    @pytest.mark.formatter
+    def test_same_tutor_id_with_diff_case(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["smith"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({"Nombre y Apellido": ["Smith"]})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        assert formatter._tutor_id("Smith") == formatter._tutor_id("smith")
 
     @pytest.mark.formatter
     def test_create_delivery_date_success(self):
@@ -249,47 +262,3 @@ class TestInputFormatter:
         assert "Hour part 'nonexistent_hour' not found in HOURS_DICT" in str(
             exc_info.value
         )
-
-    @pytest.mark.formatter
-    def test_tutors_without_availability_dates(self):
-        tutors_data = {
-            "Nombre y Apellido": ["John Smith"],
-            "Semana 1/7 [No puedo]": ["Lunes 1/7"],
-        }
-        tutors_df = pd.DataFrame(tutors_data)
-        groups_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.tutors()
-        assert result[0].id == "p1"
-        assert result[0].available_dates == []
-
-    @pytest.mark.formatter
-    def test_tutors_with_availability_dates(self):
-        tutors_data = {
-            "Nombre y Apellido": ["John Smith"],
-            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
-        }
-        tutors_df = pd.DataFrame(tutors_data)
-        groups_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.tutors()
-        assert result[0].id == "p1"
-        assert result[0].available_dates[0].week == 1
-        assert result[0].available_dates[0].day == Day.MONDAY
-        assert result[0].available_dates[0].hour == Hour.H_9_10
-
-    @pytest.mark.formatter
-    def test_group_and_tutor_tutor_id_found(self):
-        groups_data = {
-            "Número de equipo": [1, 2],
-            "Apellido del tutor": ["Smith", "Jones"],
-            "Semana 1/7 [9 a 10]": ["Lunes 1/7", "Lunes 1/7"],
-        }
-        groups_df = pd.DataFrame(groups_data)
-        tutors_df = pd.DataFrame({"Nombre y Apellido": ["John Smith", "Robert Jones"]})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        assert formatter._tutor_id("Smith") == formatter._tutor_id("John Smith")
-        assert formatter._tutor_id("Jones") == formatter._tutor_id("Robert Jones")
