@@ -1,7 +1,7 @@
 import networkx as nx
 from delivery_solver import DeliverySolver
 
-class DeliveryFlowSolver(DeliveryFlowSolver):
+class DeliveryFlowSolver(DeliverySolver):
 
     def __init__(
         self, groups, tutors, formatter, avaliable_dates, evaluators
