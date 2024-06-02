@@ -1,5 +1,5 @@
 import networkx as nx
-from delivery_solver import DeliverySolver
+from src.algorithms.delivery_solver import DeliverySolver
 
 class DeliveryFlowSolver(DeliverySolver):
 
@@ -16,7 +16,7 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         edges = []
         for node in nodes:
-            edge = ("s", node.id, {"capacity": capacity, "cost": 1})
+            edge = ("s", f"{node.id}", {"capacity": capacity, "cost": 1})
             edges.append(edge)
 
         return edges
@@ -141,7 +141,7 @@ class DeliveryFlowSolver(DeliverySolver):
         groups_graph = self.groups_assigment_flow()
         max_flow_min_cost_groups = self._max_flow_min_cost(groups_graph)
 
-        assignment_result = self.formatter.format_delivery_result(max_flow_min_cost_groups,self._tutors, self._groups, self._evaluators)
+        #assignment_result = self.formatter.format_delivery_result(max_flow_min_cost_groups,self._tutors, self._groups, self._evaluators)
 
         return assignment_result
 

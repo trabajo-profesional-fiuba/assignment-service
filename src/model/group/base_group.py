@@ -1,3 +1,5 @@
+from src.model.group.final_state_group import FinalStateGroup
+from src.model.tutor import Tutor
 class Group:
 
     def __init__(self, id, tutor=None):
@@ -32,3 +34,7 @@ class Group:
 
     def is_tutored_by(tutor_id):
         return self._tutor.id == tutor_id
+    
+    def add_avaliable_dates(self, avaliable_dates):
+        final_state = FinalStateGroup(avaliable_dates)
+        self._state = final_state
