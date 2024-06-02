@@ -1,6 +1,5 @@
 from src.model.topic import Topic
-
-
+from src.model.tutor.tutor import Tutor
 
 class InitialStateGroup():
 

@@ -46,7 +46,7 @@ class TopicTutorAssignmentFlowSolver:
                         tutor.id,
                         {
                             "capacity": tutor.capacity_of(topic),
-                            "weight": tutor.cost_of(topic),
+                            "weight": tutor.preference_of(topic),
                         },
                     )
                 )
