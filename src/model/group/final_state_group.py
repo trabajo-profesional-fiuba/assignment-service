@@ -1,5 +1,4 @@
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.tutor import Tutor
 
 
 class FinalStateGroup:

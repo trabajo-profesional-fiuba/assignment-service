@@ -1,5 +1,5 @@
 from src.model.group.final_state_group import FinalStateGroup
-from src.model.tutor import Tutor
+from src.model.tutor.tutor import Tutor
 class Group:
 
     def __init__(self, id, tutor=None):
