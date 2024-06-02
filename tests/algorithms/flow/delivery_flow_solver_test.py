@@ -169,3 +169,32 @@ class TestDeliveryFlowSolver:
         assert result["1"][self.dates[0].label()] == 1
         assert result["2"][self.dates[1].label()] == 1
         assert result["3"][self.dates[3].label()] == 1
+
+
+    @pytest.mark.unit
+    def test_all_groups_have_one_day_assigned(self):
+        # Arrange
+        g1 = Group(1, None)
+        g2 = Group(2, None)
+        g3 = Group(3, None)
+        g4 = Group(4, None)
+
+        g1.add_avaliable_dates([self.dates[0]])
+        g2.add_avaliable_dates([self.dates[1]])
+        g3.add_avaliable_dates([self.dates[3]])
+        g4.add_avaliable_dates([self.dates[2],self.dates[1]])
+
+        groups = [g1, g2, g3, g4]
+
+        possible_dates = [self.dates[0], self.dates[1],
+                          self.dates[2], self.dates[3]]
+
+        delivery_flow_solver = DeliveryFlowSolver(groups, [], None, possible_dates, [])
+        graph = delivery_flow_solver.groups_assigment_flow()
+
+        result = delivery_flow_solver._max_flow_min_cost(graph)
+
+        assert sum(result["1"].values()) == 1
+        assert sum(result["2"].values()) == 1
+        assert sum(result["3"].values()) == 1
+        assert sum(result["4"].values()) == 1
