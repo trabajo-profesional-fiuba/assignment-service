@@ -8,3 +8,7 @@ class Evaluator:
     @property
     def id(self):
         return self._id
+
+    @property
+    def avaliable_dates(self):
+        return self._avaliable_dates
