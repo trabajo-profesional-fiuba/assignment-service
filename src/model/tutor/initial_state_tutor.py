@@ -10,7 +10,7 @@ class InitialStateTutor(Tutor):
 
     @property
     def global_capacity(self):
-        return self._global_capacity_capacity
+        return self._global_capacity
 
     @property
     def topics(self):

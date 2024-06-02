@@ -11,6 +11,10 @@ class Group:
     @property
     def id(self):
         return self._id
+    
+    @property
+    def tutor(self):
+        return self._tutor
 
     @property
     def state(self):
@@ -32,9 +36,9 @@ class Group:
     def assign_date(self, date):
         self._state.assign_date(date)
 
-    def is_tutored_by(tutor_id):
+    def is_tutored_by(self, tutor_id):
         return self._tutor.id == tutor_id
     
-    def add_avaliable_dates(self, avaliable_dates):
-        final_state = FinalStateGroup(avaliable_dates)
+    def add_available_dates(self, available_dates):
+        final_state = FinalStateGroup(available_dates)
         self._state = final_state

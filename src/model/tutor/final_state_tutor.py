@@ -9,8 +9,8 @@ class FinalStateTutor(Tutor):
         self._assigned_dates = []
 
     def assign_date(self, date):
-          self._assigned_dates.append(date)
+        self._assigned_dates.append(date)
     
     @property
     def available_dates(self):
-        self._available_dates
+        return self._available_dates
