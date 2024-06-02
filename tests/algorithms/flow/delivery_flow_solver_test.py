@@ -7,7 +7,6 @@ from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evalutor import Evaluator
 
 
-
 class TestDeliveryFlowSolver:
     dates = [
         DeliveryDate(week=1, day=1, hour=1),
@@ -55,6 +54,38 @@ class TestDeliveryFlowSolver:
 
         # Act
         result = delivery_flow_solver._create_source_edges(evaluators, 35)
+
+        # Assert
+
+        assert all(e in result for e in expected_edges)
+
+    @pytest.mark.unit
+    def test_groups_to_dates_edges(self):
+        # Arrange
+        g1 = Group(1, None)
+        g2 = Group(2, None)
+        g3 = Group(3, None)
+
+        g1.add_avaliable_dates([self.dates[0], self.dates[1]])
+        g2.add_avaliable_dates([self.dates[2]])
+        g3.add_avaliable_dates([self.dates[3]])
+
+        groups = [g1, g2, g3]
+        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
+        delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
+        expected_edges = [
+            ("1", self.dates[0].label(), {
+             "capacity": 1, "cost": 1}),
+            ("1", self.dates[1].label(), {
+             "capacity": 1, "cost": 1}),
+            ("2", self.dates[2].label(), {
+             "capacity": 1, "cost": 1}),
+            ("3", self.dates[3].label(), {
+             "capacity": 1, "cost": 1}),
+        ]
+
+        # Act
+        result = delivery_flow_solver._create_date_edges(groups, possible_dates)
 
         # Assert
 

@@ -40,3 +40,6 @@ class Group:
     def add_avaliable_dates(self, avaliable_dates):
         final_state = FinalStateGroup(avaliable_dates)
         self._state = final_state
+
+    def filter_dates(self, dates: list):
+        return self.state.filter_dates(dates)

@@ -23,3 +23,12 @@ class FinalStateGroup:
 
     def assign_date(self, date):
         self._assigned_dates.append(date)
+
+    def filter_dates(self, dates):
+        labels = [d.label() for d in self._avaliable_dates]
+        possible_dates = []
+        for date in dates:
+            if date.label() in labels:
+                possible_dates.append(date)
+        return possible_dates
+

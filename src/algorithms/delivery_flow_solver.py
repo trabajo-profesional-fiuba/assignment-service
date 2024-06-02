@@ -33,9 +33,9 @@ class DeliveryFlowSolver(DeliverySolver):
                 date_label = date.label()
                 edges.append(
                     (
-                        node.id,
+                        f"{node.id}",
                         date_label,
-                        {"capacity": 1, "cost": node.preference_of(date)},
+                        {"capacity": 1, "cost": 1},
                     )
                 )
         return edges
