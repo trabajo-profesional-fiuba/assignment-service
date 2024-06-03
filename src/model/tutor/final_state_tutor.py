@@ -10,7 +10,7 @@ class FinalStateTutor(Tutor):
 
     def assign_date(self, date):
         self._assigned_dates.append(date)
-    
+
     @property
     def available_dates(self):
         return self._available_dates

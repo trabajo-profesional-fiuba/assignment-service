@@ -9,15 +9,15 @@ class Topic:
     @property
     def id(self):
         return self._id
-    
+
     @property
     def title(self):
         return self._title
-    
+
     @property
     def cost(self):
         return self._cost
-    
+
     @property
     def capacity(self):
         return self._capacity

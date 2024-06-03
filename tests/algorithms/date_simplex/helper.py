@@ -29,9 +29,8 @@ class TestSimplexHelper:
 
         for group in groups:
             group.add_available_dates(available_dates)
-        
+
         return groups
-        
 
     def create_dates(self, num_weeks: int, days_per_week: list, hours_per_day: list):
         """
@@ -62,7 +61,7 @@ class TestSimplexHelper:
 
         Returns: a list of tutors with their with their ids and available dates.
         """
-        
+
         return [
             FinalStateTutor(f"t{i}", "email", "name", available_dates)
             for i in range(1, num_tutors + 1)

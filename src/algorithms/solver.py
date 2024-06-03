@@ -1,4 +1,3 @@
-
 class Solver:
     def __init__(self, groups, tutors, formatter):
         self._groups = groups
@@ -7,4 +6,3 @@ class Solver:
     def solve():
         # this should be an exception then
         pass
-        

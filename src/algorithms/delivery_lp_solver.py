@@ -7,13 +7,17 @@ class DeliveryLPSolver(DeliverySolver):
     def __init__(self, groups, tutors, formatter, avaliable_dates, evaluators):
         super().__init__(groups, tutors, formatter, avaliable_dates)
         self._evaluators = evaluators
-    
+
     def solve(self):
-        solver_tutors = DeliveryTutorsLPSolver(self._avaliable_dates, self._groups, self._tutors)
+        solver_tutors = DeliveryTutorsLPSolver(
+            self._avaliable_dates, self._groups, self._tutors
+        )
         result_tutors = solver_tutors.solve()
-        
-        solver_evaluators = DateEvaluatorsLPSolver(self._avaliable_dates, result_tutors, self._groups, self._evaluators)
+
+        solver_evaluators = DateEvaluatorsLPSolver(
+            self._avaliable_dates, result_tutors, self._groups, self._evaluators
+        )
         result_evaluators = solver_evaluators.solve()
-        
-        # Call formatter 
+
+        # Call formatter
         return result_evaluators
