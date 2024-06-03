@@ -4,7 +4,7 @@ when assigning topics and tutors to groups.
 import pytest
 import time
 
-from src.algorithms.tutor_topics import TopicTutorAssignmentSimplexSolver
+from src.algorithms.tutor_topics import GroupTutorPLSolver
 from tests.algorithms.helper import TestHelper
 from src.model.formatter.output.output_formatter import OutputFormatter
 
@@ -40,7 +40,7 @@ class TestGroupTopicTutorSimplexSolver:
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -63,7 +63,7 @@ class TestGroupTopicTutorSimplexSolver:
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -92,7 +92,7 @@ class TestGroupTopicTutorSimplexSolver:
             3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -125,7 +125,7 @@ class TestGroupTopicTutorSimplexSolver:
             3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         result = solver.solve_simplex()
         formatted_result = self.formatter.format_result(result)
         tutors_groups = self.helper.get_tutors_groups(formatted_result)
@@ -150,7 +150,7 @@ class TestGroupTopicTutorSimplexSolver:
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -181,7 +181,7 @@ class TestGroupTopicTutorSimplexSolver:
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -212,7 +212,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -248,7 +248,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -284,7 +284,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -320,7 +320,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -356,7 +356,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = TopicTutorAssignmentSimplexSolver(groups, topics, tutors)
+        solver = GroupTutorPLSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()

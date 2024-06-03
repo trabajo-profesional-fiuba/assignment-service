@@ -1,7 +1,7 @@
 from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CMD
 
 
-class TopicTutorAssignmentSimplexSolver:
+class GroupTutorPLSolver:
     def __init__(self, groups, topics, tutors):
         """
         Constructor of the class.
@@ -66,7 +66,7 @@ class TopicTutorAssignmentSimplexSolver:
 
     def _add_constraints(self, prob, assignment_vars):
         """
-        Add constraints for the simplex algorithm.
+        Add constraints for the linear programming algorithm.
 
         Args:
             - prob: Instance of the optimization problem.
@@ -148,7 +148,7 @@ class TopicTutorAssignmentSimplexSolver:
 
     def solve_simplex(self):
         """
-        Solve the optimization problem using the simplex method.
+        Solve the optimization problem using the linear programming method.
 
         Args:
             - groups: list of groups.

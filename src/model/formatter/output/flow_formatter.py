@@ -1,4 +1,4 @@
-from typing import Dict, Tuple
+from typing import Tuple
 from src.constants import GROUP_ID, TOPIC_ID
 
 
@@ -42,16 +42,16 @@ class FlowOutputFormatter:
         """
         return is_assigned == 1
 
-    def _get_groups_topics(self, result: Dict[str, Dict[str, int]]) -> Dict[str, str]:
+    def _get_groups_topics(self, result: dict[str, dict[str, int]]) -> dict[str, str]:
         """
         Extracts groups and their assigned topics from the result.
 
         Args:
-            result (Dict[str, Dict[str, int]]): The result dictionary from the flow
+            result (dict[str, dict[str, int]]): The result dictionary from the flow
             algorithm.
 
         Returns:
-            Dict[str, str]: A dictionary with groups as keys and assigned topics as
+            dict[str, str]: A dictionary with groups as keys and assigned topics as
             values.
         """
         groups = {}
@@ -74,16 +74,16 @@ class FlowOutputFormatter:
         """
         return is_assigned > 0
 
-    def _get_topics_tutors(self, result: Dict[str, Dict[str, int]]) -> Dict[str, str]:
+    def _get_topics_tutors(self, result: dict[str, dict[str, int]]) -> dict[str, str]:
         """
         Extracts topics and their assigned tutors from the result.
 
         Args:
-            result (Dict[str, Dict[str, int]]): The result dictionary from the flow
+            result (dict[str, dict[str, int]]): The result dictionary from the flow
             algorithm.
 
         Returns:
-            Dict[str, str]: A dictionary with topics as keys and assigned tutors as
+            dict[str, str]: A dictionary with topics as keys and assigned tutors as
             values.
         """
         topics = {}
@@ -95,7 +95,7 @@ class FlowOutputFormatter:
         return topics
 
     def get_result(
-        self, result: Dict[str, Dict[str, int]]
+        self, result: dict[str, dict[str, int]]
     ) -> list[Tuple[str, str, str]]:
         """
         Formats the flow algorithm result into a standardized structure.
@@ -104,7 +104,7 @@ class FlowOutputFormatter:
         and adds them to the standardized result as tuples (group, topic, tutor).
 
         Args:
-            result (Dict[str, Dict[str, int]]): The result dictionary from the flow
+            result (dict[str, dict[str, int]]): The result dictionary from the flow
             algorithm.
 
         Returns:

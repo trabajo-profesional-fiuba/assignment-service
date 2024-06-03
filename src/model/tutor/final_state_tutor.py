@@ -1,9 +1,8 @@
-from typing import list
-from src.model.tutor.base_tutor import BaseTutor
+from src.model.tutor.tutor import Tutor
 from src.model.delivery_date.delivery_date import DeliveryDate
 
 
-class FinalStateTutor(BaseTutor):
+class FinalStateTutor(Tutor):
 
     def __init__(self, id: str, available_dates: list[DeliveryDate]) -> None:
         """

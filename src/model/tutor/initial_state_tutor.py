@@ -1,28 +1,21 @@
 from src.model.topic import Topic
-from src.model.tutor.base_tutor import BaseTutor
-from typing import Dict, list
+from src.model.tutor.tutor import Tutor
 
 
-class InitialStateTutor(BaseTutor):
+class InitialStateTutor(Tutor):
     """
     Represents the initial state of a tutor.
-
-    Attributes:
-        id (str): The identifier of the tutor.
-        capacity (int): The capacity of the tutor.
-        topics (dict): A dictionary containing costs and capacities for each topic.
     """
 
-    def __init__(self, id: str, capacity: int, topics: Dict[str, list[int]]) -> None:
+    def __init__(self, id: int, capacity: int, topics: list[Topic]) -> None:
         """
-        Initializes an InitialStateTutor object.
+        Initializes an `InitialStateTutor` object.
 
-        Args:
-            id (str): The identifier of the tutor.
-            capacity (int): The capacity of the tutor.
-            topics (dict): A dictionary containing costs and capacities for each topic.
+        Attributes:
+            id (int): The identifier of the tutor.
+            capacity (int): The group capacity of the tutor.
+            topics (list[Topic]): A list of topic ordered by topic id.
         """
-        super().__init__(id)
         self._capacity = capacity
         self._topics = topics
 
@@ -32,22 +25,21 @@ class InitialStateTutor(BaseTutor):
         return self._capacity
 
     @property
-    def topics(self) -> Dict[str, list[int]]:
-        """Returns the topics dictionary containing costs and capacities."""
+    def topics(self) -> list[Topic]:
+        """Returns the list of topics ordered by topic id."""
         return self._topics
 
-    def cost_of(self, topic: Topic) -> int:
+    def preference_of(self, topic: Topic) -> int:
         """
-        Calculates the cost of a given topic for the tutor.
+        Calculates the preference_of of a given topic for the tutor.
 
         Args:
-            topic (Topic): The topic for which the cost is calculated.
+            topic (Topic): The topic for which the preference_of is calculated.
 
         Returns:
-            int: The tutor's cost for the given topic.
+            int: The tutor's preference_of for the given topic.
         """
-        id = int(topic.id[1:])
-        return self._topics["costs"][id - 1]
+        return self._topics[topic.id - 1].cost
 
     def capacity_of(self, topic: Topic) -> int:
         """
@@ -59,5 +51,4 @@ class InitialStateTutor(BaseTutor):
         Returns:
             int: The tutor's capacity for the given topic.
         """
-        id = int(topic.id[1:])
-        return self._topics["capacities"][id - 1]
+        return self._topics[topic.id - 1].capacity

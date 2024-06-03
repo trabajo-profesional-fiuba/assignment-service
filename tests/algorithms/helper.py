@@ -1,83 +1,108 @@
 import numpy as np
-from typing import Dict, list, Tuple
-from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
+from typing import Tuple
+from src.constants import TOPIC_ID, TUTOR_ID
+from src.model.group.group import Group
 from src.model.group.initial_state_group import InitialStateGroup
+from src.model.tutor.tutor import Tutor
 from src.model.tutor.initial_state_tutor import InitialStateTutor
 from src.model.topic import Topic
 
 
 class TestHelper:
 
-    def create_topics_for_groups(costs: list[int]) -> Dict[str, int]:
-        """
-        Creates a dict of topics with its given costs assigned by the group.
-
-        Args:
-            - costs: list of topics costs assigned by the group ordered by topic id.
-
-        Returns a dict of topics with their ids as keys ans its costs as values.
-        """
-        return {
-            Topic(f"{TOPIC_ID}{i}"): topic_cost for i, topic_cost in enumerate(costs)
-        }
-
-    def create_groups(
-        self, num_groups: int, topics: list[list[int]]
-    ) -> list[InitialStateGroup]:
-        """
-        Creates a list of `InitialStateGroup`.
-
-        Args:
-            - num_groups: number of groups to create.
-            - topics: matrix of topics associated with each group.
-                     Rows represents groups and columns represents topics.
-
-        Returns: a list of groups with their ids and topics ordered by preference.
-        """
-        return [
-            InitialStateGroup(f"{GROUP_ID}{i}", topics[i - 1])
-            for i in range(1, num_groups + 1)
-        ]
-
-    def create_topics(self, num_topics: int) -> list[Topic]:
+    def _create_topics(
+        self, num_topics: int, costs: list[int], capacities: list[int]
+    ) -> list[Topic]:
         """
         Creates a list of `Topic`.
 
         Args:
-            - num_topics: number of topics to create.
+            - num_topics (int): number of topics to create.
+            - costs (list[int]): list of topic costs ordered by topic id.
+            - capacities (list[int]): list of topic capacities ordered by topic id.
 
-        Returns: a list of topics with their ids.
+        Returns (list[Topic]):
+            A list of topics with their ids, tittles, costs and capacities.
         """
-        return [Topic(f"{TOPIC_ID}{i}") for i in range(1, num_topics + 1)]
+        return [
+            Topic(i, f"{TOPIC_ID}{i}", costs[i - 1], capacities[i - 1])
+            for i in range(1, num_topics + 1)
+        ]
+
+    def create_groups(
+        self,
+        num_groups: int,
+        num_topics: int,
+        topics_costs: list[list[int]],
+        topics_capacities: list[int],
+    ) -> list[Group]:
+        """
+        Creates a list of `Group`.
+
+        Args:
+            - num_groups (int): number of groups to create.
+            - num_topics (int): number of topics to create.
+            - topics_costs (list[list[int]]): matrix of topic costs ordered by topic id.
+                                            Rows represents groups and columns
+                                            represents topics.
+            - topics_capacities (list[int]): list of topic capacities ordered by topic
+                                            id. Each index + 1 represents the capacity
+                                            of the topic id.
+
+        Returns (list[Group]):
+            A list of groups with their ids and states.
+        """
+        return [
+            Group(
+                i,
+                state=InitialStateGroup(
+                    self._create_topics(
+                        num_topics, topics_costs[i - 1], topics_capacities
+                    )
+                ),
+            )
+            for i in range(1, num_groups + 1)
+        ]
 
     def create_tutors(
         self,
         num_tutors: int,
         group_capacities: list[int],
+        num_topics: int,
         topics_capacities: list[list[int]],
         topics_costs: list[list[int]],
-    ) -> list[InitialStateTutor]:
+    ) -> list[Tutor]:
         """
-        Creates a list of tutors.
+        Creates a list of `Tutor`.
 
         Args:
-            - num_tutors: number of tutors to create.
-            - group_capacities: list of number of groups a tutor can take per topic.
-            - topics_capacities: matrix indicating the number of topics each tutor
-                                 can handle. Rows represents tutors and columns
-                                 represents topics.
-            - topics_costs: matrix of costs associated with each topic for
-                            each tutor. Rows represents tutors and columns
+            - num_tutors (int): number of tutors to create.
+            - group_capacities (list[int]): list of number of groups a tutor can take
+                                            per topic.
+            - num_topics (int): number of topics to create.
+            - topics_capacities (list[list[int]]): matrix indicating the number of
+                                topics each tutor can handle. Rows represents tutors and
+                                columns represents topics.
+            - topics_costs (list[list[int]]): matrix of costs associated with each topic
+                            for each tutor. Rows represents tutors and columns
                             represents topics.
 
-        Returns: a list of tutors with their ids, group capacities, and topics
-        capacities and costs.
+        Returns (list[Tutor]):
+            A list of tutors with their ids, group capacities, and topics
+            capacities and costs.
         """
         return [
-            InitialStateTutor(
+            Tutor(
+                i,
+                f"{TUTOR_ID}{i}@fi.uba.ar",
                 f"{TUTOR_ID}{i}",
-                group_capacities[i - 1],
-                {"capacities": topics_capacities[i - 1], "costs": topics_costs[i - 1]},
+                state=InitialStateTutor(
+                    i,
+                    group_capacities[i - 1],
+                    self._create_topics(
+                        num_topics, topics_costs[i - 1], topics_capacities[i - 1]
+                    ),
+                ),
             )
             for i in range(1, num_tutors + 1)
         ]
@@ -119,7 +144,7 @@ class TestHelper:
         vector = np.full(length, def_value)
         return vector
 
-    def get_tutors_groups(self, result: Tuple[str, str, str]) -> Dict[str, str]:
+    def get_tutors_groups(self, result: Tuple[str, str, str]) -> dict[str, str]:
         """
         Constructs a dictionary with tutors as keys and the groups assigned to
         each tutor as values.
@@ -138,7 +163,7 @@ class TestHelper:
             tutors_assignments[tutor].append(group)
         return tutors_assignments
 
-    def get_groups_topics(self, result: Tuple[str, str, str]) -> Dict[str, str]:
+    def get_groups_topics(self, result: Tuple[str, str, str]) -> dict[str, str]:
         """
         Constructs a dictionary with groups as keys and the topics assigned
         to each group as values.

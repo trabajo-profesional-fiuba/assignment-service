@@ -1,10 +1,9 @@
 from src.model.topic import Topic
-from typing import list
 
 
 class InitialStateGroup:
 
-    def __init__(self, topics):
+    def __init__(self, topics: list[Topic]) -> None:
         """
         Initializes the class with a list of topics.
 
@@ -23,7 +22,7 @@ class InitialStateGroup:
         """
         return self._topics
 
-    def preference_of(self, topic: Topic):
+    def preference_of(self, topic: Topic) -> int:
         """
         Calculates the cost of a given topic.
 
@@ -32,6 +31,4 @@ class InitialStateGroup:
 
         Returns the group's cost for the given topic.
         """
-        for t in self._topics:
-            if topic.id == t.id:
-                return t.cost
+        return self._topics[topic.id - 1].cost

@@ -126,13 +126,13 @@
 
 #         formatter = InputFormatter(groups_df, tutors_df)
 #         result = formatter.groups()
-#         assert result[0].id == "g1"
+#         assert result[0].id == "group-1"
 #         assert result[0].available_dates == []
-#         assert result[0].tutor_id == "p2"
+#         assert result[0].tutor_id == "tutor-2"
 
-#         assert result[1].id == "g2"
+#         assert result[1].id == "group-2"
 #         assert result[1].available_dates == []
-#         assert result[1].tutor_id == "p1"
+#         assert result[1].tutor_id == "tutor-1"
 
 #     @pytest.mark.formatter
 #     def test_groups_with_availability_dates(self):
@@ -146,17 +146,17 @@
 
 #         formatter = InputFormatter(groups_df, tutors_df)
 #         result = formatter.groups()
-#         assert result[0].id == "g1"
+#         assert result[0].id == "group-1"
 #         assert result[0].available_dates[0].week == 1
 #         assert result[0].available_dates[0].day == Day.MONDAY
 #         assert result[0].available_dates[0].hour == Hour.H_9_10
-#         assert result[0].tutor_id == "p2"
+#         assert result[0].tutor_id == "tutor-2"
 
-#         assert result[1].id == "g2"
+#         assert result[1].id == "group-2"
 #         assert result[1].available_dates[0].week == 1
 #         assert result[1].available_dates[0].day == Day.MONDAY
 #         assert result[1].available_dates[0].hour == Hour.H_9_10
-#         assert result[1].tutor_id == "p1"
+#         assert result[1].tutor_id == "tutor-1"
 
 #     @pytest.mark.formatter
 #     def test_tutor_id_found(self):
@@ -169,8 +169,8 @@
 #         tutors_df = pd.DataFrame({"Nombre y Apellido": ["Smith", "Jones"]})
 
 #         formatter = InputFormatter(groups_df, tutors_df)
-#         assert formatter._tutor_id("Smith") == "p2"
-#         assert formatter._tutor_id("Jones") == "p1"
+#         assert formatter._tutor_id("Smith") == "tutor-2"
+#         assert formatter._tutor_id("Jones") == "tutor-1"
 
 #     @pytest.mark.formatter
 #     def test_tutor_id_not_found(self):
@@ -229,7 +229,7 @@
 #         formatter = InputFormatter(groups_df, tutors_df)
 #         with pytest.raises(ValueError) as exc_info:
 #             formatter._create_delivery_date("nonexistent_week", "Lunes", "9 a 10")
-#         assert "Week 'nonexistent_week' not found in WEEKS_DICT" in str(exc_info.value)
+#         assert "Week 'nonexistent_week' not found in WEEKS_dict" in str(exc_info.value)
 
 #     @pytest.mark.formatter
 #     def test_create_delivery_date_day_not_found(self):
@@ -244,7 +244,7 @@
 #         formatter = InputFormatter(groups_df, tutors_df)
 #         with pytest.raises(ValueError) as exc_info:
 #             formatter._create_delivery_date("Semana 1/7", "NonexistentDay", "9 a 10")
-#         assert "Day 'NonexistentDay' not found in DAYS_DICT" in str(exc_info.value)
+#         assert "Day 'NonexistentDay' not found in DAYS_dict" in str(exc_info.value)
 
 #     @pytest.mark.formatter
 #     def test_create_delivery_date_hour_not_found(self):
@@ -259,6 +259,6 @@
 #         formatter = InputFormatter(groups_df, tutors_df)
 #         with pytest.raises(ValueError) as exc_info:
 #             formatter._create_delivery_date("Semana 1/7", "Lunes", "nonexistent_hour")
-#         assert "Hour part 'nonexistent_hour' not found in HOURS_DICT" in str(
+#         assert "Hour part 'nonexistent_hour' not found in HOURS_dict" in str(
 #             exc_info.value
 #         )

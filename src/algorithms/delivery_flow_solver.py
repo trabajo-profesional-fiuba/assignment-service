@@ -24,7 +24,7 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         Based on a list of nodes, and possible dates
         its create the edges based on items from the intersection
-        like g1 -(1,1)-> date-hr
+        like group-1 -(1,1)-> date-hr
         """
         edges = []
         for node in nodes:

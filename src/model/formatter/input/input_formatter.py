@@ -16,15 +16,15 @@ class InputFormatter:
     A class used to format input data from a DataFrame for delivery scheduling.
 
     Attributes:
-        - WEEKS_DICT (dict): A dictionary mapping week descriptions to their
+        - WEEKS_dict (dict): A dictionary mapping week descriptions to their
         corresponding week numbers.
-        - DAYS_DICT (dict): A dictionary mapping day names to `Day`
+        - DAYS_dict (dict): A dictionary mapping day names to `Day`
         enumeration values.
-        - HOURS_DICT (dict): A dictionary mapping time slots to `Hour`
+        - HOURS_dict (dict): A dictionary mapping time slots to `Hour`
         enumeration values.
     """
 
-    WEEKS_DICT = {
+    WEEKS_dict = {
         "Semana 1/7": 1,
         "Semana 8/7": 2,
         "Semana 15/7": 3,
@@ -34,7 +34,7 @@ class InputFormatter:
         "Semana 12/8": 7,
     }
 
-    DAYS_DICT = {
+    DAYS_dict = {
         "Lunes": Day.MONDAY,
         "Martes": Day.TUESDAY,
         "Miércoles": Day.WEDNESDAY,
@@ -42,7 +42,7 @@ class InputFormatter:
         "Viernes": Day.FRIDAY,
     }
 
-    HOURS_DICT = {
+    HOURS_dict = {
         "9 a 10": Hour.H_9_10,
         "10 a 11": Hour.H_10_11,
         "11 a 12": Hour.H_11_12,
@@ -133,57 +133,57 @@ class InputFormatter:
 
     def create_week(self, week_part: str) -> int:
         """
-        Retrieves the week part from the WEEKS_DICT.
+        Retrieves the week part from the WEEKS_dict.
 
         Params:
             - week_part (str): The key for the week part to retrieve.
 
         Returns:
-            int: The corresponding week part from WEEKS_DICT.
+            int: The corresponding week part from WEEKS_dict.
 
         Raises:
-            WeekNotFound: If the week part is not found in WEEKS_DICT.
+            WeekNotFound: If the week part is not found in WEEKS_dict.
         """
         try:
-            return self.WEEKS_DICT[week_part]
+            return self.WEEKS_dict[week_part]
         except KeyError:
-            raise WeekNotFound(f"Week '{week_part}' not found in WEEKS_DICT")
+            raise WeekNotFound(f"Week '{week_part}' not found in WEEKS_dict")
 
     def create_day(self, day: str) -> Day:
         """
-        Retrieves the day from the DAYS_DICT.
+        Retrieves the day from the DAYS_dict.
 
         Params:
             - day (str): The key for the day to retrieve.
 
         Returns:
-            str: The corresponding day from DAYS_DICT.
+            str: The corresponding day from DAYS_dict.
 
         Raises:
-            DayNotFound: If the day is not found in DAYS_DICT.
+            DayNotFound: If the day is not found in DAYS_dict.
         """
         try:
-            return self.DAYS_DICT[day]
+            return self.DAYS_dict[day]
         except KeyError:
-            raise DayNotFound(f"Day '{day}' not found in DAYS_DICT")
+            raise DayNotFound(f"Day '{day}' not found in DAYS_dict")
 
     def create_hour(self, hour_part: str) -> Hour:
         """
-        Retrieves the hour part from the HOURS_DICT.
+        Retrieves the hour part from the HOURS_dict.
 
         Params:
             - hour_part (str): The key for the hour part to retrieve.
 
         Returns:
-            str: The corresponding hour part from HOURS_DICT.
+            str: The corresponding hour part from HOURS_dict.
 
         Raises:
-            HourNotFound: If the hour part is not found in HOURS_DICT.
+            HourNotFound: If the hour part is not found in HOURS_dict.
         """
         try:
-            return self.HOURS_DICT[hour_part]
+            return self.HOURS_dict[hour_part]
         except KeyError:
-            raise HourNotFound(f"Hour part '{hour_part}' not found in HOURS_DICT")
+            raise HourNotFound(f"Hour part '{hour_part}' not found in HOURS_dict")
 
     def _create_delivery_date(
         self, week_part: str, day: str, hour_part: str
@@ -199,9 +199,9 @@ class InputFormatter:
         Returns (DeliveryDate): The DeliveryDate object created from the provided parts.
 
         Raises:
-            WeekNotFound: If the week part is not found in WEEKS_DICT.
-            DayNotFound: If the day is not found in DAYS_DICT.
-            HourNotFound: If the hour part is not found in HOURS_DICT.
+            WeekNotFound: If the week part is not found in WEEKS_dict.
+            DayNotFound: If the day is not found in DAYS_dict.
+            HourNotFound: If the hour part is not found in HOURS_dict.
         """
         try:
             week = self.create_week(week_part)
