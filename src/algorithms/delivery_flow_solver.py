@@ -1,12 +1,11 @@
 import networkx as nx
 from src.algorithms.delivery_solver import DeliverySolver
 
+
 class DeliveryFlowSolver(DeliverySolver):
 
-    def __init__(
-        self, groups, tutors, formatter, avaliable_dates, evaluators
-    ):
-        super().__init__(groups, tutors, formatter, avaliable_dates)
+    def __init__(self, groups, tutors, formatter, available_dates, evaluators):
+        super().__init__(groups, tutors, formatter, available_dates)
         self._evaluators = evaluators
 
     def _create_source_edges(self, nodes: list, capacity: int) -> list:
@@ -25,14 +24,20 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         Based on a list of nodes, and possible dates
         its create the edges based on items from the intersection
-        like g1 -(1,1)-> date-hr
+        like group-1 -(1,1)-> date-hr
         """
         edges = []
         for node in nodes:
             shared_dates = node.filter_dates(possible_dates)
             for date in shared_dates:
                 date_label = date.label()
-                edges.append((node.id, date_label, {"capacity": 1, "cost": node.preference_of(date)}))
+                edges.append(
+                    (
+                        node.id,
+                        date_label,
+                        {"capacity": 1, "cost": node.preference_of(date)},
+                    )
+                )
         return edges
 
     def _create_sink_edges(self, possible_dates: list, capacity: int):
@@ -43,28 +48,32 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         edges = []
         for date in possible_dates:
-            date_label = date.label()
             edges.append((date, "t", {"capacity": capacity, "cost": 1}))
-
         return edges
 
     def _create_evaluators_week_edges(self, evaluators):
         """
-        Based on evaluators it creates one edge between 
+        Based on evaluators it creates one edge between
         evaluator and its week
         """
         edges = []
         for evaluator in evaluators:
-            dates = evaluator.avaliable_dates
+            dates = evaluator.available_dates
             weeks = set(d.week for d in dates)
             for week in weeks:
-                week_edge = (evaluator.id, f"{week}-{evaluator.id}",
-                             {"capacity": 5, "cost": 1})
+                week_edge = (
+                    evaluator.id,
+                    f"{week}-{evaluator.id}",
+                    {"capacity": 5, "cost": 1},
+                )
                 edges.append(week_edge)
                 for date in dates:
                     if date.week == week:
-                        edge = (f"{week}-{evaluator.id}", key,
-                                {"capacity": 1, "cost": 1})
+                        edge = (
+                            f"{week}-{evaluator.id}",
+                            date,
+                            {"capacity": 1, "cost": 1},
+                        )
                         edges.append(edge)
 
         return edges
@@ -74,13 +83,13 @@ class DeliveryFlowSolver(DeliverySolver):
             assigned_dates = evaluator.assigned_dates
             group.remove_dates(assigned_dates)
 
-    def groups_assigment_flow(self):
+    def groups_assignment_flow(self):
         """
         Creates a directed graph based on the different edges
         """
         sources_edges = self._create_source_edges(self._groups, 1)
-        date_edges = self._create_date_edges(self._groups, self._avaliable_dates)
-        sink_edges = self._create_sink_edges(self._avaliable_dates,1)
+        date_edges = self._create_date_edges(self._groups, self._available_dates)
+        sink_edges = self._create_sink_edges(self._available_dates, 1)
 
         graph = nx.DiGraph()
         graph.add_edges_from(sources_edges)
@@ -89,18 +98,18 @@ class DeliveryFlowSolver(DeliverySolver):
         return graph
 
     def _filter_final_dates(self):
-        dates = self.avaliable_dates
+        dates = self.available_dates
         for e in self._evaluators:
-            dates =  e.filter_dates(dates)
+            dates = e.filter_dates(dates)
 
-        return dates        
+        return dates
 
-    def evaluators_assigment_flow(self):
-        
+    def evaluators_assignment_flow(self):
+
         mutual_dates = self._filter_final_dates()
         sources_edges = self._create_source_edges(self._evaluators, 35)
         weeks_date_edges = self._create_evaluators_week_edges(self._evaluators)
-        sink_edges = self._create_sink_edges(mutual_dates,2)
+        sink_edges = self._create_sink_edges(mutual_dates, 2)
 
         graph = nx.DiGraph()
         graph.add_edges_from(sources_edges)
@@ -117,7 +126,6 @@ class DeliveryFlowSolver(DeliverySolver):
                     for date, date_value in days.items():
                         if date_value == 1:
                             evaluator.assign_date(date)
-                
 
     def _max_flow_min_cost(self, graph: nx.DiGraph):
         """
@@ -131,18 +139,19 @@ class DeliveryFlowSolver(DeliverySolver):
         return max_flow_min_cost_dic
 
     def solve(self):
-        
-        evaluator_graph = self.evaluators_assigment_flow()
+
+        evaluator_graph = self.evaluators_assignment_flow()
         max_flow_min_cost_evaluators = self._max_flow_min_cost(evaluator_graph)
-    
+
         self._assign_results(max_flow_min_cost_evaluators)
         self._filter_unassigned_dates(self._groups, self._evaluators)
 
-        groups_graph = self.groups_assigment_flow()
+        groups_graph = self.groups_assignment_flow()
         max_flow_min_cost_groups = self._max_flow_min_cost(groups_graph)
-
-        #assignment_result = self.formatter.format_delivery_result(max_flow_min_cost_groups,self._tutors, self._groups, self._evaluators)
-
-        return assignment_result
-
-
+        # assignment_result = self.formatter.format_delivery_result(
+        # max_flow_min_cost_groups,
+        # self._tutors,
+        # self._groups,
+        # self._evaluators)
+        # return assignment_result
+        return max_flow_min_cost_groups
