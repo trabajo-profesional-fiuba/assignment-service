@@ -1,7 +1,8 @@
 """Module providing helpers function to create different use cases for testing."""
 
-from src.model.group.base_group import Group
+from src.model.group.group import Group
 from src.model.tutor.final_state_tutor import FinalStateTutor
+from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evalutor import Evaluator
 
@@ -23,8 +24,8 @@ class TestSimplexHelper:
         # ]
         groups = []
         for i in range(1, num_groups + 1):
-            tutor = FinalStateTutor(f"t{(i % 4)+1}", "email", "name", available_dates)
-            print(tutor._available_dates)
+            tutor = Tutor(f"t{(i % 4)+1}", "email", "name")
+            tutor.add_available_dates(available_dates)
             groups.append(Group((f"g{i}"), tutor))
 
         for group in groups:
@@ -61,11 +62,13 @@ class TestSimplexHelper:
 
         Returns: a list of tutors with their with their ids and available dates.
         """
-
-        return [
-            FinalStateTutor(f"t{i}", "email", "name", available_dates)
-            for i in range(1, num_tutors + 1)
-        ]
+        tutors = []
+        for i in range(1, num_tutors + 1):
+            tutor = Tutor(f"t{i}", "email", "name")
+            tutor.add_available_dates(available_dates)
+            tutors.append(tutor)
+        return tutors
+        
 
     def create_evaluators(self, num_tutors: int, available_dates: list):
         """

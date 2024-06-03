@@ -14,7 +14,7 @@ class FinalStateGroup:
     def assign(self, date: DeliveryDate, group):
         """
         Assigns a date to the group.
-        Double-Distpatch is performed
+        Double-Dispatch is performed
 
         Args:
             date: The date to be assigned to the group.

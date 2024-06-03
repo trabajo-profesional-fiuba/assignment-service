@@ -16,10 +16,12 @@ pulp = "^2.8.0"
 flake8 = "^7.0.0"
 black = "^24.4.2"
 pyscipopt = "^5.0.0"
+pandas = "^2.2.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
 pytest-cov = "^5.0.0"
+coverage = "^7.5.3"
 
 [tool.pytest.ini_options]
 addopts = "-v "
@@ -28,6 +30,7 @@ python_files = ["*_test.py"]
 markers = [
     "unit",
     "performance",
+    "formatter"
 ]
 
 [virtualenvs]

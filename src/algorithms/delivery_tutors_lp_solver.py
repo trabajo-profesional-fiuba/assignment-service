@@ -22,7 +22,7 @@ class DeliveryTutorsLPSolver:
                     t_date.week == date.week
                     and t_date.day == date.day
                     and date.hour == t_date.hour
-                    for t_date in tutor.available_dates
+                    for t_date in tutor.state.available_dates
                 )
             ]
 

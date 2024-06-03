@@ -21,7 +21,6 @@ class DateEvaluatorsLPSolver:
                     for (g, t, week, day, hour) in self._result_tutors
                     if g == group.id
                 ]
-                print("Grupos 1:", group_possible_dates)
                 mutual_available_dates = [
                     (week, day, hour)
                     for (g, t, week, day, hour) in group_possible_dates
@@ -53,7 +52,6 @@ class DateEvaluatorsLPSolver:
                 for (g, t, week, day, hour) in self._result_tutors
                 if g == group.id
             ]
-            print("Grupos", group_possible_dates)
             for date in group_possible_dates:
                 group_date_var = self._model.addVar(
                     f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
@@ -86,7 +84,6 @@ class DateEvaluatorsLPSolver:
                 for (g, t, week, day, hour) in self._result_tutors
                 if g == group.id
             ]
-            print("Grupos 2:", group_possible_dates)
 
             for date in group_possible_dates:
                 available_evaluators = sum(
@@ -163,6 +160,12 @@ class DateEvaluatorsLPSolver:
         )
 
     def solve(self):
+        self._model.setRealParam('limits/time', 600)  # Limitar el tiempo de solución a 600 segundos (10 minutos)
+        self._model.setIntParam('limits/solutions', 100)  # Limitar el número de soluciones
+        self._model.setRealParam('limits/gap', 0.01)  # Establecer un gap óptimo de 1%
+        self._model.setIntParam('presolving/maxrounds', 0)  # Desactivar la presolución
+        self._model.setIntParam('branching/random/priority', 100)  # Usar una estrategia de ramificación aleatoria
+
         self.create_group_tutors_evaluator_decision_variables()
         self.groups_assignment_restriction()
         self.evaluator_day_minimization_restriction()
@@ -178,10 +181,10 @@ class DateEvaluatorsLPSolver:
         print("Variables de decisión activadas:")
         for var in self._decision_variables:
             if self._model.getVal(self._decision_variables[var]) > 0:
-                print(f"Variable {var} (Grupo, Dia, Semana, Hora, Evaluador): {var}")
+                print(f"Variable {var} (Grupo, Semana, Dia, Hora, Evaluador): {var}")
                 result.append(var)
 
-        print("\nVariables adicionales activadas (Evaluador, Dia, Semana, Hora):")
+        print("\nVariables adicionales activadas (Evaluador, Semana, Dia):")
         for var in self._evaluator_day_vars:
             if self._model.getVal(self._evaluator_day_vars[var]) > 0:
                 print(f"Variable adicional {var}")

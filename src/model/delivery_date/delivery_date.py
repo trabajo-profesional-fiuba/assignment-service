@@ -1,12 +1,12 @@
-class DeliveryDate:
+from src.model.delivery_date.day import Day
+from src.model.delivery_date.hour import Hour
 
-    def __init__(self, week, day, hour):
+
+class DeliveryDate:
+    def __init__(self, week: int, day: Day, hour: Hour):
         self._week = week
         self._day = day
         self._hour = hour
-
-    def label(self):
-        return f"{self._week}-{self._day}-{self._hour}"
 
     @property
     def week(self):
@@ -19,4 +19,3 @@ class DeliveryDate:
     @property
     def hour(self):
         return self._hour
-
