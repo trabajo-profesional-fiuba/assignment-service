@@ -100,9 +100,9 @@ class DeliveryFlowSolver(DeliverySolver):
         return graph
 
     def _filter_final_dates(self):
-        dates = self.avaliable_dates
+        dates = []
         for e in self._evaluators:
-            dates = e.filter_dates(dates)
+            dates += e.filter_dates(self._avaliable_dates)
 
         return dates
 

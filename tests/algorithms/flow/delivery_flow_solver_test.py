@@ -234,7 +234,7 @@ class TestDeliveryFlowSolver:
         possible_dates = [self.dates[0], self.dates[1],
                           self.dates[2], self.dates[3]]
         delivery_flow_solver = DeliveryFlowSolver([],[], None, possible_dates, [])
-        
+
         expected_edges = [
             (self.dates[0].label(), "t", {"capacity": 2, "cost": 1}),
             (self.dates[1].label(), "t", {"capacity": 2, "cost": 1}),
@@ -248,3 +248,63 @@ class TestDeliveryFlowSolver:
         # Assert
 
         assert all(e in result for e in expected_edges)
+
+    @pytest.mark.unit
+    def test_evaluator_graph(self):
+        # Arrange
+
+        dates = [
+            DeliveryDate(week=1, day=1, hour=1),
+            DeliveryDate(week=1, day=2, hour=1),
+            DeliveryDate(week=2, day=1, hour=1),
+            DeliveryDate(week=2, day=2, hour=1),
+            DeliveryDate(week=3, day=1, hour=1),
+            DeliveryDate(week=3, day=2, hour=1),
+            DeliveryDate(week=4, day=1, hour=2),
+            DeliveryDate(week=4, day=2, hour=2)
+        ]
+
+        # e1 puede : 1-1-1, 1-2-1, 2-1-1, 2-2-1
+        # e2 puede : 2-1-1, 2-2-1, 3-1-1, 3-2-1
+        # e3 puede:  4-1-2, 4-2-2
+        evaluators = [
+            Evaluator(1, [dates[0], dates[1],
+                              dates[2],  dates[3]]),
+            Evaluator(2, [dates[2], dates[3],
+                            dates[4], dates[5]]),
+            Evaluator(3, [dates[6], dates[7]]),
+        ]
+        
+        delivery_flow_solver = DeliveryFlowSolver([],[],None, dates, evaluators)
+
+        expected_edges = [
+            ("s", "1"),
+            ("s", "2"),
+            ("s", "3"),
+            ("1", "1-1"),
+            ("1", "2-1"),
+            ("1-1", "1-1-1"),
+            ("1-1", "1-2-1"),
+            ("2-1", "2-1-1"),
+            ("2-1", "2-2-1"),
+            ("2", "2-2"),
+            ("2", "3-2"),
+            ("2-2", "2-1-1"),
+            ("2-2", "2-2-1"),
+            ("3-2", "3-1-1"),
+            ("3-2", "3-2-1"),
+            ("3", "4-3"),
+            ("4-3", "4-1-2"),
+            ("4-3", "4-2-2"),
+            (dates[0].label(), "t"),
+            (dates[1].label(), "t"),
+            (dates[2].label(), "t"),
+            (dates[3].label(), "t"),
+            (dates[4].label(), "t"),
+            (dates[5].label(), "t"),
+        ]
+
+        # Act
+        graph = delivery_flow_solver.evaluators_assigment_flow()
+
+        assert all(graph.has_edge(e[0], e[1]) for e in expected_edges)
