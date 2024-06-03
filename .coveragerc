@@ -1,0 +1,8 @@
+[run]
+omit =
+    */pyscipopt/*.pxi
+    */pyscipopt/*.pyx
+
+[report]
+exclude_lines =
+    pragma: no cover

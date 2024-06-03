@@ -15,3 +15,5 @@ coverage.xml
 .coverage
 
 dist/
+dummy.py
+database/

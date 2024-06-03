@@ -4,8 +4,8 @@ from src.algorithms.delivery_solver import DeliverySolver
 
 class DeliveryFlowSolver(DeliverySolver):
 
-    def __init__(self, groups, tutors, formatter, avaliable_dates, evaluators):
-        super().__init__(groups, tutors, formatter, avaliable_dates)
+    def __init__(self, groups, tutors, formatter, available_dates, evaluators):
+        super().__init__(groups, tutors, formatter, available_dates)
         self._evaluators = evaluators
 
     def _create_source_edges(self, nodes: list, capacity: int) -> list:
@@ -24,7 +24,7 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         Based on a list of nodes, and possible dates
         its create the edges based on items from the intersection
-        like g1 -(1,1)-> date-hr
+        like group-1 -(1,1)-> date-hr
         """
         edges = []
         for node in nodes:
@@ -60,7 +60,7 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         edges = []
         for evaluator in evaluators:
-            dates = evaluator.avaliable_dates
+            dates = evaluator.available_dates
             weeks = set(d.week for d in dates)
             for week in weeks:
                 week_edge = (
@@ -90,8 +90,8 @@ class DeliveryFlowSolver(DeliverySolver):
         Creates a directed graph based on the different edges
         """
         sources_edges = self._create_source_edges(self._groups, 1)
-        date_edges = self._create_date_edges(self._groups, self._avaliable_dates)
-        sink_edges = self._create_sink_edges(self._avaliable_dates, 1)
+        date_edges = self._create_date_edges(self._groups, self._available_dates)
+        sink_edges = self._create_sink_edges(self._available_dates, 1)
 
         graph = nx.DiGraph()
         graph.add_edges_from(sources_edges)
@@ -102,7 +102,7 @@ class DeliveryFlowSolver(DeliverySolver):
     def _filter_final_dates(self):
         dates = []
         for e in self._evaluators:
-            dates += e.filter_dates(self._avaliable_dates)
+            dates += e.filter_dates(self._available_dates)
 
         return dates
 
@@ -148,7 +148,7 @@ class DeliveryFlowSolver(DeliverySolver):
         self._assign_results(max_flow_min_cost_evaluators)
         self._filter_unassigned_dates(self._groups, self._evaluators)
 
-        groups_graph = self.groups_assigment_flow()
+        groups_graph = self.groups_assignment_flow()
         max_flow_min_cost_groups = self._max_flow_min_cost(groups_graph)
 
         # assignment_result = self.formatter.format_delivery_result(max_flow_min_cost_groups,self._tutors, self._groups, self._evaluators)

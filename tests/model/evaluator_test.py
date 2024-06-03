@@ -10,9 +10,9 @@ class TestEvaluator:
         # Arrange
         evaluator = Evaluator(1)
         # Act
-        avaliable_dates = evaluator.avaliable_dates
+        available_dates = evaluator.available_dates
         # Assert
-        assert len(avaliable_dates) == 0
+        assert len(available_dates) == 0
 
     
     @pytest.mark.unit
@@ -25,6 +25,6 @@ class TestEvaluator:
         ]
         evaluator = Evaluator(1, dates)
         # Act
-        avaliable_dates = evaluator.avaliable_dates
+        available_dates = evaluator.available_dates
         # Assert
-        assert len(avaliable_dates) == 3
+        assert len(available_dates) == 3
