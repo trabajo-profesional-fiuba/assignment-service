@@ -1,15 +1,12 @@
-"""Module testing logic, performance and scalability of max flow min cost algorithm
-when assigning topics and tutors to groups.
-
 import pytest
 import time
 
-from src.algorithms.tutor_topics import GroupTutorPLSolver
+from src.algorithms.group_tutor_lp_solver import GroupTutorLPSolver
 from tests.algorithms.helper import TestHelper
 from src.model.formatter.output.output_formatter import OutputFormatter
 
 
-class TestGroupTopicTutorSimplexSolver:
+class TestGroupTutorLPSolver:
 
     helper = TestHelper()
     formatter = OutputFormatter()
@@ -17,8 +14,8 @@ class TestGroupTopicTutorSimplexSolver:
     # ------------ Logic Tests ------------
     @pytest.mark.unit
     def test_more_groups_than_tutors_without_enough_capacity(self):
-        Testing that tutors dont get all groups so they dont to
-        exceed their capacities.
+        """Testing that tutors dont get all groups so they dont to
+        exceed their capacities."""
         group_costs = [
             [1, 2, 3, 4, 4, 4],  # groups as rows
             [4, 4, 4, 1, 2, 3],  # topics as columns
@@ -40,7 +37,7 @@ class TestGroupTopicTutorSimplexSolver:
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -51,7 +48,7 @@ class TestGroupTopicTutorSimplexSolver:
     def test_more_groups_than_tutors_but_with_enough_capacity_all_groups_are_assigned(
         self,
     ):
-        Testing that tutors get all groups without exceeding their capacities.
+        """Testing that tutors get all groups without exceeding their capacities."""
         group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
         tutors_capacities = [1, 2]
         topics_tutors_capacities = [[3, 3, 0, 0, 0, 0], [0, 0, 3, 3, 3, 3]]
@@ -63,7 +60,7 @@ class TestGroupTopicTutorSimplexSolver:
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -72,7 +69,7 @@ class TestGroupTopicTutorSimplexSolver:
 
     @pytest.mark.unit
     def test_equal_groups_and_tutors_but_tutors_do_not_exceed_their_capacities(self):
-        Testing that tutors get all groups without exceeding their capacities.
+        """Testing that tutors get all groups without exceeding their capacities."""
         group_costs = [[1, 2, 3, 4, 4, 4], [4, 4, 4, 1, 2, 3], [1, 4, 2, 4, 3, 4]]
         tutors_capacities = [1, 1, 1]
         topics_tutors_capacities = [
@@ -92,7 +89,7 @@ class TestGroupTopicTutorSimplexSolver:
             3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -101,8 +98,8 @@ class TestGroupTopicTutorSimplexSolver:
 
     @pytest.mark.unit
     def test_more_tutors_than_groups_but_tutors_do_not_exceed_their_capacities(self):
-        Testing that groups are distributed between tutors in order not
-        to exceed their capacities.
+        """Testing that groups are distributed between tutors in order not
+        to exceed their capacities."""
         group_costs = [
             [1, 2, 3, 4, 4, 4],
             [4, 4, 4, 1, 2, 3],
@@ -125,7 +122,7 @@ class TestGroupTopicTutorSimplexSolver:
             3, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         result = solver.solve_simplex()
         formatted_result = self.formatter.format_result(result)
         tutors_groups = self.helper.get_tutors_groups(formatted_result)
@@ -134,8 +131,8 @@ class TestGroupTopicTutorSimplexSolver:
 
     @pytest.mark.unit
     def test_more_groups_than_topics_but_tutors_with_enough_capacity(self):
-        Testing all groups are assigned to one topic when there are more groups than
-        topics but tutors with enough capacities.
+        """Testing all groups are assigned to one topic when there are more groups than
+        topics but tutors with enough capacities."""
         group_costs = [
             [1],
             [4],
@@ -150,7 +147,7 @@ class TestGroupTopicTutorSimplexSolver:
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -159,8 +156,8 @@ class TestGroupTopicTutorSimplexSolver:
 
     @pytest.mark.unit
     def test_more_topics_than_groups_and_one_topic_is_assigned_to_each_group(self):
-        Testing only one topic is assigned to every group when there are more
-        groups than topics.
+        """Testing only one topic is assigned to every group when there are more
+        groups than topics."""
         group_costs = [
             [1, 2, 1, 2],
             [1, 2, 1, 2],
@@ -181,7 +178,7 @@ class TestGroupTopicTutorSimplexSolver:
             2, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         result = solver.solve_simplex()
 
         formatted_result = self.formatter.format_result(result)
@@ -192,7 +189,7 @@ class TestGroupTopicTutorSimplexSolver:
     # ------------ Performance and Scalability Tests ------------
     @pytest.mark.performance
     def test_four_groups_and_topics(self):
-        Testing if the algorithm is overhead with four groups and topics.
+        """Testing if the algorithm is overhead with four groups and topics."""
         num_groups = 4
         num_topics = 4
         num_tutors = 2
@@ -212,7 +209,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -228,7 +225,7 @@ class TestGroupTopicTutorSimplexSolver:
 
     @pytest.mark.performance
     def test_ten_groups_and_topics(self):
-        Testing if the algorithm is overhead with ten groups and topics.
+        """Testing if the algorithm is overhead with ten groups and topics."""
         num_groups = 10
         num_topics = 10
         num_tutors = 5
@@ -248,7 +245,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -264,7 +261,7 @@ class TestGroupTopicTutorSimplexSolver:
 
     @pytest.mark.performance
     def test_twenty_groups_and_topics(self):
-        Testing if the algorithm is overhead with twenty groups and topics.
+        """Testing if the algorithm is overhead with twenty groups and topics."""
         num_groups = 20
         num_topics = 20
         num_tutors = 10
@@ -284,7 +281,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -300,7 +297,7 @@ class TestGroupTopicTutorSimplexSolver:
 
     @pytest.mark.performance
     def test_test_forty_groups_and_topics(self):
-        Testing if the algorithm is overhead with forty groups and topics.
+        """Testing if the algorithm is overhead with forty groups and topics."""
         num_groups = 40
         num_topics = 40
         num_tutors = 20
@@ -320,7 +317,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -336,7 +333,7 @@ class TestGroupTopicTutorSimplexSolver:
 
     @pytest.mark.performance
     def test_eighty_groups_and_topics(self):
-        Testing if the algorithm is overhead with eighty groups and topics.
+        """Testing if the algorithm is overhead with eighty groups and topics."""
         num_groups = 80
         num_topics = 80
         num_tutors = 40
@@ -356,7 +353,7 @@ class TestGroupTopicTutorSimplexSolver:
             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
         )
 
-        solver = GroupTutorPLSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors)
         start_time = time.time()
         result = solver.solve_simplex()
         end_time = time.time()
@@ -369,4 +366,3 @@ class TestGroupTopicTutorSimplexSolver:
             end_time - start_time,
             "seconds",
         )
-"""

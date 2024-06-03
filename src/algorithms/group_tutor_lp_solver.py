@@ -1,7 +1,7 @@
 from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CMD
 
 
-class GroupTutorPLSolver:
+class GroupTutorLPSolver:
     def __init__(self, groups, topics, tutors):
         """
         Constructor of the class.
