@@ -32,3 +32,8 @@ class FinalStateGroup:
                 possible_dates.append(date)
         return possible_dates
 
+    def remove_dates(self, dates):
+        for date in self._available_dates:
+            if date.label() in dates:
+                self._available_dates.remove(date)
+

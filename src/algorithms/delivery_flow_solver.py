@@ -80,10 +80,12 @@ class DeliveryFlowSolver(DeliverySolver):
 
         return edges
 
-    def _filter_unassigned_dates(self, group, evaluator):
-        if group.is_tutored_by(evaluator.id):
-            assigned_dates = evaluator.assigned_dates
-            group.remove_dates(assigned_dates)
+    def _filter_unassigned_dates(self, groups, evaluators):
+        for group in groups:
+            for evaluator in evaluators:
+                if group.is_tutored_by(evaluator.id):
+                    assigned_dates = evaluator.assigned_dates
+                    group.remove_dates(assigned_dates)
 
     def groups_assigment_flow(self):
         """
@@ -121,7 +123,7 @@ class DeliveryFlowSolver(DeliverySolver):
 
     def _assign_evaluators_results(self, result):
         for evaluator in self._evaluators:
-            weeks = result[evaluator.id]
+            weeks = result[f"{evaluator.id}"]
             for key, value in weeks.items():
                 if value > 0:
                     days = result[key]
@@ -145,12 +147,12 @@ class DeliveryFlowSolver(DeliverySolver):
         evaluator_graph = self.evaluators_assigment_flow()
         max_flow_min_cost_evaluators = self._max_flow_min_cost(evaluator_graph)
 
-        self._assign_results(max_flow_min_cost_evaluators)
+        self._assign_evaluators_results(max_flow_min_cost_evaluators)
         self._filter_unassigned_dates(self._groups, self._evaluators)
 
-        groups_graph = self.groups_assignment_flow()
+        groups_graph = self.groups_assigment_flow()
         max_flow_min_cost_groups = self._max_flow_min_cost(groups_graph)
 
         # assignment_result = self.formatter.format_delivery_result(max_flow_min_cost_groups,self._tutors, self._groups, self._evaluators)
 
-        return assignment_result
+        return max_flow_min_cost_groups

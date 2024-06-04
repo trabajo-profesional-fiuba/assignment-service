@@ -61,3 +61,6 @@ class Group:
 
     def filter_dates(self, dates):
         return self.state.filter_dates(dates)
+
+    def remove_dates(self, dates):
+        self.state.remove_dates(dates)
