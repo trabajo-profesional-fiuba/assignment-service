@@ -19,9 +19,9 @@ class TestSimplexHelper:
         """
         groups = []
         for i in range(1, num_groups + 1):
-            tutor = Tutor(f"t{(i % 4)+1}", "email", "name")
+            tutor = Tutor((i % 4)+1, "email", "name")
             tutor.add_available_dates(available_dates)
-            groups.append(Group((f"g{i}"), tutor))
+            groups.append(Group(i, tutor))
 
         for group in groups:
             group.add_available_dates(available_dates)
@@ -59,7 +59,7 @@ class TestSimplexHelper:
         """
         tutors = []
         for i in range(1, num_tutors + 1):
-            tutor = Tutor(f"t{i}", "email", "name")
+            tutor = Tutor(i, "email", "name")
             tutor.add_available_dates(available_dates)
             tutors.append(tutor)
         return tutors
@@ -76,8 +76,8 @@ class TestSimplexHelper:
         """
         return [
             Evaluator(
-                f"e{i}",
+                i,
                 available_dates,
             )
-            for i in range(1, num_tutors + 1)
+            for i in range(10, num_tutors + 10)
         ]

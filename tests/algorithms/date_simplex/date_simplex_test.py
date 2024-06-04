@@ -190,15 +190,15 @@ class TestDatesSimplex:
             DeliveryDate(5, 5, 11),
         ]
 
-        tutor1 = Tutor("t1", "Nombre Tutor 1", "email@tutor1.com")
+        tutor1 = Tutor(1, "Nombre Tutor 1", "email@tutor1.com")
         tutor1.add_available_dates(
             possible_dates[0:11] + possible_dates[33:44] + possible_dates[44:55]
         )
-        tutor2 = Tutor("t2", "Nombre Tutor 2", "email@tutor2.com")
+        tutor2 = Tutor(2, "Nombre Tutor 2", "email@tutor2.com")
         tutor2.add_available_dates(
             possible_dates[11:22] + possible_dates[22:33] + possible_dates[44:55]
         )
-        tutor3 = Tutor("t3", "Nombre Tutor 3", "email@tutor3.com")
+        tutor3 = Tutor(3, "Nombre Tutor 3", "email@tutor3.com")
         tutor3.add_available_dates(possible_dates[22:33] + possible_dates[33:44])
         group1 = Group("g1", tutor1)
         group1.add_available_dates(possible_dates[0:22])
@@ -213,10 +213,10 @@ class TestDatesSimplex:
         groups = [group1, group2, group3, group4, group5]
         tutors = [tutor1, tutor2, tutor3]
         evaluators = [
-            Evaluator(id="e1", available_dates=possible_dates[0:22]),
-            Evaluator(id="e2", available_dates=possible_dates[11:33]),
-            Evaluator(id="e3", available_dates=possible_dates[22:44]),
-            Evaluator(id="e4", available_dates=possible_dates[33:55]),
+            Evaluator(id=11, available_dates=possible_dates[0:22]),
+            Evaluator(id=12, available_dates=possible_dates[11:33]),
+            Evaluator(id=13, available_dates=possible_dates[22:44]),
+            Evaluator(id=14, available_dates=possible_dates[33:55]),
         ]
 
         solver = DeliveryLPSolver(groups, tutors, None, possible_dates, evaluators)

@@ -1,4 +1,5 @@
 import pyscipopt as scip
+from src.constants import DATE_ID, EVALUATOR_ID, GROUP_ID
 from src.model.utils.delivery_date import DeliveryDate
 
 
@@ -82,12 +83,12 @@ class DateEvaluatorsLPSolver:
 
         if evaluator.id != group.tutor.id:
             for week, day, hour in mutual_available_dates:
-                var_name = f"assign_{group.id}_{week}_{day}_{hour}_{evaluator.id}"
-                self._decision_variables[(group.id, week, day, hour, evaluator.id)] = (
+                var_name = f"{GROUP_ID}-{group.id}-{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}-{hour}"
+                self._decision_variables[(group.id, evaluator.id, week, day, hour)] = (
                     self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
                 )
                 if (evaluator.id, week, day) not in self._evaluator_day_vars:
-                    day_var_name = f"day_{evaluator.id}_{week}_{day}"
+                    day_var_name = f"{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}"
                     self._evaluator_day_vars[(evaluator.id, week, day)] = (
                         self._model.addVar(day_var_name, vtype="B", obj=0, lb=0, ub=1)
                     )
@@ -118,7 +119,7 @@ class DateEvaluatorsLPSolver:
         if len(group_possible_dates) > 0:
             for date in group_possible_dates:
                 group_date_var = self._model.addVar(
-                    f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
+                    f"{GROUP_ID}-{group.id}-{DATE_ID}-{date[0]}-{date[1]}-{date[2]}",
                     vtype="B",
                     obj=0,
                     lb=0,
@@ -129,18 +130,18 @@ class DateEvaluatorsLPSolver:
                     group_date_var
                     >= scip.quicksum(
                         self._decision_variables[
-                            (group.id, date[0], date[1], date[2], evaluator.id)
+                            (group.id, evaluator.id, date[0], date[1], date[2])
                         ]
                         for evaluator in self._evaluators
-                        if (group.id, date[0], date[1], date[2], evaluator.id)
+                        if (group.id, evaluator.id, date[0], date[1], date[2])
                         in self._decision_variables
                     )
                     / len(self._evaluators),
-                    name=f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
+                    name=f"{GROUP_ID}-{group.id}-{DATE_ID}-{date[0]}-{date[1]}-{date[2]}",
                 )
             self._model.addCons(
                 scip.quicksum(group_date_vars.values()) == 1,
-                name=f"unique_date_{group.id}",
+                name=f"{GROUP_ID}-{group.id}",
             )
 
     def _add_min_max_assignment_constraints(self, group):
@@ -199,7 +200,7 @@ class DateEvaluatorsLPSolver:
                 >= scip.quicksum(
                     self._decision_variables[var]
                     for var in self._decision_variables
-                    if var[1] == week and var[2] == day and var[4] == evaluator_id
+                    if var[1] == evaluator_id and var[2] == week and var[3] == day
                 )
                 / len(self._available_dates)
             )
@@ -228,7 +229,7 @@ class DateEvaluatorsLPSolver:
                 scip.quicksum(
                     self._decision_variables[var]
                     for var in self._decision_variables
-                    if var[1] == week and var[4] == evaluator.id
+                    if var[1] == evaluator.id and var[2] == week 
                 )
                 <= 5,
                 name=f"max_5_groups_week_{evaluator.id}_{week}",

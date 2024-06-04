@@ -1,4 +1,5 @@
 import pyscipopt as scip
+from src.constants import DATE_ID, GROUP_ID, TUTOR_ID
 
 
 class DeliveryTutorsLPSolver:
@@ -65,12 +66,12 @@ class DeliveryTutorsLPSolver:
             ]
 
             for week, day, hour in mutual_available_dates:
-                var_name = f"assign_{group.id}_{tutor.id}_{week}_{day}_{hour}"
+                var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor.id}-{DATE_ID}-{week}-{day}-{hour}"
                 self._decision_variables[(group.id, tutor.id, week, day, hour)] = (
                     self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
                 )
                 if (tutor.id, week, day, hour) not in self._tutor_day_vars:
-                    day_var_name = f"day_{tutor.id}_{week}_{day}"
+                    day_var_name = f"{TUTOR_ID}-{tutor.id}-{DATE_ID}-{week}-{day}"
                     self._tutor_day_vars[(tutor.id, week, day)] = self._model.addVar(
                         day_var_name, vtype="B", obj=0, lb=0, ub=1
                     )
