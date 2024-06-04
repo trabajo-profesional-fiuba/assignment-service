@@ -29,10 +29,6 @@ class Group:
         return self._state
 
     @property
-    def tutor(self):
-        return self._tutor
-
-    @property
     def topics(self) -> list[Topic]:
         return self._state.topics
 

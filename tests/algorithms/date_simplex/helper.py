@@ -19,7 +19,7 @@ class TestSimplexHelper:
         """
         groups = []
         for i in range(1, num_groups + 1):
-            tutor = Tutor((i % 4)+1, "email", "name")
+            tutor = Tutor((i % 4) + 1, "email", "name")
             tutor.add_available_dates(available_dates)
             groups.append(Group(i, tutor))
 

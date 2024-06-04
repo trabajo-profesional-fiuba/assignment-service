@@ -61,6 +61,8 @@ class DateEvaluatorsLPSolver:
     def _create_variables_for_group_evaluator(self, group, evaluator):
         """
         Creates decision variables for a specific group and evaluator.
+        Decision variables: group-id-evaluator-id-date-week-day-hour
+        Evaluator variables: evaluator-id-date-week-day
 
         Parameters:
         -----------
@@ -88,7 +90,9 @@ class DateEvaluatorsLPSolver:
                     self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
                 )
                 if (evaluator.id, week, day) not in self._evaluator_day_vars:
-                    day_var_name = f"{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}"
+                    day_var_name = (
+                        f"{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}"
+                    )
                     self._evaluator_day_vars[(evaluator.id, week, day)] = (
                         self._model.addVar(day_var_name, vtype="B", obj=0, lb=0, ub=1)
                     )
@@ -104,6 +108,7 @@ class DateEvaluatorsLPSolver:
     def _add_unique_date_constraint(self, group):
         """
         Adds a constraint to ensure each group is assigned to a unique date.
+        Group unique date variables: group-id-date-week-day-hour
 
         Parameters:
         -----------
@@ -177,7 +182,7 @@ class DateEvaluatorsLPSolver:
                     if var[0] == group.id
                 )
                 <= 4,
-                name=f"max_assign_{group.id}",
+                name=f"max-assign-{GROUP_ID}-{group.id}",
             )
 
             self._model.addCons(
@@ -187,7 +192,7 @@ class DateEvaluatorsLPSolver:
                     if var[0] == group.id
                 )
                 >= min_evaluators,
-                name=f"min_assign_{group.id}",
+                name=f"min-assign-{GROUP_ID}-{group.id}",
             )
 
     def add_evaluator_minimization_constraints(self):
@@ -229,10 +234,10 @@ class DateEvaluatorsLPSolver:
                 scip.quicksum(
                     self._decision_variables[var]
                     for var in self._decision_variables
-                    if var[1] == evaluator.id and var[2] == week 
+                    if var[1] == evaluator.id and var[2] == week
                 )
                 <= 5,
-                name=f"max_5_groups_week_{evaluator.id}_{week}",
+                name=f"max-5-groups-week-{EVALUATOR_ID}-{evaluator.id}-{week}",
             )
 
     def define_objective(self):

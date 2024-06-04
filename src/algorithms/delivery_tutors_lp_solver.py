@@ -46,6 +46,8 @@ class DeliveryTutorsLPSolver:
     def create_group_tutors_evaluator_decision_variables(self, num_week: int):
         """
         Creates decision variables for the assignment of dates to groups.
+        Decision variables: group-id-tutor-id-date-week-day-hour
+        Tutor variables: tutor-id-date-week-day
 
         Parameters:
         -----------
