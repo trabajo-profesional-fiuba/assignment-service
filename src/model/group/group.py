@@ -21,6 +21,10 @@ class Group:
         return self._id
 
     @property
+    def tutor(self):
+        return self._tutor
+
+    @property
     def state(self):
         return self._state
 

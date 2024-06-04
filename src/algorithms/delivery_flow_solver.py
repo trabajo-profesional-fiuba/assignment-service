@@ -1,5 +1,6 @@
 import networkx as nx
 from src.algorithms.delivery_solver import DeliverySolver
+from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 
 
 class DeliveryFlowSolver(DeliverySolver):
@@ -8,19 +9,21 @@ class DeliveryFlowSolver(DeliverySolver):
         super().__init__(groups, tutors, formatter, available_dates)
         self._evaluators = evaluators
 
-    def _create_source_edges(self, nodes: list, capacity: int) -> list:
+    def _create_source_edges(
+        self, nodes: list, capacity: int, prefix_node: str
+    ) -> list:
         """
         Based on a list of nodes, and a base capacity
         its create the edges for s -(capacity,1)-> node
         """
         edges = []
         for node in nodes:
-            edge = ("s", f"{node.id}", {"capacity": capacity, "cost": 1})
+            edge = ("s", f"{prefix_node}-{node.id}", {"capacity": capacity, "cost": 1})
             edges.append(edge)
 
         return edges
 
-    def _create_date_edges(self, nodes: list, possible_dates: list):
+    def _create_date_edges(self, nodes: list, possible_dates: list, prefix_node: str):
         """
         Based on a list of nodes, and possible dates
         its create the edges based on items from the intersection
@@ -33,8 +36,8 @@ class DeliveryFlowSolver(DeliverySolver):
                 date_label = date.label()
                 edges.append(
                     (
-                        f"{node.id}",
-                        date_label,
+                        f"{prefix_node}-{node.id}",
+                        f"{DATE_ID}-{date_label}",
                         {"capacity": 1, "cost": 1},
                     )
                 )
@@ -49,7 +52,9 @@ class DeliveryFlowSolver(DeliverySolver):
         edges = []
         for date in possible_dates:
             date_label = date.label()
-            edges.append((date_label, "t", {"capacity": capacity, "cost": 1}))
+            edges.append(
+                (f"{DATE_ID}-{date_label}", "t", {"capacity": capacity, "cost": 1})
+            )
 
         return edges
 
@@ -64,16 +69,16 @@ class DeliveryFlowSolver(DeliverySolver):
             weeks = set(d.week for d in dates)
             for week in weeks:
                 week_edge = (
-                    f"{evaluator.id}",
-                    f"{week}-{evaluator.id}",
+                    f"evaluator-{evaluator.id}",
+                    f"{DATE_ID}-{week}-evaluator-{evaluator.id}",
                     {"capacity": 5, "cost": 1},
                 )
                 edges.append(week_edge)
                 for date in dates:
                     if date.week == week:
                         edge = (
-                            f"{week}-{evaluator.id}",
-                            date.label(),
+                            f"{DATE_ID}-{week}-evaluator-{evaluator.id}",
+                            f"{DATE_ID}-{date.label()}",
                             {"capacity": 1, "cost": 1},
                         )
                         edges.append(edge)
@@ -87,12 +92,14 @@ class DeliveryFlowSolver(DeliverySolver):
                     assigned_dates = evaluator.assigned_dates
                     group.remove_dates(assigned_dates)
 
-    def groups_assigment_flow(self):
+    def groups_assignment_flow(self):
         """
         Creates a directed graph based on the different edges
         """
-        sources_edges = self._create_source_edges(self._groups, 1)
-        date_edges = self._create_date_edges(self._groups, self._available_dates)
+        sources_edges = self._create_source_edges(self._groups, 1, GROUP_ID)
+        date_edges = self._create_date_edges(
+            self._groups, self._available_dates, GROUP_ID
+        )
         sink_edges = self._create_sink_edges(self._available_dates, 1)
 
         graph = nx.DiGraph()
@@ -108,10 +115,10 @@ class DeliveryFlowSolver(DeliverySolver):
 
         return dates
 
-    def evaluators_assigment_flow(self):
+    def evaluators_assignment_flow(self):
 
         mutual_dates = self._filter_final_dates()
-        sources_edges = self._create_source_edges(self._evaluators, 35)
+        sources_edges = self._create_source_edges(self._evaluators, 35, EVALUATOR_ID)
         weeks_date_edges = self._create_evaluators_week_edges(self._evaluators)
         sink_edges = self._create_sink_edges(mutual_dates, 2)
 
@@ -123,7 +130,7 @@ class DeliveryFlowSolver(DeliverySolver):
 
     def _assign_evaluators_results(self, result):
         for evaluator in self._evaluators:
-            weeks = result[f"{evaluator.id}"]
+            weeks = result[f"{EVALUATOR_ID}-{evaluator.id}"]
             for key, value in weeks.items():
                 if value > 0:
                     days = result[key]
@@ -144,15 +151,17 @@ class DeliveryFlowSolver(DeliverySolver):
 
     def solve(self):
 
-        evaluator_graph = self.evaluators_assigment_flow()
+        evaluator_graph = self.evaluators_assignment_flow()
         max_flow_min_cost_evaluators = self._max_flow_min_cost(evaluator_graph)
 
         self._assign_evaluators_results(max_flow_min_cost_evaluators)
         self._filter_unassigned_dates(self._groups, self._evaluators)
 
-        groups_graph = self.groups_assigment_flow()
+        groups_graph = self.groups_assignment_flow()
         max_flow_min_cost_groups = self._max_flow_min_cost(groups_graph)
 
-        # assignment_result = self.formatter.format_delivery_result(max_flow_min_cost_groups,self._tutors, self._groups, self._evaluators)
+        assignment_result = self._formatter.format_result(
+            max_flow_min_cost_groups, self._groups
+        )
 
-        return max_flow_min_cost_groups
+        return assignment_result

@@ -19,4 +19,3 @@ class DeliveryDate:
 
     def label(self):
         return f"{self._week}-{self._day}-{self._hour}"
-
