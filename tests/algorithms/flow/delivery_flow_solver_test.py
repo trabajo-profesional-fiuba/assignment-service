@@ -325,7 +325,7 @@ class TestDeliveryFlowSolver:
         possible_dates = [self.dates[0], self.dates[1],
                           self.dates[2], self.dates[3]]
         evaluators = [
-            Evaluator(1, [self.dates[2], self.dates[3]]),
+            Evaluator(1, [self.dates[2]]),
             Evaluator(2, [self.dates[1]]),
             Evaluator(3, [self.dates[0]]),
             Evaluator(4, [self.dates[2], self.dates[3]])
