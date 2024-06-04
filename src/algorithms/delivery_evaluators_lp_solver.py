@@ -1,4 +1,5 @@
 import pyscipopt as scip
+from src.model.utils.delivery_date import DeliveryDate
 
 
 class DateEvaluatorsLPSolver:
@@ -114,32 +115,33 @@ class DateEvaluatorsLPSolver:
             for (g, t, week, day, hour) in self._result_tutors
             if g == group.id
         ]
-        for date in group_possible_dates:
-            group_date_var = self._model.addVar(
-                f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
-                vtype="B",
-                obj=0,
-                lb=0,
-                ub=1,
-            )
-            group_date_vars[date] = group_date_var
-            self._model.addCons(
-                group_date_var
-                >= scip.quicksum(
-                    self._decision_variables[
-                        (group.id, date[0], date[1], date[2], evaluator.id)
-                    ]
-                    for evaluator in self._evaluators
-                    if (group.id, date[0], date[1], date[2], evaluator.id)
-                    in self._decision_variables
+        if len(group_possible_dates) > 0:
+            for date in group_possible_dates:
+                group_date_var = self._model.addVar(
+                    f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
+                    vtype="B",
+                    obj=0,
+                    lb=0,
+                    ub=1,
                 )
-                / len(self._evaluators),
-                name=f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
+                group_date_vars[date] = group_date_var
+                self._model.addCons(
+                    group_date_var
+                    >= scip.quicksum(
+                        self._decision_variables[
+                            (group.id, date[0], date[1], date[2], evaluator.id)
+                        ]
+                        for evaluator in self._evaluators
+                        if (group.id, date[0], date[1], date[2], evaluator.id)
+                        in self._decision_variables
+                    )
+                    / len(self._evaluators),
+                    name=f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
+                )
+            self._model.addCons(
+                scip.quicksum(group_date_vars.values()) == 1,
+                name=f"unique_date_{group.id}",
             )
-        self._model.addCons(
-            scip.quicksum(group_date_vars.values()) == 1,
-            name=f"unique_date_{group.id}",
-        )
 
     def _add_min_max_assignment_constraints(self, group):
         """
@@ -156,37 +158,36 @@ class DateEvaluatorsLPSolver:
             for (g, t, week, day, hour) in self._result_tutors
             if g == group.id
         ]
-
-        for date in group_possible_dates:
-            available_evaluators = sum(
-                1
-                for evaluator in self._evaluators
-                for date_evaluator in evaluator.available_dates
-                if date[0] == date_evaluator.week
-                and date[1] == date_evaluator.day
-                and date[2] == date_evaluator.hour
+        if len(group_possible_dates) > 0:
+            for date in group_possible_dates:
+                available_evaluators = sum(
+                    1
+                    for evaluator in self._evaluators
+                    for date_evaluator in evaluator.available_dates
+                    if date[0] == date_evaluator.week
+                    and date[1] == date_evaluator.day
+                    and date[2] == date_evaluator.hour
+                )
+            min_evaluators = min(2, available_evaluators)
+            self._model.addCons(
+                scip.quicksum(
+                    self._decision_variables[var]
+                    for var in self._decision_variables
+                    if var[0] == group.id
+                )
+                <= 4,
+                name=f"max_assign_{group.id}",
             )
 
-        min_evaluators = min(2, available_evaluators)
-        self._model.addCons(
-            scip.quicksum(
-                self._decision_variables[var]
-                for var in self._decision_variables
-                if var[0] == group.id
+            self._model.addCons(
+                scip.quicksum(
+                    self._decision_variables[var]
+                    for var in self._decision_variables
+                    if var[0] == group.id
+                )
+                >= min_evaluators,
+                name=f"min_assign_{group.id}",
             )
-            <= 4,
-            name=f"max_assign_{group.id}",
-        )
-
-        self._model.addCons(
-            scip.quicksum(
-                self._decision_variables[var]
-                for var in self._decision_variables
-                if var[0] == group.id
-            )
-            >= min_evaluators,
-            name=f"min_assign_{group.id}",
-        )
 
     def add_evaluator_minimization_constraints(self):
         """
@@ -300,6 +301,9 @@ class DateEvaluatorsLPSolver:
             if self._model.getVal(self._decision_variables[var]) > 0:
                 print(f"Variable {var} (Group, Week, Day, Hour, Evaluator): {var}")
                 result.append(var)
+                group_id, week, day, hour, evaluator_id = var
+                group = next(g for g in self._groups if g.id == group_id)
+                group.state.assign_date(DeliveryDate(week, day, hour))
 
         print("\nAdditional activated variables (Evaluator, Week, Day):")
         for var in self._evaluator_day_vars:

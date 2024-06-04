@@ -17,10 +17,6 @@ class TestSimplexHelper:
             - available_dates: dates where the group is available
         Returns: a list of groups with their ids and available dates.
         """
-        # return [
-        #     FinalStateGroup((f"g{i}"), available_dates, (f"t{(i % 4)+1}"))
-        #     for i in range(1, num_groups + 1)
-        # ]
         groups = []
         for i in range(1, num_groups + 1):
             tutor = Tutor(f"t{(i % 4)+1}", "email", "name")
