@@ -5,5 +5,17 @@ class DeliveryDate:
         self._day = day
         self._hour = hour
 
+    @property
+    def week(self):
+        return self._week
+
+    @property
+    def day(self):
+        return self._day
+
+    @property
+    def hour(self):
+        return self._hour
+
     def label(self):
         return f"{self._week}-{self._day}-{self._hour}"

@@ -24,9 +24,9 @@ class TestOutputFormatter:
         output_formatter.FORMATTERS[dict] = mock_flow_formatter
 
         result = {"key": "value"}
-        formatted_result = output_formatter.format_result(result)
+        formatted_result = output_formatter.format_result(result, [])
 
-        mock_flow_formatter.get_result.assert_called_once_with(result)
+        mock_flow_formatter.get_result.assert_called_once_with(result, [])
         assert formatted_result == "Formatted dict result"
 
     @pytest.mark.formatter
@@ -37,9 +37,9 @@ class TestOutputFormatter:
         output_formatter.FORMATTERS[list] = mock_simplex_formatter
 
         result = ["item1", "item2"]
-        formatted_result = output_formatter.format_result(result)
+        formatted_result = output_formatter.format_result(result, [])
 
-        mock_simplex_formatter.get_result.assert_called_once_with(result)
+        mock_simplex_formatter.get_result.assert_called_once_with(result, [])
         assert formatted_result == "Formatted list result"
 
     @pytest.mark.formatter
@@ -47,4 +47,4 @@ class TestOutputFormatter:
         """Test that ResultFormatNotFound is raised for unrecognized result types."""
         result = 123  # An unrecognized type (neither dict nor list)
         with pytest.raises(ResultFormatNotFound):
-            output_formatter.format_result(result)
+            output_formatter.format_result(result, [])

@@ -53,3 +53,9 @@ class Tutor:
     def capacity(self) -> int:
         """Returns the capacity of the tutor."""
         return self._state.capacity
+
+    def assign_date(self, date: str) -> None:
+        self._state.assign_date(date)
+
+    def assigned_dates(self) -> str:
+        return self._state.assigned_dates()

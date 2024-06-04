@@ -7,7 +7,7 @@ class InitialStateTutor(Tutor):
     Represents the initial state of a tutor.
     """
 
-    def __init__(self, id: int, capacity: int, topics: list[Topic]) -> None:
+    def __init__(self, capacity: int, topics: list[Topic]) -> None:
         """
         Initializes an `InitialStateTutor` object.
 
