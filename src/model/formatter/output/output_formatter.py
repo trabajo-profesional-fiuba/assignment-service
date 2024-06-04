@@ -2,6 +2,10 @@ from src.model.formatter.output.flow_formatter import FlowOutputFormatter
 from src.model.formatter.output.simplex_formatter import SimplexOutputFormatter
 from src.exceptions import ResultFormatNotFound
 from typing import Tuple, Union
+from src.model.group.group import Group
+from src.model.tutor.tutor import Tutor
+from src.model.utils.evaluator import Evaluator
+from src.model.result import AssignmentResult
 
 
 class OutputFormatter:
@@ -21,7 +25,9 @@ class OutputFormatter:
         """
         pass
 
-    def format_result(self, result: Union[dict, list]) -> list[Tuple[str, str, str]]:
+    def format_result(
+        self, result: Union[dict, list], groups: list[Group]
+    ) -> AssignmentResult:
         """
         Formats the algorithm result into a standardized structure.
 
@@ -34,7 +40,7 @@ class OutputFormatter:
             which can be of type `dict` or `list`.
 
         Returns:
-            Any: The formatted result, as processed by the appropriate
+            AssignmentResult: The formatted result, as processed by the appropriate
             formatter class.
 
         Raises:
@@ -44,6 +50,6 @@ class OutputFormatter:
         result_type = type(result)
         formatter = self.FORMATTERS.get(result_type)
         if formatter:
-            return formatter.get_result(result)
+            return formatter.get_result(result, groups)
         else:
             raise ResultFormatNotFound("Unrecognized result format")

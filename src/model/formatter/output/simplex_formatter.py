@@ -1,4 +1,5 @@
 from typing import Tuple
+from src.model.result import AssignmentResult
 
 
 class SimplexOutputFormatter:
@@ -16,7 +17,7 @@ class SimplexOutputFormatter:
         """
         pass
 
-    def get_result(self, result: list[str]) -> list[Tuple[str, str, str]]:
+    def get_result(self, result: list[str], groups) -> AssignmentResult:
         """
         Formats the simplex algorithm result into a standardized structure.
 

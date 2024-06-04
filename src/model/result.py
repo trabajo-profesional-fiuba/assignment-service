@@ -7,12 +7,6 @@ class AssignmentResult:
 
     def __init__(
         self,
-        id: int,
         groups: list[Group],
-        tutors: list[Tutor],
-        evaluators: list[Evaluator] = None,
     ) -> None:
-        self._id: id
         self._groups: groups
-        self._tutors: tutors
-        self._evaluators: evaluators
