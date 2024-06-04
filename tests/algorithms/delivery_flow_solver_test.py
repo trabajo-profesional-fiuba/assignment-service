@@ -76,22 +76,22 @@ class TestDeliveryFlowSolver:
         expected_edges = [
             (
                 "group-1",
-                f"{DATE_ID}-{self.dates[0].label()}",
+                f"date-{self.dates[0].label()}",
                 {"capacity": 1, "cost": 1},
             ),
             (
                 "group-1",
-                f"{DATE_ID}-{self.dates[1].label()}",
+                f"date-{self.dates[1].label()}",
                 {"capacity": 1, "cost": 1},
             ),
             (
                 "group-2",
-                f"{DATE_ID}-{self.dates[2].label()}",
+                f"date-{self.dates[2].label()}",
                 {"capacity": 1, "cost": 1},
             ),
             (
                 "group-3",
-                f"{DATE_ID}-{self.dates[3].label()}",
+                f"date-{self.dates[3].label()}",
                 {"capacity": 1, "cost": 1},
             ),
         ]
@@ -110,10 +110,10 @@ class TestDeliveryFlowSolver:
         possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
         delivery_flow_solver = DeliveryFlowSolver([], possible_dates, None, [], [])
         expected_edges = [
-            (f"{DATE_ID}-{self.dates[0].label()}", "t", {"capacity": 1, "cost": 1}),
-            (f"{DATE_ID}-{self.dates[1].label()}", "t", {"capacity": 1, "cost": 1}),
-            (f"{DATE_ID}-{self.dates[2].label()}", "t", {"capacity": 1, "cost": 1}),
-            (f"{DATE_ID}-{self.dates[3].label()}", "t", {"capacity": 1, "cost": 1}),
+            (f"date-{self.dates[0].label()}", "t", {"capacity": 1, "cost": 1}),
+            (f"date-{self.dates[1].label()}", "t", {"capacity": 1, "cost": 1}),
+            (f"date-{self.dates[2].label()}", "t", {"capacity": 1, "cost": 1}),
+            (f"date-{self.dates[3].label()}", "t", {"capacity": 1, "cost": 1}),
         ]
 
         # Act
@@ -141,14 +141,14 @@ class TestDeliveryFlowSolver:
             ("s", "group-1"),
             ("s", "group-2"),
             ("s", "group-3"),
-            ("group-1", f"{DATE_ID}-{self.dates[0].label()}"),
-            ("group-1", f"{DATE_ID}-{self.dates[1].label()}"),
-            ("group-2", f"{DATE_ID}-{self.dates[2].label()}"),
-            ("group-3", f"{DATE_ID}-{self.dates[3].label()}"),
-            (f"{DATE_ID}-{self.dates[0].label()}", "t"),
-            (f"{DATE_ID}-{self.dates[1].label()}", "t"),
-            (f"{DATE_ID}-{self.dates[2].label()}", "t"),
-            (f"{DATE_ID}-{self.dates[3].label()}", "t"),
+            ("group-1", f"date-{self.dates[0].label()}"),
+            ("group-1", f"date-{self.dates[1].label()}"),
+            ("group-2", f"date-{self.dates[2].label()}"),
+            ("group-3", f"date-{self.dates[3].label()}"),
+            (f"date-{self.dates[0].label()}", "t"),
+            (f"date-{self.dates[1].label()}", "t"),
+            (f"date-{self.dates[2].label()}", "t"),
+            (f"date-{self.dates[3].label()}", "t"),
         ]
         # Act
         graph = delivery_flow_solver.groups_assignment_flow()
@@ -175,9 +175,9 @@ class TestDeliveryFlowSolver:
 
         result = delivery_flow_solver._max_flow_min_cost(graph)
 
-        assert result["group-1"][f"{DATE_ID}-{self.dates[0].label()}"] == 1
-        assert result["group-2"][f"{DATE_ID}-{self.dates[1].label()}"] == 1
-        assert result["group-3"][f"{DATE_ID}-{self.dates[3].label()}"] == 1
+        assert result["group-1"][f"date-{self.dates[0].label()}"] == 1
+        assert result["group-2"][f"date-{self.dates[1].label()}"] == 1
+        assert result["group-3"][f"date-{self.dates[3].label()}"] == 1
 
     @pytest.mark.unit
     def test_all_groups_have_one_day_assigned(self):
@@ -217,27 +217,27 @@ class TestDeliveryFlowSolver:
         delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [])
 
         expected_edges = [
-            ("evaluator-1", "{DATE_ID}-2-evaluator-1", {"capacity": 5, "cost": 1}),
+            ("evaluator-1", "date-2-evaluator-1", {"capacity": 5, "cost": 1}),
             (
-                "{DATE_ID}-2-evaluator-1",
-                f"{DATE_ID}-{self.dates[2].label()}",
+                "date-2-evaluator-1",
+                f"date-{self.dates[2].label()}",
                 {"capacity": 1, "cost": 1},
             ),
             (
-                "{DATE_ID}-2-evaluator-1",
-                f"{DATE_ID}-{self.dates[3].label()}",
+                "date-2-evaluator-1",
+                f"date-{self.dates[3].label()}",
                 {"capacity": 1, "cost": 1},
             ),
-            ("evaluator-2", "{DATE_ID}-1-evaluator-2", {"capacity": 5, "cost": 1}),
+            ("evaluator-2", "date-1-evaluator-2", {"capacity": 5, "cost": 1}),
             (
-                "{DATE_ID}-1-evaluator-2",
-                f"{DATE_ID}-{self.dates[1].label()}",
+                "date-1-evaluator-2",
+                f"date-{self.dates[1].label()}",
                 {"capacity": 1, "cost": 1},
             ),
-            ("evaluator-3", "{DATE_ID}-1-evaluator-3", {"capacity": 5, "cost": 1}),
+            ("evaluator-3", "date-1-evaluator-3", {"capacity": 5, "cost": 1}),
             (
-                "{DATE_ID}-1-evaluator-3",
-                f"{DATE_ID}-{self.dates[0].label()}",
+                "date-1-evaluator-3",
+                f"date-{self.dates[0].label()}",
                 {"capacity": 1, "cost": 1},
             ),
         ]
@@ -255,10 +255,10 @@ class TestDeliveryFlowSolver:
         delivery_flow_solver = DeliveryFlowSolver([], [], None, possible_dates, [])
 
         expected_edges = [
-            (f"{DATE_ID}-{self.dates[0].label()}", "t", {"capacity": 2, "cost": 1}),
-            (f"{DATE_ID}-{self.dates[1].label()}", "t", {"capacity": 2, "cost": 1}),
-            (f"{DATE_ID}-{self.dates[2].label()}", "t", {"capacity": 2, "cost": 1}),
-            (f"{DATE_ID}-{self.dates[3].label()}", "t", {"capacity": 2, "cost": 1}),
+            (f"date-{self.dates[0].label()}", "t", {"capacity": 2, "cost": 1}),
+            (f"date-{self.dates[1].label()}", "t", {"capacity": 2, "cost": 1}),
+            (f"date-{self.dates[2].label()}", "t", {"capacity": 2, "cost": 1}),
+            (f"date-{self.dates[3].label()}", "t", {"capacity": 2, "cost": 1}),
         ]
 
         # Act
@@ -297,21 +297,21 @@ class TestDeliveryFlowSolver:
             ("s", "evaluator-1"),
             ("s", "evaluator-2"),
             ("s", "evaluator-3"),
-            ("evaluator-1", "{DATE_ID}-1-evaluator-1"),
-            ("evaluator-1", "{DATE_ID}-2-evaluator-1"),
-            ("{DATE_ID}-1-evaluator-1", "{DATE_ID}-1-1-1"),
-            ("{DATE_ID}-1-evaluator-1", "{DATE_ID}-1-2-1"),
-            ("{DATE_ID}-2-evaluator-1", "{DATE_ID}-2-1-1"),
-            ("{DATE_ID}-2-evaluator-1", "{DATE_ID}-2-2-1"),
-            ("evaluator-2", "{DATE_ID}-2-evaluator-2"),
-            ("evaluator-2", "{DATE_ID}-3-evaluator-2"),
-            ("{DATE_ID}-2-evaluator-2", "{DATE_ID}-2-1-1"),
-            ("{DATE_ID}-2-evaluator-2", "{DATE_ID}-2-2-1"),
-            ("{DATE_ID}-3-evaluator-2", "{DATE_ID}-3-1-1"),
-            ("{DATE_ID}-3-evaluator-2", "{DATE_ID}-3-2-1"),
-            ("evaluator-3", "{DATE_ID}-4-evaluator-3"),
-            ("{DATE_ID}-4-evaluator-3", "{DATE_ID}-4-1-2"),
-            ("{DATE_ID}-4-evaluator-3", "{DATE_ID}-4-2-2"),
+            ("evaluator-1", "date-1-evaluator-1"),
+            ("evaluator-1", "date-2-evaluator-1"),
+            ("date-1-evaluator-1", "date-1-1-1"),
+            ("date-1-evaluator-1", "date-1-2-1"),
+            ("date-2-evaluator-1", "date-2-1-1"),
+            ("date-2-evaluator-1", "date-2-2-1"),
+            ("evaluator-2", "date-2-evaluator-2"),
+            ("evaluator-2", "date-3-evaluator-2"),
+            ("date-2-evaluator-2", "date-2-1-1"),
+            ("date-2-evaluator-2", "date-2-2-1"),
+            ("date-3-evaluator-2", "date-3-1-1"),
+            ("date-3-evaluator-2", "date-3-2-1"),
+            ("evaluator-3", "date-4-evaluator-3"),
+            ("date-4-evaluator-3", "date-4-1-2"),
+            ("date-4-evaluator-3", "date-4-2-2"),
             (f"{DATE_ID}-{dates[0].label()}", "t"),
             (f"{DATE_ID}-{dates[1].label()}", "t"),
             (f"{DATE_ID}-{dates[2].label()}", "t"),
