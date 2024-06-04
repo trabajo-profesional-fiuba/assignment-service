@@ -21,6 +21,10 @@ class Group:
         return self._id
 
     @property
+    def tutor(self):
+        return self._tutor
+
+    @property
     def state(self):
         return self._state
 
@@ -62,3 +66,9 @@ class Group:
         Returns the group's cost for the given topic.
         """
         return self._state.preference_of(topic)
+
+    def filter_dates(self, dates):
+        return self.state.filter_dates(dates)
+
+    def remove_dates(self, dates):
+        self.state.remove_dates(dates)
