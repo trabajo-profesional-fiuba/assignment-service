@@ -1,7 +1,7 @@
 from src.model.delivery_date.delivery_date import DeliveryDate
 
 
-class FinalStateTutor():
+class FinalStateTutor:
 
     def __init__(self, available_dates: list[DeliveryDate]) -> None:
         """

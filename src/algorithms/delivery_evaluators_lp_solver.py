@@ -2,8 +2,43 @@ import pyscipopt as scip
 
 
 class DateEvaluatorsLPSolver:
+    """
+    Class to solve the problem of assigning evaluators to groups
+    using linear programming.
+
+    Attributes:
+    -----------
+    _result_tutors : list
+        List of results related to tutors.
+    _groups : list
+        List of groups that need evaluators.
+    _evaluators : list
+        List of available evaluators.
+    _available_dates : list
+        List of available dates.
+    _decision_variables : dict
+        Decision variables for the assignment.
+    _evaluator_day_vars : dict
+        Variables to minimize the attendance days of evaluators.
+    _model : scip.Model
+        SCIP model to solve the problem.
+    """
 
     def __init__(self, dates, result_tutors, groups, evaluators):
+        """
+        Initializes the class with dates, result_tutors, groups, and evaluators.
+
+        Parameters:
+        -----------
+        dates : list
+            List of available dates.
+        result_tutors : list
+            List of results related to tutors.
+        groups : list
+            List of groups that need evaluators.
+        evaluators : list
+            List of available evaluators.
+        """
         self._result_tutors = result_tutors
         self._groups = groups
         self._evaluators = evaluators
@@ -13,111 +48,150 @@ class DateEvaluatorsLPSolver:
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
 
-    def create_group_tutors_evaluator_decision_variables(self):
+    def create_decision_variables(self):
+        """
+        Creates decision variables for the assignment of evaluators to groups.
+        """
         for group in self._groups:
             for evaluator in self._evaluators:
-                group_possible_dates = [
-                    (g, t, week, day, hour)
-                    for (g, t, week, day, hour) in self._result_tutors
-                    if g == group.id
-                ]
-                mutual_available_dates = [
-                    (week, day, hour)
-                    for (g, t, week, day, hour) in group_possible_dates
-                    for e_date in evaluator.available_dates
-                    if day == e_date.day and week == e_date.week and hour == e_date.hour
-                ]
+                self._create_variables_for_group_evaluator(group, evaluator)
 
-                if evaluator.id != group.tutor.id:
-                    for week, day, hour in mutual_available_dates:
-                        var_name = (
-                            f"assign_{group.id}_{week}_{day}_{hour}_{evaluator.id}"
-                        )
-                        self._decision_variables[
-                            (group.id, week, day, hour, evaluator.id)
-                        ] = self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
-                        if (evaluator.id, week, day) not in self._evaluator_day_vars:
-                            day_var_name = f"day_{evaluator.id}_{week}_{day}"
-                            self._evaluator_day_vars[(evaluator.id, week, day)] = (
-                                self._model.addVar(
-                                    day_var_name, vtype="B", obj=0, lb=0, ub=1
-                                )
-                            )
+    def _create_variables_for_group_evaluator(self, group, evaluator):
+        """
+        Creates decision variables for a specific group and evaluator.
 
-    def groups_assignment_restriction(self):
-        for group in self._groups:
-            group_date_vars = {}
-            group_possible_dates = [
-                (week, day, hour)
-                for (g, t, week, day, hour) in self._result_tutors
-                if g == group.id
-            ]
-            for date in group_possible_dates:
-                group_date_var = self._model.addVar(
-                    f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
-                    vtype="B",
-                    obj=0,
-                    lb=0,
-                    ub=1,
+        Parameters:
+        -----------
+        group : Group
+            A group that needs an evaluator.
+        evaluator : Evaluator
+            An evaluator available for assignment.
+        """
+        group_possible_dates = [
+            (g, t, week, day, hour)
+            for (g, t, week, day, hour) in self._result_tutors
+            if g == group.id
+        ]
+        mutual_available_dates = [
+            (week, day, hour)
+            for (g, t, week, day, hour) in group_possible_dates
+            for e_date in evaluator.available_dates
+            if day == e_date.day and week == e_date.week and hour == e_date.hour
+        ]
+
+        if evaluator.id != group.tutor.id:
+            for week, day, hour in mutual_available_dates:
+                var_name = f"assign_{group.id}_{week}_{day}_{hour}_{evaluator.id}"
+                self._decision_variables[(group.id, week, day, hour, evaluator.id)] = (
+                    self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
                 )
-                group_date_vars[date] = group_date_var
-                self._model.addCons(
-                    group_date_var
-                    >= scip.quicksum(
-                        self._decision_variables[
-                            (group.id, date[0], date[1], date[2], evaluator.id)
-                        ]
-                        for evaluator in self._evaluators
-                        if (group.id, date[0], date[1], date[2], evaluator.id)
-                        in self._decision_variables
+                if (evaluator.id, week, day) not in self._evaluator_day_vars:
+                    day_var_name = f"day_{evaluator.id}_{week}_{day}"
+                    self._evaluator_day_vars[(evaluator.id, week, day)] = (
+                        self._model.addVar(day_var_name, vtype="B", obj=0, lb=0, ub=1)
                     )
-                    / len(self._evaluators),
-                    name=f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
-                )
-            self._model.addCons(
-                scip.quicksum(group_date_vars.values()) == 1,
-                name=f"unique_date_{group.id}",
-            )
+
+    def add_group_assignment_constraints(self):
+        """
+        Adds group assignment constraints to the model.
+        """
         for group in self._groups:
-            group_possible_dates = [
-                (week, day, hour)
-                for (g, t, week, day, hour) in self._result_tutors
-                if g == group.id
-            ]
+            self._add_unique_date_constraint(group)
+            self._add_min_max_assignment_constraints(group)
 
-            for date in group_possible_dates:
-                available_evaluators = sum(
-                    1
+    def _add_unique_date_constraint(self, group):
+        """
+        Adds a constraint to ensure each group is assigned to a unique date.
+
+        Parameters:
+        -----------
+        group : Group
+            A group that needs an evaluator.
+        """
+        group_date_vars = {}
+        group_possible_dates = [
+            (week, day, hour)
+            for (g, t, week, day, hour) in self._result_tutors
+            if g == group.id
+        ]
+        for date in group_possible_dates:
+            group_date_var = self._model.addVar(
+                f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
+                vtype="B",
+                obj=0,
+                lb=0,
+                ub=1,
+            )
+            group_date_vars[date] = group_date_var
+            self._model.addCons(
+                group_date_var
+                >= scip.quicksum(
+                    self._decision_variables[
+                        (group.id, date[0], date[1], date[2], evaluator.id)
+                    ]
                     for evaluator in self._evaluators
-                    for date_evaluator in evaluator.available_dates
-                    if date[0] == date_evaluator.week
-                    and date[1] == date_evaluator.day
-                    and date[2] == date_evaluator.hour
+                    if (group.id, date[0], date[1], date[2], evaluator.id)
+                    in self._decision_variables
                 )
+                / len(self._evaluators),
+                name=f"group_date_{group.id}_{date[0]}_{date[1]}_{date[2]}",
+            )
+        self._model.addCons(
+            scip.quicksum(group_date_vars.values()) == 1,
+            name=f"unique_date_{group.id}",
+        )
 
-            min_evaluators = min(2, available_evaluators)
-            self._model.addCons(
-                scip.quicksum(
-                    self._decision_variables[var]
-                    for var in self._decision_variables
-                    if var[0] == group.id
-                )
-                <= 4,
-                name=f"max_assign_{group.id}",
+    def _add_min_max_assignment_constraints(self, group):
+        """
+        Adds constraints to ensure each group is assigned to at least
+        a minimum and at most a maximum number of evaluators.
+
+        Parameters:
+        -----------
+        group : Group
+            A group that needs an evaluator.
+        """
+        group_possible_dates = [
+            (week, day, hour)
+            for (g, t, week, day, hour) in self._result_tutors
+            if g == group.id
+        ]
+
+        for date in group_possible_dates:
+            available_evaluators = sum(
+                1
+                for evaluator in self._evaluators
+                for date_evaluator in evaluator.available_dates
+                if date[0] == date_evaluator.week
+                and date[1] == date_evaluator.day
+                and date[2] == date_evaluator.hour
             )
 
-            self._model.addCons(
-                scip.quicksum(
-                    self._decision_variables[var]
-                    for var in self._decision_variables
-                    if var[0] == group.id
-                )
-                >= min_evaluators,
-                name=f"min_assign_{group.id}",
+        min_evaluators = min(2, available_evaluators)
+        self._model.addCons(
+            scip.quicksum(
+                self._decision_variables[var]
+                for var in self._decision_variables
+                if var[0] == group.id
             )
+            <= 4,
+            name=f"max_assign_{group.id}",
+        )
 
-    def evaluator_day_minimization_restriction(self):
-        """Minimizar los días de trabajo de los evaluadores"""
+        self._model.addCons(
+            scip.quicksum(
+                self._decision_variables[var]
+                for var in self._decision_variables
+                if var[0] == group.id
+            )
+            >= min_evaluators,
+            name=f"min_assign_{group.id}",
+        )
+
+    def add_evaluator_minimization_constraints(self):
+        """
+        Adds constraints to minimize the attendance days of evaluators.
+        """
         for evaluator_id, week, day in self._evaluator_day_vars:
             self._model.addCons(
                 self._evaluator_day_vars[(evaluator_id, week, day)]
@@ -129,64 +203,107 @@ class DateEvaluatorsLPSolver:
                 / len(self._available_dates)
             )
 
-    def evaluator_group_assignment_restriction(self):
-        """Si un evaluador trabaja un día, se le asignan todos los grupos presentes ese
-        día hasta un máximo de 5. Además, un evaluador no debe
-        evaluar más de 5 grupos por semana"""
-
+    def add_evaluator_group_assignment_constraints(self):
+        """
+        Adds constraints to ensure evaluators are assigned all
+        groups present on a given day, up to a maximum of 5 groups per week.
+        """
         for evaluator in self._evaluators:
-            # Restricción de que un evaluador no evalúe más de 5 grupos por semana
-            weeks = set(date.week for date in self._available_dates)
-            for week in weeks:
-                self._model.addCons(
-                    scip.quicksum(
-                        self._decision_variables[var]
-                        for var in self._decision_variables
-                        if var[1] == week and var[4] == evaluator.id
-                    )
-                    <= 5,
-                    name=f"max_5_groups_week_{evaluator.id}_{week}",
+            self._add_weekly_group_limit_constraint(evaluator)
+
+    def _add_weekly_group_limit_constraint(self, evaluator):
+        """
+        Adds a constraint to ensure an evaluator is not
+        assigned more than 5 groups per week.
+
+        Parameters:
+        -----------
+        evaluator : Evaluator
+            An evaluator available for assignment.
+        """
+        weeks = set(date.week for date in self._available_dates)
+        for week in weeks:
+            self._model.addCons(
+                scip.quicksum(
+                    self._decision_variables[var]
+                    for var in self._decision_variables
+                    if var[1] == week and var[4] == evaluator.id
                 )
+                <= 5,
+                name=f"max_5_groups_week_{evaluator.id}_{week}",
+            )
 
     def define_objective(self):
-        # Minimizar el número de días que asisten los evaluadores
-        """"""
+        """
+        Defines the objective of minimizing the number of days evaluators attend.
+        """
         self._model.setObjective(
             scip.quicksum(
-                self._evaluator_day_vars[(evaluator_id, day, week)]
-                for (evaluator_id, day, week) in self._evaluator_day_vars
+                self._evaluator_day_vars[(evaluator_id, week, day)]
+                for (evaluator_id, week, day) in self._evaluator_day_vars
             ),
             "minimize",
         )
 
     def solve(self):
-        self._model.setRealParam('limits/time', 600)  # Limitar el tiempo de solución a 600 segundos (10 minutos)
-        self._model.setIntParam('limits/solutions', 100)  # Limitar el número de soluciones
-        self._model.setRealParam('limits/gap', 0.01)  # Establecer un gap óptimo de 1%
-        self._model.setIntParam('presolving/maxrounds', 0)  # Desactivar la presolución
-        self._model.setIntParam('branching/random/priority', 100)  # Usar una estrategia de ramificación aleatoria
+        """
+        Solves the linear programming model.
 
-        self.create_group_tutors_evaluator_decision_variables()
-        self.groups_assignment_restriction()
-        self.evaluator_day_minimization_restriction()
-        self.evaluator_group_assignment_restriction()
+        Returns:
+        --------
+        list
+            List of activated decision variables.
+        """
+        self._configure_solver()
+
+        self.create_decision_variables()
+        self.add_group_assignment_constraints()
+        self.add_evaluator_minimization_constraints()
+        self.add_evaluator_group_assignment_constraints()
         self.define_objective()
 
         self._model.optimize()
 
-        print("Estado:", self._model.getStatus())
-        print("Valor óptimo de la función objetivo:", self._model.getObjVal())
+        return self._get_results()
+
+    def _configure_solver(self):
+        """
+        Configures the solver with appropriate parameters.
+        """
+        self._model.setRealParam(
+            "limits/time", 600
+        )  # Limit the solving time to 600 seconds (10 minutes)
+        self._model.setIntParam(
+            "limits/solutions", 100
+        )  # Limit the number of solutions
+        self._model.setRealParam("limits/gap", 0.01)  # Set an optimality gap of 1%
+        self._model.setIntParam("presolving/maxrounds", 0)  # Disable presolving
+        self._model.setIntParam(
+            "branching/random/priority", 100
+        )  # Use a random branching strategy
+
+    def _get_results(self):
+        """
+        Retrieves and prints the results from the solver.
+
+        Returns:
+        --------
+        list
+            List of activated decision variables.
+        """
+        print("Status:", self._model.getStatus())
+        print("Optimal objective value:", self._model.getObjVal())
 
         result = []
-        print("Variables de decisión activadas:")
+        print("Activated decision variables:")
         for var in self._decision_variables:
             if self._model.getVal(self._decision_variables[var]) > 0:
-                print(f"Variable {var} (Grupo, Semana, Dia, Hora, Evaluador): {var}")
+                print(f"Variable {var} (Group, Week, Day, Hour, Evaluator): {var}")
                 result.append(var)
 
-        print("\nVariables adicionales activadas (Evaluador, Semana, Dia):")
+        print("\nAdditional activated variables (Evaluator, Week, Day):")
         for var in self._evaluator_day_vars:
             if self._model.getVal(self._evaluator_day_vars[var]) > 0:
-                print(f"Variable adicional {var}")
+                print(f"Additional variable {var}")
 
         return result

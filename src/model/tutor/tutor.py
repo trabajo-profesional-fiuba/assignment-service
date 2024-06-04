@@ -4,7 +4,6 @@ from src.model.tutor.final_state_tutor import FinalStateTutor
 
 class Tutor:
 
-
     def __init__(self, id: int, email: str, name: str, groups=None, state=None) -> None:
         self._id = id
         self._name = name
@@ -37,6 +36,7 @@ class Tutor:
     def add_available_dates(self, available_dates) -> None:
         final_state = FinalStateTutor(available_dates)
         self._state = final_state
+
     def preference_of(self, topic: Topic) -> int:
         """
         Calculates the cost of a given topic.

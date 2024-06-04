@@ -19,4 +19,3 @@ class DeliveryDate:
     @property
     def hour(self):
         return self._hour
-

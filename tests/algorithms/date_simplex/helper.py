@@ -1,7 +1,6 @@
 """Module providing helpers function to create different use cases for testing."""
 
 from src.model.group.group import Group
-from src.model.tutor.final_state_tutor import FinalStateTutor
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evalutor import Evaluator
@@ -68,7 +67,6 @@ class TestSimplexHelper:
             tutor.add_available_dates(available_dates)
             tutors.append(tutor)
         return tutors
-        
 
     def create_evaluators(self, num_tutors: int, available_dates: list):
         """

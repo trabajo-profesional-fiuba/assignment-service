@@ -1,8 +1,6 @@
 from src.algorithms.delivery_lp_solver import DeliveryLPSolver
 import time
 
-from src.model.group.final_state_group import FinalStateGroup
-from src.model.utils.delivery_date import DeliveryDate
 from tests.algorithms.date_simplex.helper import TestSimplexHelper
 
 
