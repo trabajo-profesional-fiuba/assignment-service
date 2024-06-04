@@ -1,4 +1,3 @@
-from typing import Tuple
 from src.model.result import AssignmentResult
 
 

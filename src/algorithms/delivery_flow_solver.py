@@ -37,7 +37,7 @@ class DeliveryFlowSolver(DeliverySolver):
                 edges.append(
                     (
                         f"{prefix_node}-{node.id}",
-                        f"date-{date_label}",
+                        f"{DATE_ID}-{date_label}",
                         {"capacity": 1, "cost": 1},
                     )
                 )
@@ -52,7 +52,9 @@ class DeliveryFlowSolver(DeliverySolver):
         edges = []
         for date in possible_dates:
             date_label = date.label()
-            edges.append((f"date-{date_label}", "t", {"capacity": capacity, "cost": 1}))
+            edges.append(
+                (f"{DATE_ID}-{date_label}", "t", {"capacity": capacity, "cost": 1})
+            )
 
         return edges
 
@@ -68,15 +70,15 @@ class DeliveryFlowSolver(DeliverySolver):
             for week in weeks:
                 week_edge = (
                     f"evaluator-{evaluator.id}",
-                    f"date-{week}-evaluator-{evaluator.id}",
+                    f"{DATE_ID}-{week}-evaluator-{evaluator.id}",
                     {"capacity": 5, "cost": 1},
                 )
                 edges.append(week_edge)
                 for date in dates:
                     if date.week == week:
                         edge = (
-                            f"date-{week}-evaluator-{evaluator.id}",
-                            f"date-{date.label()}",
+                            f"{DATE_ID}-{week}-evaluator-{evaluator.id}",
+                            f"{DATE_ID}-{date.label()}",
                             {"capacity": 1, "cost": 1},
                         )
                         edges.append(edge)

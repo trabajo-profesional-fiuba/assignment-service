@@ -1,6 +1,4 @@
 from src.model.group.group import Group
-from src.model.tutor.tutor import Tutor
-from src.model.utils.evaluator import Evaluator
 
 
 class AssignmentResult:

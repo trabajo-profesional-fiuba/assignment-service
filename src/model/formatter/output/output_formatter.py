@@ -1,10 +1,8 @@
 from src.model.formatter.output.flow_formatter import FlowOutputFormatter
 from src.model.formatter.output.simplex_formatter import SimplexOutputFormatter
 from src.exceptions import ResultFormatNotFound
-from typing import Tuple, Union
+from typing import Union
 from src.model.group.group import Group
-from src.model.tutor.tutor import Tutor
-from src.model.utils.evaluator import Evaluator
 from src.model.result import AssignmentResult
 
 

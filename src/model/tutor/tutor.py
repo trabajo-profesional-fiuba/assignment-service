@@ -1,5 +1,4 @@
 from src.model.topic import Topic
-from src.model.delivery_date.delivery_date import DeliveryDate
 
 
 class Tutor:

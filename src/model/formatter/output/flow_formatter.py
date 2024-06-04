@@ -1,11 +1,6 @@
-from typing import Tuple
 from src.constants import GROUP_ID
 from src.model.group.group import Group
-from src.model.group.final_state_group import FinalStateGroup
-from src.model.tutor.tutor import Tutor
-from src.model.utils.evaluator import Evaluator
 from src.model.result import AssignmentResult
-from src.model.delivery_date.delivery_date import DeliveryDate
 
 
 class FlowOutputFormatter:
