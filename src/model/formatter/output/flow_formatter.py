@@ -13,7 +13,7 @@ class FlowOutputFormatter:
 
     def __init__(self) -> None:
         """
-        Initializes a FlowOutputFormatter object.
+        Initializes a `FlowOutputFormatter` object.
         """
         pass
 

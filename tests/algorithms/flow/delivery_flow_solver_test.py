@@ -2,9 +2,8 @@ import pytest
 
 from src.algorithms.delivery_flow_solver import DeliveryFlowSolver
 from src.model.group.group import Group
-from src.model.group.final_state_group import FinalStateGroup
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evalutor import Evaluator
+from src.model.utils.evaluator import Evaluator
 from src.model.tutor.tutor import Tutor
 
 
@@ -13,17 +12,14 @@ class TestDeliveryFlowSolver:
         DeliveryDate(week=1, day=1, hour=1),
         DeliveryDate(week=1, day=2, hour=1),
         DeliveryDate(week=2, day=1, hour=1),
-        DeliveryDate(week=2, day=2, hour=1)
+        DeliveryDate(week=2, day=2, hour=1),
     ]
 
     @pytest.mark.unit
     def test_source_to_groups_edges(self):
 
         # Arrange
-        groups = [
-            Group(1),
-            Group(2)
-        ]
+        groups = [Group(1), Group(2)]
         delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [])
         expected_edges = [
             ("s", "1", {"capacity": 1, "cost": 1}),
@@ -75,14 +71,10 @@ class TestDeliveryFlowSolver:
         possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
         delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
         expected_edges = [
-            ("1", self.dates[0].label(), {
-             "capacity": 1, "cost": 1}),
-            ("1", self.dates[1].label(), {
-             "capacity": 1, "cost": 1}),
-            ("2", self.dates[2].label(), {
-             "capacity": 1, "cost": 1}),
-            ("3", self.dates[3].label(), {
-             "capacity": 1, "cost": 1}),
+            ("1", self.dates[0].label(), {"capacity": 1, "cost": 1}),
+            ("1", self.dates[1].label(), {"capacity": 1, "cost": 1}),
+            ("2", self.dates[2].label(), {"capacity": 1, "cost": 1}),
+            ("3", self.dates[3].label(), {"capacity": 1, "cost": 1}),
         ]
 
         # Act
@@ -95,8 +87,7 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_dates_to_sink_edges(self):
         # Arrange
-        possible_dates = [self.dates[0], self.dates[1],
-                          self.dates[2], self.dates[3]]
+        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
         delivery_flow_solver = DeliveryFlowSolver([], possible_dates, None, [], [])
         expected_edges = [
             (self.dates[0].label(), "t", {"capacity": 1, "cost": 1}),
@@ -124,8 +115,7 @@ class TestDeliveryFlowSolver:
         g2.add_available_dates([self.dates[2]])
         g3.add_available_dates([self.dates[3]])
         groups = [g1, g2, g3]
-        possible_dates = [self.dates[0], self.dates[1],
-                          self.dates[2], self.dates[3]]
+        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
 
         delivery_flow_solver = DeliveryFlowSolver(groups, [], None, possible_dates, [])
         expected_edges = [
@@ -142,7 +132,7 @@ class TestDeliveryFlowSolver:
             (self.dates[3].label(), "t"),
         ]
         # Act
-        graph = delivery_flow_solver.groups_assigment_flow()
+        graph = delivery_flow_solver.groups_assignment_flow()
 
         # Assert
         assert all(graph.has_edge(e[0], e[1]) for e in expected_edges)
@@ -159,11 +149,10 @@ class TestDeliveryFlowSolver:
         g3.add_available_dates([self.dates[3]])
         groups = [g1, g2, g3]
 
-        possible_dates = [self.dates[0], self.dates[1],
-                          self.dates[2], self.dates[3]]
+        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
 
         delivery_flow_solver = DeliveryFlowSolver(groups, [], None, possible_dates, [])
-        graph = delivery_flow_solver.groups_assigment_flow()
+        graph = delivery_flow_solver.groups_assignment_flow()
 
         result = delivery_flow_solver._max_flow_min_cost(graph)
 
@@ -186,11 +175,10 @@ class TestDeliveryFlowSolver:
 
         groups = [g1, g2, g3, g4]
 
-        possible_dates = [self.dates[0], self.dates[1],
-                          self.dates[2], self.dates[3]]
+        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
 
         delivery_flow_solver = DeliveryFlowSolver(groups, [], None, possible_dates, [])
-        graph = delivery_flow_solver.groups_assigment_flow()
+        graph = delivery_flow_solver.groups_assignment_flow()
 
         result = delivery_flow_solver._max_flow_min_cost(graph)
 
@@ -207,7 +195,7 @@ class TestDeliveryFlowSolver:
             Evaluator(2, [self.dates[1]]),
             Evaluator(3, [self.dates[0]]),
         ]
-        delivery_flow_solver = DeliveryFlowSolver([], [], None,  [], [])
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [])
 
         expected_edges = [
             ("1", "2-1", {"capacity": 5, "cost": 1}),
@@ -229,8 +217,7 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_dates_to_sink_with_capacity_edges(self):
         # Arrange
-        possible_dates = [self.dates[0], self.dates[1],
-                          self.dates[2], self.dates[3]]
+        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
         delivery_flow_solver = DeliveryFlowSolver([], [], None, possible_dates, [])
 
         expected_edges = [
@@ -259,17 +246,15 @@ class TestDeliveryFlowSolver:
             DeliveryDate(week=3, day=1, hour=1),
             DeliveryDate(week=3, day=2, hour=1),
             DeliveryDate(week=4, day=1, hour=2),
-            DeliveryDate(week=4, day=2, hour=2)
+            DeliveryDate(week=4, day=2, hour=2),
         ]
 
         # e1 puede : 1-1-1, 1-2-1, 2-1-1, 2-2-1
         # e2 puede : 2-1-1, 2-2-1, 3-1-1, 3-2-1
         # e3 puede:  4-1-2, 4-2-2
         evaluators = [
-            Evaluator(1, [dates[0], dates[1],
-                          dates[2],  dates[3]]),
-            Evaluator(2, [dates[2], dates[3],
-                          dates[4], dates[5]]),
+            Evaluator(1, [dates[0], dates[1], dates[2], dates[3]]),
+            Evaluator(2, [dates[2], dates[3], dates[4], dates[5]]),
             Evaluator(3, [dates[6], dates[7]]),
         ]
 
@@ -303,14 +288,14 @@ class TestDeliveryFlowSolver:
         ]
 
         # Act
-        graph = delivery_flow_solver.evaluators_assigment_flow()
+        graph = delivery_flow_solver.evaluators_assignment_flow()
 
         assert all(graph.has_edge(e[0], e[1]) for e in expected_edges)
 
     @pytest.mark.unit
     def test_small_use_case(self):
-        g1 = Group(1, Tutor(2,"fake@fi.uba.com","Juan"))
-        g2 = Group(2, Tutor(1,"fak3@fi.uba.com","Pedro"))
+        g1 = Group(1, Tutor(2, "fake@fi.uba.com", "Juan"))
+        g2 = Group(2, Tutor(1, "fak3@fi.uba.com", "Pedro"))
         """
         DeliveryDate(week=1, day=1, hour=1),
         DeliveryDate(week=1, day=2, hour=1),
@@ -322,15 +307,16 @@ class TestDeliveryFlowSolver:
         g2.add_available_dates([self.dates[2], self.dates[3]])
         groups = [g1, g2]
 
-        possible_dates = [self.dates[0], self.dates[1],
-                          self.dates[2], self.dates[3]]
+        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
         evaluators = [
             Evaluator(1, [self.dates[2]]),
             Evaluator(2, [self.dates[1]]),
             Evaluator(3, [self.dates[0]]),
-            Evaluator(4, [self.dates[2], self.dates[3]])
+            Evaluator(4, [self.dates[2], self.dates[3]]),
         ]
 
-        delivery_flow_solver = DeliveryFlowSolver(groups, [], None, possible_dates, evaluators)
-        result = delivery_flow_solver.solve()
-        assert 1 == 1 
+        delivery_flow_solver = DeliveryFlowSolver(
+            groups, [], None, possible_dates, evaluators
+        )
+        _result = delivery_flow_solver.solve()
+        assert 1 == 1

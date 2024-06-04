@@ -36,4 +36,3 @@ class FinalStateGroup:
         for date in self._available_dates:
             if date.label() in dates:
                 self._available_dates.remove(date)
-

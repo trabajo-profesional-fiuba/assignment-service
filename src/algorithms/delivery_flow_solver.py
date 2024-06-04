@@ -87,7 +87,7 @@ class DeliveryFlowSolver(DeliverySolver):
                     assigned_dates = evaluator.assigned_dates
                     group.remove_dates(assigned_dates)
 
-    def groups_assigment_flow(self):
+    def groups_assignment_flow(self):
         """
         Creates a directed graph based on the different edges
         """
@@ -108,7 +108,7 @@ class DeliveryFlowSolver(DeliverySolver):
 
         return dates
 
-    def evaluators_assigment_flow(self):
+    def evaluators_assignment_flow(self):
 
         mutual_dates = self._filter_final_dates()
         sources_edges = self._create_source_edges(self._evaluators, 35)
@@ -144,15 +144,16 @@ class DeliveryFlowSolver(DeliverySolver):
 
     def solve(self):
 
-        evaluator_graph = self.evaluators_assigment_flow()
+        evaluator_graph = self.evaluators_assignment_flow()
         max_flow_min_cost_evaluators = self._max_flow_min_cost(evaluator_graph)
 
         self._assign_evaluators_results(max_flow_min_cost_evaluators)
         self._filter_unassigned_dates(self._groups, self._evaluators)
 
-        groups_graph = self.groups_assigment_flow()
+        groups_graph = self.groups_assignment_flow()
         max_flow_min_cost_groups = self._max_flow_min_cost(groups_graph)
 
-        # assignment_result = self.formatter.format_delivery_result(max_flow_min_cost_groups,self._tutors, self._groups, self._evaluators)
+        # assignment_result = self.formatter.format_delivery_result(max_flow_min_cost_groups,
+        # self._tutors, self._groups, self._evaluators)
 
         return max_flow_min_cost_groups
