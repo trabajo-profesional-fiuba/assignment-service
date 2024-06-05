@@ -387,3 +387,88 @@ class TestInputFormatter:
         formatter = InputFormatter(groups_df, tutors_df)
         result = formatter.evaluators()
         assert len(result) == 3
+
+    @pytest.mark.formatter
+    def test_possible_dates_with_one_week_and_one_hour(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter.possible_dates()
+        assert len(result) == 5
+        assert result[0].label() == "1-1-9"
+        assert result[1].label() == "1-2-9"
+        assert result[2].label() == "1-3-9"
+        assert result[3].label() == "1-4-9"
+        assert result[4].label() == "1-5-9"
+
+    @pytest.mark.formatter
+    def test_possible_dates_with_one_week_but_two_hours(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+            "Semana 1/7 [10 a 11]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter.possible_dates()
+        assert len(result) == 10
+        assert result[0].label() == "1-1-9"
+        assert result[1].label() == "1-2-9"
+        assert result[2].label() == "1-3-9"
+        assert result[3].label() == "1-4-9"
+        assert result[4].label() == "1-5-9"
+
+        assert result[5].label() == "1-1-10"
+        assert result[6].label() == "1-2-10"
+        assert result[7].label() == "1-3-10"
+        assert result[8].label() == "1-4-10"
+        assert result[9].label() == "1-5-10"
+
+    @pytest.mark.formatter
+    def test_possible_dates_with_two_weeks_and_two_hours(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+            "Semana 1/7 [10 a 11]": ["Lunes 1/7"],
+            "Semana 8/7 [9 a 10]": ["Lunes 1/7"],
+            "Semana 8/7 [10 a 11]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter.possible_dates()
+        assert len(result) == 20
+        assert result[0].label() == "1-1-9"
+        assert result[1].label() == "1-2-9"
+        assert result[2].label() == "1-3-9"
+        assert result[3].label() == "1-4-9"
+        assert result[4].label() == "1-5-9"
+
+        assert result[5].label() == "1-1-10"
+        assert result[6].label() == "1-2-10"
+        assert result[7].label() == "1-3-10"
+        assert result[8].label() == "1-4-10"
+        assert result[9].label() == "1-5-10"
+
+        assert result[10].label() == "2-1-9"
+        assert result[11].label() == "2-2-9"
+        assert result[12].label() == "2-3-9"
+        assert result[13].label() == "2-4-9"
+        assert result[14].label() == "2-5-9"
+
+        assert result[15].label() == "2-1-10"
+        assert result[16].label() == "2-2-10"
+        assert result[17].label() == "2-3-10"
+        assert result[18].label() == "2-4-10"
+        assert result[19].label() == "2-5-10"

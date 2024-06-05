@@ -230,7 +230,8 @@ class InputFormatter:
         Params:
             row (pd.Series): The row of the DataFrame containing availability data.
 
-        Returns (list): A list of DeliveryDate objects representing availability.
+        Returns (list[DeliveryDate]): A list of `DeliveryDate` objects representing
+        availability.
         """
         dates = []
         for column, value in row.items():
@@ -308,3 +309,22 @@ class InputFormatter:
             axis=1,
         )
         return evaluators
+
+    def possible_dates(self) -> list[DeliveryDate]:
+        """
+        Extracts possible dates from a list of columns.
+
+        Returns (list[DeliveryDate]): A list of `DeliveryDate` objects representing
+        possible dates.
+        """
+        dates = []
+        for column in self._groups_df.columns:
+            if "Semana" in column:
+                week_part, hour_part = self._extract_week_hour_parts(column)
+                if hour_part != "No puedo":
+                    days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+                    for day in days:
+                        dates.append(
+                            self._create_delivery_date(week_part, day, hour_part)
+                        )
+        return dates
