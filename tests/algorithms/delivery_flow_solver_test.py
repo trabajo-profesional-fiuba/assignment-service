@@ -32,7 +32,6 @@ class TestDeliveryFlowSolver:
         result = delivery_flow_solver._create_source_edges(groups, 1, GROUP_ID)
 
         # Assert
-
         assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit
@@ -338,11 +337,12 @@ class TestDeliveryFlowSolver:
         g1.add_available_dates([self.dates[0], self.dates[1]])
         g2.add_available_dates([self.dates[2], self.dates[3]])
 
-        # possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
-        # evaluators = [
-        #     Evaluator(1, [self.dates[2]]),
-        #     Evaluator(2, [self.dates[1]]),
-        #     Evaluator(3, [self.dates[0]]),
-        #     Evaluator(4, [self.dates[2], self.dates[3]]),
-        # ]
-        # assert 1 == 1
+        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
+        evaluators = [
+            Evaluator(1, [self.dates[2]]),
+            Evaluator(2, [self.dates[1]]),
+            Evaluator(3, [self.dates[0]]),
+            Evaluator(4, [self.dates[2], self.dates[3]]),
+        ]
+
+        assert 1 == 1
