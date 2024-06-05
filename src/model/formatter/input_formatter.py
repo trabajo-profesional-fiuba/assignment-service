@@ -7,7 +7,7 @@ from src.model.group.group import Group
 from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.tutor import Tutor
 from src.model.tutor.final_state_tutor import FinalStateTutor
-from src.constants import GROUP_ID, TUTOR_ID
+from src.constants import BLANK_SPACE
 from src.exceptions import TutorNotFound, WeekNotFound, DayNotFound, HourNotFound
 
 
@@ -67,6 +67,22 @@ class InputFormatter:
         self._groups_df = groups_df
         self._tutors_df = tutors_df
 
+    def _all_tutor_names(self) -> list[str]:
+        tutors = self._tutors_df["Nombre y Apellido"].str.split().str[-1].str.strip()
+        tutors = tutors.str.lower()
+        tutors = tutors.unique()
+        tutors.sort()
+        return tutors
+
+    def _has_blank_space(self, string: str) -> bool:
+        return BLANK_SPACE in string
+
+    def _format_lastname(self, lastname: str) -> str:
+        if self._has_blank_space(lastname):
+            aux = lastname.lower().split(BLANK_SPACE)
+            lastname = aux[len(aux) - 1]
+        return lastname
+
     def _tutor_id(self, tutor_lastname: str) -> int:
         """
         Generates a unique tutor identifier based on their lastname.
@@ -84,18 +100,12 @@ class InputFormatter:
         It converts the last names to lowercase, gets the unique values of the last
         names, sorts the unique last names alphabetically.
         """
-        tutors = self._tutors_df["Nombre y Apellido"].str.split().str[-1].str.strip()
-        tutors = tutors.str.lower()
-        tutors = tutors.unique()
-        tutors.sort()
-        if " " in tutor_lastname:
-            aux = tutor_lastname.lower().split(" ")
-            tutor_lastname = aux[len(aux) - 1]
+        tutors = self._all_tutor_names()
+        tutor_lastname = self._format_lastname(tutor_lastname)
         index = np.where([tutor_lastname.lower() in tutor for tutor in tutors])[0]
         if len(index) > 0:
             return int(index[0] + 1)
-        else:
-            raise TutorNotFound(f"Tutor '{tutor_lastname}' not found.")
+        raise TutorNotFound(f"Tutor '{tutor_lastname}' not found.")
 
     def _extract_week_hour_parts(self, column: str) -> Tuple[str, str]:
         """
@@ -272,7 +282,7 @@ class InputFormatter:
             lambda x: Group(
                 int(x["Número de equipo"]),
                 tutor=self._get_tutor_by_id(self._tutor_id(x["Apellido del tutor"])),
-                state=FinalStateTutor(self._available_dates(x)),
+                state=FinalStateGroup(self._available_dates(x)),
             ),
             axis=1,
         )
