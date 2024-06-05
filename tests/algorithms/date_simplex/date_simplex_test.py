@@ -1,17 +1,18 @@
-from src.algorithms.delivery_lp_solver import DeliveryLPSolver
 import time
+import pytest
 
+from src.algorithms.delivery_lp_solver import DeliveryLPSolver
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evalutor import Evaluator
+from src.model.utils.evaluator import Evaluator
 from tests.algorithms.date_simplex.helper import TestSimplexHelper
-
 
 class TestDatesSimplex:
     helper = TestSimplexHelper()
 
     # ------------ Performance and Scalability Tests ------------
+    @pytest.mark.lp_formatter
     def test_four_groups_and_evaluators(self):
         """Testing if the algorithm is overhead with four groups,
         four dates and four evaluators."""
@@ -30,7 +31,7 @@ class TestDatesSimplex:
 
         solver = DeliveryLPSolver(groups, tutors, None, dates, evaluators)
         result = solver.solve()
-
+        print("result: ", result)
         end_time = time.time()
 
         assert len(result) > 0

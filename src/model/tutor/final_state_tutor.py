@@ -1,4 +1,4 @@
-from src.model.delivery_date.delivery_date import DeliveryDate
+from src.model.utils.delivery_date import DeliveryDate
 
 
 class FinalStateTutor:

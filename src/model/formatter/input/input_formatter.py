@@ -2,9 +2,7 @@ import pandas as pd
 import numpy as np
 from typing import Tuple
 
-from src.model.delivery_date.delivery_date import DeliveryDate
-from src.model.delivery_date.hour import Hour
-from src.model.delivery_date.day import Day
+from src.model.utils.delivery_date import DeliveryDate
 from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.final_state_tutor import FinalStateTutor
 from src.constants import GROUP_ID, TUTOR_ID
@@ -35,25 +33,25 @@ class InputFormatter:
     }
 
     DAYS_dict = {
-        "Lunes": Day.MONDAY,
-        "Martes": Day.TUESDAY,
-        "Miércoles": Day.WEDNESDAY,
-        "Jueves": Day.THURSDAY,
-        "Viernes": Day.FRIDAY,
+        "Lunes": 1,
+        "Martes": 2,
+        "Miércoles": 3,
+        "Jueves": 4,
+        "Viernes": 5,
     }
 
     HOURS_dict = {
-        "9 a 10": Hour.H_9_10,
-        "10 a 11": Hour.H_10_11,
-        "11 a 12": Hour.H_11_12,
-        "12 a 13": Hour.H_12_13,
-        "14 a 15": Hour.H_14_15,
-        "15 a 16": Hour.H_15_16,
-        "16 a 17": Hour.H_16_17,
-        "17 a 18": Hour.H_17_18,
-        "18 a 19": Hour.H_18_19,
-        "19 a 20": Hour.H_19_20,
-        "20 a 21": Hour.H_20_21,
+        "9 a 10": 9,
+        "10 a 11": 10,
+        "11 a 12": 11,
+        "12 a 13": 12,
+        "14 a 15": 14,
+        "15 a 16": 15,
+        "16 a 17": 16,
+        "17 a 18": 17,
+        "18 a 19": 18,
+        "19 a 20": 19,
+        "20 a 21": 20,
     }
 
     def __init__(self, groups_df: pd.DataFrame, tutors_df: pd.DataFrame) -> None:

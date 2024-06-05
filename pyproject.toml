@@ -30,7 +30,8 @@ python_files = ["*_test.py"]
 markers = [
     "unit",
     "performance",
-    "formatter"
+    "formatter",
+    "lp_formatter"
 ]
 
 [virtualenvs]

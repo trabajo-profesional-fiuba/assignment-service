@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 from src.model.formatter.output.flow_formatter import FlowOutputFormatter
-from src.model.formatter.output.simplex_formatter import SimplexOutputFormatter
+from src.model.formatter.output.lp_formatter import LPOutputFormatter
 from src.exceptions import ResultFormatNotFound
 from src.model.formatter.output.output_formatter import OutputFormatter
 
@@ -32,14 +32,14 @@ class TestOutputFormatter:
     @pytest.mark.formatter
     def test_format_result_with_list(self, output_formatter):
         """Test formatting result with a list."""
-        mock_simplex_formatter = MagicMock(SimplexOutputFormatter)
-        mock_simplex_formatter.get_result.return_value = "Formatted list result"
-        output_formatter.FORMATTERS[list] = mock_simplex_formatter
+        mock_lp_formatter = MagicMock(LPOutputFormatter)
+        mock_lp_formatter.get_result.return_value = "Formatted list result"
+        output_formatter.FORMATTERS[list] = mock_lp_formatter
 
         result = ["item1", "item2"]
         formatted_result = output_formatter.format_result(result, [])
 
-        mock_simplex_formatter.get_result.assert_called_once_with(result, [])
+        mock_lp_formatter.get_result.assert_called_once_with(result, [])
         assert formatted_result == "Formatted list result"
 
     @pytest.mark.formatter

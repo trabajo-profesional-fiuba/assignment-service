@@ -1,5 +1,5 @@
 from src.model.formatter.output.flow_formatter import FlowOutputFormatter
-from src.model.formatter.output.simplex_formatter import SimplexOutputFormatter
+from src.model.formatter.output.lp_formatter import LPOutputFormatter
 from src.exceptions import ResultFormatNotFound
 from typing import Union
 from src.model.group.group import Group
@@ -15,7 +15,7 @@ class OutputFormatter:
     uses the appropriate formatter based on the type of result.
     """
 
-    FORMATTERS = {dict: FlowOutputFormatter(), list: SimplexOutputFormatter()}
+    FORMATTERS = {dict: FlowOutputFormatter(), list: LPOutputFormatter()}
 
     def __init__(self) -> None:
         """

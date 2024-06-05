@@ -1,11 +1,10 @@
 from src.model.utils.delivery_date import DeliveryDate
 
-
 class FinalStateGroup:
 
     def __init__(self, available_dates):
         self._available_dates = available_dates
-        self._assigned_dates = []
+        self._assigned_date = None
 
     @property
     def available_dates(self):
@@ -21,8 +20,8 @@ class FinalStateGroup:
         """
         group.assign_date(date)
 
-    def assign_date(self, date):
-        self._assigned_dates.append(date)
+    def assign_date(self, date: DeliveryDate):
+        self._assigned_date = date
 
     def filter_dates(self, dates):
         labels = [d.label() for d in self._available_dates]

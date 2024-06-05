@@ -1,6 +1,7 @@
 from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.tutor import Tutor
 from src.model.topic import Topic
+from src.model.utils.delivery_date import DeliveryDate
 
 
 class Group:
@@ -42,7 +43,8 @@ class Group:
     def assign_tutor(self, tutor: Tutor) -> None:
         self._tutor = tutor
 
-    def assign_date(self, date) -> None:
+    def assign_date(self, date: DeliveryDate) -> None:
+        self._tutor.assign_date(date)
         self._state.assign_date(date)
 
     def is_tutored_by(self, tutor_id) -> bool:

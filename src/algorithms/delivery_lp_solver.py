@@ -18,6 +18,4 @@ class DeliveryLPSolver(DeliverySolver):
             self._available_dates, result_tutors, self._groups, self._evaluators
         )
         result_evaluators = solver_evaluators.solve()
-
-        # Call formatter
         return result_evaluators
