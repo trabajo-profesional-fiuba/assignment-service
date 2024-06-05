@@ -5,7 +5,6 @@ from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
 from src.model.tutor.tutor import Tutor
-from src.model.formatter.output.output_formatter import OutputFormatter
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 from src.model.tutor.final_state_tutor import FinalStateTutor
 
@@ -217,26 +216,26 @@ class TestDeliveryFlowSolver:
         delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [])
 
         expected_edges = [
-            ("evaluator-1", "{DATE_ID}-2-evaluator-1", {"capacity": 5, "cost": 1}),
+            ("evaluator-1", f"{DATE_ID}-2-evaluator-1", {"capacity": 5, "cost": 1}),
             (
-                "{DATE_ID}-2-evaluator-1",
+                f"{DATE_ID}-2-evaluator-1",
                 f"{DATE_ID}-{self.dates[2].label()}",
                 {"capacity": 1, "cost": 1},
             ),
             (
-                "{DATE_ID}-2-evaluator-1",
+                f"{DATE_ID}-2-evaluator-1",
                 f"{DATE_ID}-{self.dates[3].label()}",
                 {"capacity": 1, "cost": 1},
             ),
-            ("evaluator-2", "{DATE_ID}-1-evaluator-2", {"capacity": 5, "cost": 1}),
+            ("evaluator-2", f"{DATE_ID}-1-evaluator-2", {"capacity": 5, "cost": 1}),
             (
-                "{DATE_ID}-1-evaluator-2",
+                f"{DATE_ID}-1-evaluator-2",
                 f"{DATE_ID}-{self.dates[1].label()}",
                 {"capacity": 1, "cost": 1},
             ),
-            ("evaluator-3", "{DATE_ID}-1-evaluator-3", {"capacity": 5, "cost": 1}),
+            ("evaluator-3", f"{DATE_ID}-1-evaluator-3", {"capacity": 5, "cost": 1}),
             (
-                "{DATE_ID}-1-evaluator-3",
+                f"{DATE_ID}-1-evaluator-3",
                 f"{DATE_ID}-{self.dates[0].label()}",
                 {"capacity": 1, "cost": 1},
             ),
@@ -297,21 +296,21 @@ class TestDeliveryFlowSolver:
             ("s", "evaluator-1"),
             ("s", "evaluator-2"),
             ("s", "evaluator-3"),
-            ("evaluator-1", "{DATE_ID}-1-evaluator-1"),
-            ("evaluator-1", "{DATE_ID}-2-evaluator-1"),
-            ("{DATE_ID}-1-evaluator-1", "{DATE_ID}-1-1-1"),
-            ("{DATE_ID}-1-evaluator-1", "{DATE_ID}-1-2-1"),
-            ("{DATE_ID}-2-evaluator-1", "{DATE_ID}-2-1-1"),
-            ("{DATE_ID}-2-evaluator-1", "{DATE_ID}-2-2-1"),
-            ("evaluator-2", "{DATE_ID}-2-evaluator-2"),
-            ("evaluator-2", "{DATE_ID}-3-evaluator-2"),
-            ("{DATE_ID}-2-evaluator-2", "{DATE_ID}-2-1-1"),
-            ("{DATE_ID}-2-evaluator-2", "{DATE_ID}-2-2-1"),
-            ("{DATE_ID}-3-evaluator-2", "{DATE_ID}-3-1-1"),
-            ("{DATE_ID}-3-evaluator-2", "{DATE_ID}-3-2-1"),
-            ("evaluator-3", "{DATE_ID}-4-evaluator-3"),
-            ("{DATE_ID}-4-evaluator-3", "{DATE_ID}-4-1-2"),
-            ("{DATE_ID}-4-evaluator-3", "{DATE_ID}-4-2-2"),
+            ("evaluator-1", f"{DATE_ID}-1-evaluator-1"),
+            ("evaluator-1", f"{DATE_ID}-2-evaluator-1"),
+            (f"{DATE_ID}-1-evaluator-1", f"{DATE_ID}-1-1-1"),
+            (f"{DATE_ID}-1-evaluator-1", f"{DATE_ID}-1-2-1"),
+            (f"{DATE_ID}-2-evaluator-1", f"{DATE_ID}-2-1-1"),
+            (f"{DATE_ID}-2-evaluator-1", f"{DATE_ID}-2-2-1"),
+            ("evaluator-2", f"{DATE_ID}-2-evaluator-2"),
+            ("evaluator-2", f"{DATE_ID}-3-evaluator-2"),
+            (f"{DATE_ID}-2-evaluator-2", f"{DATE_ID}-2-1-1"),
+            (f"{DATE_ID}-2-evaluator-2", f"{DATE_ID}-2-2-1"),
+            (f"{DATE_ID}-3-evaluator-2", f"{DATE_ID}-3-1-1"),
+            (f"{DATE_ID}-3-evaluator-2", f"{DATE_ID}-3-2-1"),
+            ("evaluator-3", f"{DATE_ID}-4-evaluator-3"),
+            (f"{DATE_ID}-4-evaluator-3", f"{DATE_ID}-4-1-2"),
+            (f"{DATE_ID}-4-evaluator-3", f"{DATE_ID}-4-2-2"),
             (f"{DATE_ID}-{dates[0].label()}", "t"),
             (f"{DATE_ID}-{dates[1].label()}", "t"),
             (f"{DATE_ID}-{dates[2].label()}", "t"),
@@ -338,13 +337,12 @@ class TestDeliveryFlowSolver:
 
         g1.add_available_dates([self.dates[0], self.dates[1]])
         g2.add_available_dates([self.dates[2], self.dates[3]])
-        groups = [g1, g2]
 
-        possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
-        evaluators = [
-            Evaluator(1, [self.dates[2]]),
-            Evaluator(2, [self.dates[1]]),
-            Evaluator(3, [self.dates[0]]),
-            Evaluator(4, [self.dates[2], self.dates[3]]),
-        ]
-        assert 1 == 1
+        # possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
+        # evaluators = [
+        #     Evaluator(1, [self.dates[2]]),
+        #     Evaluator(2, [self.dates[1]]),
+        #     Evaluator(3, [self.dates[0]]),
+        #     Evaluator(4, [self.dates[2], self.dates[3]]),
+        # ]
+        # assert 1 == 1

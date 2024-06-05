@@ -15,6 +15,7 @@ pylint = "^3.1.0"
 pulp = "^2.8.0"
 flake8 = "^7.0.0"
 black = "^24.4.2"
+pyscipopt = "^5.0.0"
 pandas = "^2.2.2"
 
 [tool.poetry.group.dev.dependencies]

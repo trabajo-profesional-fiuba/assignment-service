@@ -1,4 +1,5 @@
 from src.model.topic import Topic
+from src.model.tutor.final_state_tutor import FinalStateTutor
 
 
 class Tutor:
@@ -22,11 +23,19 @@ class Tutor:
     def email(self) -> str:
         return self._email
 
+    @property
+    def state(self) -> str:
+        return self._state
+
     def topics(self) -> list[Topic]:
         return self._state.topics
 
     def assign_group(self, group) -> None:
         self._groups.append(group)
+
+    def add_available_dates(self, available_dates) -> None:
+        final_state = FinalStateTutor(available_dates)
+        self._state = final_state
 
     def preference_of(self, topic: Topic) -> int:
         """
