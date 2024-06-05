@@ -18,4 +18,9 @@ class DeliveryLPSolver(DeliverySolver):
             self._available_dates, result_tutors, self._groups, self._evaluators
         )
         result_evaluators = solver_evaluators.solve()
-        return result_evaluators
+        print("result: ", result_evaluators)
+        assignment_result = self._formatter.format_result(
+            result_evaluators, self._groups, self._evaluators
+        )
+
+        return assignment_result
