@@ -308,7 +308,13 @@ class DateEvaluatorsLPSolver:
         for var in self._decision_variables:
             if self._model.getVal(self._decision_variables[var]) > 0:
                 print(f"Variable {var} (Group, Evaluator, Week, Day, Hour): {var}")
-                result.append((f"{GROUP_ID}-{var[0]}", f"{EVALUATOR_ID}-{var[1]}", f"{DATE_ID}-{var[2]}-{var[3]}-{var[4]}"))
+                result.append(
+                    (
+                        f"{GROUP_ID}-{var[0]}",
+                        f"{EVALUATOR_ID}-{var[1]}",
+                        f"{DATE_ID}-{var[2]}-{var[3]}-{var[4]}",
+                    )
+                )
 
                 group_id, week, day, hour, evaluator_id = var
                 group = next(g for g in self._groups if g.id == group_id)

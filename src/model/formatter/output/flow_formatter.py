@@ -41,8 +41,10 @@ class FlowOutputFormatter:
         Args:
             - result (dict[str, dict[str, int]]): The result dictionary from the flow
             algorithm.
-            - groups (list[Group]): List of groups with tutors to be assigned a delivery date.
-            - evaluators (list[Evaluator]): List of evaluators to be assigned a delivery date.
+            - groups (list[Group]): List of groups with tutors to be assigned
+            a delivery date.
+            - evaluators (list[Evaluator]): List of evaluators to be assigned
+            a delivery date.
 
         Returns:
             AssignmentResult: An object with groups.

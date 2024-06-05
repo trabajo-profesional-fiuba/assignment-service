@@ -40,8 +40,10 @@ class OutputFormatter:
         Args:
             - result (Union[dict, list]): The result of the assignment algorithm,
             which can be of type `dict` or `list`.
-            - groups (list[Group]): List of groups with tutors to be assigned a delivery date.
-            - evaluators (list[Evaluator]): List of evaluators to be assigned a delivery date.
+            - groups (list[Group]): List of groups with tutors to be assigned
+            a delivery date.
+            - evaluators (list[Evaluator]): List of evaluators to be assigned
+            a delivery date.
 
         Returns:
             AssignmentResult: The formatted result, as processed by the appropriate

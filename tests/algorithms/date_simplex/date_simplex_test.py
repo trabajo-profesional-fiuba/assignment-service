@@ -134,7 +134,7 @@ class TestDatesSimplex:
     #     )
 
     # ------------ Logical Tests ------------
-    @pytest.mark.pl
+    @pytest.mark.unit
     def test_all_groups_are_assigned_evaluators(self):
         possible_dates = [
             DeliveryDate(1, 1, 1),
@@ -238,9 +238,9 @@ class TestDatesSimplex:
                         == result.delivery_date_group(group).label()
                     ):
                         group_assignments[group.id] += 1
-        
-        # for group_id, evaluators_assigned in group_assignments.items():
-        #     assert 1 <= evaluators_assigned <= 4
+
+        for group_id, evaluators_assigned in group_assignments.items():
+            assert 1 <= evaluators_assigned <= 4
 
         # # Check that the max number of groups per day is not exceeded
         # evaluator_date_count = {}
