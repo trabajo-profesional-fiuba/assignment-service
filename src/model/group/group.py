@@ -70,3 +70,6 @@ class Group:
 
     def assigned_date(self) -> DeliveryDate:
         return self._state.assigned_date
+
+    def available_dates(self) -> list[DeliveryDate]:
+        return self.state.available_dates
