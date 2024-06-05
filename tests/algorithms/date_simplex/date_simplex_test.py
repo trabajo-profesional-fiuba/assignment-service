@@ -8,6 +8,7 @@ from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
 from tests.algorithms.date_simplex.helper import TestSimplexHelper
 
+
 class TestDatesSimplex:
     helper = TestSimplexHelper()
 

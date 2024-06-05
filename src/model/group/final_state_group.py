@@ -1,5 +1,6 @@
 from src.model.utils.delivery_date import DeliveryDate
 
+
 class FinalStateGroup:
 
     def __init__(self, available_dates):
