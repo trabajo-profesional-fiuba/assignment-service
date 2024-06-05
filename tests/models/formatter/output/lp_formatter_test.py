@@ -7,7 +7,7 @@ class TestLPOutputFormatter:
 
     helper = TestLPHelper()
 
-    @pytest.mark.formatter
+    @pytest.mark.unit
     def test_get_result_with_groups(self):
         lp_solver_result = [
             ("group-1", "evaluator-10", "date-2-2-10"),
@@ -26,7 +26,7 @@ class TestLPOutputFormatter:
         assert "2-2-10" == result.delivery_date_group(groups[0]).label()
         assert "2-2-11" == result.delivery_date_group(groups[1]).label()
 
-    @pytest.mark.formatter
+    @pytest.mark.unit
     def test_get_result_with_evaluators(self):
         lp_solver_result = [
             ("group-1", "evaluator-10", "date-2-2-10"),
@@ -45,7 +45,7 @@ class TestLPOutputFormatter:
         assert "2-2-10" == result.delivery_date_evaluator(evaluators[0])[0].label()
         assert "2-2-11" == result.delivery_date_evaluator(evaluators[1])[0].label()
 
-    @pytest.mark.formatter
+    @pytest.mark.unit
     def test_get_result_with_empty_result(self):
         num_groups = 2
         num_weeks = 4
@@ -59,7 +59,7 @@ class TestLPOutputFormatter:
         assert result.delivery_date_group(groups[0]) is None
         assert result.delivery_date_group(groups[1]) is None
 
-    @pytest.mark.formatter
+    @pytest.mark.unit
     def test_get_result_with_empty_groups(self):
         lp_solver_result = [
             ("group-1", "evaluator-10", "date-2-2-10"),
@@ -80,7 +80,7 @@ class TestLPOutputFormatter:
         assert result.delivery_date_group(groups[0]) is None
         assert result.delivery_date_group(groups[1]) is None
 
-    @pytest.mark.formatter
+    @pytest.mark.unit
     def test_get_result_with_empty_evaluators(self):
         lp_solver_result = [
             ("group-1", "evaluator-10", "date-2-2-10"),
