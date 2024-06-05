@@ -11,15 +11,9 @@ class FinalStateGroup:
     def available_dates(self):
         return self._available_dates
 
-    def assign(self, date: DeliveryDate, group):
-        """
-        Assigns a date to the group.
-        Double-Dispatch is performed
-
-        Args:
-            date: The date to be assigned to the group.
-        """
-        group.assign_date(date)
+    @property
+    def assigned_date(self):
+        return self._assigned_date
 
     def assign_date(self, date: DeliveryDate):
         self._assigned_date = date

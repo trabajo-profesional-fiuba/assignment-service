@@ -8,3 +8,6 @@ class AssignmentResult:
         groups: list[Group],
     ) -> None:
         self._groups: groups
+
+    def delivery_date(self, group: Group):
+        return group.assigned_date()

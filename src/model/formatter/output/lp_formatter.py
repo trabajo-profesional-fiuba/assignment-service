@@ -15,7 +15,7 @@ class LPOutputFormatter:
         """
         pass
 
-    def _create_date(assignment: Tuple) -> DeliveryDate:
+    def _create_date(self, assignment: Tuple) -> DeliveryDate:
         return DeliveryDate(assignment[1], assignment[2], assignment[3])
 
     def _groups(self, result: list[str], groups: list[Group]) -> list[Group]:
@@ -36,5 +36,4 @@ class LPOutputFormatter:
         Returns:
             AssignmentResult: An objects with groups.
         """
-        # return AssignmentResult(self._groups(result, groups))
-        return result
+        return AssignmentResult(self._groups(result, groups))

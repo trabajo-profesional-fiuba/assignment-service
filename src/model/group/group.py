@@ -37,9 +37,6 @@ class Group:
     def state(self, state) -> None:
         self._state = state
 
-    def assign(self, item) -> None:
-        self.state.assign(item, self)
-
     def assign_tutor(self, tutor: Tutor) -> None:
         self._tutor = tutor
 
@@ -65,8 +62,11 @@ class Group:
         """
         return self._state.preference_of(topic)
 
-    def filter_dates(self, dates):
+    def filter_dates(self, dates) -> None:
         return self.state.filter_dates(dates)
 
-    def remove_dates(self, dates):
+    def remove_dates(self, dates) -> None:
         self.state.remove_dates(dates)
+
+    def assigned_date(self) -> DeliveryDate:
+        return self._state.assigned_date

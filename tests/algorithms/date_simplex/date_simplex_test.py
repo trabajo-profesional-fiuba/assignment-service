@@ -6,11 +6,11 @@ from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
-from tests.algorithms.date_simplex.helper import TestSimplexHelper
+from tests.algorithms.date_simplex.helper import TestLPHelper
 
 
 class TestDatesSimplex:
-    helper = TestSimplexHelper()
+    helper = TestLPHelper()
 
     # ------------ Performance and Scalability Tests ------------
     @pytest.mark.lp_formatter

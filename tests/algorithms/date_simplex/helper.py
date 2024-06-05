@@ -3,10 +3,10 @@
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evalutor import Evaluator
+from src.model.utils.evaluator import Evaluator
 
 
-class TestSimplexHelper:
+class TestLPHelper:
 
     def create_groups(self, num_groups: int, available_dates: list):
         """

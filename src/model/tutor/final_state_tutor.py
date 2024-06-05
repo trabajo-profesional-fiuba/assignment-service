@@ -25,5 +25,5 @@ class FinalStateTutor:
     def assigned_dates(self) -> list[DeliveryDate]:
         return self._assigned_dates
 
-    def assign_date(self, date) -> None:
+    def assign_date(self, date: DeliveryDate) -> None:
         self._assigned_dates.append(date)

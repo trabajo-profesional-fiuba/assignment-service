@@ -147,15 +147,15 @@ class InputFormatter:
         except KeyError:
             raise WeekNotFound(f"Week '{week_part}' not found in WEEKS_dict")
 
-    def create_day(self, day: str) -> Day:
+    def create_day(self, day: str) -> int:
         """
-        Retrieves the day from the DAYS_dict.
+        Retrieves the day from DAYS_dict.
 
         Params:
             - day (str): The key for the day to retrieve.
 
         Returns:
-            str: The corresponding day from DAYS_dict.
+            int: The corresponding day from DAYS_dict.
 
         Raises:
             DayNotFound: If the day is not found in DAYS_dict.
@@ -165,7 +165,7 @@ class InputFormatter:
         except KeyError:
             raise DayNotFound(f"Day '{day}' not found in DAYS_dict")
 
-    def create_hour(self, hour_part: str) -> Hour:
+    def create_hour(self, hour_part: str) -> int:
         """
         Retrieves the hour part from the HOURS_dict.
 
@@ -173,7 +173,7 @@ class InputFormatter:
             - hour_part (str): The key for the hour part to retrieve.
 
         Returns:
-            str: The corresponding hour part from HOURS_dict.
+            int: The corresponding hour part from HOURS_dict.
 
         Raises:
             HourNotFound: If the hour part is not found in HOURS_dict.
