@@ -4,9 +4,7 @@ from src.algorithms.delivery_flow_solver import DeliveryFlowSolver
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
-from src.model.tutor.tutor import Tutor
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
-from src.model.tutor.final_state_tutor import FinalStateTutor
 
 
 class TestDeliveryFlowSolver:

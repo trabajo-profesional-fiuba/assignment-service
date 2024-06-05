@@ -1,14 +1,24 @@
 import pandas as pd
 import numpy as np
+import os
 from typing import Tuple
+from dotenv import load_dotenv
 
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.group.group import Group
 from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.tutor import Tutor
 from src.model.tutor.final_state_tutor import FinalStateTutor
+from src.model.utils.evaluator import Evaluator
 from src.constants import BLANK_SPACE
 from src.exceptions import TutorNotFound, WeekNotFound, DayNotFound, HourNotFound
+
+load_dotenv()
+EVALUATORS = os.getenv("EVALUATORS", "").split(",")
+
+
+def get_evaluators():
+    return EVALUATORS
 
 
 class InputFormatter:
@@ -18,10 +28,10 @@ class InputFormatter:
     Attributes:
         - WEEKS_dict (dict): A dictionary mapping week descriptions to their
         corresponding week numbers.
-        - DAYS_dict (dict): A dictionary mapping day names to `Day`
-        enumeration values.
-        - HOURS_dict (dict): A dictionary mapping time slots to `Hour`
-        enumeration values.
+        - DAYS_dict (dict): A dictionary mapping day names to their
+        corresponding day numbers
+        - HOURS_dict (dict): A dictionary mapping time slots to their
+        corresponding hour numbers
     """
 
     WEEKS_dict = {
@@ -259,9 +269,7 @@ class InputFormatter:
         return tutors
 
     def _get_tutor_by_id(self, tutor_id: int) -> Tutor:
-        print(f"get tutor by id with tutors: {self.tutors()}")
         for tutor in self.tutors():
-            print(f"tutor.id: {tutor.id} vs tutor_id: {tutor_id}")
             if tutor.id == tutor_id:
                 return tutor
         raise TutorNotFound(f"Tutor '{tutor_id}' not found.")
@@ -287,3 +295,16 @@ class InputFormatter:
             axis=1,
         )
         return groups
+
+    def evaluators(self) -> list[Evaluator]:
+        evaluators_df = self._tutors_df[
+            self._tutors_df["Nombre y Apellido"].isin(get_evaluators())
+        ]
+        evaluators = evaluators_df.apply(
+            lambda x: Evaluator(
+                self._tutor_id(x["Nombre y Apellido"]),
+                self._available_dates(x),
+            ),
+            axis=1,
+        )
+        return evaluators

@@ -7,8 +7,8 @@ from src.exceptions import TutorNotFound
 class TestInputFormatter:
 
     @pytest.mark.formatter
-    def test_one_group_with_one_availability_date(self):
-        """Testing that group has expected availability date."""
+    def test_one_group_with_one_available_date(self):
+        """Testing that group has expected available date."""
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -25,7 +25,7 @@ class TestInputFormatter:
 
     @pytest.mark.formatter
     def test_available_dates_no_data(self):
-        """Testing that group has none availability date if there is no data."""
+        """Testing that group has none available date if there is no data."""
         groups_data = {"Número de equipo": [1], "Apellido del tutor": ["Smith"]}
         tutors_df = pd.DataFrame({})
         groups_df = pd.DataFrame(groups_data)
@@ -35,7 +35,7 @@ class TestInputFormatter:
 
     @pytest.mark.formatter
     def test_one_group_with_multiple_dates_in_different_days(self):
-        """Testing that one group has availability dates in different days."""
+        """Testing that one group has available dates in different days."""
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -56,7 +56,7 @@ class TestInputFormatter:
 
     @pytest.mark.formatter
     def test_one_group_with_multiple_dates_in_different_hours(self):
-        """Testing that one group has availability dates in different hours."""
+        """Testing that one group has available dates in different hours."""
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -78,7 +78,7 @@ class TestInputFormatter:
 
     @pytest.mark.formatter
     def test_one_group_with_multiple_dates_in_different_weeks(self):
-        """Testing that one group has availability dates in different weeks."""
+        """Testing that one group has available dates in different weeks."""
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -99,8 +99,8 @@ class TestInputFormatter:
         assert result[1].hour == 10
 
     @pytest.mark.formatter
-    def test_one_group_with_no_availability_date(self):
-        """Testing that group has not availability dates."""
+    def test_one_group_with_no_available_date(self):
+        """Testing that group has not available dates."""
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -112,7 +112,7 @@ class TestInputFormatter:
         formatter = InputFormatter(groups_df, tutors_df)
         assert formatter._available_dates(groups_df.iloc[0]) == []
 
-    @pytest.mark.input_formatter
+    @pytest.mark.formatter
     def test_groups_without_available_dates(self):
         groups_data = {
             "Número de equipo": [1, 2],
@@ -276,3 +276,114 @@ class TestInputFormatter:
         assert "Hour part 'nonexistent_hour' not found in HOURS_dict" in str(
             exc_info.value
         )
+
+    @pytest.mark.formatter
+    def test_one_evaluator_group_with_one_available_date(self):
+        """Testing that group has expected available date."""
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Fontela"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame(
+            {
+                "Nombre y Apellido": ["Carlos Fontela"],
+                "Dirección de correo electrónico": ["fontela@fi.uba.ar"],
+                "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+            }
+        )
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter.evaluators()
+        assert len(result) == 1
+        assert result[0].id == 1
+        assert len(result[0].available_dates) == 1
+        assert result[0].available_dates[0].label() == "1-1-9"
+
+    @pytest.mark.formatter
+    def test_one_evaluator_group_without_available_date(self, mocker):
+        """Testing that group has expected available date."""
+        mocker.patch(
+            "src.model.formatter.input_formatter.EVALUATORS",
+            ["mocked_name1", "mocked_name2", "mocked_name3"],
+        )
+
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame(
+            {
+                "Nombre y Apellido": ["mocked_name1"],
+                "Dirección de correo electrónico": ["mocked_name1@fi.uba.ar"],
+                "Semana 1/7 [No puedo]": ["Lunes 1/7"],
+            }
+        )
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter.evaluators()
+        assert len(result) == 1
+        assert result[0].id == 1
+        assert len(result[0].available_dates) == 0
+
+    @pytest.mark.formatter
+    def test_none_evaluator(self, mocker):
+        """Testing that group has expected available date."""
+        mocker.patch(
+            "src.model.formatter.input_formatter.EVALUATORS",
+            ["mocked_name1", "mocked_name2", "mocked_name3"],
+        )
+
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame(
+            {
+                "Nombre y Apellido": ["John Smith"],
+                "Dirección de correo electrónico": ["smith@fi.uba.ar"],
+                "Semana 1/7 [No puedo]": ["Lunes 1/7"],
+            }
+        )
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter.evaluators()
+        assert len(result) == 0
+
+    @pytest.mark.formatter
+    def test_all_evaluators(self, mocker):
+        """Testing that group has expected available date."""
+        mocker.patch(
+            "src.model.formatter.input_formatter.EVALUATORS",
+            ["mocked_name1", "mocked_name2", "mocked_name3"],
+        )
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame(
+            {
+                "Nombre y Apellido": [
+                    "mocked_name1",
+                    "mocked_name2",
+                    "mocked_name3",
+                ],
+                "Dirección de correo electrónico": [
+                    "mocked_name1@fi.uba.ar",
+                    "mocked_name2@fi.uba.ar",
+                    "mocked_name3@fi.uba.ar",
+                ],
+                "Semana 1/7 [9 a 10]": ["Lunes 1/7", "Lunes 1/7", "Lunes 1/7"],
+            }
+        )
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter.evaluators()
+        assert len(result) == 3
