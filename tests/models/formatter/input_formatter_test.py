@@ -278,18 +278,23 @@ class TestInputFormatter:
         )
 
     @pytest.mark.unit
-    def test_one_evaluator_group_with_one_available_date(self):
+    def test_one_evaluator_group_with_one_available_date(self, mocker):
         """Testing that group has expected available date."""
+        mocker.patch(
+            "src.model.formatter.input_formatter.EVALUATORS",
+            ["mocked_name1", "mocked_name2", "mocked_name3"],
+        )
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Fontela"],
             "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
         }
         groups_df = pd.DataFrame(groups_data)
+
         tutors_df = pd.DataFrame(
             {
-                "Nombre y Apellido": ["Carlos Fontela"],
-                "Dirección de correo electrónico": ["fontela@fi.uba.ar"],
+                "Nombre y Apellido": ["mocked_name1"],
+                "Dirección de correo electrónico": ["mocked_name1@fi.uba.ar"],
                 "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
             }
         )
