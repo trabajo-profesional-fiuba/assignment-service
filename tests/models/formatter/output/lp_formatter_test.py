@@ -26,7 +26,7 @@ class TestLPOutputFormatter:
         assert "2-2-10" == result.delivery_date_group(groups[0]).label()
         assert "2-2-11" == result.delivery_date_group(groups[1]).label()
 
-    @pytest.mark.pl
+    @pytest.mark.formatter
     def test_get_result_with_evaluators(self):
         lp_solver_result = [
             ("group-1", "evaluator-10", "date-2-2-10"),

@@ -242,12 +242,19 @@ class TestDatesSimplex:
         for group_id, evaluators_assigned in group_assignments.items():
             assert 1 <= evaluators_assigned <= 4
 
-        # # Check that the max number of groups per day is not exceeded
-        # evaluator_date_count = {}
-        # for var in result.groups:
-        #     evaluator_date_count[(var[2], var[1])] = (
-        #         evaluator_date_count.get((var[2], var[1]), 0) + 1
-        #     )
+        evaluators_assignment = {
+            (evaluator.id, day_id): 0
+            for evaluator in result.evaluators
+            for day_id in range(1, 6)
+        }
 
-        # for key in evaluator_date_count:
-        #     assert evaluator_date_count[key] <= 5
+        # Check that the max number of groups per day is not exceeded
+        for evaluator_id, day_id in evaluators_assignment:
+            for evaluator in result.evaluators:
+                if evaluator.id == evaluator_id:
+                    for assigned_date in result.delivery_date_evaluator(evaluator):
+                        if assigned_date.day == day_id:
+                            evaluators_assignment[(evaluator_id, day_id)] += 1
+
+        for key, value in evaluators_assignment:
+            assert value <= 5
