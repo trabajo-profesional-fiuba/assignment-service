@@ -16,13 +16,17 @@ class OutputFormatter:
     uses the appropriate formatter based on the type of result.
     """
 
-    FORMATTERS = {dict: FlowOutputFormatter(), list: LPOutputFormatter()}
-
     def __init__(self) -> None:
         """
         Initializes an `OutputFormatter` object.
         """
         pass
+
+    def _create_formatter(
+        self, result_type: Union[dict, list]
+    ) -> Union[FlowOutputFormatter, LPOutputFormatter]:
+        FORMATTERS = {dict: FlowOutputFormatter(), list: LPOutputFormatter()}
+        return FORMATTERS.get(result_type)
 
     def format_result(
         self,
@@ -53,8 +57,7 @@ class OutputFormatter:
             ResultFormatNotFound: If the result type is not recognized by
             any formatter.
         """
-        result_type = type(result)
-        formatter = self.FORMATTERS.get(result_type)
+        formatter = self._create_formatter(type(result))
         if formatter:
             return formatter.get_result(result, groups, evaluators)
         else:

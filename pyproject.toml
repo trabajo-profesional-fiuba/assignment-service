@@ -31,9 +31,7 @@ testpaths = ["tests"]
 python_files = ["*_test.py"]
 markers = [
     "unit",
-    "performance",
-    "formatter",
-    "input_formatter"
+    "performance"
 ]
 
 [virtualenvs]
