@@ -325,6 +325,52 @@ class TestDeliveryFlowSolver:
         assert all(graph.has_edge(e[0], e[1]) for e in expected_edges)
 
     @pytest.mark.unit
+    def test_assign_evaluators_dates(self):
+        dates = [
+            DeliveryDate(week=1, day=1, hour=1),
+            DeliveryDate(week=1, day=2, hour=1),
+            DeliveryDate(week=2, day=1, hour=1),
+            DeliveryDate(week=2, day=2, hour=1),
+            DeliveryDate(week=3, day=1, hour=1),
+            DeliveryDate(week=3, day=2, hour=1),
+        ]
+        result = {
+            "evaluator-1": {
+                "date-1-evaluator-1": 2,
+                "date-2-evaluator-1": 2,
+                "date-3-evaluator-1": 0
+            },
+            "date-1-evaluator-1": {
+                "date-1-1-1-1": 1,
+                "date-1-1-2-1": 1
+            },
+            "date-2-evaluator-1": {
+                "date-2-2-1-1": 1,
+                "date-2-2-2-1": 1
+            },
+            "date-1-1-1-1": {
+                "t": 1
+            },
+            "date-1-1-2-1": {
+                "t": 1
+            },
+            "date-2-2-1-1": {
+                "t": 1
+            },
+            "date-2-2-2-1": {
+                "t": 1
+            }
+        }
+
+        evaluators = [
+            Evaluator(1, [dates[0], dates[1], dates[2], dates[3],dates[4],dates[5]])
+        ]
+
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, dates, evaluators)
+        delivery_flow_solver._assign_evaluators_results(result)
+        assert len(evaluators[0].assigned_dates) == 4
+
+    @pytest.mark.unit
     def test_small_use_case(self):
         g1 = Group(1, Tutor(2, "fake@fi.uba.com", "Juan", state=FinalStateTutor()))
         g2 = Group(2, Tutor(1, "fak3@fi.uba.com", "Pedro", state=FinalStateTutor()))

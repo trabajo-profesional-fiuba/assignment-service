@@ -4,7 +4,7 @@ import time
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evalutor import Evaluator
+from src.model.utils.evaluator import Evaluator
 from tests.algorithms.date_simplex.helper import TestSimplexHelper
 
 
