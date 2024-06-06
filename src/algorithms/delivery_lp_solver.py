@@ -19,5 +19,8 @@ class DeliveryLPSolver(DeliverySolver):
         )
         result_evaluators = solver_evaluators.solve()
 
-        # Call formatter
-        return result_evaluators
+        assignment_result = self._formatter.format_result(
+            result_evaluators, self._groups, self._evaluators
+        )
+
+        return assignment_result

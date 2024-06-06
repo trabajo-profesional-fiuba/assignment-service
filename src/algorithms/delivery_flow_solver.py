@@ -196,7 +196,7 @@ class DeliveryFlowSolver(DeliverySolver):
         max_flow_min_cost_groups = self._max_flow_min_cost(groups_graph)
 
         assignment_result = self._formatter.format_result(
-            max_flow_min_cost_groups, self._groups
+            max_flow_min_cost_groups, self._groups, self._evaluators
         )
 
         return assignment_result

@@ -68,7 +68,8 @@ class DeliveryTutorsLPSolver:
             ]
 
             for week, day, hour in mutual_available_dates:
-                var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor.id}-{DATE_ID}-{week}-{day}-{hour}"
+                var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor.id}-{DATE_ID}\
+                -{week}-{day}-{hour}"
                 self._decision_variables[(group.id, tutor.id, week, day, hour)] = (
                     self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
                 )

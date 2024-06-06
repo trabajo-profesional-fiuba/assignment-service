@@ -1,14 +1,24 @@
 import pandas as pd
 import numpy as np
+import os
 from typing import Tuple
+from dotenv import load_dotenv
 
-from src.model.delivery_date.delivery_date import DeliveryDate
-from src.model.delivery_date.hour import Hour
-from src.model.delivery_date.day import Day
+from src.model.utils.delivery_date import DeliveryDate
+from src.model.group.group import Group
 from src.model.group.final_state_group import FinalStateGroup
+from src.model.tutor.tutor import Tutor
 from src.model.tutor.final_state_tutor import FinalStateTutor
-from src.constants import GROUP_ID, TUTOR_ID
+from src.model.utils.evaluator import Evaluator
+from src.constants import BLANK_SPACE
 from src.exceptions import TutorNotFound, WeekNotFound, DayNotFound, HourNotFound
+
+load_dotenv()
+EVALUATORS = os.getenv("EVALUATORS", "").split(",")
+
+
+def get_evaluators():
+    return EVALUATORS
 
 
 class InputFormatter:
@@ -18,10 +28,10 @@ class InputFormatter:
     Attributes:
         - WEEKS_dict (dict): A dictionary mapping week descriptions to their
         corresponding week numbers.
-        - DAYS_dict (dict): A dictionary mapping day names to `Day`
-        enumeration values.
-        - HOURS_dict (dict): A dictionary mapping time slots to `Hour`
-        enumeration values.
+        - DAYS_dict (dict): A dictionary mapping day names to their
+        corresponding day numbers
+        - HOURS_dict (dict): A dictionary mapping time slots to their
+        corresponding hour numbers
     """
 
     WEEKS_dict = {
@@ -35,25 +45,25 @@ class InputFormatter:
     }
 
     DAYS_dict = {
-        "Lunes": Day.MONDAY,
-        "Martes": Day.TUESDAY,
-        "Miércoles": Day.WEDNESDAY,
-        "Jueves": Day.THURSDAY,
-        "Viernes": Day.FRIDAY,
+        "Lunes": 1,
+        "Martes": 2,
+        "Miércoles": 3,
+        "Jueves": 4,
+        "Viernes": 5,
     }
 
     HOURS_dict = {
-        "9 a 10": Hour.H_9_10,
-        "10 a 11": Hour.H_10_11,
-        "11 a 12": Hour.H_11_12,
-        "12 a 13": Hour.H_12_13,
-        "14 a 15": Hour.H_14_15,
-        "15 a 16": Hour.H_15_16,
-        "16 a 17": Hour.H_16_17,
-        "17 a 18": Hour.H_17_18,
-        "18 a 19": Hour.H_18_19,
-        "19 a 20": Hour.H_19_20,
-        "20 a 21": Hour.H_20_21,
+        "9 a 10": 9,
+        "10 a 11": 10,
+        "11 a 12": 11,
+        "12 a 13": 12,
+        "14 a 15": 14,
+        "15 a 16": 15,
+        "16 a 17": 16,
+        "17 a 18": 17,
+        "18 a 19": 18,
+        "19 a 20": 19,
+        "20 a 21": 20,
     }
 
     def __init__(self, groups_df: pd.DataFrame, tutors_df: pd.DataFrame) -> None:
@@ -67,25 +77,30 @@ class InputFormatter:
         self._groups_df = groups_df
         self._tutors_df = tutors_df
 
-    def _group_id(self, group_id: int) -> str:
-        """
-        Generates a group identifier.
+    def _all_tutor_names(self) -> list[str]:
+        tutors = self._tutors_df["Nombre y Apellido"].str.split().str[-1].str.strip()
+        tutors = tutors.str.lower()
+        tutors = tutors.unique()
+        tutors.sort()
+        return tutors
 
-        Params:
-            - group_id (int): The group number.
+    def _has_blank_space(self, string: str) -> bool:
+        return BLANK_SPACE in string
 
-        Returns (str): The formatted group identifier.
-        """
-        return GROUP_ID + str(group_id)
+    def _format_lastname(self, lastname: str) -> str:
+        if self._has_blank_space(lastname):
+            aux = lastname.lower().split(BLANK_SPACE)
+            lastname = aux[len(aux) - 1]
+        return lastname
 
-    def _tutor_id(self, tutor_lastname: str) -> str:
+    def _tutor_id(self, tutor_lastname: str) -> int:
         """
         Generates a unique tutor identifier based on their lastname.
 
         Params:
             - tutor_lastname (str): The lastname of the tutor.
 
-        Returns (str): The formatted tutor identifier.
+        Returns (int): The tutor identifier.
 
         Raises:
             - TutorNotFound: If the tutor lastname is not found in the DataFrame.
@@ -95,15 +110,12 @@ class InputFormatter:
         It converts the last names to lowercase, gets the unique values of the last
         names, sorts the unique last names alphabetically.
         """
-        tutors = self._tutors_df["Nombre y Apellido"].str.split().str[-1].str.strip()
-        tutors = tutors.str.lower()
-        tutors = tutors.unique()
-        tutors.sort()
+        tutors = self._all_tutor_names()
+        tutor_lastname = self._format_lastname(tutor_lastname)
         index = np.where([tutor_lastname.lower() in tutor for tutor in tutors])[0]
         if len(index) > 0:
-            return TUTOR_ID + str(index[0] + 1)
-        else:
-            raise TutorNotFound(f"Tutor '{tutor_lastname}' not found.")
+            return int(index[0] + 1)
+        raise TutorNotFound(f"Tutor '{tutor_lastname}' not found.")
 
     def _extract_week_hour_parts(self, column: str) -> Tuple[str, str]:
         """
@@ -149,15 +161,15 @@ class InputFormatter:
         except KeyError:
             raise WeekNotFound(f"Week '{week_part}' not found in WEEKS_dict")
 
-    def create_day(self, day: str) -> Day:
+    def create_day(self, day: str) -> int:
         """
-        Retrieves the day from the DAYS_dict.
+        Retrieves the day from DAYS_dict.
 
         Params:
             - day (str): The key for the day to retrieve.
 
         Returns:
-            str: The corresponding day from DAYS_dict.
+            int: The corresponding day from DAYS_dict.
 
         Raises:
             DayNotFound: If the day is not found in DAYS_dict.
@@ -167,7 +179,7 @@ class InputFormatter:
         except KeyError:
             raise DayNotFound(f"Day '{day}' not found in DAYS_dict")
 
-    def create_hour(self, hour_part: str) -> Hour:
+    def create_hour(self, hour_part: str) -> int:
         """
         Retrieves the hour part from the HOURS_dict.
 
@@ -175,7 +187,7 @@ class InputFormatter:
             - hour_part (str): The key for the hour part to retrieve.
 
         Returns:
-            str: The corresponding hour part from HOURS_dict.
+            int: The corresponding hour part from HOURS_dict.
 
         Raises:
             HourNotFound: If the hour part is not found in HOURS_dict.
@@ -211,14 +223,15 @@ class InputFormatter:
         except (WeekNotFound, DayNotFound, HourNotFound) as e:
             raise ValueError(f"Failed to create DeliveryDate: {e}")
 
-    def _availability_dates(self, row: pd.Series) -> list[DeliveryDate]:
+    def _available_dates(self, row: pd.Series) -> list[DeliveryDate]:
         """
         Extracts availability dates from a DataFrame row.
 
         Params:
             row (pd.Series): The row of the DataFrame containing availability data.
 
-        Returns (list): A list of DeliveryDate objects representing availability.
+        Returns (list[DeliveryDate]): A list of `DeliveryDate` objects representing
+        availability.
         """
         dates = []
         for column, value in row.items():
@@ -232,44 +245,86 @@ class InputFormatter:
                         )
         return dates
 
-    def groups(self) -> list[FinalStateGroup]:
+    def tutors(self) -> list[Tutor]:
         """
-        Generates a list of `FinalStateGroup` objects from the DataFrame.
+        Generates a list of `Tutor` objects from the DataFrame.
 
         Applies a lambda function to each row of the DataFrame `_df` to create
-        a `FinalStateGroup` object with:
-        - A group identifier generated by `_group_id`.
-        - Availability dates generated by `_availability_dates`.
+        a `Tutor` object with:
         - A tutor identifier generated by `_tutor_id`.
+        - A tutor email.
+        - A tutor name.
+        - A FinalStateTutor with availability dates generated by `_available_dates`.
 
-        Returns (pd.Series): A series of `FinalStateGroup` objects.
+        Returns (list[Tutor]): A list of `Tutor` objects.
+        """
+        tutors = self._tutors_df.apply(
+            lambda x: Tutor(
+                self._tutor_id(x["Nombre y Apellido"]),
+                x["Dirección de correo electrónico"],
+                x["Nombre y Apellido"],
+                state=FinalStateTutor(self._available_dates(x)),
+            ),
+            axis=1,
+        )
+        return tutors
+
+    def _get_tutor_by_id(self, tutor_id: int) -> Tutor:
+        for tutor in self.tutors():
+            if tutor.id == tutor_id:
+                return tutor
+        raise TutorNotFound(f"Tutor '{tutor_id}' not found.")
+
+    def groups(self) -> list[Group]:
+        """
+        Generates a list of `Group` objects from the DataFrame.
+
+        Applies a lambda function to each row of the DataFrame `_df` to create
+        a `Group` object with:
+        - A group identifier.
+        - A `Tutor` generated by `_get_tutor_by_id`.
+        - A `FinalStateGroup` state with a list of `AvailableDates`.
+
+        Returns (list[Group]): A list of `Group` objects.
         """
         groups = self._groups_df.apply(
-            lambda x: FinalStateGroup(
-                self._group_id(x["Número de equipo"]),
-                self._availability_dates(x),
-                self._tutor_id(x["Apellido del tutor"]),
+            lambda x: Group(
+                int(x["Número de equipo"]),
+                tutor=self._get_tutor_by_id(self._tutor_id(x["Apellido del tutor"])),
+                state=FinalStateGroup(self._available_dates(x)),
             ),
             axis=1,
         )
         return groups
 
-    def tutors(self) -> list[FinalStateTutor]:
-        """
-        Generates a list of `FinalStateTutor` objects from the DataFrame.
-
-        Applies a lambda function to each row of the DataFrame `_df` to create
-        a `FinalStateTutor` object with:
-        - A tutor identifier generated by `_tutor_id`.
-        - Availability dates generated by `_availability_dates`.
-
-        Returns (pd.Series): A series of `FinalStateTutor` objects.
-        """
-        tutors = self._tutors_df.apply(
-            lambda x: FinalStateTutor(
+    def evaluators(self) -> list[Evaluator]:
+        evaluators_df = self._tutors_df[
+            self._tutors_df["Nombre y Apellido"].isin(get_evaluators())
+        ]
+        evaluators = evaluators_df.apply(
+            lambda x: Evaluator(
                 self._tutor_id(x["Nombre y Apellido"]),
-                self._availability_dates(x),
+                self._available_dates(x),
             ),
             axis=1,
         )
-        return tutors
+        return evaluators
+
+    def possible_dates(self) -> list[DeliveryDate]:
+        """
+        Extracts possible dates from a list of columns.
+
+        Returns (list[DeliveryDate]): A list of `DeliveryDate` objects representing
+        possible dates.
+        """
+        dates = []
+        for column in self._groups_df.columns:
+            if "Semana" in column:
+                week_part, hour_part = self._extract_week_hour_parts(column)
+                if hour_part != "No puedo":
+                    days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+                    for day in days:
+                        dates.append(
+                            self._create_delivery_date(week_part, day, hour_part)
+                        )
+        return dates

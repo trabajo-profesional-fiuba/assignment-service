@@ -1,5 +1,6 @@
 from src.model.topic import Topic
 from src.model.tutor.final_state_tutor import FinalStateTutor
+from src.model.utils.delivery_date import DeliveryDate
 
 
 class Tutor:
@@ -63,7 +64,7 @@ class Tutor:
         """Returns the capacity of the tutor."""
         return self._state.capacity
 
-    def assign_date(self, date: str) -> None:
+    def assign_date(self, date: DeliveryDate) -> None:
         self._state.assign_date(date)
 
     def assigned_dates(self) -> str:

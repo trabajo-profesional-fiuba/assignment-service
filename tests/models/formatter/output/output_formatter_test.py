@@ -1,50 +1,64 @@
 import pytest
-from unittest.mock import MagicMock
-from src.model.formatter.output.flow_formatter import FlowOutputFormatter
-from src.model.formatter.output.simplex_formatter import SimplexOutputFormatter
-from src.exceptions import ResultFormatNotFound
 from src.model.formatter.output.output_formatter import OutputFormatter
+from src.model.formatter.output.flow_formatter import FlowOutputFormatter
+from src.model.formatter.output.lp_formatter import LPOutputFormatter
+from src.exceptions import ResultFormatNotFound
+from src.model.group.group import Group
+from src.model.result import AssignmentResult
+from src.model.utils.evaluator import Evaluator
 
 
 class TestOutputFormatter:
     @pytest.fixture
-    def output_formatter(self):
-        return OutputFormatter()
+    def setup_data(self):
+        groups = [Group(1), Group(2)]
+        evaluators = [Evaluator(1), Evaluator(2)]
+        return groups, evaluators
 
-    @pytest.mark.formatter
-    def test_initialization(self, output_formatter):
-        """Test that the OutputFormatter initializes correctly."""
-        assert isinstance(output_formatter, OutputFormatter)
+    @pytest.mark.unit
+    def test_initialization(self):
+        formatter = OutputFormatter()
+        assert formatter is not None
 
-    @pytest.mark.formatter
-    def test_format_result_with_dict(self, output_formatter):
-        """Test formatting result with a dictionary."""
-        mock_flow_formatter = MagicMock(FlowOutputFormatter)
-        mock_flow_formatter.get_result.return_value = "Formatted dict result"
-        output_formatter.FORMATTERS[dict] = mock_flow_formatter
-
+    @pytest.mark.unit
+    def test_format_result_dict(self, mocker, setup_data):
+        formatter = OutputFormatter()
         result = {"key": "value"}
-        formatted_result = output_formatter.format_result(result, [])
+        groups, evaluators = setup_data
 
-        mock_flow_formatter.get_result.assert_called_once_with(result, [])
-        assert formatted_result == "Formatted dict result"
+        mocker.patch.object(
+            FlowOutputFormatter,
+            "get_result",
+            return_value=AssignmentResult(groups, evaluators),
+        )
 
-    @pytest.mark.formatter
-    def test_format_result_with_list(self, output_formatter):
-        """Test formatting result with a list."""
-        mock_simplex_formatter = MagicMock(SimplexOutputFormatter)
-        mock_simplex_formatter.get_result.return_value = "Formatted list result"
-        output_formatter.FORMATTERS[list] = mock_simplex_formatter
+        formatted_result = formatter.format_result(result, groups, evaluators)
+        assert isinstance(formatted_result, AssignmentResult)
+        FlowOutputFormatter.get_result.assert_called_once_with(
+            result, groups, evaluators
+        )
 
+    @pytest.mark.unit
+    def test_format_result_list(self, mocker, setup_data):
+        formatter = OutputFormatter()
         result = ["item1", "item2"]
-        formatted_result = output_formatter.format_result(result, [])
+        groups, evaluators = setup_data
 
-        mock_simplex_formatter.get_result.assert_called_once_with(result, [])
-        assert formatted_result == "Formatted list result"
+        mocker.patch.object(
+            LPOutputFormatter,
+            "get_result",
+            return_value=AssignmentResult(groups, evaluators),
+        )
 
-    @pytest.mark.formatter
-    def test_format_result_with_unrecognized_type(self, output_formatter):
-        """Test that ResultFormatNotFound is raised for unrecognized result types."""
-        result = 123  # An unrecognized type (neither dict nor list)
+        formatted_result = formatter.format_result(result, groups, evaluators)
+        assert isinstance(formatted_result, AssignmentResult)
+        LPOutputFormatter.get_result.assert_called_once_with(result, groups, evaluators)
+
+    @pytest.mark.unit
+    def test_format_result_unrecognized_format(self, setup_data):
+        formatter = OutputFormatter()
+        result = "unrecognized_format"
+        groups, evaluators = setup_data
+
         with pytest.raises(ResultFormatNotFound):
-            output_formatter.format_result(result, [])
+            formatter.format_result(result, groups, evaluators)

@@ -17,3 +17,5 @@ coverage.xml
 dist/
 dummy.py
 database/
+
+.env

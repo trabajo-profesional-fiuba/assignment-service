@@ -2,11 +2,11 @@ import pytest
 
 from src.algorithms.delivery_flow_solver import DeliveryFlowSolver
 from src.model.group.group import Group
+from src.model.tutor.tutor import Tutor
+from src.model.tutor.final_state_tutor import FinalStateTutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
-from src.model.tutor.tutor import Tutor
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
-from src.model.tutor.final_state_tutor import FinalStateTutor
 
 
 class TestDeliveryFlowSolver:
@@ -32,7 +32,6 @@ class TestDeliveryFlowSolver:
         result = delivery_flow_solver._create_source_edges(groups, 1, GROUP_ID)
 
         # Assert
-
         assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit

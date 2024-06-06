@@ -1,6 +1,7 @@
 from src.constants import GROUP_ID
 from src.model.group.group import Group
 from src.model.result import AssignmentResult
+from src.model.utils.evaluator import Evaluator
 
 
 class FlowOutputFormatter:
@@ -26,7 +27,10 @@ class FlowOutputFormatter:
         return groups
 
     def get_result(
-        self, result: dict[str, dict[str, int]], groups: list[Group]
+        self,
+        result: dict[str, dict[str, int]],
+        groups: list[Group],
+        evaluators: list[Evaluator],
     ) -> AssignmentResult:
         """
         Formats the flow algorithm result into a standardized structure.
@@ -35,10 +39,14 @@ class FlowOutputFormatter:
         and adds them to the standardized result as AssignmentResult.
 
         Args:
-            result (dict[str, dict[str, int]]): The result dictionary from the flow
+            - result (dict[str, dict[str, int]]): The result dictionary from the flow
             algorithm.
+            - groups (list[Group]): List of groups with tutors to be assigned
+            a delivery date.
+            - evaluators (list[Evaluator]): List of evaluators to be assigned
+            a delivery date.
 
         Returns:
-            AssignmentResult: An object with id, groups, tutors and evaluators.
+            AssignmentResult: An object with groups.
         """
-        return AssignmentResult(self._groups(result, groups))
+        return AssignmentResult(self._groups(result, groups), evaluators)

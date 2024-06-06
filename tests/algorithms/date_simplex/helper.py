@@ -6,7 +6,7 @@ from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
 
 
-class TestSimplexHelper:
+class TestLPHelper:
 
     def create_groups(self, num_groups: int, available_dates: list):
         """

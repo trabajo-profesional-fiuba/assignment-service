@@ -1,6 +1,7 @@
 from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.tutor import Tutor
 from src.model.topic import Topic
+from src.model.utils.delivery_date import DeliveryDate
 
 
 class Group:
@@ -36,13 +37,11 @@ class Group:
     def state(self, state) -> None:
         self._state = state
 
-    def assign(self, item) -> None:
-        self.state.assign(item, self)
-
     def assign_tutor(self, tutor: Tutor) -> None:
         self._tutor = tutor
 
-    def assign_date(self, date) -> None:
+    def assign_date(self, date: DeliveryDate) -> None:
+        self._tutor.assign_date(date)
         self._state.assign_date(date)
 
     def is_tutored_by(self, tutor_id) -> bool:
@@ -63,8 +62,14 @@ class Group:
         """
         return self._state.preference_of(topic)
 
-    def filter_dates(self, dates):
+    def filter_dates(self, dates) -> None:
         return self.state.filter_dates(dates)
 
-    def remove_dates(self, dates):
+    def remove_dates(self, dates) -> None:
         self.state.remove_dates(dates)
+
+    def assigned_date(self) -> DeliveryDate:
+        return self._state.assigned_date
+
+    def available_dates(self) -> list[DeliveryDate]:
+        return self.state.available_dates
