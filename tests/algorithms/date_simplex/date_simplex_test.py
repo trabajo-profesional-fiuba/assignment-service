@@ -1,17 +1,21 @@
-from src.algorithms.delivery_lp_solver import DeliveryLPSolver
 import time
+import pytest
 
+from src.algorithms.delivery_lp_solver import DeliveryLPSolver
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evalutor import Evaluator
-from tests.algorithms.date_simplex.helper import TestSimplexHelper
+from src.model.utils.evaluator import Evaluator
+from tests.algorithms.date_simplex.helper import TestLPHelper
+from src.model.formatter.output.output_formatter import OutputFormatter
 
 
 class TestDatesSimplex:
-    helper = TestSimplexHelper()
+    helper = TestLPHelper()
+    formatter = OutputFormatter()
 
     # ------------ Performance and Scalability Tests ------------
+    @pytest.mark.performance
     def test_four_groups_and_evaluators(self):
         """Testing if the algorithm is overhead with four groups,
         four dates and four evaluators."""
@@ -22,18 +26,17 @@ class TestDatesSimplex:
         days_per_week = [1, 2, 3, 4, 5]
         hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
-        start_time = time.time()
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         groups = self.helper.create_groups(num_groups, dates)
         tutors = self.helper.create_tutors(num_tutors, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
 
-        solver = DeliveryLPSolver(groups, tutors, None, dates, evaluators)
+        solver = DeliveryLPSolver(groups, tutors, self.formatter, dates, evaluators)
+        start_time = time.time()
         result = solver.solve()
-
         end_time = time.time()
 
-        assert len(result) > 0
+        assert len(result.groups) > 0
 
         print(
             "4 groups, 4 evaluators, 2 tutors, 4 dates - Execution time:",
@@ -41,6 +44,7 @@ class TestDatesSimplex:
             "seconds",
         )
 
+    @pytest.mark.performance
     def test_ten_groups_and_four_evaluators(self):
         """Testing if the algorithm is overhead with ten groups,
         five dates and five evaluators."""
@@ -52,18 +56,17 @@ class TestDatesSimplex:
         days_per_week = [1, 2, 3, 4, 5]
         hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
-        start_time = time.time()
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         groups = self.helper.create_groups(num_groups, dates)
         tutors = self.helper.create_tutors(num_tutors, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
 
-        solver = DeliveryLPSolver(groups, tutors, None, dates, evaluators)
+        solver = DeliveryLPSolver(groups, tutors, self.formatter, dates, evaluators)
+        start_time = time.time()
         result = solver.solve()
-
         end_time = time.time()
 
-        assert len(result) > 0
+        assert len(result.groups) > 0
 
         print(
             "10 groups, 5 evaluators, 5 tutors, 5 dates - Execution time:",
@@ -71,7 +74,8 @@ class TestDatesSimplex:
             "seconds",
         )
 
-    def test_ten_groups_and_one_evaluators(self):
+    @pytest.mark.performance
+    def test_ten_groups_and_one_evaluator(self):
         """Testing if the algorithm is overhead with ten groups,
         five dates and 1 evaluator."""
         num_groups = 10
@@ -82,18 +86,17 @@ class TestDatesSimplex:
         days_per_week = [1, 2, 3, 4, 5]
         hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
-        start_time = time.time()
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         groups = self.helper.create_groups(num_groups, dates)
         tutors = self.helper.create_tutors(num_tutors, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
 
-        solver = DeliveryLPSolver(groups, tutors, None, dates, evaluators)
+        solver = DeliveryLPSolver(groups, tutors, self.formatter, dates, evaluators)
+        start_time = time.time()
         result = solver.solve()
-
         end_time = time.time()
 
-        assert len(result) > 0
+        assert len(result.groups) > 0
 
         print(
             "10 groups, 1 evaluators, 5 tutors, 5 dates - Execution time:",
@@ -101,6 +104,7 @@ class TestDatesSimplex:
             "seconds",
         )
 
+    # @pytest.mark.performance
     # def test_fifty_groups_and_four_evaluators(self):
     #     """Testing if the algorithm is overhead with fifty groups,
     #     ten dates and four evaluators."""
@@ -112,18 +116,17 @@ class TestDatesSimplex:
     #     days_per_week = [1, 2, 3, 4, 5]
     #     hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
-    #     start_time = time.time()
     #     dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
     #     groups = self.helper.create_groups(num_groups, dates)
     #     tutors = self.helper.create_tutors(num_tutors, dates)
 
     #     evaluators = self.helper.create_evaluators(num_evaluators, dates)
-    #     solver = DeliveryLPSolver(groups, tutors, None, dates, evaluators)
+    #     solver = DeliveryLPSolver(groups, tutors, self.formatter, dates, evaluators)
+    #     start_time = time.time()
     #     result = solver.solve()
-
     #     end_time = time.time()
 
-    #     assert len(result) > 0
+    #     assert len(result.groups) > 0
     #     print(
     #         "50 groups, 4 evaluators, 6 tutors, 10 dates - Execution time:",
     #         end_time - start_time,
@@ -131,7 +134,8 @@ class TestDatesSimplex:
     #     )
 
     # ------------ Logical Tests ------------
-    def test_group_evaluator_assignment_maximization(self):
+    @pytest.mark.unit
+    def test_all_groups_are_assigned_evaluators(self):
         possible_dates = [
             DeliveryDate(1, 1, 1),
             DeliveryDate(1, 1, 2),
@@ -190,25 +194,25 @@ class TestDatesSimplex:
             DeliveryDate(5, 5, 11),
         ]
 
-        tutor1 = Tutor(1, "Nombre Tutor 1", "email@tutor1.com")
+        tutor1 = Tutor(1, "Tutor 1", "email@tutor1.com")
         tutor1.add_available_dates(
             possible_dates[0:11] + possible_dates[33:44] + possible_dates[44:55]
         )
-        tutor2 = Tutor(2, "Nombre Tutor 2", "email@tutor2.com")
+        tutor2 = Tutor(2, "Tutor 2", "email@tutor2.com")
         tutor2.add_available_dates(
             possible_dates[11:22] + possible_dates[22:33] + possible_dates[44:55]
         )
-        tutor3 = Tutor(3, "Nombre Tutor 3", "email@tutor3.com")
+        tutor3 = Tutor(3, "Tutor 3", "email@tutor3.com")
         tutor3.add_available_dates(possible_dates[22:33] + possible_dates[33:44])
-        group1 = Group("g1", tutor1)
+        group1 = Group(1, tutor1)
         group1.add_available_dates(possible_dates[0:22])
-        group2 = Group("g2", tutor2)
+        group2 = Group(2, tutor2)
         group2.add_available_dates(possible_dates[11:33])
-        group3 = Group("g3", tutor3)
+        group3 = Group(3, tutor3)
         group3.add_available_dates(possible_dates[22:44])
-        group4 = Group("g4", tutor1)
+        group4 = Group(4, tutor1)
         group4.add_available_dates(possible_dates[33:55])
-        group5 = Group("g5", tutor3)
+        group5 = Group(5, tutor3)
         group5.add_available_dates(possible_dates[0:11] + possible_dates[33:44])
         groups = [group1, group2, group3, group4, group5]
         tutors = [tutor1, tutor2, tutor3]
@@ -219,24 +223,38 @@ class TestDatesSimplex:
             Evaluator(id=14, available_dates=possible_dates[33:55]),
         ]
 
-        solver = DeliveryLPSolver(groups, tutors, None, possible_dates, evaluators)
+        solver = DeliveryLPSolver(
+            groups, tutors, self.formatter, possible_dates, evaluators
+        )
         result = solver.solve()
 
-        # Comprueba que todos los grupos tienen evaluadores asignados
-        group_assignments = {group.id: 0 for group in groups}
-        for var in result:
-            group_assignments[var[0]] += 1
-        print(result)
-        print(group_assignments)
-        for group_id in group_assignments:
-            assert 1 <= group_assignments[group_id] <= 4
+        # Check that all groups have assigned evaluators
+        group_assignments = {group.id: 0 for group in result.groups}
+        for group in result.groups:
+            for evaluator in result.evaluators:
+                for assigned_date in result.delivery_date_evaluator(evaluator):
+                    if (
+                        assigned_date.label()
+                        == result.delivery_date_group(group).label()
+                    ):
+                        group_assignments[group.id] += 1
 
-        # Comprueba que la cantidad máxima de grupos evaluados por día no se exceda
-        evaluator_date_count = {}
-        for var in result:
-            evaluator_date_count[(var[2], var[1])] = (
-                evaluator_date_count.get((var[2], var[1]), 0) + 1
-            )
+        for group_id, evaluators_assigned in group_assignments.items():
+            assert 1 <= evaluators_assigned <= 4
 
-        for key in evaluator_date_count:
-            assert evaluator_date_count[key] <= 5
+        evaluators_assignment = {
+            (evaluator.id, day_id): 0
+            for evaluator in result.evaluators
+            for day_id in range(1, 6)
+        }
+
+        # Check that the max number of groups per day is not exceeded
+        for evaluator_id, day_id in evaluators_assignment:
+            for evaluator in result.evaluators:
+                if evaluator.id == evaluator_id:
+                    for assigned_date in result.delivery_date_evaluator(evaluator):
+                        if assigned_date.day == day_id:
+                            evaluators_assignment[(evaluator_id, day_id)] += 1
+
+        for key, value in evaluators_assignment:
+            assert value <= 5

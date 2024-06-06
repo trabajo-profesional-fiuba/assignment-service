@@ -4,9 +4,7 @@ from src.algorithms.delivery_flow_solver import DeliveryFlowSolver
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
-from src.model.tutor.tutor import Tutor
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
-from src.model.tutor.final_state_tutor import FinalStateTutor
 
 
 class TestDeliveryFlowSolver:
@@ -32,7 +30,6 @@ class TestDeliveryFlowSolver:
         result = delivery_flow_solver._create_source_edges(groups, 1, GROUP_ID)
 
         # Assert
-
         assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit
@@ -323,26 +320,3 @@ class TestDeliveryFlowSolver:
         graph = delivery_flow_solver.evaluators_assignment_flow()
 
         assert all(graph.has_edge(e[0], e[1]) for e in expected_edges)
-
-    @pytest.mark.unit
-    def test_small_use_case(self):
-        g1 = Group(1, Tutor(2, "fake@fi.uba.com", "Juan", state=FinalStateTutor()))
-        g2 = Group(2, Tutor(1, "fak3@fi.uba.com", "Pedro", state=FinalStateTutor()))
-        """
-        DeliveryDate(week=1, day=1, hour=1),
-        DeliveryDate(week=1, day=2, hour=1),
-        DeliveryDate(week=2, day=1, hour=1),
-        DeliveryDate(week=2, day=2, hour=1)
-        """
-
-        g1.add_available_dates([self.dates[0], self.dates[1]])
-        g2.add_available_dates([self.dates[2], self.dates[3]])
-
-        # possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
-        # evaluators = [
-        #     Evaluator(1, [self.dates[2]]),
-        #     Evaluator(2, [self.dates[1]]),
-        #     Evaluator(3, [self.dates[0]]),
-        #     Evaluator(4, [self.dates[2], self.dates[3]]),
-        # ]
-        # assert 1 == 1

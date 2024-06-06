@@ -1,9 +1,10 @@
-from src.model.formatter.output.flow_formatter import FlowOutputFormatter
-from src.model.formatter.output.simplex_formatter import SimplexOutputFormatter
-from src.exceptions import ResultFormatNotFound
 from typing import Union
+from src.model.formatter.output.flow_formatter import FlowOutputFormatter
+from src.model.formatter.output.lp_formatter import LPOutputFormatter
+from src.exceptions import ResultFormatNotFound
 from src.model.group.group import Group
 from src.model.result import AssignmentResult
+from src.model.utils.evaluator import Evaluator
 
 
 class OutputFormatter:
@@ -15,16 +16,23 @@ class OutputFormatter:
     uses the appropriate formatter based on the type of result.
     """
 
-    FORMATTERS = {dict: FlowOutputFormatter(), list: SimplexOutputFormatter()}
-
     def __init__(self) -> None:
         """
         Initializes an `OutputFormatter` object.
         """
         pass
 
+    def _create_formatter(
+        self, result_type: Union[dict, list]
+    ) -> Union[FlowOutputFormatter, LPOutputFormatter]:
+        FORMATTERS = {dict: FlowOutputFormatter(), list: LPOutputFormatter()}
+        return FORMATTERS.get(result_type)
+
     def format_result(
-        self, result: Union[dict, list], groups: list[Group]
+        self,
+        result: Union[dict, list],
+        groups: list[Group],
+        evaluators: list[Evaluator],
     ) -> AssignmentResult:
         """
         Formats the algorithm result into a standardized structure.
@@ -34,8 +42,12 @@ class OutputFormatter:
         class to process it.
 
         Args:
-            result (Union[dict, list]): The result of the assignment algorithm,
+            - result (Union[dict, list]): The result of the assignment algorithm,
             which can be of type `dict` or `list`.
+            - groups (list[Group]): List of groups with tutors to be assigned
+            a delivery date.
+            - evaluators (list[Evaluator]): List of evaluators to be assigned
+            a delivery date.
 
         Returns:
             AssignmentResult: The formatted result, as processed by the appropriate
@@ -45,9 +57,8 @@ class OutputFormatter:
             ResultFormatNotFound: If the result type is not recognized by
             any formatter.
         """
-        result_type = type(result)
-        formatter = self.FORMATTERS.get(result_type)
+        formatter = self._create_formatter(type(result))
         if formatter:
-            return formatter.get_result(result, groups)
+            return formatter.get_result(result, groups, evaluators)
         else:
             raise ResultFormatNotFound("Unrecognized result format")

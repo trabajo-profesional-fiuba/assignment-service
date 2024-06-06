@@ -85,7 +85,8 @@ class DateEvaluatorsLPSolver:
 
         if evaluator.id != group.tutor.id:
             for week, day, hour in mutual_available_dates:
-                var_name = f"{GROUP_ID}-{group.id}-{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}-{hour}"
+                var_name = f"{GROUP_ID}-{group.id}-{EVALUATOR_ID}-{evaluator.id}-\
+                {DATE_ID}-{week}-{day}-{hour}"
                 self._decision_variables[(group.id, evaluator.id, week, day, hour)] = (
                     self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
                 )
@@ -142,7 +143,8 @@ class DateEvaluatorsLPSolver:
                         in self._decision_variables
                     )
                     / len(self._evaluators),
-                    name=f"{GROUP_ID}-{group.id}-{DATE_ID}-{date[0]}-{date[1]}-{date[2]}",
+                    name=f"{GROUP_ID}-{group.id}-{DATE_ID}-{date[0]}-{date[1]}\
+                    -{date[2]}",
                 )
             self._model.addCons(
                 scip.quicksum(group_date_vars.values()) == 1,
@@ -305,8 +307,15 @@ class DateEvaluatorsLPSolver:
         print("Activated decision variables:")
         for var in self._decision_variables:
             if self._model.getVal(self._decision_variables[var]) > 0:
-                print(f"Variable {var} (Group, Week, Day, Hour, Evaluator): {var}")
-                result.append(var)
+                print(f"Variable {var} (Group, Evaluator, Week, Day, Hour): {var}")
+                result.append(
+                    (
+                        f"{GROUP_ID}-{var[0]}",
+                        f"{EVALUATOR_ID}-{var[1]}",
+                        f"{DATE_ID}-{var[2]}-{var[3]}-{var[4]}",
+                    )
+                )
+
                 group_id, week, day, hour, evaluator_id = var
                 group = next(g for g in self._groups if g.id == group_id)
                 group.state.assign_date(DeliveryDate(week, day, hour))
