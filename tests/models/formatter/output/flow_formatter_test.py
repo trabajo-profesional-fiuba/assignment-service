@@ -5,20 +5,35 @@ from tests.algorithms.date_simplex.helper import TestLPHelper
 
 
 class TestFlowOutputFormatter:
+    """
+    Test cases for the `FlowOutputFormatter` class.
+    """
+
     formatter = FlowOutputFormatter()
     helper = TestLPHelper()
 
     @pytest.mark.unit
     def test_create_date_with_correct_format(self):
+        """
+        Tests if _create_date correctly parses a properly formatted date string.
+        """
         assert "1-1-1" == self.formatter._create_date("date-1-1-1").label()
 
     @pytest.mark.unit
     def test_create_date_with_wrong_format(self):
+        """
+        Tests if _create_date raises WrongDateFormat for incorrectly formatted date
+        strings.
+        """
         with pytest.raises(WrongDateFormat):
             assert "1-1-1" == self.formatter._create_date("1-1-1").label()
 
     @pytest.mark.unit
     def test_get_result_with_groups(self):
+        """
+        Tests get_result method for assigning delivery dates to groups based on the flow
+        solver result.
+        """
         flow_solver_result = {
             "s": {"group-1", "group-2"},
             "group-1": {"date-2-2-10": 1, "date-2-2-11": 0},
@@ -41,6 +56,10 @@ class TestFlowOutputFormatter:
 
     @pytest.mark.unit
     def test_get_result_with_evaluators(self):
+        """
+        Tests get_result method for assigning delivery dates to evaluators based on the
+        flow solver result.
+        """
         flow_solver_result = {
             "s": {"evaluator-1": 4, "evaluator-2": 4},
             "evaluator-1": {"date-1-evaluator-1": 2, "date-2-evaluator-1": 2},
@@ -65,6 +84,9 @@ class TestFlowOutputFormatter:
 
     @pytest.mark.unit
     def test_get_result_with_empty_result(self):
+        """
+        Tests get_result method with an empty result dictionary.
+        """
         num_groups = 2
         num_weeks = 4
         days_per_week = [1, 2, 3, 4, 5]
@@ -78,6 +100,9 @@ class TestFlowOutputFormatter:
 
     @pytest.mark.unit
     def test_get_result_with_empty_groups(self):
+        """
+        Tests get_result method with an empty list of groups.
+        """
         flow_solver_result = {
             "s": {"group-1", "group-2"},
             "group-1": {"date-2-2-10": 1, "date-2-2-11": 0},
