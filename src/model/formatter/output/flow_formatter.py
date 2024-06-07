@@ -29,7 +29,8 @@ class FlowOutputFormatter:
             group_edges = result[f"{GROUP_ID}-{group.id}"]
             for key, value in group_edges.items():
                 if value == 1:
-                    group.assign_date(key)
+                    date = self._create_date(key)
+                    group.assign_date(date)
         return groups
 
     def get_result(
