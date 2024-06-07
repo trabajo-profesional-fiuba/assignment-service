@@ -2,6 +2,8 @@ from src.constants import GROUP_ID
 from src.model.group.group import Group
 from src.model.result import AssignmentResult
 from src.model.utils.evaluator import Evaluator
+from src.model.utils.delivery_date import DeliveryDate
+from src.exceptions import WrongDateFormat
 
 
 class FlowOutputFormatter:
@@ -14,6 +16,12 @@ class FlowOutputFormatter:
         Initializes a `FlowOutputFormatter` object.
         """
 
+    def _create_date(self, date: str) -> DeliveryDate:
+        date_parts = date.split("-")
+        if len(date_parts) == 4:
+            return DeliveryDate(date_parts[1], date_parts[2], date_parts[3])
+        raise WrongDateFormat("Unrecognized date format")
+
     def _groups(
         self, result: dict[str, dict[str, int]], groups: list[Group]
     ) -> list[Group]:
@@ -21,9 +29,7 @@ class FlowOutputFormatter:
             group_edges = result[f"{GROUP_ID}-{group.id}"]
             for key, value in group_edges.items():
                 if value == 1:
-                    date = result[key]
-                    group.tutor.assign_date(date)
-                    group.assign_date(date)
+                    group.assign_date(key)
         return groups
 
     def get_result(

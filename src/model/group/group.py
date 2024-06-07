@@ -41,6 +41,7 @@ class Group:
         self._tutor = tutor
 
     def assign_date(self, date: DeliveryDate) -> None:
+        print(f"date to assign tutor and group: {date}")
         self._tutor.assign_date(date)
         self._state.assign_date(date)
 
