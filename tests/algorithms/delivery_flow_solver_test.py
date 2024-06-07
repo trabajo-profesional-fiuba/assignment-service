@@ -1,12 +1,14 @@
 import pytest
+import pandas as pd
 
 from src.algorithms.delivery_flow_solver import DeliveryFlowSolver
 from src.model.group.group import Group
-from src.model.tutor.tutor import Tutor
-from src.model.tutor.final_state_tutor import FinalStateTutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
+from src.model.formatter.input_formatter import InputFormatter
+from src.model.formatter.output.output_formatter import OutputFormatter
+from src.model.formatter.input_formatter import get_evaluators
 
 
 class TestDeliveryFlowSolver:
@@ -356,24 +358,72 @@ class TestDeliveryFlowSolver:
         assert len(evaluators[0].assigned_dates) == 4
 
     @pytest.mark.unit
-    def test_small_use_case(self):
-        g1 = Group(1, Tutor(2, "fake@fi.uba.com", "Juan", state=FinalStateTutor()))
-        g2 = Group(2, Tutor(1, "fak3@fi.uba.com", "Pedro", state=FinalStateTutor()))
-        """
-        DeliveryDate(week=1, day=1, hour=1),
-        DeliveryDate(week=1, day=2, hour=1),
-        DeliveryDate(week=2, day=1, hour=1),
-        DeliveryDate(week=2, day=2, hour=1)
-        """
+    def test_real_case(self):
+        groups_df = pd.read_csv("db/equipos.csv")
+        tutors_df = pd.read_csv("db/tutores.csv")
 
-        g1.add_available_dates([self.dates[0], self.dates[1]])
-        g2.add_available_dates([self.dates[2], self.dates[3]])
+        formatter = InputFormatter(groups_df, tutors_df)
+        groups, tutors, evaluators, possible_dates = formatter.get_data()
 
-        # possible_dates = [self.dates[0], self.dates[1], self.dates[2], self.dates[3]]
-        # evaluators = [
-        #     Evaluator(1, [self.dates[2]]),
-        #     Evaluator(2, [self.dates[1]]),
-        #     Evaluator(3, [self.dates[0]]),
-        #     Evaluator(4, [self.dates[2], self.dates[3]]),
-        # ]
-        # assert 1 == 1
+        # Check that there are three evaluators
+        evaluators_id = []
+        for tutor in tutors:
+            if tutor.name in get_evaluators():
+                evaluators_id.append(tutor.id)
+        assert len(evaluators) == 3
+
+        # Check that expected evaluators were created
+        evaluators_count = {evaluator.id: 0 for evaluator in evaluators}
+        for evaluator in evaluators:
+            for id in evaluators_id:
+                if evaluator.id == id:
+                    evaluators_count[evaluator.id] += 1
+        for evaluator, count in evaluators_count.items():
+            assert count == 1
+
+        flow_solver = DeliveryFlowSolver(
+            groups, tutors, OutputFormatter(), possible_dates, evaluators
+        )
+
+        result = flow_solver.solve()
+
+        # Check that all groups are in result
+        groups_result = result.groups
+        assert len(groups_result) == len(groups)
+        for group in groups_result:
+            # Check that all groups have an assigned date set
+            assert result.delivery_date_group(group) is not None
+            # Check that assigned date is in group available dates
+            group_available_dates = []
+            for available_date in group.available_dates():
+                group_available_dates.append(f"date-{available_date.label()}")
+            assert result.delivery_date_group(group) in group_available_dates
+            print(
+                f"group {group.id}, tutor {group.tutor.id}, delivery_date\
+                {result.delivery_date_group(group)}"
+            )
+
+        # Check that all evaluators are in result
+        evaluators_result = result.evaluators
+        for evaluator in evaluators_result:
+            print(
+                f"evaluator {evaluator.id}, count delivery_date\
+                {len(result.delivery_date_evaluator(evaluator))}"
+            )
+            for assigned_date in result.delivery_date_evaluator(evaluator):
+                print(f"evaluator {evaluator.id}, delivery_date {assigned_date}")
+                # Check that assigned date is in evaluator available dates
+                available_dates = []
+                for available_date in evaluator.available_dates:
+                    available_dates.append(f"date-{available_date.label()}")
+                assert assigned_date in available_dates
+
+        # Check that evaluators are not assigned dates that were assigned to groups
+        # they are tutoring
+        # for group in groups_result:
+        #     for evaluator in evaluators_result:
+        #         if evaluator.id == group.tutor.id:
+        #             print(f"group {group.id}, tutor {group.tutor.name}\
+        #             {group.tutor.id}, evaluator {evaluator.id}")
+        #             for assigned_date in result.delivery_date_evaluator(evaluator):
+        #                 assert assigned_date != result.delivery_date_group(group)
