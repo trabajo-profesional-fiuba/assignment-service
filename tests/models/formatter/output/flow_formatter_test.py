@@ -17,8 +17,6 @@ class TestFlowOutputFormatter:
         with pytest.raises(WrongDateFormat):
             assert "1-1-1" == self.formatter._create_date("1-1-1").label()
 
-    helper = TestLPHelper()
-
     @pytest.mark.unit
     def test_get_result_with_groups(self):
         flow_solver_result = {
