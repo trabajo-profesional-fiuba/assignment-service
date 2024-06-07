@@ -40,7 +40,7 @@ class Group:
     def assign_tutor(self, tutor: Tutor) -> None:
         self._tutor = tutor
 
-    def assign_date(self, date: DeliveryDate) -> None:
+    def assign_date(self, date) -> None:
         self._tutor.assign_date(date)
         self._state.assign_date(date)
 
@@ -68,7 +68,7 @@ class Group:
     def remove_dates(self, dates) -> None:
         self.state.remove_dates(dates)
 
-    def assigned_date(self) -> DeliveryDate:
+    def assigned_date(self) -> str:
         return self._state.assigned_date
 
     def available_dates(self) -> list[DeliveryDate]:

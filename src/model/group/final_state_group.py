@@ -1,6 +1,3 @@
-from src.model.utils.delivery_date import DeliveryDate
-
-
 class FinalStateGroup:
 
     def __init__(self, available_dates):
@@ -15,7 +12,7 @@ class FinalStateGroup:
     def assigned_date(self):
         return self._assigned_date
 
-    def assign_date(self, date: DeliveryDate):
+    def assign_date(self, date):
         self._assigned_date = date
 
     def filter_dates(self, dates):

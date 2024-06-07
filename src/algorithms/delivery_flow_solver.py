@@ -91,7 +91,7 @@ class DeliveryFlowSolver(DeliverySolver):
         Tutors and groups need to filter so that they can match with
         evaluators day.
 
-        This function is in charge of removed unassigned dates from the evaluators 
+        This function is in charge of removed unassigned dates from the evaluators
         """
         for group in groups:
             for evaluator in evaluators:
@@ -136,32 +136,17 @@ class DeliveryFlowSolver(DeliverySolver):
         graph.add_edges_from(sink_edges)
         return graph
 
-
-    def _assign_evaluators_results_recursive(self, list_of_keys, result):
-        if "t" in result[list_of_keys[0]]:
-            value = result[list_of_keys[0]]
-            if value["t"] > 0:
-                return [list_of_keys[0]] 
-            else:
-                return []
-        else:
-            for i in list_of_keys:
-                dates = list(result[i].keys())
-                dates_left = self._assign_evaluators_results_recursive(dates[len(dates)//2:], result) 
-                dates_right = self._assign_evaluators_results_recursive(dates[:len(dates)//2], result)
-                
-                return dates_left + dates_right
-
     def _assign_evaluators_results(self, result):
         for evaluator in self._evaluators:
-            weeks = list(result[f"{EVALUATOR_ID}-{evaluator.id}"].keys())
-            dates_left = self._assign_evaluators_results_recursive(weeks[len(weeks)//2:], result) 
-            dates_right = self._assign_evaluators_results_recursive(weeks[:len(weeks)//2], result)
-            final_dates = dates_left + dates_right
-            evaluator.assign_dates(final_dates)
+            weeks = result[f"{EVALUATOR_ID}-{evaluator.id}"]
+            for key, value in weeks.items():
+                if value > 0:
+                    days = result[key]
+                    for date, date_value in days.items():
+                        if date_value > 0:
+                            evaluator.assign_date(date)
 
-
-    def _filter_evaluators_tutors_date(self, evalutors, tutors):
+    def _filter_evaluators_tutors_date(self, evaluators, tutors):
         pass
 
     def _max_flow_min_cost(self, graph: nx.DiGraph):
@@ -183,13 +168,12 @@ class DeliveryFlowSolver(DeliverySolver):
         self._assign_evaluators_results(max_flow_min_cost_evaluators)
 
         # filtro fechas de evaluadores con los tutores restantes
-        #self._filter_evaluators_tutors_date(self._tutors, self._evaluators)
+        # self._filter_evaluators_tutors_date(self._tutors, self._evaluators)
         self._filter_unassigned_dates(self._groups, self._evaluators)
 
-
         # Hago el grafo de los tutores y filtro los resultados
-        #evaluator_graph = self.evaluators_assignment_flow()
-        #self._filter_unassigned_dates(self._groups, self._tutors)
+        # evaluator_graph = self.evaluators_assignment_flow()
+        # self._filter_unassigned_dates(self._groups, self._tutors)
 
         # Hago el grafo de los alumnos
         groups_graph = self.groups_assignment_flow()

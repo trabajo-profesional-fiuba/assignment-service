@@ -47,6 +47,7 @@ class InputFormatter:
     DAYS_dict = {
         "Lunes": 1,
         "Martes": 2,
+        "Miercoles": 3,
         "Miércoles": 3,
         "Jueves": 4,
         "Viernes": 5,
@@ -245,7 +246,7 @@ class InputFormatter:
                         )
         return dates
 
-    def tutors(self) -> list[Tutor]:
+    def _tutors(self) -> list[Tutor]:
         """
         Generates a list of `Tutor` objects from the DataFrame.
 
@@ -270,12 +271,12 @@ class InputFormatter:
         return tutors
 
     def _get_tutor_by_id(self, tutor_id: int) -> Tutor:
-        for tutor in self.tutors():
+        for tutor in self._tutors():
             if tutor.id == tutor_id:
                 return tutor
         raise TutorNotFound(f"Tutor '{tutor_id}' not found.")
 
-    def groups(self) -> list[Group]:
+    def _groups(self) -> list[Group]:
         """
         Generates a list of `Group` objects from the DataFrame.
 
@@ -289,7 +290,7 @@ class InputFormatter:
         """
         groups = self._groups_df.apply(
             lambda x: Group(
-                int(x["Número de equipo"]),
+                x["Número de equipo"],
                 tutor=self._get_tutor_by_id(self._tutor_id(x["Apellido del tutor"])),
                 state=FinalStateGroup(self._available_dates(x)),
             ),
@@ -297,7 +298,7 @@ class InputFormatter:
         )
         return groups
 
-    def evaluators(self) -> list[Evaluator]:
+    def _evaluators(self) -> list[Evaluator]:
         evaluators_df = self._tutors_df[
             self._tutors_df["Nombre y Apellido"].isin(get_evaluators())
         ]
@@ -310,7 +311,7 @@ class InputFormatter:
         )
         return evaluators
 
-    def possible_dates(self) -> list[DeliveryDate]:
+    def _possible_dates(self) -> list[DeliveryDate]:
         """
         Extracts possible dates from a list of columns.
 
@@ -328,3 +329,11 @@ class InputFormatter:
                             self._create_delivery_date(week_part, day, hour_part)
                         )
         return dates
+
+    def get_data(self):
+        return (
+            self._groups(),
+            self._tutors(),
+            self._evaluators(),
+            self._possible_dates(),
+        )

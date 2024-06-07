@@ -337,32 +337,18 @@ class TestDeliveryFlowSolver:
             "evaluator-1": {
                 "date-1-evaluator-1": 2,
                 "date-2-evaluator-1": 2,
-                "date-3-evaluator-1": 0
+                "date-3-evaluator-1": 0,
             },
-            "date-1-evaluator-1": {
-                "date-1-1-1-1": 1,
-                "date-1-1-2-1": 1
-            },
-            "date-2-evaluator-1": {
-                "date-2-2-1-1": 1,
-                "date-2-2-2-1": 1
-            },
-            "date-1-1-1-1": {
-                "t": 1
-            },
-            "date-1-1-2-1": {
-                "t": 1
-            },
-            "date-2-2-1-1": {
-                "t": 1
-            },
-            "date-2-2-2-1": {
-                "t": 1
-            }
+            "date-1-evaluator-1": {"date-1-1-1-1": 1, "date-1-1-2-1": 1},
+            "date-2-evaluator-1": {"date-2-2-1-1": 1, "date-2-2-2-1": 1},
+            "date-1-1-1-1": {"t": 1},
+            "date-1-1-2-1": {"t": 1},
+            "date-2-2-1-1": {"t": 1},
+            "date-2-2-2-1": {"t": 1},
         }
 
         evaluators = [
-            Evaluator(1, [dates[0], dates[1], dates[2], dates[3],dates[4],dates[5]])
+            Evaluator(1, [dates[0], dates[1], dates[2], dates[3], dates[4], dates[5]])
         ]
 
         delivery_flow_solver = DeliveryFlowSolver([], [], None, dates, evaluators)

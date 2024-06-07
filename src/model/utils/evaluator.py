@@ -29,7 +29,7 @@ class Evaluator:
 
     def assign_date(self, date: DeliveryDate) -> None:
         self._assigned_dates.append(date)
-    
+
     def assign_dates(self, dates):
         for d in dates:
             self.assign_date(d)
