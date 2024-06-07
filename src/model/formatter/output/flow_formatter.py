@@ -26,11 +26,12 @@ class FlowOutputFormatter:
         self, result: dict[str, dict[str, int]], groups: list[Group]
     ) -> list[Group]:
         for group in groups:
-            group_edges = result[f"{GROUP_ID}-{group.id}"]
-            for key, value in group_edges.items():
-                if value == 1:
-                    date = self._create_date(key)
-                    group.assign_date(date)
+            if result != {} and groups != []:
+                group_edges = result[f"{GROUP_ID}-{group.id}"]
+                for key, value in group_edges.items():
+                    if value == 1:
+                        date = self._create_date(key)
+                        group.assign_date(date)
         return groups
 
     def get_result(
