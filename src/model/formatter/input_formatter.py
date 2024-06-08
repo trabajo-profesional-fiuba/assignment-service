@@ -46,11 +46,16 @@ class InputFormatter:
 
     DAYS_dict = {
         "Lunes": 1,
+        "lunes": 1,
         "Martes": 2,
+        "martes": 2,
         "Miercoles": 3,
         "Miércoles": 3,
+        "miercoles": 3,
         "Jueves": 4,
+        "jueves": 4,
         "Viernes": 5,
+        "viernes": 5,
     }
 
     HOURS_dict = {

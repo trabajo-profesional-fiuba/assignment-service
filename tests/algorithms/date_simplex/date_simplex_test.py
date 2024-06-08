@@ -1,6 +1,6 @@
 import time
 import pytest
-
+import pandas as pd
 from src.algorithms.delivery_lp_solver import DeliveryLPSolver
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
@@ -8,6 +8,8 @@ from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
 from tests.algorithms.date_simplex.helper import TestLPHelper
 from src.model.formatter.output.output_formatter import OutputFormatter
+from src.model.formatter.input_formatter import InputFormatter
+from src.model.formatter.input_formatter import get_evaluators
 
 
 class TestDatesSimplex:
@@ -258,3 +260,80 @@ class TestDatesSimplex:
 
         for key, value in evaluators_assignment:
             assert value <= 5
+
+    @pytest.mark.unit
+    def test_real_case(self):
+        groups_df = pd.read_csv("db/equipos.csv")
+        tutors_df = pd.read_csv("db/tutores.csv")
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        groups, tutors, evaluators, possible_dates = formatter.get_data()
+
+        # Check that there are three evaluators
+        evaluators_id = []
+        for tutor in tutors:
+            if tutor.name in get_evaluators():
+                evaluators_id.append(tutor.id)
+        assert len(evaluators) == 3
+
+        # Check that expected evaluators were created
+        evaluators_count = {evaluator.id: 0 for evaluator in evaluators}
+        for evaluator in evaluators:
+            for id in evaluators_id:
+                if evaluator.id == id:
+                    evaluators_count[evaluator.id] += 1
+        for evaluator, count in evaluators_count.items():
+            assert count == 1
+
+        # (self, groups, tutors, formatter, available_dates, evaluators):
+
+        lp_solver = DeliveryLPSolver(
+            groups, tutors, self.formatter, possible_dates, evaluators
+        )
+
+        result = lp_solver.solve()
+
+        # Check that all groups are in result
+        groups_result = result.groups
+        assert len(groups_result) == len(groups)
+        for group in groups_result:
+            # Check that all groups have an assigned date set
+            assert result.delivery_date_group(group) is not None
+            # Check that assigned date is in group available dates
+            group_available_dates = []
+            for group_available_date in group.available_dates():
+                group_available_dates.append(group_available_date.label())
+            assert result.delivery_date_group(group).label() in group_available_dates
+            print(
+                f"group {group.id}, tutor {group.tutor.id}, delivery_date\
+                {result.delivery_date_group(group).label()}"
+            )
+
+        # Check that all evaluators are in result
+        evaluators_result = result.evaluators
+        for evaluator in evaluators_result:
+            print(
+                f"evaluator {evaluator.id}, count delivery_date\
+                {len(result.delivery_date_evaluator(evaluator))}"
+            )
+            for assigned_date in result.delivery_date_evaluator(evaluator):
+                print(
+                    f"evaluator {evaluator.id}, delivery_date {assigned_date.label()}"
+                )
+                # Check that assigned date is in evaluator available dates
+                evaluator_available_dates = []
+                for evaluator_available_date in evaluator.available_dates:
+                    evaluator_available_dates.append(evaluator_available_date.label())
+                assert assigned_date.label() in evaluator_available_dates
+
+        # Check that evaluators are not assigned dates that were assigned to groups
+        # they are tutoring
+        for group in groups_result:
+            for evaluator in evaluators_result:
+                if evaluator.id == group.tutor.id:
+                    print(
+                        f"group {group.id}, tutor {group.tutor.name}\
+                    {group.tutor.id}, evaluator {evaluator.id}"
+                    )
+                    for assigned_date in result.delivery_date_evaluator(evaluator):
+                        assert assigned_date != result.delivery_date_group(group)
