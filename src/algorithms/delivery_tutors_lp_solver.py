@@ -43,7 +43,7 @@ class DeliveryTutorsLPSolver:
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
 
-    def create_group_tutors_evaluator_decision_variables(self, num_week: int):
+    def create_group_tutors_evaluator_decision_variables(self):
         """
         Creates decision variables for the assignment of dates to groups.
         Decision variables: group-id-tutor-id-date-week-day-hour
@@ -58,7 +58,8 @@ class DeliveryTutorsLPSolver:
             tutor = group.tutor
             mutual_available_dates = [
                 (date.week, date.day, date.hour)
-                for date in self.dates_in_week(group.state.available_dates, num_week)
+                # for date in self.dates_in_week(group.state.available_dates, num_week)
+                for date in group.state.available_dates
                 if any(
                     t_date.week == date.week
                     and t_date.day == date.day
@@ -66,18 +67,17 @@ class DeliveryTutorsLPSolver:
                     for t_date in tutor.state.available_dates
                 )
             ]
-
-            for week, day, hour in mutual_available_dates:
-                var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor.id}-{DATE_ID}\
-                -{week}-{day}-{hour}"
-                self._decision_variables[(group.id, tutor.id, week, day, hour)] = (
-                    self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
-                )
-                if (tutor.id, week, day, hour) not in self._tutor_day_vars:
-                    day_var_name = f"{TUTOR_ID}-{tutor.id}-{DATE_ID}-{week}-{day}"
-                    self._tutor_day_vars[(tutor.id, week, day)] = self._model.addVar(
-                        day_var_name, vtype="B", obj=0, lb=0, ub=1
+            if len(mutual_available_dates)> 0:
+                for week, day, hour in mutual_available_dates:
+                    var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor.id}-{DATE_ID}-{week}-{day}-{hour}"
+                    self._decision_variables[(group.id, tutor.id, week, day, hour)] = (
+                        self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
                     )
+                    if (tutor.id, week, day, hour) not in self._tutor_day_vars:
+                        day_var_name = f"{TUTOR_ID}-{tutor.id}-{DATE_ID}-{week}-{day}"
+                        self._tutor_day_vars[(tutor.id, week, day)] = self._model.addVar(
+                            day_var_name, vtype="B", obj=0, lb=0, ub=1
+                        )
 
     def groups_assignment_restriction(self, num_week: int):
         """
@@ -89,19 +89,31 @@ class DeliveryTutorsLPSolver:
             The week number for which the restrictions are being added.
         """
         # Cada grupo se debe asignar una sola vez a una fecha y hora específica
-        for date in self.dates_in_week(self._available_dates, num_week):
-            self._model.addCons(
-                scip.quicksum(
-                    self._decision_variables[
-                        (group.id, tutor.id, date.week, date.day, date.hour)
-                    ]
-                    for group in self._groups
-                    for tutor in self._tutors
-                    if (group.id, tutor.id, date.week, date.day, date.hour)
-                    in self._decision_variables
-                )
-                <= 1
-            )
+        # for date in self.dates_in_week(self._available_dates, num_week):
+        #     variables_group = [
+        #         self._decision_variables[
+        #                 (group.id, tutor.id, date.week, date.day, date.hour)
+        #             ]
+        #             for group in self._groups
+        #             for tutor in self._tutors
+        #             if (group.id, tutor.id, date.week, date.day, date.hour)
+        #             in self._decision_variables
+        #     ]
+        #     print(variables_group)
+        #     if len(variables_group) > 0:
+        #         self._model.addCons(scip.quicksum(variables_group) <= 1)
+            # self._model.addCons(
+            #     scip.quicksum(
+            #         self._decision_variables[
+            #             (group.id, tutor.id, date.week, date.day, date.hour)
+            #         ]
+            #         for group in self._groups
+            #         for tutor in self._tutors
+            #         if (group.id, tutor.id, date.week, date.day, date.hour)
+            #         in self._decision_variables
+            #     )
+            #     == 1
+            # )
         # Cada grupo se asigne exactamente una vez a una
         # combinación de fecha y hora.
         for group in self._groups:
@@ -114,8 +126,8 @@ class DeliveryTutorsLPSolver:
                 if (group.id, tutor.id, date.week, date.day, date.hour)
                 in self._decision_variables
             ]
-            if variables:
-                self._model.addCons(scip.quicksum(variables) == 1)
+            if len(variables) > 0:
+                self._model.addCons(scip.quicksum(variables) >= 1)
 
     def tutor_max_groups_per_date_restriction(self, num_week: int):
         """
@@ -128,16 +140,26 @@ class DeliveryTutorsLPSolver:
         """
         for tutor in self._tutors:
             for date in self.dates_in_week(self._available_dates, num_week):
-                self._model.addCons(
-                    scip.quicksum(
-                        self._decision_variables[var]
+                variables = [
+                    self._decision_variables[var]
                         for var in self._decision_variables
                         if var[2] == date.week
                         and var[3] == date.day
                         and var[1] == tutor.id
-                    )
-                    <= 5
-                )
+                ]
+                if len(variables) > 0:
+                    self._model.addCons(scip.quicksum(variables) <= 5)
+
+                # self._model.addCons(
+                #     scip.quicksum(
+                #         self._decision_variables[var]
+                #         for var in self._decision_variables
+                #         if var[2] == date.week
+                #         and var[3] == date.day
+                #         and var[1] == tutor.id
+                #     )
+                #     <= 5
+                # )
 
     def tutor_day_minimization_restriction(self, num_week: int):
         """
@@ -200,47 +222,48 @@ class DeliveryTutorsLPSolver:
         """
         num_week = 1
         result = []
+        self.create_group_tutors_evaluator_decision_variables()
+        # while num_week <= max(date.week for date in self._available_dates):
 
-        while num_week <= max(date.week for date in self._available_dates):
+        #     # Reinicia el modelo y las variables para cada semana
+        #     self._model.freeTransform()
+        #     self._model = scip.Model()
+        #     self._model.setIntParam("display/verblevel", 0)
+        #     self._decision_variables = {}
+        #     self._tutor_day_vars = {}
 
-            # Reinicia el modelo y las variables para cada semana
-            self._model.freeTransform()
-            self._model = scip.Model()
-            self._model.setIntParam("display/verblevel", 0)
-            self._decision_variables = {}
-            self._tutor_day_vars = {}
+        #     # Crea las variables de decisión y restricciones solo para la semana actual
+        #     # self.create_group_tutors_evaluator_decision_variables()
+        #     self.groups_assignment_restriction(num_week)
+        #     self.tutor_max_groups_per_date_restriction(num_week)
+        #     self.tutor_day_minimization_restriction(num_week)
+        #     self.define_objective()
 
-            # Crea las variables de decisión y restricciones solo para la semana actual
-            self.create_group_tutors_evaluator_decision_variables(num_week)
-            self.groups_assignment_restriction(num_week)
-            self.tutor_max_groups_per_date_restriction(num_week)
-            self.tutor_day_minimization_restriction(num_week)
-            self.define_objective()
+        #     # Resolver el modelo para la semana actual
+        #     self._model.optimize()
 
-            # Resolver el modelo para la semana actual
-            self._model.optimize()
+        #     print(f"Estado para la semana {num_week}:", self._model.getStatus())
+        #     print(
+        #         f"Valor óptimo de la función objetivo para la semana {num_week}:",
+        #         self._model.getObjVal(),
+        #     )
 
-            print(f"Estado para la semana {num_week}:", self._model.getStatus())
-            print(
-                f"Valor óptimo de la función objetivo para la semana {num_week}:",
-                self._model.getObjVal(),
-            )
+        #     print(f"Variables de decisión activadas para la semana {num_week}:")
+        #     for var in self._decision_variables:
+        #         if self._model.getVal(self._decision_variables[var]) > 0:
+        #             print(f"Variable {var} ((Grupo, Tutor, Semana, Día, Hora): {var}")
+        #             for group in self._groups:
+        #                 if group.id == var[0]:
+        #                     result.append(var)
 
-            print(f"Variables de decisión activadas para la semana {num_week}:")
-            for var in self._decision_variables:
-                if self._model.getVal(self._decision_variables[var]) > 0:
-                    print(f"Variable {var} ((Grupo, Tutor, Semana, Día, Hora): {var}")
-                    for group in self._groups:
-                        if group.id == var[0]:
-                            result.append(var)
+        #     print(
+        #         f"\nVariables activadas para la semana {num_week} (Tutor, Fecha, Hora):"
+        #     )
+        #     for var in self._tutor_day_vars:
+        #         if self._model.getVal(self._tutor_day_vars[var]) > 0:
+        #             print(f"Variable adicional {var}")
 
-            print(
-                f"\nVariables activadas para la semana {num_week} (Tutor, Fecha, Hora):"
-            )
-            for var in self._tutor_day_vars:
-                if self._model.getVal(self._tutor_day_vars[var]) > 0:
-                    print(f"Variable adicional {var}")
+        #     num_week += 1
 
-            num_week += 1
-
-        return result
+        # return result
+        return self._decision_variables

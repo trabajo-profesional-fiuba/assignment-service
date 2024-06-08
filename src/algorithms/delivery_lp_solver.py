@@ -1,6 +1,5 @@
 from src.algorithms.delivery_evaluators_lp_solver import DateEvaluatorsLPSolver
 from src.algorithms.delivery_solver import DeliverySolver
-from src.algorithms.delivery_tutors_lp_solver import DeliveryTutorsLPSolver
 
 
 class DeliveryLPSolver(DeliverySolver):
@@ -9,13 +8,13 @@ class DeliveryLPSolver(DeliverySolver):
         self._evaluators = evaluators
 
     def solve(self):
-        solver_tutors = DeliveryTutorsLPSolver(
-            self._available_dates, self._groups, self._tutors
-        )
-        result_tutors = solver_tutors.solve()
+        # solver_tutors = DeliveryTutorsLPSolver(
+        #     self._available_dates, self._groups, self._tutors
+        # )
+        # result_tutors = solver_tutors.solve()
 
         solver_evaluators = DateEvaluatorsLPSolver(
-            self._available_dates, result_tutors, self._groups, self._evaluators
+            self._available_dates, self._groups, self._tutors, self._evaluators
         )
         result_evaluators = solver_evaluators.solve()
 
