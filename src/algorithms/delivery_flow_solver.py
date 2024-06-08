@@ -82,7 +82,6 @@ class DeliveryFlowSolver(DeliverySolver):
                             {"capacity": 1, "cost": 1},
                         )
                         edges.append(edge)
-
         return edges
 
     def _filter_unassigned_dates(self, groups, evaluators):
@@ -112,11 +111,9 @@ class DeliveryFlowSolver(DeliverySolver):
         dates = []
         for e in self._evaluators:
             dates += e.filter_dates(self._available_dates)
-
         return dates
 
     def evaluators_assignment_flow(self):
-
         mutual_dates = self._filter_final_dates()
         sources_edges = self._create_source_edges(self._evaluators, 35, EVALUATOR_ID)
         weeks_date_edges = self._create_evaluators_week_edges(self._evaluators)
@@ -146,11 +143,9 @@ class DeliveryFlowSolver(DeliverySolver):
         max_flow_min_cost_dic = nx.max_flow_min_cost(
             graph, "s", "t", capacity="capacity", weight="cost"
         )
-
         return max_flow_min_cost_dic
 
     def solve(self):
-
         evaluator_graph = self.evaluators_assignment_flow()
         max_flow_min_cost_evaluators = self._max_flow_min_cost(evaluator_graph)
 
@@ -163,5 +158,4 @@ class DeliveryFlowSolver(DeliverySolver):
         assignment_result = self._formatter.format_result(
             max_flow_min_cost_groups, self._groups, self._evaluators
         )
-
         return assignment_result

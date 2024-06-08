@@ -10,12 +10,12 @@ poetry.lock
 # vscode
 .vscode
 
-#Coverage
+# Coverage
 coverage.xml
 .coverage
 
-dist/
-dummy.py
-database/
+# Local
+db/
 
+# Env
 .env
