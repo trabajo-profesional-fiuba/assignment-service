@@ -55,11 +55,12 @@ class DeliveryFlowSolver(DeliverySolver):
                     date_label = date.label()
                     cost_date = group.cost_of_date(date)
                     edges.append(
-                    (
-                        f"{GROUP_ID}-{group.id}",
-                        f"{DATE_ID}-{date_label}",
-                        {"capacity": 1, "cost": cost_date},
-                    ))
+                        (
+                            f"{GROUP_ID}-{group.id}",
+                            f"{DATE_ID}-{date_label}",
+                            {"capacity": 1, "cost": cost_date},
+                        )
+                    )
                     final_dates.append(date_label)
         sink_edges = self._create_sink_edges(list(set(final_dates)), 1, DATE_ID)
         return edges + sink_edges + sources_edges
@@ -82,9 +83,9 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         groups = []
         for group in self._groups:
-            if group.is_tutored_by(evaluator_id) == False:
+            if group.is_tutored_by(evaluator_id) is False:
                 group_dates = list(d.label() for d in group.available_dates())
-                weeks_dates = list(filter(lambda x: x.split('-')[0] == week, dates))
+                weeks_dates = list(filter(lambda x: x.split("-")[0] == week, dates))
                 mutual_dates = list(set(group_dates) & set(weeks_dates))
                 if len(mutual_dates) > 0:
                     cost = group.cost_of_week(week)
@@ -96,7 +97,7 @@ class DeliveryFlowSolver(DeliverySolver):
     def _create_evaluators_edges(self):
         """
         Based on evaluators it creates one edge between
-        evaluator and its week, it also search for groups with mutual dates 
+        evaluator and its week, it also search for groups with mutual dates
         and connect that week node to the group as they share at least one date.
         """
         sources_edges = self._create_source_edges(self._evaluators, 35, EVALUATOR_ID)
@@ -106,7 +107,7 @@ class DeliveryFlowSolver(DeliverySolver):
             weeks_checked = []
             evaluador_dates = [d.label() for d in evaluator.available_dates]
             for date in evaluador_dates:
-                week = date.split('-')[0]
+                week = date.split("-")[0]
                 if week not in weeks_checked:
                     weeks_checked.append(week)
                     week_edge = (
@@ -115,7 +116,9 @@ class DeliveryFlowSolver(DeliverySolver):
                         {"capacity": 5, "cost": 1},
                     )
                     edges.append(week_edge)
-                    groups_info = self._get_groups_id_with_mutual_dates(week, evaluador_dates, evaluator.id)
+                    groups_info = self._get_groups_id_with_mutual_dates(
+                        week, evaluador_dates, evaluator.id
+                    )
 
                     for group in groups_info:
                         if group[0] not in all_group_ids:
@@ -149,19 +152,19 @@ class DeliveryFlowSolver(DeliverySolver):
         for evaluator in self._evaluators:
             evaluator_key = f"{EVALUATOR_ID}-{evaluator.id}"
             evaluator_results = results[evaluator_key]
-            
+
             for week, week_value in evaluator_results.items():
-                week_num = int(week.split('-')[1])
-                week_key = f"week-{week_num}"              
-                
+                week_num = int(week.split("-")[1])
+                week_key = f"week-{week_num}"
+
                 if week_value > 0:
-                    
-                    for group, group_value in results[week].items():
+
+                    for group, group_value in results[week_key].items():
                         if group_value > 0:
-                            cleaned_results[group] =  (int(week_num),evaluator.id)
-        
+                            cleaned_results[group] = (int(week_num), evaluator.id)
+
         return cleaned_results
-    
+
     def _get_evaluator_dates(self, evaluator_id):
         """
         Collect of the evaluators dates labels based on an id
@@ -169,7 +172,7 @@ class DeliveryFlowSolver(DeliverySolver):
         for evaluator in self._evaluators:
             if evaluator.id == evaluator_id:
                 return [d.label() for d in evaluator._available_dates]
-        
+
         return []
 
     # Graph methods
@@ -196,13 +199,12 @@ class DeliveryFlowSolver(DeliverySolver):
         After the first graph is completed, we clean the results to improve performance and create the groups edges.
         Each group contains and edge to all its dates related to a week.
 
-        When the two graphs are completed, every group should have a date and an evaluator 
+        When the two graphs are completed, every group should have a date and an evaluator
         We also considered the cost inside each date base on the availability of that group in that date or week.
 
         """
         mutual_dates = self._filter_evaluators_dates()
         mutual_dates = self._filter_groups_dates(mutual_dates)
-
 
         evaluator_edges = self._create_evaluators_edges()
         e_graph = nx.DiGraph()
@@ -216,8 +218,8 @@ class DeliveryFlowSolver(DeliverySolver):
         g_graph.add_edges_from(groups_edges)
         max_flow_min_cost_groups = self._max_flow_min_cost(g_graph)
 
-        #assignment_result = self._formatter.format_result(
+        # assignment_result = self._formatter.format_result(
         #    max_flow_min_cost_groups, self._groups, self._evaluators
-        #)
+        # )
 
         return max_flow_min_cost_evaluator, max_flow_min_cost_groups

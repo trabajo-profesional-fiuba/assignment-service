@@ -69,7 +69,7 @@ class Tutor:
 
     def assigned_dates(self) -> str:
         return self._state.assigned_dates()
-    
+
     def available_dates(self):
         return self._state.available_dates
 
