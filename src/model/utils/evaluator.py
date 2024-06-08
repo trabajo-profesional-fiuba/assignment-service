@@ -20,16 +20,19 @@ class Evaluator:
         return self._assigned_dates
 
     def filter_dates(self, dates: list[DeliveryDate]):
-        labels = [d.label() for d in self._available_dates]
+        labels = [d.label() for d in dates]
         possible_dates = []
-        for date in dates:
+        possible_dates_labels = []
+        for date in self._available_dates:
             if date.label() in labels:
                 possible_dates.append(date)
-        return possible_dates
+                possible_dates_labels.append(date.label())
+        self._available_dates = possible_dates
+        return possible_dates_labels
 
     def assign_date(self, date: DeliveryDate) -> None:
         self._assigned_dates.append(date)
 
-    def assign_dates(self, dates):
+    def assign_dates(self, dates: list[DeliveryDate]):
         for d in dates:
             self.assign_date(d)

@@ -13,12 +13,6 @@ class Group:
 
     @property
     def id(self) -> str:
-        """
-        Retrieves the identifier of the group.
-
-        Returns:
-            str: The identifier of the group.
-        """
         return self._id
 
     @property
@@ -51,19 +45,11 @@ class Group:
         final_state = FinalStateGroup(available_dates)
         self._state = final_state
 
+    def available_dates(self) -> list[DeliveryDate]:
+        return self._state.available_dates
+
     def preference_of(self, topic: Topic) -> int:
-        """
-        Calculates the cost of a given topic.
-
-        Args:
-            - topic: The topic for which the cost is calculated.
-
-        Returns the group's cost for the given topic.
-        """
         return self._state.preference_of(topic)
-
-    def filter_dates(self, dates) -> None:
-        return self.state.filter_dates(dates)
 
     def remove_dates(self, dates) -> None:
         self.state.remove_dates(dates)
@@ -71,5 +57,12 @@ class Group:
     def assigned_date(self) -> str:
         return self._state.assigned_date
 
-    def available_dates(self) -> list[DeliveryDate]:
-        return self.state.available_dates
+    def filter_dates(self, dates):
+        tutor_dates = self._tutor.available_dates()
+        return self._state.filter_dates(tutor_dates, dates)
+
+    def cost_of_week(self, week):
+        return self._state.cost_of_week(week)
+
+    def cost_of_date(self, date):
+        return self._state.cost_of_date(date)

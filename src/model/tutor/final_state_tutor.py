@@ -27,3 +27,14 @@ class FinalStateTutor:
 
     def assign_date(self, date: DeliveryDate) -> None:
         self._assigned_dates.append(date)
+    
+    def remove_dates(self, groups, dates):
+        for group in groups:
+            group.remove_dates(dates)
+        
+        labels = [d.label() for d in self._available_dates]
+        possible_dates = []
+        for date in dates:
+            if date.label() in labels:
+                possible_dates.append(date)
+        self._available_dates = possible_dates
