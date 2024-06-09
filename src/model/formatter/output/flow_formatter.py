@@ -1,6 +1,6 @@
 from src.constants import GROUP_ID
 from src.model.group.group import Group
-from src.model.result import AssignmentResult
+from src.model.utils.result import AssignmentResult
 from src.model.utils.evaluator import Evaluator
 from src.model.utils.delivery_date import DeliveryDate
 from src.exceptions import WrongDateFormat

@@ -1,4 +1,4 @@
-from src.model.topic import Topic
+from src.model.utils.topic import Topic
 
 
 class InitialStateGroup:

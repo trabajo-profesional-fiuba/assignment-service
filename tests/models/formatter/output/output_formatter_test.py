@@ -4,7 +4,7 @@ from src.model.formatter.output.flow_formatter import FlowOutputFormatter
 from src.model.formatter.output.lp_formatter import LPOutputFormatter
 from src.exceptions import ResultFormatNotFound
 from src.model.group.group import Group
-from src.model.result import AssignmentResult
+from src.model.utils.result import AssignmentResult
 from src.model.utils.evaluator import Evaluator
 
 

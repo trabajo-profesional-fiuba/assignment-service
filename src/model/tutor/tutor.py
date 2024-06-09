@@ -1,4 +1,4 @@
-from src.model.topic import Topic
+from src.model.utils.topic import Topic
 from src.model.tutor.final_state_tutor import FinalStateTutor
 from src.model.utils.delivery_date import DeliveryDate
 

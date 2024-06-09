@@ -5,7 +5,7 @@ from src.model.group.group import Group
 from src.model.group.initial_state_group import InitialStateGroup
 from src.model.tutor.tutor import Tutor
 from src.model.tutor.initial_state_tutor import InitialStateTutor
-from src.model.topic import Topic
+from src.model.utils.topic import Topic
 
 
 class TestHelper:
