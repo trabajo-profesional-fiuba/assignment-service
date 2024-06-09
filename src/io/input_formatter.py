@@ -89,10 +89,10 @@ class InputFormatter:
         return BLANK_SPACE in string
 
     def _format_lastname(self, lastname: str) -> str:
-        if self._has_blank_space(lastname):
+        if self._has_blank_space(lastname.strip()):
             aux = lastname.lower().split(BLANK_SPACE)
             lastname = aux[len(aux) - 1]
-        return lastname
+        return lastname.lower().strip()
 
     def _tutor_id(self, tutor_lastname: str) -> int:
         """
@@ -113,7 +113,7 @@ class InputFormatter:
         """
         tutors = self._all_tutor_names()
         tutor_lastname = self._format_lastname(tutor_lastname)
-        index = np.where([tutor_lastname.lower() in tutor for tutor in tutors])[0]
+        index = np.where([tutor_lastname.lower() == tutor for tutor in tutors])[0]
         if len(index) > 0:
             return int(index[0] + 1)
         raise TutorNotFound(f"Tutor '{tutor_lastname}' not found.")
