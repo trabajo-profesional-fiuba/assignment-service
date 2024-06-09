@@ -58,6 +58,41 @@ class TestDeliveryFlowSolver:
 
         assert all(e in result for e in expected_edges)
 
+    @pytest.mark.unit
+    def test_find_substitutes_for_group(self, mocker):
+        # Arrange
+        ev1 = Evaluator(1)
+        mocker.patch.object(ev1, "is_avaliable", return_value=True)
+        ev2 = Evaluator(2)
+        mocker.patch.object(ev2, "is_avaliable", return_value=True)
+        
+        group_info = {
+            "group-1": (1,1),
+            "group-2": (2,2)
+        }
+        groups_result = {
+            "group-1": {
+                "date-1-1-1": 1,
+                "date-1-2-1": 0
+            },
+            "group-2": {
+                "date--1-1": 1,
+                "date-2-2-1": 0
+            },
+        }
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [])
+
+        expected = {
+            "group-1": [ev2],
+            "group-2": [ev1]
+        }
+
+        # Act
+        substitutes = delivery_flow_solver._find_substitutes(group_info,groups_result)
+
+        # Assert
+        assert  substitutes ==  substitutes
+
     # @pytest.mark.unit
     @pytest.mark.skip(reason="Todavia hay que ajustar el codigo")
     def test_real_case(self):

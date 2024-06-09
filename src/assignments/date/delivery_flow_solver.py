@@ -148,6 +148,7 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         With the evaluators results, it reduces the values just to have the important
         info such as group, week to evaluate, evaluator id that evaluates that group
+        The estructure as results is 'group_{id}':(week, evaluator_id)
         """
         cleaned_results = {}
         for evaluator in self._evaluators:
@@ -176,7 +177,34 @@ class DeliveryFlowSolver(DeliverySolver):
 
         return []
 
+    def _find_substitutes_on_date(self, date, evaluator_id):
+        substitutes = []
+        for evaluator in self._evaluators:
+            if evaluator.is_avaliable(date) and evaluator.id != evaluator_id:
+                substitutes.append(evaluator)
+
+        return substitutes
+
+    def _find_substitutes(self, groups_info: dict, groups_result: dict):
+        """
+        With the groups results, it reduces the values just to have the important
+        info such as group and the list of other possible evaluators that day.
+        """
+        substitutes = {}
+        for group, info in groups_info.items():
+            filtered_values = {group: key for key,
+                               value in groups_result[group].items() if value > 0}
+            date_assigned = filtered_values[group]
+
+            evaluator_id = info[1]
+            date = date_assigned.split('-', 1)[1]
+            evaluators = self._find_substitutes_on_date(date, evaluator_id)
+            substitutes[group] = evaluators
+
+        return substitutes
+
     # Graph methods
+
     def _max_flow_min_cost(self, graph: nx.DiGraph):
         """
         It calculates the max flow min cost of directed graph
@@ -221,6 +249,8 @@ class DeliveryFlowSolver(DeliverySolver):
         g_graph = nx.DiGraph()
         g_graph.add_edges_from(groups_edges)
         max_flow_min_cost_groups = self._max_flow_min_cost(g_graph)
+
+        substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
 
         # assignment_result = self._formatter.format_result(
         #    max_flow_min_cost_groups, self._groups, self._evaluators
