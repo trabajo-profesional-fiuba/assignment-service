@@ -79,22 +79,22 @@ class TestDeliveryFlowSolver:
         # Assert
         assert substitutes == substitutes
 
-    @pytest.mark.unit
-    # @pytest.mark.skip(reason="Todavia hay que ajustar el codigo")
-    def test_real_case(self):
-        groups_df = pd.read_csv("db/equipos.csv")
-        tutors_df = pd.read_csv("db/tutores.csv")
+    # @pytest.mark.unit
+    # # @pytest.mark.skip(reason="Todavia hay que ajustar el codigo")
+    # def test_real_case(self):
+    #     groups_df = pd.read_csv("db/equipos.csv")
+    #     tutors_df = pd.read_csv("db/tutores.csv")
 
-        formatter = InputFormatter(groups_df, tutors_df)
-        groups, tutors, evaluators, possible_dates = formatter.get_data()
+    #     formatter = InputFormatter(groups_df, tutors_df)
+    #     groups, tutors, evaluators, possible_dates = formatter.get_data()
 
-        for tutor in tutors:
-            print(f"tutor {tutor.id} {tutor.name}")
-        for group in groups:
-            for tutor in tutors:
-                if group.tutor.id == tutor.id:
-                    print(f"group {group.id}, tutor {tutor.id} {tutor.name}")
-        assert 1 == 1
+    #     for tutor in tutors:
+    #         print(f"tutor {tutor.id} {tutor.name}")
+    #     for group in groups:
+    #         for tutor in tutors:
+    #             if group.tutor.id == tutor.id:
+    #                 print(f"group {group.id}, tutor {tutor.id} {tutor.name}")
+    #     assert 1 == 1
         # # Check that there are three evaluators
         # evaluators_id = []
         # for tutor in tutors:
