@@ -186,6 +186,10 @@ class DeliveryFlowSolver(DeliverySolver):
         return substitutes
 
     def _find_substitutes(self, groups_info: dict, groups_result: dict):
+        """
+        With the groups results, it reduces the values just to have the important
+        info such as group and the list of other possible evaluators that day.
+        """
         substitutes = {}
         for group, info in groups_info.items():
             filtered_values = {group: key for key,
