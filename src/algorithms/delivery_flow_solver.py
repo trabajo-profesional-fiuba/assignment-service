@@ -183,7 +183,6 @@ class DeliveryFlowSolver(DeliverySolver):
         max_flow_min_cost_dic = nx.max_flow_min_cost(
             graph, "s", "t", capacity="capacity", weight="cost"
         )
-
         return max_flow_min_cost_dic
 
     def solve(self):

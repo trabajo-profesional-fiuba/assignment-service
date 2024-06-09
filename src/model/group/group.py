@@ -34,7 +34,7 @@ class Group:
     def assign_tutor(self, tutor: Tutor) -> None:
         self._tutor = tutor
 
-    def assign_date(self, date) -> None:
+    def assign_date(self, date: DeliveryDate) -> None:
         self._tutor.assign_date(date)
         self._state.assign_date(date)
 

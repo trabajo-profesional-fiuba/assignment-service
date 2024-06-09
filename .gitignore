@@ -10,10 +10,14 @@ poetry.lock
 # vscode
 .vscode
 
-#Coverage
+# Coverage
 coverage.xml
 .coverage
 
 dist/
+
+# Local
 db/
+
+# Env
 .env
