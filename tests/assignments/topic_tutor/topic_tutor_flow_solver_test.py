@@ -4,7 +4,7 @@
 #     GroupTutorFlowSolver,
 # )
 # from tests.algorithms.helper import TestHelper
-# from src.model.formatter.output.output_formatter import OutputFormatter
+# from src.io.output.output_formatter import OutputFormatter
 
 
 # class TestGroupTopicTutorFlowSolver:

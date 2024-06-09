@@ -1,7 +1,7 @@
 import pandas as pd
-from src.model.formatter.input_formatter import InputFormatter
+from src.io.input_formatter import InputFormatter
 from src.algorithms.delivery_flow_solver import DeliveryFlowSolver
-from src.model.formatter.output.output_formatter import OutputFormatter
+from src.io.output.output_formatter import OutputFormatter
 
 groups_df = pd.read_csv("db/equipos.csv")
 tutors_df = pd.read_csv("db/tutores.csv")

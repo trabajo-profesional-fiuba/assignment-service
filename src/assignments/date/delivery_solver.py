@@ -1,4 +1,4 @@
-from src.algorithms.solver import Solver
+from src.assignments.solver import Solver
 
 
 class DeliverySolver(Solver):

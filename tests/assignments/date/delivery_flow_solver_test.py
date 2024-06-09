@@ -1,14 +1,13 @@
 import pytest
 import pandas as pd
 
-from src.algorithms.delivery_flow_solver import DeliveryFlowSolver
+from src.assignments.date.delivery_flow_solver import DeliveryFlowSolver
+from src.io.input_formatter import InputFormatter, get_evaluators
+from src.io.output.output_formatter import OutputFormatter
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
-from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
-from src.model.formatter.input_formatter import InputFormatter
-from src.model.formatter.output.output_formatter import OutputFormatter
-from src.model.formatter.input_formatter import get_evaluators
+from src.constants import GROUP_ID, EVALUATOR_ID
 
 
 class TestDeliveryFlowSolver:

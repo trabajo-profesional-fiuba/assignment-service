@@ -1,5 +1,5 @@
 import networkx as nx
-from src.algorithms.delivery_solver import DeliverySolver
+from src.assignments.date.delivery_solver import DeliverySolver
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 
 
@@ -40,8 +40,9 @@ class DeliveryFlowSolver(DeliverySolver):
     # Group edges methods
     def _create_group_date_edges(self, clean_results):
         """
-        With the results already cleaned, and edge from a group to a date should be created
-        if that date contains the same week as the clean_results has for a particular group_id
+        With the results already cleaned, and edge from a group to a date should be
+        created if that date contains the same week as the clean_results has for a
+        particular group_id
         """
         sources_edges = self._create_source_edges(self._groups, 1, GROUP_ID)
         edges = []
@@ -145,8 +146,8 @@ class DeliveryFlowSolver(DeliverySolver):
 
     def _clean_evaluators_results(self, results):
         """
-        With the evaluators resuts, it reduces the values just to have the important info
-        such as group, week to evaluate, evaluator id that evaluates that group
+        With the evaluators results, it reduces the values just to have the important
+        info such as group, week to evaluate, evaluator id that evaluates that group
         """
         cleaned_results = {}
         for evaluator in self._evaluators:
@@ -190,16 +191,20 @@ class DeliveryFlowSolver(DeliverySolver):
         Based on mutual dates between the evaluators, tutors and groups
 
         First, we create a graph to solve max flow min cost for evaluators,
-        in this graph we create an edge between an evaluator and a week where the evaluator can evaluate
-        Then, those weeks have edges to each group where each group has at least one common date in that week with
-        the evaluator
-        The result of this graph can be intrepreted as 'Which evaluator evaluates a group on week n'
+        in this graph we create an edge between an evaluator and a week
+        where the evaluator can evaluate.
+        Then, those weeks have edges to each group where each group has at
+        least one common date in that week with the evaluator.
+        The result of this graph can be interpreted as 'Which evaluator
+        evaluates a group on week n'.
 
-        After the first graph is completed, we clean the results to improve performance and create the groups edges.
+        After the first graph is completed, we clean the results to improve
+        performance and create the groups edges.
         Each group contains and edge to all its dates related to a week.
 
-        When the two graphs are completed, every group should have a date and an evaluator
-        We also considered the cost inside each date base on the availability of that group in that date or week.
+        When the two graphs are completed, every group should have a date and an
+        evaluator. We also considered the cost inside each date base on the
+        availability of that group in that date or week.
 
         """
         mutual_dates = self._filter_evaluators_dates()

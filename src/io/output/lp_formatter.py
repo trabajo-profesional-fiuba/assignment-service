@@ -1,4 +1,4 @@
-from src.model.result import AssignmentResult
+from src.model.utils.result import AssignmentResult
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator

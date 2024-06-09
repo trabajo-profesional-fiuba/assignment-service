@@ -1,6 +1,6 @@
 from src.constants import GROUP_ID
 from src.model.group.group import Group
-from src.model.result import AssignmentResult
+from src.model.utils.result import AssignmentResult
 from src.model.utils.evaluator import Evaluator
 from src.model.utils.delivery_date import DeliveryDate
 from src.exceptions import WrongDateFormat
@@ -42,7 +42,8 @@ class FlowOutputFormatter:
         Processes groups and assigns delivery dates based on the result dictionary.
 
         Args:
-            result (dict[str, dict[str, int]]): The result dictionary from the flow algorithm.
+            result (dict[str, dict[str, int]]): The result dictionary from the flow
+            algorithm.
             groups (list[Group]): List of groups to be processed.
 
         Returns:
@@ -67,8 +68,10 @@ class FlowOutputFormatter:
         Formats the flow algorithm result into a standardized structure.
 
         Args:
-            result (dict[str, dict[str, int]]): The result dictionary from the flow algorithm.
-            groups (list[Group]): List of groups with tutors to be assigned a delivery date.
+            result (dict[str, dict[str, int]]): The result dictionary from the
+            flow algorithm.
+            groups (list[Group]): List of groups with tutors to be assigned a
+            delivery date.
             evaluators (list[Evaluator]): List of evaluators.
 
         Returns:

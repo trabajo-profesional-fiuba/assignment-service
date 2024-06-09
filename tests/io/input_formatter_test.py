@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from src.model.formatter.input_formatter import InputFormatter
+from src.io.input_formatter import InputFormatter
 from src.exceptions import TutorNotFound
 
 
@@ -281,7 +281,7 @@ class TestInputFormatter:
     def test_one_evaluator_group_with_one_available_date(self, mocker):
         """Testing that group has expected available date."""
         mocker.patch(
-            "src.model.formatter.input_formatter.EVALUATORS",
+            "src.io.input_formatter.EVALUATORS",
             ["mocked_name1", "mocked_name2", "mocked_name3"],
         )
         groups_data = {
@@ -310,7 +310,7 @@ class TestInputFormatter:
     def test_one_evaluator_group_without_available_date(self, mocker):
         """Testing that group has expected available date."""
         mocker.patch(
-            "src.model.formatter.input_formatter.EVALUATORS",
+            "src.io.input_formatter.EVALUATORS",
             ["mocked_name1", "mocked_name2", "mocked_name3"],
         )
 
@@ -338,7 +338,7 @@ class TestInputFormatter:
     def test_none_evaluator(self, mocker):
         """Testing that group has expected available date."""
         mocker.patch(
-            "src.model.formatter.input_formatter.EVALUATORS",
+            "src.io.input_formatter.EVALUATORS",
             ["mocked_name1", "mocked_name2", "mocked_name3"],
         )
 
@@ -364,7 +364,7 @@ class TestInputFormatter:
     def test_all_evaluators(self, mocker):
         """Testing that group has expected available date."""
         mocker.patch(
-            "src.model.formatter.input_formatter.EVALUATORS",
+            "src.io.input_formatter.EVALUATORS",
             ["mocked_name1", "mocked_name2", "mocked_name3"],
         )
         groups_data = {
