@@ -131,7 +131,7 @@ class TestInputFormatter:
         )
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.groups()
+        result = formatter._groups()
         assert result[0].id == 1
         assert result[0].available_dates() == []
         assert result[0].tutor.id == 2
@@ -159,7 +159,7 @@ class TestInputFormatter:
         )
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.groups()
+        result = formatter._groups()
         assert result[0].id == 1
         assert result[0].available_dates()[0].week == 1
         assert result[0].available_dates()[0].day == 1
@@ -300,7 +300,7 @@ class TestInputFormatter:
         )
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.evaluators()
+        result = formatter._evaluators()
         assert len(result) == 1
         assert result[0].id == 1
         assert len(result[0].available_dates) == 1
@@ -329,7 +329,7 @@ class TestInputFormatter:
         )
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.evaluators()
+        result = formatter._evaluators()
         assert len(result) == 1
         assert result[0].id == 1
         assert len(result[0].available_dates) == 0
@@ -357,7 +357,7 @@ class TestInputFormatter:
         )
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.evaluators()
+        result = formatter._evaluators()
         assert len(result) == 0
 
     @pytest.mark.unit
@@ -390,7 +390,7 @@ class TestInputFormatter:
         )
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.evaluators()
+        result = formatter._evaluators()
         assert len(result) == 3
 
     @pytest.mark.unit
@@ -404,7 +404,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.possible_dates()
+        result = formatter._possible_dates()
         assert len(result) == 5
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
@@ -424,7 +424,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.possible_dates()
+        result = formatter._possible_dates()
         assert len(result) == 10
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
@@ -452,7 +452,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter.possible_dates()
+        result = formatter._possible_dates()
         assert len(result) == 20
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
