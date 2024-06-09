@@ -1,6 +1,6 @@
 import pytest
 from src.model.formatter.output.lp_formatter import LPOutputFormatter
-from tests.algorithms.date_simplex.helper import TestLPHelper
+from tests.assignments.date.helper import TestLPHelper
 
 
 class TestLPOutputFormatter:

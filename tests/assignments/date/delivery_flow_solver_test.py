@@ -1,6 +1,6 @@
 import pytest
 
-from src.algorithms.delivery_flow_solver import DeliveryFlowSolver
+from src.assignments.date.delivery_flow_solver import DeliveryFlowSolver
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator

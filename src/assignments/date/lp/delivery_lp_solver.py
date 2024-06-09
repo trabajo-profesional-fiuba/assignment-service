@@ -1,6 +1,6 @@
-from src.algorithms.delivery_evaluators_lp_solver import DateEvaluatorsLPSolver
-from src.algorithms.delivery_solver import DeliverySolver
-from src.algorithms.delivery_tutors_lp_solver import DeliveryTutorsLPSolver
+from src.assignments.date.delivery_solver import DeliverySolver
+from src.assignments.date.lp.delivery_tutors_lp_solver import DeliveryTutorsLPSolver
+from src.assignments.date.lp.delivery_evaluators_lp_solver import DateEvaluatorsLPSolver
 
 
 class DeliveryLPSolver(DeliverySolver):

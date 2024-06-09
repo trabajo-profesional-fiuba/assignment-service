@@ -1,7 +1,7 @@
 import pytest
 from src.model.formatter.output.flow_formatter import FlowOutputFormatter
 from src.exceptions import WrongDateFormat
-from tests.algorithms.date_simplex.helper import TestLPHelper
+from tests.assignments.date.helper import TestLPHelper
 
 
 class TestFlowOutputFormatter:

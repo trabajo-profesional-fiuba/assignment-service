@@ -1,5 +1,5 @@
 import networkx as nx
-from src.algorithms.delivery_solver import DeliverySolver
+from src.assignments.date.delivery_solver import DeliverySolver
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 
 

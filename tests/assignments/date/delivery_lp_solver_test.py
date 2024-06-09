@@ -1,16 +1,16 @@
 import time
 import pytest
 
-from src.algorithms.delivery_lp_solver import DeliveryLPSolver
+from src.assignments.date.lp.delivery_lp_solver import DeliveryLPSolver
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
-from tests.algorithms.date_simplex.helper import TestLPHelper
+from tests.assignments.date.helper import TestLPHelper
 from src.model.formatter.output.output_formatter import OutputFormatter
 
 
-class TestDatesSimplex:
+class TestDeliveryLPSolver:
     helper = TestLPHelper()
     formatter = OutputFormatter()
 
