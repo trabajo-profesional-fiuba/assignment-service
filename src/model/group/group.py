@@ -52,7 +52,7 @@ class Group:
     def remove_dates(self, dates) -> None:
         self.state.remove_dates(dates)
 
-    def assigned_date(self) -> str:
+    def assigned_date(self) -> DeliveryDate:
         return self._state.assigned_date
 
     def filter_dates(self, dates):
