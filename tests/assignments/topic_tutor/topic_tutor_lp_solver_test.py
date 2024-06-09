@@ -3,7 +3,7 @@
 
 # from src.algorithms.group_tutor_lp_solver import GroupTutorLPSolver
 # from tests.algorithms.helper import TestHelper
-# from src.model.formatter.output.output_formatter import OutputFormatter
+# from src.io.output.output_formatter import OutputFormatter
 
 
 # class TestGroupTutorLPSolver:

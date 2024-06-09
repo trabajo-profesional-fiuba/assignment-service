@@ -1,5 +1,5 @@
 import pytest
-from src.model.formatter.output.lp_formatter import LPOutputFormatter
+from src.io.output.lp_formatter import LPOutputFormatter
 from tests.assignments.date.helper import TestLPHelper
 
 

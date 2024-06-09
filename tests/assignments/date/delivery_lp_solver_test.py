@@ -2,7 +2,7 @@ import time
 import pytest
 
 from src.assignments.date.lp.delivery_lp_solver import DeliveryLPSolver
-from src.model.formatter.output.output_formatter import OutputFormatter
+from src.io.output.output_formatter import OutputFormatter
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
