@@ -65,33 +65,19 @@ class TestDeliveryFlowSolver:
         mocker.patch.object(ev1, "is_avaliable", return_value=True)
         ev2 = Evaluator(2)
         mocker.patch.object(ev2, "is_avaliable", return_value=True)
-        
-        group_info = {
-            "group-1": (1,1),
-            "group-2": (2,2)
-        }
+
+        group_info = {"group-1": (1, 1), "group-2": (2, 2)}
         groups_result = {
-            "group-1": {
-                "date-1-1-1": 1,
-                "date-1-2-1": 0
-            },
-            "group-2": {
-                "date--1-1": 1,
-                "date-2-2-1": 0
-            },
+            "group-1": {"date-1-1-1": 1, "date-1-2-1": 0},
+            "group-2": {"date--1-1": 1, "date-2-2-1": 0},
         }
         delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [])
 
-        expected = {
-            "group-1": [ev2],
-            "group-2": [ev1]
-        }
-
         # Act
-        substitutes = delivery_flow_solver._find_substitutes(group_info,groups_result)
+        substitutes = delivery_flow_solver._find_substitutes(group_info, groups_result)
 
         # Assert
-        assert  substitutes ==  substitutes
+        assert substitutes == substitutes
 
     # @pytest.mark.unit
     @pytest.mark.skip(reason="Todavia hay que ajustar el codigo")
@@ -102,6 +88,13 @@ class TestDeliveryFlowSolver:
         formatter = InputFormatter(groups_df, tutors_df)
         groups, tutors, evaluators, possible_dates = formatter.get_data()
 
+        for tutor in tutors:
+            print(f"tutor {tutor.id} {tutor.name}")
+        for group in groups:
+            for tutor in tutors:
+                if group.tutor.id == tutor.id:
+                    print(f"group {group.id}, tutor {tutor.id} {tutor.name}")
+        assert 1 == 1
         # Check that there are three evaluators
         evaluators_id = []
         for tutor in tutors:
@@ -157,10 +150,12 @@ class TestDeliveryFlowSolver:
 
         # Check that evaluators are not assigned dates that were assigned to groups
         # they are tutoring
-        # for group in groups_result:
-        #     for evaluator in evaluators_result:
-        #         if evaluator.id == group.tutor.id:
-        #             print(f"group {group.id}, tutor {group.tutor.name}\
-        #             {group.tutor.id}, evaluator {evaluator.id}")
-        #             for assigned_date in result.delivery_date_evaluator(evaluator):
-        #                 assert assigned_date != result.delivery_date_group(group)
+        for group in groups_result:
+            for evaluator in evaluators_result:
+                if evaluator.id == group.tutor.id:
+                    print(
+                        f"group {group.id}, tutor {group.tutor.name}\
+                    {group.tutor.id}, evaluator {evaluator.id}"
+                    )
+                    for assigned_date in result.delivery_date_evaluator(evaluator):
+                        assert assigned_date != result.delivery_date_group(group)

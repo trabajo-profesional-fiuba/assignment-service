@@ -36,7 +36,7 @@ class Evaluator:
     def assign_dates(self, dates: list[DeliveryDate]):
         for d in dates:
             self.assign_date(d)
-    
-    def is_avaliable(self,date_label):
+
+    def is_avaliable(self, date_label):
         labels = [d.label() for d in self._available_dates]
         return date_label in labels

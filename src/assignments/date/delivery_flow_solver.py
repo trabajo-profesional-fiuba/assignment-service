@@ -192,12 +192,13 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         substitutes = {}
         for group, info in groups_info.items():
-            filtered_values = {group: key for key,
-                               value in groups_result[group].items() if value > 0}
+            filtered_values = {
+                group: key for key, value in groups_result[group].items() if value > 0
+            }
             date_assigned = filtered_values[group]
 
             evaluator_id = info[1]
-            date = date_assigned.split('-', 1)[1]
+            date = date_assigned.split("-", 1)[1]
             evaluators = self._find_substitutes_on_date(date, evaluator_id)
             substitutes[group] = evaluators
 
@@ -250,7 +251,7 @@ class DeliveryFlowSolver(DeliverySolver):
         g_graph.add_edges_from(groups_edges)
         max_flow_min_cost_groups = self._max_flow_min_cost(g_graph)
 
-        substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
+        # substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
 
         # assignment_result = self._formatter.format_result(
         #    max_flow_min_cost_groups, self._groups, self._evaluators

@@ -10,7 +10,6 @@ from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.tutor import Tutor
 from src.model.tutor.final_state_tutor import FinalStateTutor
 from src.model.utils.evaluator import Evaluator
-from src.constants import BLANK_SPACE
 from src.exceptions import TutorNotFound, WeekNotFound, DayNotFound, HourNotFound
 
 load_dotenv()
@@ -45,12 +44,11 @@ class InputFormatter:
     }
 
     DAYS_dict = {
-        "Lunes": 1,
-        "Martes": 2,
-        "Miercoles": 3,
-        "Miércoles": 3,
-        "Jueves": 4,
-        "Viernes": 5,
+        "lunes": 1,
+        "martes": 2,
+        "miercoles": 3,
+        "jueves": 4,
+        "viernes": 5,
     }
 
     HOURS_dict = {
@@ -85,14 +83,8 @@ class InputFormatter:
         tutors.sort()
         return tutors
 
-    def _has_blank_space(self, string: str) -> bool:
-        return BLANK_SPACE in string
-
     def _format_lastname(self, lastname: str) -> str:
-        if self._has_blank_space(lastname):
-            aux = lastname.lower().split(BLANK_SPACE)
-            lastname = aux[len(aux) - 1]
-        return lastname
+        return lastname.strip().lower().split(" ")[-1]
 
     def _tutor_id(self, tutor_lastname: str) -> int:
         """
@@ -113,7 +105,7 @@ class InputFormatter:
         """
         tutors = self._all_tutor_names()
         tutor_lastname = self._format_lastname(tutor_lastname)
-        index = np.where([tutor_lastname.lower() in tutor for tutor in tutors])[0]
+        index = np.where([tutor_lastname.lower() == tutor for tutor in tutors])[0]
         if len(index) > 0:
             return int(index[0] + 1)
         raise TutorNotFound(f"Tutor '{tutor_lastname}' not found.")
@@ -162,6 +154,15 @@ class InputFormatter:
         except KeyError:
             raise WeekNotFound(f"Week '{week_part}' not found in WEEKS_dict")
 
+    def remove_accents(self, text: str):
+        text = text.strip().lower()
+        text = text.replace("á", "a")
+        text = text.replace("é", "e")
+        text = text.replace("í", "i")
+        text = text.replace("ó", "o")
+        text = text.replace("ú", "u")
+        return text
+
     def create_day(self, day: str) -> int:
         """
         Retrieves the day from DAYS_dict.
@@ -176,7 +177,8 @@ class InputFormatter:
             DayNotFound: If the day is not found in DAYS_dict.
         """
         try:
-            return self.DAYS_dict[day]
+            day_without_accent = self.remove_accents(day)
+            return self.DAYS_dict[day_without_accent]
         except KeyError:
             raise DayNotFound(f"Day '{day}' not found in DAYS_dict")
 

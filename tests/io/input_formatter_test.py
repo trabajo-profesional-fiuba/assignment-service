@@ -187,6 +187,50 @@ class TestInputFormatter:
         assert formatter._tutor_id("Jones") == 1
 
     @pytest.mark.unit
+    def test_tutor_id_border_case(self):
+        groups_data = {
+            "Número de equipo": [1, 2],
+            "Apellido del tutor": ["John", "Johnson"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7", "Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame(
+            {"Nombre y Apellido": ["Robert John", "William Johnson"]}
+        )
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        assert formatter._tutor_id("John") == 1
+        assert formatter._tutor_id("Johnson") == 2
+
+    @pytest.mark.unit
+    def test_tutor_id_with_sensitive_case(self):
+        groups_data = {
+            "Número de equipo": [1, 2],
+            "Apellido del tutor": ["smith", "Jones"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7", "Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({"Nombre y Apellido": ["Will Smith", "Robert jones"]})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        assert formatter._tutor_id("smith") == 2
+        assert formatter._tutor_id("Jones") == 1
+
+    @pytest.mark.unit
+    def test_tutor_id_with_blank_space(self):
+        groups_data = {
+            "Número de equipo": [1, 2],
+            "Apellido del tutor": ["Smith ", "Jones "],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7", "Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({"Nombre y Apellido": ["Will Smith", "Robert jones"]})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        assert formatter._tutor_id("Smith ") == 2
+        assert formatter._tutor_id("Jones ") == 1
+
+    @pytest.mark.unit
     def test_tutor_id_not_found(self):
         groups_data = {
             "Número de equipo": [1],
@@ -199,13 +243,26 @@ class TestInputFormatter:
         formatter = InputFormatter(groups_df, tutors_df)
         with pytest.raises(TutorNotFound) as err:
             formatter._tutor_id("Smith")
-        assert str(err.value) == "Tutor 'Smith' not found."
+        assert str(err.value) == "Tutor 'smith' not found."
 
     @pytest.mark.unit
     def test_same_tutor_id_with_diff_case(self):
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["smith"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({"Nombre y Apellido": ["Smith"]})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        assert formatter._tutor_id("Smith") == formatter._tutor_id("smith")
+
+    @pytest.mark.unit
+    def test_same_tutor_id_with_accent_mark(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smíth"],
             "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
         }
         groups_df = pd.DataFrame(groups_data)
