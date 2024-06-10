@@ -46,7 +46,7 @@ class InputFormatter:
     DAYS_dict = {
         "lunes": 1,
         "martes": 2,
-        "miércoles": 3,
+        "miercoles": 3,
         "jueves": 4,
         "viernes": 5,
     }
@@ -154,6 +154,15 @@ class InputFormatter:
         except KeyError:
             raise WeekNotFound(f"Week '{week_part}' not found in WEEKS_dict")
 
+    def remove_accents(self, text: str):
+        text = text.strip().lower()
+        text = text.replace("á", "a")
+        text = text.replace("é", "e")
+        text = text.replace("í", "i")
+        text = text.replace("ó", "o")
+        text = text.replace("ú", "u")
+        return text
+
     def create_day(self, day: str) -> int:
         """
         Retrieves the day from DAYS_dict.
@@ -168,7 +177,8 @@ class InputFormatter:
             DayNotFound: If the day is not found in DAYS_dict.
         """
         try:
-            return self.DAYS_dict[day.lower()]
+            day_without_accent = self.remove_accents(day)
+            return self.DAYS_dict[day_without_accent]
         except KeyError:
             raise DayNotFound(f"Day '{day}' not found in DAYS_dict")
 

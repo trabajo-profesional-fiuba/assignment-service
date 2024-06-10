@@ -259,6 +259,19 @@ class TestInputFormatter:
         assert formatter._tutor_id("Smith") == formatter._tutor_id("smith")
 
     @pytest.mark.unit
+    def test_same_tutor_id_with_accent_mark(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smíth"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({"Nombre y Apellido": ["Smith"]})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        assert formatter._tutor_id("Smith") == formatter._tutor_id("smith")
+
+    @pytest.mark.unit
     def test_create_delivery_date_success(self):
         groups_data = {
             "Número de equipo": [1],
