@@ -10,7 +10,6 @@ from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.tutor import Tutor
 from src.model.tutor.final_state_tutor import FinalStateTutor
 from src.model.utils.evaluator import Evaluator
-from src.constants import BLANK_SPACE
 from src.exceptions import TutorNotFound, WeekNotFound, DayNotFound, HourNotFound
 
 load_dotenv()
@@ -84,14 +83,8 @@ class InputFormatter:
         tutors.sort()
         return tutors
 
-    def _has_blank_space(self, string: str) -> bool:
-        return BLANK_SPACE in string
-
     def _format_lastname(self, lastname: str) -> str:
-        if self._has_blank_space(lastname.strip()):
-            aux = lastname.lower().split(BLANK_SPACE)
-            lastname = aux[len(aux) - 1]
-        return lastname.lower().strip()
+        return lastname.strip().lower().split(" ")[-1]
 
     def _tutor_id(self, tutor_lastname: str) -> int:
         """
