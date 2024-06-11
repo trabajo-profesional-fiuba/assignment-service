@@ -1,7 +1,10 @@
 import pandas as pd
 import pytest
+from datetime import datetime
+
 from src.io.input_formatter import InputFormatter
-from src.exceptions import TutorNotFound
+from src.exceptions import TutorNotFound, WeekNotFound
+from src.model.utils.delivery_date import DeliveryDate
 
 
 class TestInputFormatter:
@@ -461,7 +464,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter._possible_dates()
+        result = formatter._possible_dates(datetime(2024, 3, 3))
         assert len(result) == 5
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
@@ -481,7 +484,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter._possible_dates()
+        result = formatter._possible_dates(datetime(2024, 3, 3))
         assert len(result) == 10
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
@@ -509,7 +512,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter._possible_dates()
+        result = formatter._possible_dates(datetime(2024, 3, 3))
         assert len(result) == 20
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
@@ -534,3 +537,67 @@ class TestInputFormatter:
         assert result[17].label() == "2-3-10"
         assert result[18].label() == "2-4-10"
         assert result[19].label() == "2-5-10"
+
+    def test_extract_day_month_with_diff_days(self):
+        groups_df = pd.DataFrame({})
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        weeks = [
+            "Semana 1/7",
+            "Semana 8/7",
+            "Semana 15/7",
+            "Semana 22/7",
+            "Semana 29/7",
+        ]
+        for i, week in enumerate(weeks):
+            result = formatter._extract_day_month(week)
+            assert result[0] == 1 + (7 * i)
+            assert result[1] == 7
+
+    def test_extract_day_month_with_diff_months(self):
+        groups_df = pd.DataFrame({})
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        weeks = ["Semana 1/7", "Semana 1/8", "Semana 1/9", "Semana 1/10", "Semana 1/11"]
+        for i, week in enumerate(weeks):
+            result = formatter._extract_day_month(week)
+            assert result[0] == 1
+            assert result[1] == 7 + i
+
+    def test_get_day_month_from_value_with_real_data(self):
+        groups_df = pd.DataFrame({})
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        weeks = [
+            "Semana 1/7",
+            "Semana 8/7",
+            "Semana 15/7",
+            "Semana 22/7",
+            "Semana 29/7",
+            "Semana 5/8",
+            "Semana 12/8",
+        ]
+        for i, week in enumerate(weeks):
+            assert week == formatter._get_day_month_from_value(i + 1)
+
+    def test_get_day_month_from_value_when_week_not_found(self):
+        groups_df = pd.DataFrame({})
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        with pytest.raises(WeekNotFound) as exc_info:
+            formatter._get_day_month_from_value(9)
+        assert "Week '9' not found in WEEKS_dict" in str(exc_info.value)
+
+    def test_to_datetime_with_real_data(self):
+        groups_df = pd.DataFrame({})
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter._to_datetime(DeliveryDate(1, 1, 9))
+        assert result.year == 2024
+        assert result.month == 7
+        assert result.day == 1
