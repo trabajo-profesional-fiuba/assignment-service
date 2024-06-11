@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-from datetime import datetime
 
 from src.io.input_formatter import InputFormatter
 from src.exceptions import TutorNotFound, WeekNotFound
@@ -347,6 +346,7 @@ class TestInputFormatter:
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Fontela"],
+            "Fecha de entrega del informe final": ["03/03/2024"],
             "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
         }
         groups_df = pd.DataFrame(groups_data)
@@ -377,6 +377,7 @@ class TestInputFormatter:
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
+            "Fecha de entrega del informe final": ["03/03/2024"],
             "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
         }
         groups_df = pd.DataFrame(groups_data)
@@ -430,6 +431,7 @@ class TestInputFormatter:
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
+            "Fecha de entrega del informe final": ["03/03/2024"],
             "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
         }
         groups_df = pd.DataFrame(groups_data)
@@ -464,7 +466,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter._possible_dates(datetime(2024, 3, 3))
+        result = formatter._possible_dates()
         assert len(result) == 5
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
@@ -484,7 +486,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter._possible_dates(datetime(2024, 3, 3))
+        result = formatter._possible_dates()
         assert len(result) == 10
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
@@ -512,7 +514,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
 
         formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter._possible_dates(datetime(2024, 3, 3))
+        result = formatter._possible_dates()
         assert len(result) == 20
         assert result[0].label() == "1-1-9"
         assert result[1].label() == "1-2-9"
@@ -566,6 +568,7 @@ class TestInputFormatter:
             assert result[0] == 1
             assert result[1] == 7 + i
 
+    @pytest.mark.unit
     def test_get_day_month_from_value_with_real_data(self):
         groups_df = pd.DataFrame({})
         tutors_df = pd.DataFrame({})
@@ -583,6 +586,7 @@ class TestInputFormatter:
         for i, week in enumerate(weeks):
             assert week == formatter._get_day_month_from_value(i + 1)
 
+    @pytest.mark.unit
     def test_get_day_month_from_value_when_week_not_found(self):
         groups_df = pd.DataFrame({})
         tutors_df = pd.DataFrame({})
@@ -592,6 +596,7 @@ class TestInputFormatter:
             formatter._get_day_month_from_value(9)
         assert "Week '9' not found in WEEKS_dict" in str(exc_info.value)
 
+    @pytest.mark.unit
     def test_to_datetime_with_real_data(self):
         groups_df = pd.DataFrame({})
         tutors_df = pd.DataFrame({})
@@ -601,3 +606,61 @@ class TestInputFormatter:
         assert result.year == 2024
         assert result.month == 7
         assert result.day == 1
+
+    @pytest.mark.unit
+    def test_create_base_date_with_data(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Fecha de entrega del informe final": ["01/07/2024"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter._create_base_date(groups_df.iloc[0])
+        assert result.year == 2024
+        assert result.month == 7
+        assert result.day == 15
+
+    @pytest.mark.unit
+    def test_create_base_date_without_data(self):
+        groups_df = pd.DataFrame({})
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        assert formatter._create_base_date(None) is None
+
+    @pytest.mark.unit
+    def test_available_dates_with_all_filtered_dates(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Fecha de entrega del informe final": ["01/07/2024"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        assert formatter._available_dates(groups_df.iloc[0]) == []
+
+    @pytest.mark.unit
+    def test_available_dates_with_some_filtered_dates(self):
+        groups_data = {
+            "Número de equipo": [1],
+            "Apellido del tutor": ["Smith"],
+            "Fecha de entrega del informe final": ["01/07/2024"],
+            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
+            "Semana 8/7 [9 a 10]": ["Lunes 8/7"],
+            "Semana 15/7 [9 a 10]": ["Lunes 15/7, Martes 16/7, Miércoles 17/7"],
+        }
+        groups_df = pd.DataFrame(groups_data)
+        tutors_df = pd.DataFrame({})
+
+        formatter = InputFormatter(groups_df, tutors_df)
+        result = formatter._available_dates(groups_df.iloc[0])
+        assert len(result) == 2
+        assert result[0].label() == "3-2-9"
+        assert result[1].label() == "3-3-9"

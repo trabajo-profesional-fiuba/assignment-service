@@ -226,6 +226,45 @@ class InputFormatter:
         except (WeekNotFound, DayNotFound, HourNotFound) as e:
             raise ValueError(f"Failed to create DeliveryDate: {e}")
 
+    def _extract_day_month(self, week_string: str) -> tuple[int, int]:
+        """
+        Extracts the day and month numbers from a string formatted as 'Semana X/Y'.
+
+        Args:
+            week_string (str): The string containing the day and month numbers.
+
+        Returns:
+            tuple[int, int]: A tuple containing the day number and the month
+            number as integers.
+        """
+        # Remove the 'Semana ' prefix and split by '/'
+        _, day_month_part = week_string.split(" ")
+        day, month = day_month_part.split("/")
+        return int(day), int(month)
+
+    def _get_day_month_from_value(self, week: int) -> str:
+        for day_month, value in self.WEEKS_dict.items():
+            if value == week:
+                return day_month
+        raise WeekNotFound(f"Week '{week}' not found in WEEKS_dict")
+
+    def _to_datetime(self, date: DeliveryDate):
+        day_month = self._get_day_month_from_value(date.week)
+        day, month = self._extract_day_month(day_month)
+        return datetime(2024, month, day + (date.day - 1))
+
+    def _create_base_date(self, row):
+        """
+        Calculates the limit date which is two weeks from the final report
+        delivery date.
+        """
+        if row is not None:
+            columns = row.index
+            if "Fecha de entrega del informe final" in columns:
+                date = row["Fecha de entrega del informe final"]
+                return datetime.strptime(date, "%d/%m/%Y") + timedelta(weeks=2)
+        return None
+
     def _available_dates(self, row: pd.Series) -> list[DeliveryDate]:
         """
         Extracts availability dates from a DataFrame row.
@@ -237,15 +276,23 @@ class InputFormatter:
         availability.
         """
         dates = []
+        base_date = self._create_base_date(row)
         for column, value in row.items():
             if "Semana" in column:
                 week_part, hour_part = self._extract_week_hour_parts(column)
                 if hour_part != "No puedo" and not pd.isna(value):
                     days = self._process_day_values(value)
+                    print(f"days {days}")
                     for day in days:
-                        dates.append(
-                            self._create_delivery_date(week_part, day, hour_part)
+                        delivery_date = self._create_delivery_date(
+                            week_part, day, hour_part
                         )
+                        if base_date is not None:
+                            # Check if the delivery_date is within the next two weeks
+                            if self._to_datetime(delivery_date) > base_date:
+                                dates.append(delivery_date)
+                        else:
+                            dates.append(delivery_date)
         return dates
 
     def _tutors(self) -> list[Tutor]:
@@ -313,34 +360,7 @@ class InputFormatter:
         )
         return evaluators
 
-    def _extract_day_month(self, week_string: str) -> tuple[int, int]:
-        """
-        Extracts the day and month numbers from a string formatted as 'Semana X/Y'.
-
-        Args:
-            week_string (str): The string containing the day and month numbers.
-
-        Returns:
-            tuple[int, int]: A tuple containing the day number and the month
-            number as integers.
-        """
-        # Remove the 'Semana ' prefix and split by '/'
-        _, day_month_part = week_string.split(" ")
-        day, month = day_month_part.split("/")
-        return int(day), int(month)
-
-    def _get_day_month_from_value(self, week: int) -> str:
-        for day_month, value in self.WEEKS_dict.items():
-            if value == week:
-                return day_month
-        raise WeekNotFound(f"Week '{week}' not found in WEEKS_dict")
-
-    def _to_datetime(self, date: DeliveryDate):
-        day_month = self._get_day_month_from_value(date.week)
-        day, month = self._extract_day_month(day_month)
-        return datetime(2024, month, day)
-
-    def _possible_dates(self, report_delivery_date: datetime) -> list[DeliveryDate]:
+    def _possible_dates(self) -> list[DeliveryDate]:
         """
         Extracts possible dates from a list of columns.
 
@@ -348,9 +368,6 @@ class InputFormatter:
         possible dates.
         """
         dates = []
-        # Calculate the limit date which is two weeks from the final report
-        # delivery date
-        base_date = report_delivery_date + timedelta(weeks=2)
 
         for column in self._groups_df.columns:
             if "Semana" in column:
@@ -358,12 +375,9 @@ class InputFormatter:
                 if hour_part != "No puedo":
                     days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
                     for day in days:
-                        delivery_date = self._create_delivery_date(
-                            week_part, day, hour_part
+                        dates.append(
+                            self._create_delivery_date(week_part, day, hour_part)
                         )
-                        # Check if the delivery_date is within the next two weeks
-                        if self._to_datetime(delivery_date) > base_date:
-                            dates.append(delivery_date)
         return dates
 
     def get_data(self):
