@@ -34,3 +34,18 @@ class TestEvaluator:
         is_avaliable = evaluator.is_avaliable(dates[1].label())
         # Assert
         assert is_avaliable is True
+
+
+    @pytest.mark.unit
+    def test_evaluator_can_filter_dates(self):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
+        evaluator = Evaluator(1, dates)
+        expected = [dates[1].label(), dates[2].label()]
+
+        # Act & Assert
+        assert len(evaluator.available_dates) == 3
+        dates_filtered = evaluator.filter_dates([dates[1], dates[2]])
+        assert all(e in dates_filtered for e in expected)
+        assert len(evaluator.available_dates) == 2
+
