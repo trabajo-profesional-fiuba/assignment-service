@@ -7,7 +7,7 @@ from src.io.output.output_formatter import OutputFormatter
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
-from src.constants import GROUP_ID, EVALUATOR_ID
+from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 
 
 class TestDeliveryFlowSolver:
@@ -36,6 +36,26 @@ class TestDeliveryFlowSolver:
         assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit
+    def test_dates_to_sink_edges(self):
+        # Arrange
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [])
+        # 35 = 5 entregas x 7 semanas
+        expected_edges = [
+            (f"date-{self.dates[0].label()}", "t", {"capacity": 1, "cost": 1}),
+            (f"date-{self.dates[1].label()}", "t", {"capacity": 1, "cost": 1}),
+            (f"date-{self.dates[2].label()}", "t", {"capacity": 1, "cost": 1}),
+            (f"date-{self.dates[3].label()}", "t", {"capacity": 1, "cost": 1}),
+        ]
+        dates = [d.label() for d in self.dates]
+
+        # Act
+        result = delivery_flow_solver._create_sink_edges(dates, 1, DATE_ID)
+
+        # Assert
+
+        assert all(e in result for e in expected_edges)
+
+    @pytest.mark.unit
     def test_source_to_evaluators_edges(self):
         # Arrange
         evaluators = [
@@ -57,6 +77,37 @@ class TestDeliveryFlowSolver:
         # Assert
 
         assert all(e in result for e in expected_edges)
+
+    @pytest.mark.unit
+    def test_create_groups_edges(self,mocker):
+
+        # Arrange
+        group1 = Group(1)
+        group1.add_available_dates([self.dates[0]])
+        mocker.patch.object(group1, "filter_dates", return_value=None)
+        mocker.patch.object(group1, "available_dates", return_value=[self.dates[0]])
+        mocker.patch.object(group1, "cost_of_date", return_value=10)
+        groups = [group1]
+
+        
+        delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
+        mocker.patch.object(delivery_flow_solver, "_get_evaluator_dates", return_value=[self.dates[0]])
+
+        clean_results = {
+            "group-1": (1,1)
+        }
+        expected_edges = [
+            ("s", "group-1", {"capacity": 1, "cost": 1}),
+            ("group-1", f"{DATE_ID}-{self.dates[0].label()}", {"capacity": 1, "cost": 10}),
+            (f"{DATE_ID}-{self.dates[0].label()}","t", {"capacity": 1, "cost": 1}),
+        ]
+
+        # Act
+        result = delivery_flow_solver._create_group_date_edges(clean_results)
+
+        # Assert
+        assert all(e in result for e in expected_edges)
+
 
     @pytest.mark.unit
     def test_find_substitutes_for_group(self, mocker):
