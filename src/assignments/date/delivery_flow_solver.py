@@ -157,7 +157,7 @@ class DeliveryFlowSolver(DeliverySolver):
 
             for week, week_value in evaluator_results.items():
                 week_num = int(week.split("-")[1])
-                week_key = f"week-{week_num}"
+                week_key = week
 
                 if week_value > 0:
 
