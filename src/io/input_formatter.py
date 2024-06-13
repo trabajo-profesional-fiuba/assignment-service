@@ -3,6 +3,7 @@ import numpy as np
 import os
 from dotenv import load_dotenv
 from datetime import timedelta, datetime
+import calendar
 
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.group.group import Group
@@ -251,7 +252,11 @@ class InputFormatter:
     def _to_datetime(self, date: DeliveryDate):
         day_month = self._get_day_month_from_value(date.week)
         day, month = self._extract_day_month(day_month)
-        return datetime(2024, month, day + (date.day - 1))
+        _, days_of_month = calendar.monthrange(2024, month)
+        day_of_month = day + (date.day - 1)
+        if day_of_month <= days_of_month:
+            return datetime(2024, month, day_of_month)
+        return datetime(2024, month + 1, date.day)
 
     def _create_base_date(self, row):
         """
