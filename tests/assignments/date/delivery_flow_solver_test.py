@@ -7,6 +7,7 @@ from src.io.output.output_formatter import OutputFormatter
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
+from src.model.tutor.tutor import Tutor
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 
 
@@ -108,6 +109,33 @@ class TestDeliveryFlowSolver:
         # Assert
         assert all(e in result for e in expected_edges)
 
+    @pytest.mark.unit
+    def test_filter_group_dates(self,mocker):
+
+        # Arrange
+        mutual_dates = [self.dates[0].label(),self.dates[1].label(),self.dates[2].label()]
+        tutor = Tutor(1,"fake@fi.uba.ar", "Jon Doe")
+        mocker.patch.object(tutor, "available_dates", return_value=[self.dates[0],self.dates[1],self.dates[2]])
+        
+        group1 = Group(1,tutor)
+        group1.add_available_dates([self.dates[0]])
+
+        group2 = Group(2,tutor)
+        group2.add_available_dates([self.dates[1]])
+
+        groups = [group1,group2]
+
+
+        
+        delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
+        
+        expected_edges = [self.dates[0].label(),self.dates[1].label()]
+
+        # Act
+        result = delivery_flow_solver._filter_groups_dates(mutual_dates)
+
+        # Assert
+        assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit
     def test_find_substitutes_for_group(self, mocker):
