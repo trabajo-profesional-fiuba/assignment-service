@@ -170,14 +170,39 @@ class Calendar:
                 return day_month
         raise WeekNotFound(f"Week '{week}' not found in WEEKS_dict")
 
-    def _to_datetime(self, date: DeliveryDate):
-        day_month = self._get_day_month_from_value(date.week)
-        day, month = self._extract_day_month(day_month)
-        _, days_of_month = calendar.monthrange(2024, month)
-        day_of_month = day + (date.day - 1)
-        if day_of_month <= days_of_month:
-            return datetime(2024, month, day_of_month)
-        return datetime(2024, month + 1, date.day)
+    def _calculate_datetime(
+        self, year: int, month: int, start_day: int, additional_days: int
+    ) -> datetime:
+        """
+        Calculate the correct datetime object based on the initial day and additional days.
+
+        Args:
+            year (int): The year for the datetime.
+            month (int): The starting month.
+            start_day (int): The initial day of the month.
+            additional_days (int): The additional days to add to the start_day.
+
+        Returns:
+            datetime: The calculated datetime object.
+        """
+        initial_date = datetime(year, month, start_day)
+        final_date = initial_date + timedelta(days=additional_days - 1)
+        return final_date
+
+    def _to_datetime(self, date: DeliveryDate) -> datetime:
+        """
+        Convert a DeliveryDate object to a datetime object.
+
+        Args:
+            date (DeliveryDate): The DeliveryDate object containing the week and day information.
+
+        Returns:
+            datetime: The corresponding datetime object for the given DeliveryDate.
+        """
+        # Get the initial day and month from the week value
+        day, month = self._extract_day_month(self._get_day_month_from_value(date.week))
+        # Calculate and return the correct datetime
+        return self._calculate_datetime(2024, month, day, date.day)
 
     def _create_base_date(self, row):
         """
