@@ -2,11 +2,13 @@ import pandas as pd
 import pytest
 
 from src.io.input_formatter import InputFormatter
-from src.exceptions import TutorNotFound, WeekNotFound
-from src.model.utils.delivery_date import DeliveryDate
+from src.exceptions import TutorNotFound
+from src.io.calendar import Calendar
 
 
 class TestInputFormatter:
+
+    calendar = Calendar()
 
     @pytest.mark.unit
     def test_one_group_with_one_available_date(self):
@@ -19,7 +21,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._available_dates(groups_df.iloc[0])
         assert result[0].week == 1
         assert result[0].day == 1
@@ -32,7 +34,7 @@ class TestInputFormatter:
         tutors_df = pd.DataFrame({})
         groups_df = pd.DataFrame(groups_data)
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._available_dates(groups_df.iloc[0]) == []
 
     @pytest.mark.unit
@@ -46,7 +48,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._available_dates(groups_df.iloc[0])
         assert result[0].week == 1
         assert result[0].day == 1
@@ -68,7 +70,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._available_dates(groups_df.iloc[0])
         assert result[0].week == 1
         assert result[0].day == 1
@@ -90,7 +92,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._available_dates(groups_df.iloc[0])
         assert result[0].week == 1
         assert result[0].day == 1
@@ -111,7 +113,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._available_dates(groups_df.iloc[0]) == []
 
     @pytest.mark.unit
@@ -132,7 +134,7 @@ class TestInputFormatter:
             }
         )
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._groups()
         assert result[0].id == 1
         assert result[0].available_dates() == []
@@ -160,7 +162,7 @@ class TestInputFormatter:
             }
         )
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._groups()
         assert result[0].id == 1
         assert result[0].available_dates()[0].week == 1
@@ -184,7 +186,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({"Nombre y Apellido": ["Smith", "Jones"]})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._tutor_id("Smith") == 2
         assert formatter._tutor_id("Jones") == 1
 
@@ -200,7 +202,7 @@ class TestInputFormatter:
             {"Nombre y Apellido": ["Robert John", "William Johnson"]}
         )
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._tutor_id("John") == 1
         assert formatter._tutor_id("Johnson") == 2
 
@@ -214,7 +216,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({"Nombre y Apellido": ["Will Smith", "Robert jones"]})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._tutor_id("smith") == 2
         assert formatter._tutor_id("Jones") == 1
 
@@ -228,7 +230,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({"Nombre y Apellido": ["Will Smith", "Robert jones"]})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._tutor_id("Smith ") == 2
         assert formatter._tutor_id("Jones ") == 1
 
@@ -242,7 +244,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({"Nombre y Apellido": ["Robert Jones"]})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         with pytest.raises(TutorNotFound) as err:
             formatter._tutor_id("Smith")
         assert str(err.value) == "Tutor 'smith' not found."
@@ -257,7 +259,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({"Nombre y Apellido": ["Smith"]})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._tutor_id("Smith") == formatter._tutor_id("smith")
 
     @pytest.mark.unit
@@ -270,71 +272,8 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({"Nombre y Apellido": ["Smith"]})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._tutor_id("Smith") == formatter._tutor_id("smith")
-
-    @pytest.mark.unit
-    def test_create_delivery_date_success(self):
-        groups_data = {
-            "Número de equipo": [1],
-            "Apellido del tutor": ["Jones"],
-            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
-        }
-        groups_df = pd.DataFrame(groups_data)
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        delivery_date = formatter._create_delivery_date("Semana 1/7", "Lunes", "9 a 10")
-        assert delivery_date.week == 1
-        assert delivery_date.day == 1
-        assert delivery_date.hour == 9
-
-    @pytest.mark.unit
-    def test_create_delivery_date_week_not_found(self):
-        groups_data = {
-            "Número de equipo": [1],
-            "Apellido del tutor": ["Jones"],
-            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
-        }
-        groups_df = pd.DataFrame(groups_data)
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        with pytest.raises(ValueError) as exc_info:
-            formatter._create_delivery_date("nonexistent_week", "Lunes", "9 a 10")
-        assert "Week 'nonexistent_week' not found in WEEKS_dict" in str(exc_info.value)
-
-    @pytest.mark.unit
-    def test_create_delivery_date_day_not_found(self):
-        groups_data = {
-            "Número de equipo": [1],
-            "Apellido del tutor": ["Jones"],
-            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
-        }
-        groups_df = pd.DataFrame(groups_data)
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        with pytest.raises(ValueError) as exc_info:
-            formatter._create_delivery_date("Semana 1/7", "NonexistentDay", "9 a 10")
-        assert "Day 'NonexistentDay' not found in DAYS_dict" in str(exc_info.value)
-
-    @pytest.mark.unit
-    def test_create_delivery_date_hour_not_found(self):
-        groups_data = {
-            "Número de equipo": [1],
-            "Apellido del tutor": ["Jones"],
-            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
-        }
-        groups_df = pd.DataFrame(groups_data)
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        with pytest.raises(ValueError) as exc_info:
-            formatter._create_delivery_date("Semana 1/7", "Lunes", "nonexistent_hour")
-        assert "Hour part 'nonexistent_hour' not found in HOURS_dict" in str(
-            exc_info.value
-        )
 
     @pytest.mark.unit
     def test_one_evaluator_group_with_one_available_date(self, mocker):
@@ -359,7 +298,7 @@ class TestInputFormatter:
             }
         )
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._evaluators()
         assert len(result) == 1
         assert result[0].id == 1
@@ -389,7 +328,7 @@ class TestInputFormatter:
             }
         )
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._evaluators()
         assert len(result) == 1
         assert result[0].id == 1
@@ -417,7 +356,7 @@ class TestInputFormatter:
             }
         )
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._evaluators()
         assert len(result) == 0
 
@@ -451,7 +390,7 @@ class TestInputFormatter:
             }
         )
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._evaluators()
         assert len(result) == 3
 
@@ -465,7 +404,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._possible_dates()
         assert len(result) == 5
         assert result[0].label() == "1-1-9"
@@ -485,7 +424,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._possible_dates()
         assert len(result) == 10
         assert result[0].label() == "1-1-9"
@@ -513,7 +452,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._possible_dates()
         assert len(result) == 20
         assert result[0].label() == "1-1-9"
@@ -540,98 +479,6 @@ class TestInputFormatter:
         assert result[18].label() == "2-4-10"
         assert result[19].label() == "2-5-10"
 
-    def test_extract_day_month_with_diff_days(self):
-        groups_df = pd.DataFrame({})
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        weeks = [
-            "Semana 1/7",
-            "Semana 8/7",
-            "Semana 15/7",
-            "Semana 22/7",
-            "Semana 29/7",
-        ]
-        for i, week in enumerate(weeks):
-            result = formatter._extract_day_month(week)
-            assert result[0] == 1 + (7 * i)
-            assert result[1] == 7
-
-    def test_extract_day_month_with_diff_months(self):
-        groups_df = pd.DataFrame({})
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        weeks = ["Semana 1/7", "Semana 1/8", "Semana 1/9", "Semana 1/10", "Semana 1/11"]
-        for i, week in enumerate(weeks):
-            result = formatter._extract_day_month(week)
-            assert result[0] == 1
-            assert result[1] == 7 + i
-
-    @pytest.mark.unit
-    def test_get_day_month_from_value_with_real_data(self):
-        groups_df = pd.DataFrame({})
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        weeks = [
-            "Semana 1/7",
-            "Semana 8/7",
-            "Semana 15/7",
-            "Semana 22/7",
-            "Semana 29/7",
-            "Semana 5/8",
-            "Semana 12/8",
-        ]
-        for i, week in enumerate(weeks):
-            assert week == formatter._get_day_month_from_value(i + 1)
-
-    @pytest.mark.unit
-    def test_get_day_month_from_value_when_week_not_found(self):
-        groups_df = pd.DataFrame({})
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        with pytest.raises(WeekNotFound) as exc_info:
-            formatter._get_day_month_from_value(9)
-        assert "Week '9' not found in WEEKS_dict" in str(exc_info.value)
-
-    @pytest.mark.unit
-    def test_to_datetime_with_real_data(self):
-        groups_df = pd.DataFrame({})
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter._to_datetime(DeliveryDate(1, 1, 9))
-        assert result.year == 2024
-        assert result.month == 7
-        assert result.day == 1
-
-    @pytest.mark.unit
-    def test_create_base_date_with_data(self):
-        groups_data = {
-            "Número de equipo": [1],
-            "Apellido del tutor": ["Smith"],
-            "Fecha de entrega del informe final": ["01/07/2024"],
-            "Semana 1/7 [9 a 10]": ["Lunes 1/7"],
-        }
-        groups_df = pd.DataFrame(groups_data)
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        result = formatter._create_base_date(groups_df.iloc[0])
-        assert result.year == 2024
-        assert result.month == 7
-        assert result.day == 15
-
-    @pytest.mark.unit
-    def test_create_base_date_without_data(self):
-        groups_df = pd.DataFrame({})
-        tutors_df = pd.DataFrame({})
-
-        formatter = InputFormatter(groups_df, tutors_df)
-        assert formatter._create_base_date(None) is None
-
     @pytest.mark.unit
     def test_available_dates_with_all_filtered_dates(self):
         groups_data = {
@@ -643,7 +490,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         assert formatter._available_dates(groups_df.iloc[0]) == []
 
     @pytest.mark.unit
@@ -659,7 +506,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._available_dates(groups_df.iloc[0])
         assert len(result) == 2
         assert result[0].label() == "3-2-9"
@@ -679,7 +526,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._available_dates(groups_df.iloc[0])
         assert len(result) == 2
         assert result[0].label() == "3-2-9"
@@ -695,7 +542,7 @@ class TestInputFormatter:
         groups_df = pd.DataFrame(groups_data)
         tutors_df = pd.DataFrame({})
 
-        formatter = InputFormatter(groups_df, tutors_df)
+        formatter = InputFormatter(groups_df, tutors_df, self.calendar)
         result = formatter._available_dates(groups_df.iloc[0])
         assert len(result) == 2
         assert result[0].label() == "5-3-9"
