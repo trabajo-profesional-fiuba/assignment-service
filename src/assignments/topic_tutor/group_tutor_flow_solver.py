@@ -4,7 +4,7 @@ of groups to topics and tutors.
 """
 
 import networkx as nx
-from typing import Tuple
+
 from src.constants import SOURCE_NODE_ID, SINK_NODE_ID, GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
@@ -31,12 +31,12 @@ class GroupTutorFlowSolver:
         self._groups = groups
         self._tutors = tutors
 
-    def _create_source_groups_edges(self) -> list[Tuple[str, str, dict[str, int]]]:
+    def _create_source_groups_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
         Defines edges from the source node to group nodes.
 
         Returns:
-            list[Tuple[str, str, dict[str, int]]]: A list of edges with capacities
+            list[tuple[str, str, dict[str, int]]]: A list of edges with capacities
             and costs.
         """
         return [
@@ -44,12 +44,12 @@ class GroupTutorFlowSolver:
             for group in self._groups
         ]
 
-    def _create_groups_topics_edges(self) -> list[Tuple[str, str, dict[str, int]]]:
+    def _create_groups_topics_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
         Defines edges from group nodes to topic nodes.
 
         Returns:
-            list[Tuple[str, str, dict[str, int]]]: A list of edges with capacities
+            list[tuple[str, str, dict[str, int]]]: A list of edges with capacities
             and costs.
         """
         group_topic_edges = []
@@ -67,12 +67,12 @@ class GroupTutorFlowSolver:
                 )
         return group_topic_edges
 
-    def _create_topics_tutors_edges(self) -> list[Tuple[str, str, dict[str, int]]]:
+    def _create_topics_tutors_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
         Defines edges from topic nodes to tutor nodes.
 
         Returns:
-            list[Tuple[str, str, dict[str, int]]]: A list of edges with capacities
+            list[tuple[str, str, dict[str, int]]]: A list of edges with capacities
             and costs.
         """
         topic_tutor_edges = []
@@ -90,12 +90,12 @@ class GroupTutorFlowSolver:
                 )
         return topic_tutor_edges
 
-    def _create_tutors_sink_edges(self) -> list[Tuple[str, str, dict[str, int]]]:
+    def _create_tutors_sink_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
         Defines edges from tutor nodes to the sink node.
 
         Returns:
-            list[Tuple[str, str, dict[str, int]]]: A list of edges with capacities
+            list[tuple[str, str, dict[str, int]]]: A list of edges with capacities
             and costs.
         """
         tutor_sink_edges = [
@@ -108,7 +108,7 @@ class GroupTutorFlowSolver:
         ]
         return tutor_sink_edges
 
-    def _create_edges(self) -> list[Tuple[str, str, dict[str, int]]]:
+    def _create_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
         Creates all the edges needed to construct the digraph.
 
@@ -116,7 +116,7 @@ class GroupTutorFlowSolver:
         topic nodes to tutor nodes, and tutor nodes to the sink node.
 
         Returns:
-            list[Tuple[str, str, dict[str, int]]]: A list of all edges in the graph.
+            list[tuple[str, str, dict[str, int]]]: A list of all edges in the graph.
         """
         group_topic_edges = self._create_groups_topics_edges()
         source_groups_edges = self._create_source_groups_edges()
@@ -129,13 +129,13 @@ class GroupTutorFlowSolver:
             + tutor_sink_edges
         )
 
-    def _create_graph(self, edges: list[Tuple[str, str, dict[str, int]]]) -> nx.DiGraph:
+    def _create_graph(self, edges: list[tuple[str, str, dict[str, int]]]) -> nx.DiGraph:
         """
         Creates a directed graph (digraph) with the given edges, including costs
         and capacities.
 
         Args:
-            edges (list[Tuple[str, str, dict[str, int]]]): The edges to add to
+            edges (list[tuple[str, str, dict[str, int]]]): The edges to add to
             the graph.
 
         Returns:

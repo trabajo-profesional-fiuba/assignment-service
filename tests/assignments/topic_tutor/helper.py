@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple
+
 from src.constants import TOPIC_ID, TUTOR_ID
 from src.model.group.group import Group
 from src.model.group.initial_state_group import InitialStateGroup
@@ -144,7 +144,7 @@ class TestHelper:
         vector = np.full(length, def_value)
         return vector
 
-    def get_tutors_groups(self, result: Tuple[str, str, str]) -> dict[str, str]:
+    def get_tutors_groups(self, result: tuple[str, str, str]) -> dict[str, str]:
         """
         Constructs a dictionary with tutors as keys and the groups assigned to
         each tutor as values.
@@ -163,7 +163,7 @@ class TestHelper:
             tutors_assignments[tutor].append(group)
         return tutors_assignments
 
-    def get_groups_topics(self, result: Tuple[str, str, str]) -> dict[str, str]:
+    def get_groups_topics(self, result: tuple[str, str, str]) -> dict[str, str]:
         """
         Constructs a dictionary with groups as keys and the topics assigned
         to each group as values.
