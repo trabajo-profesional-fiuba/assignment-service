@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import os
 from dotenv import load_dotenv
+import unicodedata
+import datetime
 
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.group.group import Group
@@ -70,44 +72,111 @@ class InputFormatter:
             return int(index[0] + 1)
         raise TutorNotFound(f"Tutor '{tutor_lastname}' not found.")
 
-    def remove_accents(self, text: str):
-        text = text.strip().lower()
-        text = text.replace("á", "a")
-        text = text.replace("é", "e")
-        text = text.replace("í", "i")
-        text = text.replace("ó", "o")
-        text = text.replace("ú", "u")
-        return text
+    def remove_accents(self, text: str) -> str:
+        """
+        Removes accents from a string and converts it to lowercase.
+
+        This function normalizes the input string to decompose combined characters
+        into their base characters and diacritics, then removes the diacritics.
+        It also converts the string to lowercase and trims any leading or trailing
+        whitespace.
+
+        Params:
+            text (str): The input string from which to remove accents.
+
+        Returns:
+            str: The processed string without accents and in lowercase.
+        """
+        # Normalize the text to decompose combined characters
+        text = unicodedata.normalize("NFKD", text)
+        # Remove diacritical marks (accents)
+        text = "".join(c for c in text if not unicodedata.combining(c))
+        # Convert to lowercase and strip leading/trailing whitespace
+        return text.lower().strip()
 
     def _available_dates(self, row: pd.Series) -> list[DeliveryDate]:
         """
         Extracts availability dates from a DataFrame row.
 
+        This method parses a row of the DataFrame to extract availability data,
+        converting it into a list of `DeliveryDate` objects. It filters out dates
+        that fall within two weeks of a base date (if provided).
+
         Params:
             row (pd.Series): The row of the DataFrame containing availability data.
 
-        Returns (list[DeliveryDate]): A list of `DeliveryDate` objects representing
-        availability.
+        Returns:
+            list[DeliveryDate]: A list of `DeliveryDate` objects representing
+            availability.
         """
         dates = []
         base_date = self._calendar._create_base_date(row)
+
         for column, value in row.items():
-            if "Semana" in column:
+            if self._is_valid_week_column(column):
                 week_part, hour_part = self._calendar._extract_week_hour_parts(column)
-                if hour_part != "No puedo" and not pd.isna(value):
-                    days = self._calendar._process_day_values(value)
-                    print(f"days {days}")
-                    for day in days:
-                        delivery_date = self._calendar._create_delivery_date(
-                            week_part, self.remove_accents(day), hour_part
-                        )
-                        if base_date is not None:
-                            # Check if the delivery_date is within the next two weeks
-                            if self._calendar._to_datetime(delivery_date) > base_date:
-                                dates.append(delivery_date)
-                        else:
-                            dates.append(delivery_date)
+
+                if self._is_valid_hour_part(hour_part):
+                    dates.extend(
+                        self._process_days(value, week_part, hour_part, base_date)
+                    )
+
         return dates
+
+    def _is_valid_week_column(self, column: str) -> bool:
+        """
+        Checks if the column name indicates a valid week.
+
+        Params:
+            column (str): The column name to check.
+
+        Returns:
+            bool: True if the column name contains "Semana", False otherwise.
+        """
+        return "Semana" in column
+
+    def _process_days(
+        self, value: str, week_part: str, hour_part: str, base_date: datetime
+    ) -> list[DeliveryDate]:
+        """
+        Processes the day values and creates DeliveryDate objects.
+
+        Params:
+            value (str): The cell value containing the day information.
+            week_part (str): The week part extracted from the column name.
+            hour_part (str): The hour part extracted from the column name.
+            base_date (datetime): The base date to filter dates against.
+
+        Returns:
+            list[DeliveryDate]: A list of `DeliveryDate` objects.
+        """
+        days = self._calendar._process_day_values(value)
+        dates = []
+
+        for day in days:
+            delivery_date = self._calendar._create_delivery_date(
+                week_part, self.remove_accents(day), hour_part
+            )
+
+            if self._is_date_valid(delivery_date, base_date):
+                dates.append(delivery_date)
+
+        return dates
+
+    def _is_date_valid(self, delivery_date: DeliveryDate, base_date: datetime) -> bool:
+        """
+        Checks if a DeliveryDate object is valid based on the base date.
+
+        Params:
+            delivery_date (DeliveryDate): The DeliveryDate object to check.
+            base_date (datetime): The base date to filter dates against.
+
+        Returns:
+            bool: True if the delivery_date is valid, False otherwise.
+        """
+        if base_date:
+            return self._calendar._to_datetime(delivery_date) > base_date
+        return True
 
     def _tutors(self) -> list[Tutor]:
         """
@@ -174,26 +243,64 @@ class InputFormatter:
         )
         return evaluators
 
+    def _is_valid_hour_part(self, hour_part: str) -> bool:
+        """
+        Checks if an hour part is valid for delivery.
+
+        Params:
+            hour_part (str): The hour part extracted from the column name.
+
+        Returns:
+            bool: True if the hour part is not "No puedo", False otherwise.
+        """
+        return hour_part != "No puedo"
+
+    def _is_week_column(self, column: str) -> bool:
+        """
+        Checks if a column name indicates a delivery week.
+
+        Params:
+            column (str): The column name to check.
+
+        Returns:
+            bool: True if the column name contains "Semana", False otherwise.
+        """
+        return "Semana" in column
+
+    def _valid_week_days(self) -> list[str]:
+        """
+        Retrieves valid week days for delivery.
+
+        Returns:
+            list[str]: A list of valid week days ("Lunes" to "Viernes").
+        """
+        return ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+
     def _possible_dates(self) -> list[DeliveryDate]:
         """
-        Extracts possible dates from a list of columns.
+        Extracts possible delivery dates from the columns of `_groups_df`.
 
-        Returns (list[DeliveryDate]): A list of `DeliveryDate` objects representing
-        possible dates.
+        This method iterates through each column in `_groups_df` to identify columns
+        related to delivery dates (indicated by containing "Semana"). It then extracts
+        possible delivery dates for each valid day of the week (Monday to Friday),
+        considering the hours specified for each day.
+
+        Returns:
+            list[DeliveryDate]: A list of `DeliveryDate` objects representing possible
+            delivery dates.
         """
         dates = []
 
         for column in self._groups_df.columns:
-            if "Semana" in column:
+            if self._is_week_column(column):
                 week_part, hour_part = self._calendar._extract_week_hour_parts(column)
-                if hour_part != "No puedo":
-                    days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
-                    for day in days:
-                        dates.append(
-                            self._calendar._create_delivery_date(
-                                week_part, self.remove_accents(day), hour_part
-                            )
+                if self._is_valid_hour_part(hour_part):
+                    for day in self._valid_week_days():
+                        delivery_date = self._calendar._create_delivery_date(
+                            week_part, self.remove_accents(day).lower(), hour_part
                         )
+                        dates.append(delivery_date)
+
         return dates
 
     def get_data(self):

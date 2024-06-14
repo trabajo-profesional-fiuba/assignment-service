@@ -1,8 +1,7 @@
 from datetime import timedelta, datetime
-import calendar
 
 from src.model.utils.delivery_date import DeliveryDate
-from src.exceptions import TutorNotFound, WeekNotFound, DayNotFound, HourNotFound
+from src.exceptions import WeekNotFound, DayNotFound, HourNotFound
 
 
 class Calendar:
@@ -165,6 +164,18 @@ class Calendar:
         return int(day), int(month)
 
     def _get_day_month_from_value(self, week: int) -> str:
+        """
+        Gets the day and month string corresponding to a given week number.
+
+        Args:
+            week (int): The week number to look up.
+
+        Returns:
+            str: The day and month string corresponding to the week number.
+
+        Raises:
+            WeekNotFound: If the week is not found in WEEKS_dict.
+        """
         for day_month, value in self.WEEKS_dict.items():
             if value == week:
                 return day_month
@@ -174,7 +185,8 @@ class Calendar:
         self, year: int, month: int, start_day: int, additional_days: int
     ) -> datetime:
         """
-        Calculate the correct datetime object based on the initial day and additional days.
+        Calculate the correct datetime object based on the initial day and
+        additional days.
 
         Args:
             year (int): The year for the datetime.
@@ -194,7 +206,8 @@ class Calendar:
         Convert a DeliveryDate object to a datetime object.
 
         Args:
-            date (DeliveryDate): The DeliveryDate object containing the week and day information.
+            date (DeliveryDate): The DeliveryDate object containing the week
+            and day information.
 
         Returns:
             datetime: The corresponding datetime object for the given DeliveryDate.
@@ -204,10 +217,15 @@ class Calendar:
         # Calculate and return the correct datetime
         return self._calculate_datetime(2024, month, day, date.day)
 
-    def _create_base_date(self, row):
+    def _create_base_date(self, row) -> datetime:
         """
-        Calculates the limit date which is two weeks from the final report
-        delivery date.
+        Calculates the limit date which is two weeks from the final report delivery date.
+
+        Params:
+            row (pandas.Series): The row containing the final report delivery date.
+
+        Returns:
+            datetime: The calculated limit date.
         """
         if row is not None:
             columns = row.index
