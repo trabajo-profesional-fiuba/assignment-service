@@ -215,11 +215,12 @@ class Calendar:
         # Get the initial day and month from the week value
         day, month = self._extract_day_month(self._get_day_month_from_value(date.week))
         # Calculate and return the correct datetime
-        return self._calculate_datetime(2024, month, day, date.day)
+        return self._calculate_datetime(datetime.now().year, month, day, date.day)
 
     def _create_base_date(self, row) -> datetime:
         """
-        Calculates the limit date which is two weeks from the final report delivery date.
+        Calculates the limit date which is two weeks from the final report delivery
+        date.
 
         Params:
             row (pandas.Series): The row containing the final report delivery date.

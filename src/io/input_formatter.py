@@ -24,7 +24,8 @@ def get_evaluators():
 
 class InputFormatter:
     """
-    A class to format input data into structured objects for groups, tutors, and evaluators.
+    A class to format input data into structured objects for groups, tutors, and
+    evaluators.
     """
 
     def __init__(
@@ -305,14 +306,17 @@ class InputFormatter:
 
     def get_data(self):
         """
-        Retrieves formatted data for groups, tutors, evaluators, and possible delivery dates.
+        Retrieves formatted data for groups, tutors, evaluators, and possible delivery
+        dates.
 
         Returns:
-            tuple: A tuple containing lists of `Group`, `Tutor`, `Evaluator`, and `DeliveryDate` objects.
+            tuple: A tuple containing lists of `Group`, `Tutor`, `Evaluator`, and
+            `DeliveryDate` objects.
                 - `Group`: List of `Group` objects representing each group.
                 - `Tutor`: List of `Tutor` objects representing each tutor.
                 - `Evaluator`: List of `Evaluator` objects representing each evaluator.
-                - `DeliveryDate`: List of `DeliveryDate` objects representing possible delivery dates.
+                - `DeliveryDate`: List of `DeliveryDate` objects representing possible
+                delivery dates.
         """
         return (
             self._groups(),
