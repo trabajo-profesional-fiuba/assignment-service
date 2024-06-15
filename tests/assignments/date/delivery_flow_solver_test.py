@@ -242,7 +242,24 @@ class TestDeliveryFlowSolver:
 
     @pytest.mark.unit
     def test_evaluator_edges(self, mocker):
-        pass
+        # Arrange
+        evaluator1 = Evaluator(
+            1, available_dates=[self.dates[0], self.dates[1]]
+        )
+        evaluators = [evaluator1]
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
+        mocker.patch.object(delivery_flow_solver, '_get_groups_id_with_mutual_dates', return_value=[(1,10)])
+        expected_edges = [
+            ("s", f"{EVALUATOR_ID}-1", {"capacity": 35, "cost": 1}),
+            (f"{EVALUATOR_ID}-1", f"{DATE_ID}-1-{EVALUATOR_ID}-1",{"capacity": 5, "cost": 1}),
+            (f"{DATE_ID}-1-{EVALUATOR_ID}-1",f"{GROUP_ID}-1",{"capacity": 1, "cost": 10}),
+            (f"{GROUP_ID}-1","t", {"capacity": 1, "cost": 1}),
+        ]
+        # Act
+        result = delivery_flow_solver._create_evaluators_edges()
+
+        # Assert
+        assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit
     def test_find_substitutes_for_group(self, mocker):

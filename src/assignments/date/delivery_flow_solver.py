@@ -110,7 +110,7 @@ class DeliveryFlowSolver(DeliverySolver):
         all_group_ids = []
         for evaluator in self._evaluators:
             weeks_checked = []
-            evaluador_dates = [d.label() for d in evaluator.available_dates]
+            evaluador_dates = (d.label() for d in evaluator.available_dates)
             for date in evaluador_dates:
                 week = date.split("-")[0]
                 if week not in weeks_checked:
