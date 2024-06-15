@@ -57,5 +57,5 @@ class Evaluator:
         """
         Checks if the evaluaator is avaliable on that day
         """
-        labels = [d.label() for d in self._available_dates]
+        labels = (d.label() for d in self._available_dates)
         return date_label in labels

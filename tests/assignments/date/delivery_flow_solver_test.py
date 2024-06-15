@@ -178,7 +178,6 @@ class TestDeliveryFlowSolver:
             f"{DATE_ID}-1-evaluator-1": {
                 "group-1": 1
             }
-
         }
         
         # Act
@@ -186,6 +185,36 @@ class TestDeliveryFlowSolver:
 
         # Assert
         assert result['group-1'] == (1,1)
+
+    @pytest.mark.unit
+    def test_get_evaluators_dates_by_id(self):
+        # Arrange
+        evaluator = Evaluator(1,available_dates=[self.dates[0],self.dates[1],self.dates[2]])
+        evaluators = [evaluator]
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
+        expected_dates = [self.dates[0].label(),self.dates[1].label(),self.dates[2].label()]
+        
+        # Act
+        result = delivery_flow_solver._get_evaluator_dates(1)
+
+        # Assert
+        assert all(e in result for e in expected_dates)
+    
+    @pytest.mark.unit
+    def test_find_substitutes_for_group_on_date(self):
+        # Arrange
+        evaluator1 = Evaluator(1,available_dates=[self.dates[0],self.dates[1],self.dates[2]])
+        evaluator2 = Evaluator(2,available_dates=[self.dates[1],self.dates[2]])
+        evaluators = [evaluator1,evaluator2]
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
+        expected_substitutes = [evaluator2]
+
+        # Act
+        result = delivery_flow_solver._find_substitutes_on_date(self.dates[2].label(),1)
+
+        # Assert
+        assert all(e in result for e in expected_substitutes)
+
 
     @pytest.mark.unit
     def test_find_substitutes_for_group(self, mocker):
