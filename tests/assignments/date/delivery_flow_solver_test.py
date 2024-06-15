@@ -152,6 +152,42 @@ class TestDeliveryFlowSolver:
         assert expected_groups[0][1] == expected_cost
 
     @pytest.mark.unit
+    def test_filter_evaluators_dates(self):
+        # Arrange
+        evaluator = Evaluator(1,available_dates=[self.dates[0],self.dates[1],self.dates[2]])
+        evaluators = [evaluator]
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
+        expected_dates = [self.dates[0].label(),self.dates[1].label(),self.dates[2].label()]
+        
+        # Act
+        result = delivery_flow_solver._filter_evaluators_dates()
+
+        # Assert
+        assert all(e in result for e in expected_dates)
+
+    @pytest.mark.unit
+    def test_clean_evaluators_results(self):
+        # Arrange
+        evaluator = Evaluator(1,available_dates=[self.dates[0]])
+        evaluators = [evaluator]
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
+        evaluator_results = {
+            f"{EVALUATOR_ID}-1": {
+                f"{DATE_ID}-1-evaluator-1": 1
+            },
+            f"{DATE_ID}-1-evaluator-1": {
+                "group-1": 1
+            }
+
+        }
+        
+        # Act
+        result = delivery_flow_solver._clean_evaluators_results(evaluator_results)
+
+        # Assert
+        assert result['group-1'] == (1,1)
+
+    @pytest.mark.unit
     def test_find_substitutes_for_group(self, mocker):
         # Arrange
         ev1 = Evaluator(1)

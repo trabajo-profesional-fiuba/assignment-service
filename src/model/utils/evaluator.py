@@ -27,10 +27,10 @@ class Evaluator:
 
     def filter_dates(self, dates: list[DeliveryDate]):
         """
-        Filter dates and return filtered dates, base on a list of dates,
+        Filter dates and return filtered dates labels, base on a list of dates,
         in the process it updates the current possible dates of the evaluator
         """
-        labels = [d.label() for d in dates]
+        labels = (d.label() for d in dates)
         possible_dates = []
         possible_dates_labels = []
         for date in self._available_dates:
