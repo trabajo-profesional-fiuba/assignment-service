@@ -80,7 +80,7 @@ class TestDeliveryFlowSolver:
         assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit
-    def test_create_groups_edges(self,mocker):
+    def test_create_groups_edges(self, mocker):
 
         # Arrange
         group1 = Group(1)
@@ -90,17 +90,20 @@ class TestDeliveryFlowSolver:
         mocker.patch.object(group1, "cost_of_date", return_value=10)
         groups = [group1]
 
-        
         delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
-        mocker.patch.object(delivery_flow_solver, "_get_evaluator_dates", return_value=[self.dates[0]])
+        mocker.patch.object(
+            delivery_flow_solver, "_get_evaluator_dates", return_value=[self.dates[0]]
+        )
 
-        clean_results = {
-            "group-1": (1,1)
-        }
+        clean_results = {"group-1": (1, 1)}
         expected_edges = [
             ("s", "group-1", {"capacity": 1, "cost": 1}),
-            ("group-1", f"{DATE_ID}-{self.dates[0].label()}", {"capacity": 1, "cost": 10}),
-            (f"{DATE_ID}-{self.dates[0].label()}","t", {"capacity": 1, "cost": 1}),
+            (
+                "group-1",
+                f"{DATE_ID}-{self.dates[0].label()}",
+                {"capacity": 1, "cost": 10},
+            ),
+            (f"{DATE_ID}-{self.dates[0].label()}", "t", {"capacity": 1, "cost": 1}),
         ]
 
         # Act
@@ -110,23 +113,31 @@ class TestDeliveryFlowSolver:
         assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit
-    def test_filter_group_dates(self,mocker):
+    def test_filter_group_dates(self, mocker):
         # Arrange
-        mutual_dates = [self.dates[0].label(),self.dates[1].label(),self.dates[2].label()]
-        tutor = Tutor(1,"fake@fi.uba.ar", "Jon Doe")
-        mocker.patch.object(tutor, "available_dates", return_value=[self.dates[0],self.dates[1],self.dates[2]])
-        
-        group1 = Group(1,tutor)
+        mutual_dates = [
+            self.dates[0].label(),
+            self.dates[1].label(),
+            self.dates[2].label(),
+        ]
+        tutor = Tutor(1, "fake@fi.uba.ar", "Jon Doe")
+        mocker.patch.object(
+            tutor,
+            "available_dates",
+            return_value=[self.dates[0], self.dates[1], self.dates[2]],
+        )
+
+        group1 = Group(1, tutor)
         group1.add_available_dates([self.dates[0]])
 
-        group2 = Group(2,tutor)
+        group2 = Group(2, tutor)
         group2.add_available_dates([self.dates[1]])
 
-        groups = [group1,group2]
+        groups = [group1, group2]
 
         delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
-        
-        expected_edges = [self.dates[0].label(),self.dates[1].label()]
+
+        expected_edges = [self.dates[0].label(), self.dates[1].label()]
 
         # Act
         result = delivery_flow_solver._filter_groups_dates(mutual_dates)
@@ -135,17 +146,19 @@ class TestDeliveryFlowSolver:
         assert all(e in result for e in expected_edges)
 
     @pytest.mark.unit
-    def test_mutual_dates_between_evaluators_and_group(self,mocker):
+    def test_mutual_dates_between_evaluators_and_group(self, mocker):
         # Arrange
-        tutor = Tutor(1,"fake@fi.uba.ar", "Jon Doe")
-        group1 = Group(1,tutor)
-        group1.add_available_dates([self.dates[0],self.dates[1],self.dates[2]])
+        tutor = Tutor(1, "fake@fi.uba.ar", "Jon Doe")
+        group1 = Group(1, tutor)
+        group1.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
         groups = [group1]
-        dates = [self.dates[0].label(),self.dates[1].label()]
+        dates = [self.dates[0].label(), self.dates[1].label()]
         delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
 
         # Act
-        expected_groups = delivery_flow_solver._get_groups_id_with_mutual_dates(1, dates, 2)
+        expected_groups = delivery_flow_solver._get_groups_id_with_mutual_dates(
+            1, dates, 2
+        )
         expected_cost = 5 * 11 - 2
         # Assert
         assert expected_groups[0][0] == 1
@@ -154,11 +167,17 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_filter_evaluators_dates(self):
         # Arrange
-        evaluator = Evaluator(1,available_dates=[self.dates[0],self.dates[1],self.dates[2]])
+        evaluator = Evaluator(
+            1, available_dates=[self.dates[0], self.dates[1], self.dates[2]]
+        )
         evaluators = [evaluator]
         delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
-        expected_dates = [self.dates[0].label(),self.dates[1].label(),self.dates[2].label()]
-        
+        expected_dates = [
+            self.dates[0].label(),
+            self.dates[1].label(),
+            self.dates[2].label(),
+        ]
+
         # Act
         result = delivery_flow_solver._filter_evaluators_dates()
 
@@ -168,53 +187,62 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_clean_evaluators_results(self):
         # Arrange
-        evaluator = Evaluator(1,available_dates=[self.dates[0]])
+        evaluator = Evaluator(1, available_dates=[self.dates[0]])
         evaluators = [evaluator]
         delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
         evaluator_results = {
-            f"{EVALUATOR_ID}-1": {
-                f"{DATE_ID}-1-evaluator-1": 1
-            },
-            f"{DATE_ID}-1-evaluator-1": {
-                "group-1": 1
-            }
+            f"{EVALUATOR_ID}-1": {f"{DATE_ID}-1-evaluator-1": 1},
+            f"{DATE_ID}-1-evaluator-1": {"group-1": 1},
         }
-        
+
         # Act
         result = delivery_flow_solver._clean_evaluators_results(evaluator_results)
 
         # Assert
-        assert result['group-1'] == (1,1)
+        assert result["group-1"] == (1, 1)
 
     @pytest.mark.unit
     def test_get_evaluators_dates_by_id(self):
         # Arrange
-        evaluator = Evaluator(1,available_dates=[self.dates[0],self.dates[1],self.dates[2]])
+        evaluator = Evaluator(
+            1, available_dates=[self.dates[0], self.dates[1], self.dates[2]]
+        )
         evaluators = [evaluator]
         delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
-        expected_dates = [self.dates[0].label(),self.dates[1].label(),self.dates[2].label()]
-        
+        expected_dates = [
+            self.dates[0].label(),
+            self.dates[1].label(),
+            self.dates[2].label(),
+        ]
+
         # Act
         result = delivery_flow_solver._get_evaluator_dates(1)
 
         # Assert
         assert all(e in result for e in expected_dates)
-    
+
     @pytest.mark.unit
     def test_find_substitutes_for_group_on_date(self):
         # Arrange
-        evaluator1 = Evaluator(1,available_dates=[self.dates[0],self.dates[1],self.dates[2]])
-        evaluator2 = Evaluator(2,available_dates=[self.dates[1],self.dates[2]])
-        evaluators = [evaluator1,evaluator2]
+        evaluator1 = Evaluator(
+            1, available_dates=[self.dates[0], self.dates[1], self.dates[2]]
+        )
+        evaluator2 = Evaluator(2, available_dates=[self.dates[1], self.dates[2]])
+        evaluators = [evaluator1, evaluator2]
         delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
         expected_substitutes = [evaluator2]
 
         # Act
-        result = delivery_flow_solver._find_substitutes_on_date(self.dates[2].label(),1)
+        result = delivery_flow_solver._find_substitutes_on_date(
+            self.dates[2].label(), 1
+        )
 
         # Assert
         assert all(e in result for e in expected_substitutes)
 
+    @pytest.mark.unit
+    def test_evaluator_edges(self, mocker):
+        pass
 
     @pytest.mark.unit
     def test_find_substitutes_for_group(self, mocker):

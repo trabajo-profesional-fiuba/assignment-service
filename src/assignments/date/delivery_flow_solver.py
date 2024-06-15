@@ -77,7 +77,9 @@ class DeliveryFlowSolver(DeliverySolver):
 
         return list(set(dates))
 
-    def _get_groups_id_with_mutual_dates(self, week: int, dates: list[str], evaluator_id: int):
+    def _get_groups_id_with_mutual_dates(
+        self, week: int, dates: list[str], evaluator_id: int
+    ):
         """
         Search for at least mutual date between a group and an evaluator,
         the evaluator can't be the group's tutor.
@@ -86,7 +88,9 @@ class DeliveryFlowSolver(DeliverySolver):
         for group in self._groups:
             if group.is_tutored_by(evaluator_id) is False:
                 group_dates = list(d.label() for d in group.available_dates())
-                weeks_dates = list(filter(lambda x: x.split("-")[0] == str(week), dates))
+                weeks_dates = list(
+                    filter(lambda x: x.split("-")[0] == str(week), dates)
+                )
                 mutual_dates = list(set(group_dates) & set(weeks_dates))
                 if len(mutual_dates) > 0:
                     cost = group.cost_of_week(week)
