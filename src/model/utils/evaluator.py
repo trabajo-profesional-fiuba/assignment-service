@@ -30,7 +30,7 @@ class Evaluator:
         Filter dates and return filtered dates labels, base on a list of dates,
         in the process it updates the current possible dates of the evaluator
         """
-        labels = (d.label() for d in dates)
+        labels = list(d.label() for d in dates)
         possible_dates = []
         possible_dates_labels = []
         for date in self._available_dates:
