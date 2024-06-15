@@ -111,7 +111,6 @@ class TestDeliveryFlowSolver:
 
     @pytest.mark.unit
     def test_filter_group_dates(self,mocker):
-
         # Arrange
         mutual_dates = [self.dates[0].label(),self.dates[1].label(),self.dates[2].label()]
         tutor = Tutor(1,"fake@fi.uba.ar", "Jon Doe")
@@ -125,8 +124,6 @@ class TestDeliveryFlowSolver:
 
         groups = [group1,group2]
 
-
-        
         delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
         
         expected_edges = [self.dates[0].label(),self.dates[1].label()]
@@ -136,6 +133,23 @@ class TestDeliveryFlowSolver:
 
         # Assert
         assert all(e in result for e in expected_edges)
+
+    @pytest.mark.unit
+    def test_mutual_dates_between_evaluators_and_group(self,mocker):
+        # Arrange
+        tutor = Tutor(1,"fake@fi.uba.ar", "Jon Doe")
+        group1 = Group(1,tutor)
+        group1.add_available_dates([self.dates[0],self.dates[1],self.dates[2]])
+        groups = [group1]
+        dates = [self.dates[0].label(),self.dates[1].label()]
+        delivery_flow_solver = DeliveryFlowSolver(groups, [], None, [], [])
+
+        # Act
+        expected_groups = delivery_flow_solver._get_groups_id_with_mutual_dates(1, dates, 2)
+        expected_cost = 5 * 11 - 2
+        # Assert
+        assert expected_groups[0][0] == 1
+        assert expected_groups[0][1] == expected_cost
 
     @pytest.mark.unit
     def test_find_substitutes_for_group(self, mocker):

@@ -66,7 +66,7 @@ class DeliveryFlowSolver(DeliverySolver):
         sink_edges = self._create_sink_edges(list(set(final_dates)), 1, DATE_ID)
         return edges + sink_edges + sources_edges
 
-    def _filter_groups_dates(self, mutual_dates):
+    def _filter_groups_dates(self, mutual_dates: list[str]):
         """
         Remove all the dates that won't be used for creating edges
         returning the labels of each one that will be considered
@@ -77,7 +77,7 @@ class DeliveryFlowSolver(DeliverySolver):
 
         return list(set(dates))
 
-    def _get_groups_id_with_mutual_dates(self, week, dates, evaluator_id):
+    def _get_groups_id_with_mutual_dates(self, week: int, dates: list[str], evaluator_id: int):
         """
         Search for at least mutual date between a group and an evaluator,
         the evaluator can't be the group's tutor.
@@ -86,7 +86,7 @@ class DeliveryFlowSolver(DeliverySolver):
         for group in self._groups:
             if group.is_tutored_by(evaluator_id) is False:
                 group_dates = list(d.label() for d in group.available_dates())
-                weeks_dates = list(filter(lambda x: x.split("-")[0] == week, dates))
+                weeks_dates = list(filter(lambda x: x.split("-")[0] == str(week), dates))
                 mutual_dates = list(set(group_dates) & set(weeks_dates))
                 if len(mutual_dates) > 0:
                     cost = group.cost_of_week(week)
