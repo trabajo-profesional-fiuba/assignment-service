@@ -1,5 +1,6 @@
 import pytest
 from src.io.output.output_formatter import OutputFormatter
+from src.io.output.result_context import ResultContext
 from src.io.output.flow_formatter import FlowOutputFormatter
 from src.io.output.lp_formatter import LPOutputFormatter
 from src.exceptions import ResultFormatNotFound
@@ -21,9 +22,10 @@ class TestOutputFormatter:
         assert formatter is not None
 
     @pytest.mark.unit
-    def test_format_result_dict(self, mocker, setup_data):
+    def test_format_result_flow(self, mocker, setup_data):
         formatter = OutputFormatter()
-        result = {"key": "value"}
+        context = ResultContext(type='flow')
+
         groups, evaluators = setup_data
 
         mocker.patch.object(
@@ -32,16 +34,16 @@ class TestOutputFormatter:
             return_value=AssignmentResult(groups, evaluators),
         )
 
-        formatted_result = formatter.format_result(result, groups, evaluators)
+        formatted_result = formatter.format_result(context)
         assert isinstance(formatted_result, AssignmentResult)
         FlowOutputFormatter.get_result.assert_called_once_with(
-            result, groups, evaluators
+            context
         )
 
     @pytest.mark.unit
-    def test_format_result_list(self, mocker, setup_data):
+    def test_format_result_linear(self, mocker, setup_data):
         formatter = OutputFormatter()
-        result = ["item1", "item2"]
+        context = ResultContext(type='linear')
         groups, evaluators = setup_data
 
         mocker.patch.object(
@@ -50,15 +52,26 @@ class TestOutputFormatter:
             return_value=AssignmentResult(groups, evaluators),
         )
 
-        formatted_result = formatter.format_result(result, groups, evaluators)
+        formatted_result = formatter.format_result(context)
         assert isinstance(formatted_result, AssignmentResult)
-        LPOutputFormatter.get_result.assert_called_once_with(result, groups, evaluators)
+        LPOutputFormatter.get_result.assert_called_once_with(context)
 
     @pytest.mark.unit
     def test_format_result_unrecognized_format(self, setup_data):
         formatter = OutputFormatter()
-        result = "unrecognized_format"
+        context = ResultContext(type='pepe')
         groups, evaluators = setup_data
 
         with pytest.raises(ResultFormatNotFound):
-            formatter.format_result(result, groups, evaluators)
+            formatter.format_result(context)
+    
+
+    @pytest.mark.unit
+    def test_format_result_context_without_type_key(self, setup_data):
+        formatter = OutputFormatter()
+        context = ResultContext(pepe='flow')
+        groups, evaluators = setup_data
+
+        with pytest.raises(ResultFormatNotFound):
+            formatter.format_result(context)
+

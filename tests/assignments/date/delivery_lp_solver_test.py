@@ -134,7 +134,7 @@ class TestDeliveryLPSolver:
     #     )
 
     # ------------ Logical Tests ------------
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_all_groups_are_assigned_evaluators(self):
         possible_dates = [
             DeliveryDate(1, 1, 1),

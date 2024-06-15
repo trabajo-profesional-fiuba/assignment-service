@@ -1,6 +1,7 @@
 from typing import Union
 from src.io.output.flow_formatter import FlowOutputFormatter
 from src.io.output.lp_formatter import LPOutputFormatter
+from src.io.output.result_context import ResultContext
 from src.exceptions import ResultFormatNotFound
 from src.model.group.group import Group
 from src.model.utils.result import AssignmentResult
@@ -23,16 +24,17 @@ class OutputFormatter:
         pass
 
     def _create_formatter(
-        self, result_type: Union[dict, list]
+        self, result_type: str 
     ) -> Union[FlowOutputFormatter, LPOutputFormatter]:
-        FORMATTERS = {dict: FlowOutputFormatter(), list: LPOutputFormatter()}
-        return FORMATTERS.get(result_type)
+        FORMATTERS = {'flow': FlowOutputFormatter(), 'linear': LPOutputFormatter()}
+        try:
+            return FORMATTERS.get(result_type)
+        except:
+            raise ResultFormatNotFound('Formatter type not found')
 
     def format_result(
         self,
-        result: Union[dict, list],
-        groups: list[Group],
-        evaluators: list[Evaluator],
+        result_context
     ) -> AssignmentResult:
         """
         Formats the algorithm result into a standardized structure.
@@ -42,12 +44,7 @@ class OutputFormatter:
         class to process it.
 
         Args:
-            - result (Union[dict, list]): The result of the assignment algorithm,
-            which can be of type `dict` or `list`.
-            - groups (list[Group]): List of groups with tutors to be assigned
-            a delivery date.
-            - evaluators (list[Evaluator]): List of evaluators to be assigned
-            a delivery date.
+            - result_context: The context of the result where each Formatter knows how to manage
 
         Returns:
             AssignmentResult: The formatted result, as processed by the appropriate
@@ -57,8 +54,9 @@ class OutputFormatter:
             ResultFormatNotFound: If the result type is not recognized by
             any formatter.
         """
-        formatter = self._create_formatter(type(result))
-        if formatter:
-            return formatter.get_result(result, groups, evaluators)
-        else:
-            raise ResultFormatNotFound("Unrecognized result format")
+        try:
+            result_type = result_context.get('type')
+            formatter = self._create_formatter(result_type)
+            return formatter.get_result(result_context)
+        except:
+            raise ResultFormatNotFound('Type of formatter not found')

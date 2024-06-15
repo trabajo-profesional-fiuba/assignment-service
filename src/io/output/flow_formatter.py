@@ -49,8 +49,11 @@ class FlowOutputFormatter:
         Returns:
             list[Group]: The list of groups with assigned delivery dates.
         """
-        for group in groups:
-            if result and groups:
+        if groups is None:
+            return []
+
+        if result :
+            for group in groups:
                 group_edges = result[f"{GROUP_ID}-{group.id}"]
                 for key, value in group_edges.items():
                     if value == 1:
@@ -58,23 +61,41 @@ class FlowOutputFormatter:
                         group.assign_date(date)
         return groups
 
+    def _evaluators(self, evaluators_data, group_result, evaluators):
+        if evaluators is None:
+            return []
+
+        if evaluators_data and group_result :
+            for evaluator in evaluators:
+                groups_evaluated = [k for k, v in evaluators_data.items() if v[0] == evaluator.id]
+                for g in groups_evaluated:
+                    dates = group_result[g]
+                    for d,v in dates.items():
+                        if v > 0:
+                            date = self._create_date(d)
+                            evaluator.assign_date(date)
+        return evaluators
+
     def get_result(
         self,
-        result: dict[str, dict[str, int]],
-        groups: list[Group],
-        evaluators: list[Evaluator],
+        result_context
     ) -> AssignmentResult:
         """
         Formats the flow algorithm result into a standardized structure.
 
         Args:
-            result (dict[str, dict[str, int]]): The result dictionary from the
-            flow algorithm.
-            groups (list[Group]): List of groups with tutors to be assigned a
-            delivery date.
-            evaluators (list[Evaluator]): List of evaluators.
+            result_context
 
         Returns:
             AssignmentResult: An object with groups and evaluators.
         """
-        return AssignmentResult(self._groups(result, groups), evaluators)
+        group_result = result_context.get('group_result')
+        evaluators_data = result_context.get('evaluators_data')
+        groups = result_context.get('groups')
+        evaluators = result_context.get('evaluators')
+        substitutes = result_context.get('subtitutes')
+
+        groups_with_dates_assigned = self._groups(group_result, groups)
+        evaluators_with_dates_assigned = self._evaluators(evaluators_data, group_result, evaluators)
+
+        return AssignmentResult(groups_with_dates_assigned, evaluators_with_dates_assigned)
