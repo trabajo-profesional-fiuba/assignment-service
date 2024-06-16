@@ -89,7 +89,7 @@ class FlowOutputFormatter:
         Returns:
             AssignmentResult: An object with groups and evaluators.
         """
-        group_result = result_context.get('group_result')
+        group_result = result_context.get('result')
         evaluators_data = result_context.get('evaluators_data')
         groups = result_context.get('groups')
         evaluators = result_context.get('evaluators')
@@ -97,5 +97,6 @@ class FlowOutputFormatter:
 
         groups_with_dates_assigned = self._groups(group_result, groups)
         evaluators_with_dates_assigned = self._evaluators(evaluators_data, group_result, evaluators)
+        evaluators_with_dates_assigned = self._add_substitutes(groups,evaluators,substitutes)
 
         return AssignmentResult(groups_with_dates_assigned, evaluators_with_dates_assigned)

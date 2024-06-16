@@ -6,6 +6,7 @@ from tests.assignments.date.helper import TestLPHelper
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
 
+
 class TestFlowOutputFormatter:
     """
     Test cases for the `FlowOutputFormatter` class.
@@ -52,7 +53,8 @@ class TestFlowOutputFormatter:
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         groups = self.helper.create_groups(num_groups, dates)
 
-        result_context = ResultContext(type='flow',groups=groups, group_result=flow_solver_result)
+        result_context = ResultContext(
+            type='flow', groups=groups, result=flow_solver_result)
 
         result = formatter.get_result(result_context)
         assert "2-2-10" == result.delivery_date_group(groups[0]).label()
@@ -65,8 +67,8 @@ class TestFlowOutputFormatter:
         flow solver result.
         """
         clean_results = {
-            "group-1": (1,2),
-            "group-2": (2,2),
+            "group-1": (1, 2),
+            "group-2": (2, 2),
         }
 
         flow_solver_result = {
@@ -78,11 +80,45 @@ class TestFlowOutputFormatter:
             "t": {},
         }
         formatter = FlowOutputFormatter()
-        evaluators = [Evaluator(1),Evaluator(2)]
-        dates =[DeliveryDate(2,2,10),DeliveryDate(2,2,11)]
-        result_context = ResultContext(type='flow',evaluators=evaluators,evaluators_data= clean_results, group_result=flow_solver_result)
+        evaluators = [Evaluator(1), Evaluator(2)]
+        dates = [DeliveryDate(2, 2, 10), DeliveryDate(2, 2, 11)]
+        result_context = ResultContext(
+            type='flow', evaluators=evaluators, evaluators_data=clean_results, result=flow_solver_result)
 
         result = formatter.get_result(result_context)
-        assert result.delivery_date_evaluator(evaluators[0])[0].label() == dates[0].label()
-        assert result.delivery_date_evaluator(evaluators[1])[0].label() == dates[1].label()
+        assert result.delivery_date_evaluator(
+            evaluators[0])[0].label() == dates[0].label()
+        assert result.delivery_date_evaluator(
+            evaluators[1])[0].label() == dates[1].label()
 
+    @pytest.mark.unit
+    def test_get_result_with_substitutes(self):
+        """
+        Tests get_result method for assigning delivery dates to evaluators based on the
+        flow solver result.
+        """
+        evaluators = [Evaluator(1), Evaluator(2)]
+        clean_results = {
+            "group-1": (1, 2),
+            "group-2": (2, 2),
+        }
+        flow_solver_result = {
+            "s": {"group-1", "group-2"},
+            "group-1": {"date-2-2-10": 1, "date-2-2-11": 0},
+            "group-2": {"date-2-2-10": 0, "date-2-2-11": 1},
+            "date-2-2-10": {"t": 1},
+            "date-2-2-11": {"t": 1},
+            "t": {},
+        }
+        substitutes = {
+            "group-1": [evaluators[1]],
+            "group-2": [evaluators[0]]
+        }
+        formatter = FlowOutputFormatter()
+        dates = [DeliveryDate(2, 2, 10).label(), DeliveryDate(2, 2, 11).label()]
+        result_context = ResultContext(type='flow', evaluators=evaluators,
+                                       evaluators_data=clean_results, result=flow_solver_result, substitutes=substitutes)
+
+        result = formatter.get_result(result_context)
+        assert all(d.label() in dates for d in evaluators[0].assigned_dates)
+        assert all(d.label() in dates for d in evaluators[1].assigned_dates)
