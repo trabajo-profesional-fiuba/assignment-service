@@ -115,10 +115,12 @@ class TestFlowOutputFormatter:
             "group-2": [evaluators[0]]
         }
         formatter = FlowOutputFormatter()
-        dates = [DeliveryDate(2, 2, 10).label(), DeliveryDate(2, 2, 11).label()]
-        result_context = ResultContext(type='flow', evaluators=evaluators,
+        dates_labels = [DeliveryDate(2, 2, 10).label(), DeliveryDate(2, 2, 11).label()]
+        dates = [DeliveryDate(2, 2, 10), DeliveryDate(2, 2, 11)]
+        groups = self.helper.create_groups(2, dates)
+        result_context = ResultContext(type='flow', groups=groups, evaluators=evaluators,
                                        evaluators_data=clean_results, result=flow_solver_result, substitutes=substitutes)
 
         result = formatter.get_result(result_context)
-        assert all(d.label() in dates for d in evaluators[0].assigned_dates)
-        assert all(d.label() in dates for d in evaluators[1].assigned_dates)
+        assert all(d.label() in dates_labels for d in evaluators[0].assigned_dates)
+        assert all(d.label() in dates_labels for d in evaluators[1].assigned_dates)

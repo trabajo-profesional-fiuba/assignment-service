@@ -4,6 +4,7 @@ from src.model.utils.result import AssignmentResult
 from src.model.utils.evaluator import Evaluator
 from src.model.utils.delivery_date import DeliveryDate
 from src.exceptions import WrongDateFormat
+from src.constants import GROUP_ID
 
 
 class FlowOutputFormatter:
@@ -75,6 +76,18 @@ class FlowOutputFormatter:
                             date = self._create_date(d)
                             evaluator.assign_date(date)
         return evaluators
+    
+    def _add_substitutes(self, groups, evaluators, substitutes):
+        if substitutes:
+            for group in groups:
+                date = group.assigned_date()
+                subs = substitutes[f"{GROUP_ID}-{group.id}"]
+                for evaluator in evaluators:
+                    if evaluator in subs:
+                        evaluator.add_substitute_date(date)
+        
+        return evaluators
+
 
     def get_result(
         self,
@@ -93,7 +106,7 @@ class FlowOutputFormatter:
         evaluators_data = result_context.get('evaluators_data')
         groups = result_context.get('groups')
         evaluators = result_context.get('evaluators')
-        substitutes = result_context.get('subtitutes')
+        substitutes = result_context.get('substitutes')
 
         groups_with_dates_assigned = self._groups(group_result, groups)
         evaluators_with_dates_assigned = self._evaluators(evaluators_data, group_result, evaluators)
