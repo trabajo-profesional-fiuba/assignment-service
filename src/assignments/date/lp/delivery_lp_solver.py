@@ -1,6 +1,7 @@
 from src.assignments.date.delivery_solver import DeliverySolver
 from src.assignments.date.lp.delivery_tutors_lp_solver import DeliveryTutorsLPSolver
 from src.assignments.date.lp.delivery_evaluators_lp_solver import DateEvaluatorsLPSolver
+from src.io.output.result_context import ResultContext
 
 
 class DeliveryLPSolver(DeliverySolver):
@@ -19,8 +20,8 @@ class DeliveryLPSolver(DeliverySolver):
         )
         result_evaluators = solver_evaluators.solve()
 
-        assignment_result = self._formatter.format_result(
-            result_evaluators, self._groups, self._evaluators
-        )
+        result_context = ResultContext(
+            type='linear', result=result_evaluators, groups=self._groups, evaluators=self._evaluators)
+        assignment_result = self._formatter.format_result(result_context)
 
         return assignment_result

@@ -2,6 +2,7 @@ from src.model.utils.result import AssignmentResult
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
+from src.io.output.result_context import ResultContext
 
 
 class LPOutputFormatter:
@@ -46,7 +47,7 @@ class LPOutputFormatter:
         return evaluators
 
     def get_result(
-        self, result: list[str], groups: list[Group], evaluators: list[Evaluator]
+        self, result_context: ResultContext
     ) -> AssignmentResult:
         """
         Formats the simplex algorithm result into a standardized structure.
@@ -57,6 +58,11 @@ class LPOutputFormatter:
         Returns:
             AssignmentResult: An objects with groups.
         """
+        result =  result_context.get('result')
+        groups = result_context.get('groups')
+        evaluators = result_context.get('evaluators')
+
+        
         return AssignmentResult(
             self._groups(result, groups), self._evaluators(result, evaluators)
         )
