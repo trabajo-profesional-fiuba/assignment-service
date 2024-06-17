@@ -1,6 +1,6 @@
-## Asignaciones
+# Asignaciones
 
-### Asignacion de fechas grupos y evaluadores
+## Asignacion de fechas grupos y evaluadores
 
 Para la asignacion de fechas entre grupos y evaluadores, se tomaron dos algoritmos. El primer algoritmo utiliza programacion lineal y el segundo utiliza dos redes de flujos compuestas para buscar las asignaciones deseadas
 
