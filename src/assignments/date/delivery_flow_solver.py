@@ -66,7 +66,7 @@ class DeliveryFlowSolver(DeliverySolver):
         sink_edges = self._create_sink_edges(list(set(final_dates)), 1, DATE_ID)
         return edges + sink_edges + sources_edges
 
-    def _filter_groups_dates(self, mutual_dates):
+    def _filter_groups_dates(self, mutual_dates: list[str]):
         """
         Remove all the dates that won't be used for creating edges
         returning the labels of each one that will be considered
@@ -77,7 +77,9 @@ class DeliveryFlowSolver(DeliverySolver):
 
         return list(set(dates))
 
-    def _get_groups_id_with_mutual_dates(self, week, dates, evaluator_id):
+    def _get_groups_id_with_mutual_dates(
+        self, week: int, dates: list[str], evaluator_id: int
+    ):
         """
         Search for at least mutual date between a group and an evaluator,
         the evaluator can't be the group's tutor.
@@ -86,7 +88,9 @@ class DeliveryFlowSolver(DeliverySolver):
         for group in self._groups:
             if group.is_tutored_by(evaluator_id) is False:
                 group_dates = list(d.label() for d in group.available_dates())
-                weeks_dates = list(filter(lambda x: x.split("-")[0] == week, dates))
+                weeks_dates = list(
+                    filter(lambda x: x.split("-")[0] == str(week), dates)
+                )
                 mutual_dates = list(set(group_dates) & set(weeks_dates))
                 if len(mutual_dates) > 0:
                     cost = group.cost_of_week(week)
@@ -106,7 +110,7 @@ class DeliveryFlowSolver(DeliverySolver):
         all_group_ids = []
         for evaluator in self._evaluators:
             weeks_checked = []
-            evaluador_dates = [d.label() for d in evaluator.available_dates]
+            evaluador_dates = list(d.label() for d in evaluator.available_dates)
             for date in evaluador_dates:
                 week = date.split("-")[0]
                 if week not in weeks_checked:
@@ -157,7 +161,7 @@ class DeliveryFlowSolver(DeliverySolver):
 
             for week, week_value in evaluator_results.items():
                 week_num = int(week.split("-")[1])
-                week_key = f"week-{week_num}"
+                week_key = week
 
                 if week_value > 0:
 
@@ -210,10 +214,24 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         It calculates the max flow min cost of directed graph
         """
-        max_flow_min_cost_dic = nx.max_flow_min_cost(
-            graph, "s", "t", capacity="capacity", weight="cost"
-        )
-        return max_flow_min_cost_dic
+        try:
+            max_flow_min_cost_dic = nx.max_flow_min_cost(
+                graph, "s", "t", capacity="capacity", weight="cost"
+            )
+            return max_flow_min_cost_dic
+        except:
+            return None
+
+    def _valid_evaluator_results(self, clean_results):
+        # Check if every group has one evaluator
+
+        all_evaluated = True
+        for group in self._groups:
+            group_key = f"{GROUP_ID}-{group.id}"
+            if group_key not in clean_results:
+                all_evaluated = False
+
+        return all_evaluated
 
     def solve(self):
         """
@@ -257,4 +275,4 @@ class DeliveryFlowSolver(DeliverySolver):
         #    max_flow_min_cost_groups, self._groups, self._evaluators
         # )
 
-        return max_flow_min_cost_evaluator, max_flow_min_cost_groups
+        return max_flow_min_cost_groups
