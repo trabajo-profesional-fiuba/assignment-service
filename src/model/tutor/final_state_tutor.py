@@ -1,5 +1,4 @@
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.group.group import Group
 
 
 class FinalStateTutor:
@@ -29,7 +28,7 @@ class FinalStateTutor:
     def assign_date(self, date: DeliveryDate) -> None:
         self._assigned_dates.append(date)
 
-    def remove_dates(self, groups: list[Group], dates: list[DeliveryDate]):
+    def remove_dates(self, groups, dates: list[DeliveryDate]):
         for group in groups:
             group.remove_dates(dates)
 
