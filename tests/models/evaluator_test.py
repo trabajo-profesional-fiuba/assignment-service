@@ -49,3 +49,39 @@ class TestEvaluator:
 
         # Assert
         assert evaluator.substitute_dates[0] == subst_date
+
+    @pytest.mark.unit
+    def test_evaluator_can_filter_dates(self):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
+        evaluator = Evaluator(1, dates)
+        expected = [dates[1].label(), dates[2].label()]
+
+        # Act & Assert
+        assert len(evaluator.available_dates) == 3
+        dates_filtered = evaluator.filter_dates([dates[1], dates[2]])
+        assert all(e in dates_filtered for e in expected)
+        assert len(evaluator.available_dates) == 2
+
+    @pytest.mark.unit
+    def test_assign_date_to_evaluator(self):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
+        date = DeliveryDate(2, 2, 5)
+        evaluator = Evaluator(1, dates)
+
+        # Act & Assert
+        assert len(evaluator.assigned_dates) == 0
+        evaluator.assign_date(date)
+        assert len(evaluator.assigned_dates) == 1
+
+    @pytest.mark.unit
+    def test_assign_dates_to_evaluator(self):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
+        evaluator = Evaluator(1)
+
+        # Act & Assert
+        assert len(evaluator.assigned_dates) == 0
+        evaluator.assign_dates(dates)
+        assert len(evaluator.assigned_dates) == 3

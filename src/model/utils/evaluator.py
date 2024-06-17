@@ -14,10 +14,16 @@ class Evaluator:
 
     @property
     def available_dates(self) -> list[DeliveryDate]:
+        """
+        Returns all the avaliable dates
+        """
         return self._available_dates
 
     @property
     def assigned_dates(self) -> list[DeliveryDate]:
+        """
+        Returns all the assigned dates
+        """
         return self._assigned_dates
 
     @property
@@ -25,7 +31,11 @@ class Evaluator:
         return self._substitutes_dates
 
     def filter_dates(self, dates: list[DeliveryDate]):
-        labels = [d.label() for d in dates]
+        """
+        Filter dates and return filtered dates labels, base on a list of dates,
+        in the process it updates the current possible dates of the evaluator
+        """
+        labels = list(d.label() for d in dates)
         possible_dates = []
         possible_dates_labels = []
         for date in self._available_dates:
@@ -36,14 +46,23 @@ class Evaluator:
         return possible_dates_labels
 
     def assign_date(self, date: DeliveryDate) -> None:
+        """
+        Assign a date to assigned dates list
+        """
         self._assigned_dates.append(date)
 
     def assign_dates(self, dates: list[DeliveryDate]):
+        """
+        Assign a list of to assigned dates list
+        """
         for d in dates:
             self.assign_date(d)
 
     def is_avaliable(self, date_label):
-        labels = [d.label() for d in self._available_dates]
+        """
+        Checks if the evaluaator is avaliable on that day
+        """
+        labels = (d.label() for d in self._available_dates)
         return date_label in labels
 
     def add_substitute_date(self, subst_date: DeliveryDate):

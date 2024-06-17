@@ -15,7 +15,7 @@ class FinalStateGroup:
     def assign_date(self, date):
         self._assigned_date = date
 
-    def filter_dates(self, tutor_dates, dates):
+    def filter_dates(self, tutor_dates=[], dates=[]):
         mutual_dates = list(set([d.label() for d in tutor_dates]) & set(dates))
         possible_dates = []
         for date in self._available_dates:
