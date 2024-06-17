@@ -242,17 +242,27 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_evaluator_edges(self, mocker):
         # Arrange
-        evaluator1 = Evaluator(
-            1, available_dates=[self.dates[0], self.dates[1]]
-        )
+        evaluator1 = Evaluator(1, available_dates=[self.dates[0], self.dates[1]])
         evaluators = [evaluator1]
         delivery_flow_solver = DeliveryFlowSolver([], [], None, self.dates, evaluators)
-        mocker.patch.object(delivery_flow_solver, '_get_groups_id_with_mutual_dates', return_value=[(1,10)])
+        mocker.patch.object(
+            delivery_flow_solver,
+            "_get_groups_id_with_mutual_dates",
+            return_value=[(1, 10)],
+        )
         expected_edges = [
             ("s", f"{EVALUATOR_ID}-1", {"capacity": 35, "cost": 1}),
-            (f"{EVALUATOR_ID}-1", f"{DATE_ID}-1-{EVALUATOR_ID}-1",{"capacity": 5, "cost": 1}),
-            (f"{DATE_ID}-1-{EVALUATOR_ID}-1",f"{GROUP_ID}-1",{"capacity": 1, "cost": 10}),
-            (f"{GROUP_ID}-1","t", {"capacity": 1, "cost": 1}),
+            (
+                f"{EVALUATOR_ID}-1",
+                f"{DATE_ID}-1-{EVALUATOR_ID}-1",
+                {"capacity": 5, "cost": 1},
+            ),
+            (
+                f"{DATE_ID}-1-{EVALUATOR_ID}-1",
+                f"{GROUP_ID}-1",
+                {"capacity": 1, "cost": 10},
+            ),
+            (f"{GROUP_ID}-1", "t", {"capacity": 1, "cost": 1}),
         ]
         # Act
         result = delivery_flow_solver._create_evaluators_edges()
@@ -284,26 +294,56 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_evaluator_valid_flow(self, mocker):
         # Arrange
-        dates = [DeliveryDate(1,2,3), DeliveryDate(1,3,4), DeliveryDate(1,1,2)]
+        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 3, 4), DeliveryDate(1, 1, 2)]
         tutor = Tutor(1, "fake@fi.uba.ar", "Jon Doe")
-        group1 = Group(1,tutor)
-        group1.add_available_dates([dates[0], dates[1] ])
-        group2 = Group(1,tutor)
+        group1 = Group(1, tutor)
+        group1.add_available_dates([dates[0], dates[1]])
+        group2 = Group(2, tutor)
         group2.add_available_dates([dates[2]])
-        evaluator = Evaluator(2,dates)
-        delivery_flow_solver = DeliveryFlowSolver([group1,group2], [tutor], None, dates, [evaluator])
+        evaluator = Evaluator(3, dates)
+        delivery_flow_solver = DeliveryFlowSolver(
+            [group1, group2], [tutor], None, dates, [evaluator]
+        )
 
         evaluator_edges = delivery_flow_solver._create_evaluators_edges()
         e_graph = nx.DiGraph()
         e_graph.add_edges_from(evaluator_edges)
-        
+
         # Act
         max_flow_min_cost_evaluator = delivery_flow_solver._max_flow_min_cost(e_graph)
-        clean_results = delivery_flow_solver._clean_evaluators_results(max_flow_min_cost_evaluator)
+        clean_results = delivery_flow_solver._clean_evaluators_results(
+            max_flow_min_cost_evaluator
+        )
         result = delivery_flow_solver._valid_evaluator_results(clean_results)
 
         # Assertion
         assert result is True
+
+    @pytest.mark.unit
+    def test_complete_valid_flow(self, mocker):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 3, 4), DeliveryDate(1, 1, 2)]
+        tutor = Tutor(1, "fake@fi.uba.ar", "Jon Doe")
+        mocker.patch.object(tutor, 'available_dates', return_value=dates)
+        group1 = Group(1, tutor)
+        group1.add_available_dates([dates[0], dates[1]])
+        group2 = Group(2, tutor)
+        group2.add_available_dates([dates[2]])
+        groups = [group1, group2]
+        evaluator = Evaluator(2, dates)
+        delivery_flow_solver = DeliveryFlowSolver(
+            groups, [tutor], None, dates, [evaluator]
+        )
+
+        # Act
+        max_flow_min_cost = delivery_flow_solver.solve()
+
+        # Assertion
+        assert len(max_flow_min_cost["s"].keys()) == 2
+        for k,v in max_flow_min_cost["s"].items():
+            assert v == 1
+        
+        
 
     # @pytest.mark.unit
     @pytest.mark.skip(reason="Todavia hay que ajustar el codigo")

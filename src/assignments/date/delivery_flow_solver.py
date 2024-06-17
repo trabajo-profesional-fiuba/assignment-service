@@ -110,7 +110,7 @@ class DeliveryFlowSolver(DeliverySolver):
         all_group_ids = []
         for evaluator in self._evaluators:
             weeks_checked = []
-            evaluador_dates = (d.label() for d in evaluator.available_dates)
+            evaluador_dates = list(d.label() for d in evaluator.available_dates)
             for date in evaluador_dates:
                 week = date.split("-")[0]
                 if week not in weeks_checked:
@@ -214,11 +214,14 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         It calculates the max flow min cost of directed graph
         """
-        max_flow_min_cost_dic = nx.max_flow_min_cost(
-            graph, "s", "t", capacity="capacity", weight="cost"
-        )
-        return max_flow_min_cost_dic
-    
+        try:
+            max_flow_min_cost_dic = nx.max_flow_min_cost(
+                graph, "s", "t", capacity="capacity", weight="cost"
+            )
+            return max_flow_min_cost_dic
+        except:
+            return None
+
     def _valid_evaluator_results(self, clean_results):
         # Check if every group has one evaluator
 
@@ -227,9 +230,8 @@ class DeliveryFlowSolver(DeliverySolver):
             group_key = f"{GROUP_ID}-{group.id}"
             if group_key not in clean_results:
                 all_evaluated = False
-        
-        return all_evaluated
 
+        return all_evaluated
 
     def solve(self):
         """
@@ -273,4 +275,4 @@ class DeliveryFlowSolver(DeliverySolver):
         #    max_flow_min_cost_groups, self._groups, self._evaluators
         # )
 
-        return max_flow_min_cost_evaluator, max_flow_min_cost_groups
+        return max_flow_min_cost_groups
