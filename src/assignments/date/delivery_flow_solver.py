@@ -218,6 +218,18 @@ class DeliveryFlowSolver(DeliverySolver):
             graph, "s", "t", capacity="capacity", weight="cost"
         )
         return max_flow_min_cost_dic
+    
+    def _valid_evaluator_results(self, clean_results):
+        # Check if every group has one evaluator
+
+        all_evaluated = True
+        for group in self._groups:
+            group_key = f"{GROUP_ID}-{group.id}"
+            if group_key not in clean_results:
+                all_evaluated = False
+        
+        return all_evaluated
+
 
     def solve(self):
         """

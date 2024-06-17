@@ -1,6 +1,5 @@
 import pytest
-import pandas as pd
-
+import networkx as nx
 from src.assignments.date.delivery_flow_solver import DeliveryFlowSolver
 from src.io.input_formatter import InputFormatter, get_evaluators
 from src.io.output.output_formatter import OutputFormatter
@@ -281,6 +280,30 @@ class TestDeliveryFlowSolver:
 
         # Assert
         assert substitutes == substitutes
+
+    @pytest.mark.unit
+    def test_evaluator_valid_flow(self, mocker):
+        # Arrange
+        dates = [DeliveryDate(1,2,3), DeliveryDate(1,3,4), DeliveryDate(1,1,2)]
+        tutor = Tutor(1, "fake@fi.uba.ar", "Jon Doe")
+        group1 = Group(1,tutor)
+        group1.add_available_dates([dates[0], dates[1] ])
+        group2 = Group(1,tutor)
+        group2.add_available_dates([dates[2]])
+        evaluator = Evaluator(2,dates)
+        delivery_flow_solver = DeliveryFlowSolver([group1,group2], [tutor], None, dates, [evaluator])
+
+        evaluator_edges = delivery_flow_solver._create_evaluators_edges()
+        e_graph = nx.DiGraph()
+        e_graph.add_edges_from(evaluator_edges)
+        
+        # Act
+        max_flow_min_cost_evaluator = delivery_flow_solver._max_flow_min_cost(e_graph)
+        clean_results = delivery_flow_solver._clean_evaluators_results(max_flow_min_cost_evaluator)
+        result = delivery_flow_solver._valid_evaluator_results(clean_results)
+
+        # Assertion
+        assert result is True
 
     # @pytest.mark.unit
     @pytest.mark.skip(reason="Todavia hay que ajustar el codigo")
