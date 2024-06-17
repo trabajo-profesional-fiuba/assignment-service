@@ -281,15 +281,17 @@ class TestDeliveryFlowSolver:
         group_info = {"group-1": (1, 1), "group-2": (2, 2)}
         groups_result = {
             "group-1": {"date-1-1-1": 1, "date-1-2-1": 0},
-            "group-2": {"date--1-1": 1, "date-2-2-1": 0},
+            "group-2": {"date-1-1-1": 0, "date-2-2-1": 1},
         }
-        delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [])
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [ev1,ev2])
+        
 
         # Act
         substitutes = delivery_flow_solver._find_substitutes(group_info, groups_result)
 
         # Assert
-        assert substitutes == substitutes
+        assert substitutes['group-1'][0] == ev2
+        assert substitutes['group-2'][0] == ev1
 
     @pytest.mark.unit
     def test_evaluator_valid_flow(self, mocker):

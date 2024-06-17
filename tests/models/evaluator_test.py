@@ -35,6 +35,21 @@ class TestEvaluator:
         # Assert
         assert is_avaliable is True
 
+
+    @pytest.mark.unit
+    def test_evaluator_is_substitute(self):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
+        evaluator = Evaluator(1, dates)
+
+        subst_date = DeliveryDate(2, 2, 4)
+
+        # Act
+        evaluator.add_substitute_date(subst_date)
+
+        # Assert
+        assert evaluator.substitute_dates[0] == subst_date
+
     @pytest.mark.unit
     def test_evaluator_can_filter_dates(self):
         # Arrange

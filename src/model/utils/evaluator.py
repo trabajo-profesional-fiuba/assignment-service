@@ -6,6 +6,7 @@ class Evaluator:
         self._id = id
         self._available_dates = available_dates
         self._assigned_dates = []
+        self._substitutes_dates = []
 
     @property
     def id(self) -> int:
@@ -24,6 +25,10 @@ class Evaluator:
         Returns all the assigned dates
         """
         return self._assigned_dates
+
+    @property
+    def substitute_dates(self) -> list[DeliveryDate]:
+        return self._substitutes_dates
 
     def filter_dates(self, dates: list[DeliveryDate]):
         """
@@ -59,3 +64,6 @@ class Evaluator:
         """
         labels = (d.label() for d in self._available_dates)
         return date_label in labels
+
+    def add_substitute_date(self, subst_date: DeliveryDate):
+        self._substitutes_dates.append(subst_date)
