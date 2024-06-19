@@ -283,15 +283,14 @@ class TestDeliveryFlowSolver:
             "group-1": {"date-1-1-1": 1, "date-1-2-1": 0},
             "group-2": {"date-1-1-1": 0, "date-2-2-1": 1},
         }
-        delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [ev1,ev2])
-        
+        delivery_flow_solver = DeliveryFlowSolver([], [], None, [], [ev1, ev2])
 
         # Act
         substitutes = delivery_flow_solver._find_substitutes(group_info, groups_result)
 
         # Assert
-        assert substitutes['group-1'][0] == ev2
-        assert substitutes['group-2'][0] == ev1
+        assert substitutes["group-1"][0] == ev2
+        assert substitutes["group-2"][0] == ev1
 
     @pytest.mark.unit
     def test_evaluator_valid_flow(self, mocker):
@@ -326,7 +325,7 @@ class TestDeliveryFlowSolver:
         # Arrange
         dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 3, 4), DeliveryDate(1, 1, 2)]
         tutor = Tutor(1, "fake@fi.uba.ar", "Jon Doe")
-        mocker.patch.object(tutor, 'available_dates', return_value=dates)
+        mocker.patch.object(tutor, "available_dates", return_value=dates)
         group1 = Group(1, tutor)
         group1.add_available_dates([dates[0], dates[1]])
         group2 = Group(2, tutor)
@@ -342,10 +341,8 @@ class TestDeliveryFlowSolver:
 
         # Assertion
         assert len(max_flow_min_cost["s"].keys()) == 2
-        for k,v in max_flow_min_cost["s"].items():
+        for k, v in max_flow_min_cost["s"].items():
             assert v == 1
-        
-        
 
     # @pytest.mark.unit
     @pytest.mark.skip(reason="Todavia hay que ajustar el codigo")

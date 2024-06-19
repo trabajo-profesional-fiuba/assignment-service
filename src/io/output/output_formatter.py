@@ -24,18 +24,15 @@ class OutputFormatter:
         pass
 
     def _create_formatter(
-        self, result_type: str 
+        self, result_type: str
     ) -> Union[FlowOutputFormatter, LPOutputFormatter]:
-        FORMATTERS = {'flow': FlowOutputFormatter(), 'linear': LPOutputFormatter()}
+        FORMATTERS = {"flow": FlowOutputFormatter(), "linear": LPOutputFormatter()}
         try:
             return FORMATTERS.get(result_type)
         except:
-            raise ResultFormatNotFound('Formatter type not found')
+            raise ResultFormatNotFound("Formatter type not found")
 
-    def format_result(
-        self,
-        result_context
-    ) -> AssignmentResult:
+    def format_result(self, result_context) -> AssignmentResult:
         """
         Formats the algorithm result into a standardized structure.
 
@@ -55,8 +52,8 @@ class OutputFormatter:
             any formatter.
         """
         try:
-            result_type = result_context.get('type')
+            result_type = result_context.get("type")
             formatter = self._create_formatter(result_type)
             return formatter.get_result(result_context)
         except:
-            raise ResultFormatNotFound('Type of formatter not found')
+            raise ResultFormatNotFound("Type of formatter not found")

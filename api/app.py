@@ -1,6 +1,6 @@
 from flask import Flask
 from flasgger import Swagger
-from routes import routes
+from api.routes import routes
 
 app = Flask(__name__)
 swagger = Swagger(app)

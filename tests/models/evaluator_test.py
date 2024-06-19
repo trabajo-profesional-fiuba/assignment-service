@@ -35,7 +35,6 @@ class TestEvaluator:
         # Assert
         assert is_avaliable is True
 
-
     @pytest.mark.unit
     def test_evaluator_is_substitute(self):
         # Arrange

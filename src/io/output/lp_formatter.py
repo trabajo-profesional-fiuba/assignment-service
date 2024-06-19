@@ -46,9 +46,7 @@ class LPOutputFormatter:
                     evaluator.assign_date(date)
         return evaluators
 
-    def get_result(
-        self, result_context: ResultContext
-    ) -> AssignmentResult:
+    def get_result(self, result_context: ResultContext) -> AssignmentResult:
         """
         Formats the simplex algorithm result into a standardized structure.
 
@@ -58,11 +56,10 @@ class LPOutputFormatter:
         Returns:
             AssignmentResult: An objects with groups.
         """
-        result =  result_context.get('result')
-        groups = result_context.get('groups')
-        evaluators = result_context.get('evaluators')
+        result = result_context.get("result")
+        groups = result_context.get("groups")
+        evaluators = result_context.get("evaluators")
 
-        
         return AssignmentResult(
             self._groups(result, groups), self._evaluators(result, evaluators)
         )
