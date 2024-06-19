@@ -45,5 +45,5 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-start = "backend.app:app"
+start = "api.app:app"
 
