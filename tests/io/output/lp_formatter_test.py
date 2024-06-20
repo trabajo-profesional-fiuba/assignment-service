@@ -23,10 +23,11 @@ class TestLPOutputFormatter:
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         groups = self.helper.create_groups(num_groups, dates)
         result_context = ResultContext(
-            type='linear', result=lp_solver_result, groups=groups, evaluators=[])
+            type="linear", result=lp_solver_result, groups=groups, evaluators=[]
+        )
 
         formatter = LPOutputFormatter()
-        
+
         # Act
         result = formatter.get_result(result_context)
 
@@ -49,10 +50,11 @@ class TestLPOutputFormatter:
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
         result_context = ResultContext(
-            type='linear', result=lp_solver_result, groups=[], evaluators=evaluators)
+            type="linear", result=lp_solver_result, groups=[], evaluators=evaluators
+        )
 
         formatter = LPOutputFormatter()
-        
+
         # Act
         result = formatter.get_result(result_context)
 
@@ -70,7 +72,8 @@ class TestLPOutputFormatter:
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         groups = self.helper.create_groups(num_groups, dates)
         result_context = ResultContext(
-            type='linear', result=[], groups=groups, evaluators=[])
+            type="linear", result=[], groups=groups, evaluators=[]
+        )
 
         formatter = LPOutputFormatter()
 
@@ -98,9 +101,10 @@ class TestLPOutputFormatter:
         groups = self.helper.create_groups(num_groups, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
         result_context = ResultContext(
-            type='linear', result=lp_solver_result, groups=[], evaluators=evaluators)
+            type="linear", result=lp_solver_result, groups=[], evaluators=evaluators
+        )
         formatter = LPOutputFormatter()
-        
+
         # Act
         result = formatter.get_result(result_context)
 
@@ -125,10 +129,12 @@ class TestLPOutputFormatter:
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         groups = self.helper.create_groups(num_groups, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
-        
+
         formatter = LPOutputFormatter()
-        result_context = ResultContext(type='linear', result=lp_solver_result, groups=groups, evaluators=[])
-        
+        result_context = ResultContext(
+            type="linear", result=lp_solver_result, groups=groups, evaluators=[]
+        )
+
         # Act
         result = formatter.get_result(result_context)
 

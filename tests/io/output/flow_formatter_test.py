@@ -11,6 +11,7 @@ class TestFlowOutputFormatter:
     """
     Test cases for the `FlowOutputFormatter` class.
     """
+
     helper = TestLPHelper()
 
     @pytest.mark.unit
@@ -54,7 +55,8 @@ class TestFlowOutputFormatter:
         groups = self.helper.create_groups(num_groups, dates)
 
         result_context = ResultContext(
-            type='flow', groups=groups, result=flow_solver_result)
+            type="flow", groups=groups, result=flow_solver_result
+        )
 
         result = formatter.get_result(result_context)
         assert "2-2-10" == result.delivery_date_group(groups[0]).label()
@@ -83,13 +85,19 @@ class TestFlowOutputFormatter:
         evaluators = [Evaluator(1), Evaluator(2)]
         dates = [DeliveryDate(2, 2, 10), DeliveryDate(2, 2, 11)]
         result_context = ResultContext(
-            type='flow', evaluators=evaluators, evaluators_data=clean_results, result=flow_solver_result)
+            type="flow",
+            evaluators=evaluators,
+            evaluators_data=clean_results,
+            result=flow_solver_result,
+        )
 
         result = formatter.get_result(result_context)
-        assert result.delivery_date_evaluator(
-            evaluators[0])[0].label() == dates[0].label()
-        assert result.delivery_date_evaluator(
-            evaluators[1])[0].label() == dates[1].label()
+        assert (
+            result.delivery_date_evaluator(evaluators[0])[0].label() == dates[0].label()
+        )
+        assert (
+            result.delivery_date_evaluator(evaluators[1])[0].label() == dates[1].label()
+        )
 
     @pytest.mark.unit
     def test_get_result_with_substitutes(self):
@@ -110,16 +118,19 @@ class TestFlowOutputFormatter:
             "date-2-2-11": {"t": 1},
             "t": {},
         }
-        substitutes = {
-            "group-1": [evaluators[1]],
-            "group-2": [evaluators[0]]
-        }
+        substitutes = {"group-1": [evaluators[1]], "group-2": [evaluators[0]]}
         formatter = FlowOutputFormatter()
         dates_labels = [DeliveryDate(2, 2, 10).label(), DeliveryDate(2, 2, 11).label()]
         dates = [DeliveryDate(2, 2, 10), DeliveryDate(2, 2, 11)]
         groups = self.helper.create_groups(2, dates)
-        result_context = ResultContext(type='flow', groups=groups, evaluators=evaluators,
-                                       evaluators_data=clean_results, result=flow_solver_result, substitutes=substitutes)
+        result_context = ResultContext(
+            type="flow",
+            groups=groups,
+            evaluators=evaluators,
+            evaluators_data=clean_results,
+            result=flow_solver_result,
+            substitutes=substitutes,
+        )
 
         result = formatter.get_result(result_context)
         assert all(d.label() in dates_labels for d in evaluators[0].assigned_dates)

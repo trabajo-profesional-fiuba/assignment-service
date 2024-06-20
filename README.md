@@ -51,3 +51,11 @@ To check format code using Poetry, run the following command in your terminal:
 ```bash
 poetry run flake8
 ```
+
+### Run Backend Service
+
+To run the backend service using Poetry, run the following command in the terminal:
+
+```bash
+poetry run flask run --port=8080
+```

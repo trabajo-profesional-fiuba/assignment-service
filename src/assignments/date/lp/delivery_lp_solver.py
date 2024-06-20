@@ -21,7 +21,11 @@ class DeliveryLPSolver(DeliverySolver):
         result_evaluators = solver_evaluators.solve()
 
         result_context = ResultContext(
-            type='linear', result=result_evaluators, groups=self._groups, evaluators=self._evaluators)
+            type="linear",
+            result=result_evaluators,
+            groups=self._groups,
+            evaluators=self._evaluators,
+        )
         assignment_result = self._formatter.format_result(result_context)
 
         return assignment_result

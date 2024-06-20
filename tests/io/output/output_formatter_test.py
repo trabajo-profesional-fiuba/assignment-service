@@ -24,7 +24,7 @@ class TestOutputFormatter:
     @pytest.mark.unit
     def test_format_result_flow(self, mocker, setup_data):
         formatter = OutputFormatter()
-        context = ResultContext(type='flow')
+        context = ResultContext(type="flow")
 
         groups, evaluators = setup_data
 
@@ -36,14 +36,12 @@ class TestOutputFormatter:
 
         formatted_result = formatter.format_result(context)
         assert isinstance(formatted_result, AssignmentResult)
-        FlowOutputFormatter.get_result.assert_called_once_with(
-            context
-        )
+        FlowOutputFormatter.get_result.assert_called_once_with(context)
 
     @pytest.mark.unit
     def test_format_result_linear(self, mocker, setup_data):
         formatter = OutputFormatter()
-        context = ResultContext(type='linear')
+        context = ResultContext(type="linear")
         groups, evaluators = setup_data
 
         mocker.patch.object(
@@ -59,19 +57,17 @@ class TestOutputFormatter:
     @pytest.mark.unit
     def test_format_result_unrecognized_format(self, setup_data):
         formatter = OutputFormatter()
-        context = ResultContext(type='pepe')
+        context = ResultContext(type="pepe")
         groups, evaluators = setup_data
 
         with pytest.raises(ResultFormatNotFound):
             formatter.format_result(context)
-    
 
     @pytest.mark.unit
     def test_format_result_context_without_type_key(self, setup_data):
         formatter = OutputFormatter()
-        context = ResultContext(pepe='flow')
+        context = ResultContext(pepe="flow")
         groups, evaluators = setup_data
 
         with pytest.raises(ResultFormatNotFound):
             formatter.format_result(context)
-
