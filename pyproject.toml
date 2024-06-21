@@ -15,9 +15,8 @@ python-dotenv = "1.0.1"
 pyscipopt = "5.0.1"
 solver = "0.0.4"
 fastapi = "0.111.0"
-sqlalchemy = "^2.0.31"
-asyncpg = "^0.29.0"
-psycopg2-binary = "^2.9.9"
+sqlalchemy = "2.0.31"
+psycopg2-binary = "2.9.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.2.0"
