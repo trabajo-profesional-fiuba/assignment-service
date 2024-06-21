@@ -21,5 +21,5 @@ class TopicPreferencesItem(BaseModel):
 
 
 @app.post("/topic_preferences/", status_code=201)
-async def create_topic_preferences(topic_preferences: TopicPreferencesItem):
+async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     return topic_preferences

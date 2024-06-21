@@ -16,7 +16,7 @@ class TestApi:
         assert response.status_code == 200
         assert response.json() == "Ping"
 
-    def test_create_topic_preferences(self, test_app):
+    def test_add_topic_preferences(self, test_app):
         """Test POST /topic_preferences/ endpoint."""
         payload = {
             "email": "test@example.com",
