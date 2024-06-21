@@ -54,8 +54,8 @@ poetry run flake8
 
 ### Run Backend Service
 
-To run the backend service using Poetry, run the following command in the terminal:
+To run the backend service run the following command in the terminal:
 
 ```bash
-poetry run flask run --port=8080
+uvicorn api.main:app --reload
 ```
