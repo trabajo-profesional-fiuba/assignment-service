@@ -6,29 +6,28 @@ authors = ["celedituro <cdituro@fi.uba.ar>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-scipy = "^1.13.0"
-pytest = "^8.2.0"
-networkx = "^3.3"
-numpy = "^1.26.4"
-pylint = "^3.1.0"
-pulp = "^2.8.0"
-flake8 = "^7.0.0"
-black = "^24.4.2"
-pyscipopt = "^5.0.0"
-pandas = "^2.2.2"
-python-dotenv = "^1.0.1"
-flask = "^3.0.3"
+python = "3.11.0"
+networkx = "3.3.0"
+numpy = "1.26.4"
+pulp = "2.8.0"
+pandas = "2.2.2"
+python-dotenv = "1.0.1"
+flask = "3.0.3"
+flasgger = "0.9.7.1"
 
-flasgger = "^0.9.7.1"
+pyscipopt = "^5.0.1"
+solver = "^0.0.4"
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.2.0"
-pytest-cov = "^5.0.0"
-coverage = "^7.5.3"
-pytest-mock = "^3.14.0"
+pytest = "8.2.0"
+pytest-cov = "5.0.0"
+coverage = "7.5.3"
+pytest-mock = "3.14.0"
+pylint = "3.1.0"
+flake8 = "7.0.0"
+black = "24.4.2"
 
 [tool.pytest.ini_options]
-addopts = "-v "
+addopts = "-v"
 testpaths = ["tests"]
 python_files = ["*_test.py"]
 markers = [
@@ -46,4 +45,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 start = "api.app:app"
-
