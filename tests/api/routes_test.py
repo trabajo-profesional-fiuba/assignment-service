@@ -9,7 +9,7 @@ class TestRoutes:
         with app.test_client() as client:
             yield client
 
-    def test_hello_world(self, client):
+    def test_ping(self, client):
         response = client.get("/")
         assert response.status_code == 200
-        assert response.data.decode("utf-8") == "Hello, World!"
+        assert response.data.decode("utf-8") == "Ping"

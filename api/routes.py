@@ -4,9 +4,9 @@ routes = Blueprint("routes", __name__)
 
 
 @routes.route("/")
-def hello_world():
+def ping():
     """
-    A simple endpoint that returns "Hello, World!"
+    A simple endpoint that returns "Ping" to check system's availability
     ---
     responses:
       200:
@@ -16,4 +16,4 @@ def hello_world():
             schema:
               type: string
     """
-    return "Hello, World!"
+    return "Ping"
