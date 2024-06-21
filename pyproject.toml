@@ -15,8 +15,8 @@ python-dotenv = "1.0.1"
 flask = "3.0.3"
 flasgger = "0.9.7.1"
 
-pyscipopt = "^5.0.1"
-solver = "^0.0.4"
+pyscipopt = "5.0.1"
+solver = "0.0.4"
 [tool.poetry.group.dev.dependencies]
 pytest = "8.2.0"
 pytest-cov = "5.0.0"
