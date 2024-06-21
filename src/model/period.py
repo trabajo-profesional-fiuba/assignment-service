@@ -4,6 +4,7 @@ from src.model.utils.topic import Topic
 
 import src.exceptions as e
 
+
 class Period:
     def __init__(self, period: str):
         self._period = period
@@ -16,7 +17,7 @@ class Period:
         self._is_evaluator = False
         self._tutor = None
         self._capacity = 0
-    
+
     # Getters
     @property
     def available_dates(self):
@@ -33,11 +34,11 @@ class Period:
     @property
     def substitute_dates(self):
         return self._substitute_dates
-    
+
     @property
     def groups(self):
         return self._groups
-    
+
     @property
     def topics(self):
         return self._topics
@@ -45,11 +46,11 @@ class Period:
     @property
     def tutor(self):
         return self._tutor
-    
+
     @property
     def capacity(self):
         return self._capacity
-    
+
     def is_evaluator(self):
         return self._is_evaluator
 
@@ -61,26 +62,37 @@ class Period:
             return self._tutor.id
 
         raise e.PeriodWithoutParentError('The period must have a parent')
-    
+
     def make_evaluator(self):
         self._is_evaluator = True
 
     # Date manipulations
     def add_available_dates(self, dates: list[DeliveryDate]):
         self._available_dates += dates
-    
+
     def evaluate_date(self, date: DeliveryDate):
         self._as_evaluator_dates.append(date)
 
     def tutor_date(self, date: DeliveryDate):
         self._as_tutor_dates.append(date)
-    
+
     def is_avaliable(self, date: str):
         label = (d.label() for d in self._available_dates)
         return date in label
-    
+
     def add_substitute_date(self, date: DeliveryDate):
         self._substitute_dates.append(date)
-    
+
     def add_topic(self, topic: Topic):
         self._topics.append(topic)
+
+    def find_mutual_dates(self, dates: list[DeliveryDate]):
+        labels = [d.label() for d in dates]
+        mutual_dates = list()
+        
+        for av in self._available_dates:
+            available_date_label = av.label()
+            if available_date_label in labels:
+                mutual_dates.append(available_date_label)
+        
+        return mutual_dates

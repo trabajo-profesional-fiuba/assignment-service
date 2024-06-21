@@ -128,3 +128,16 @@ class TestPeriod:
 
         assert len(period._topics) == 2
 
+    @pytest.mark.unit
+    def test_period_can_filter_mutual_dates(self):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
+        period = Period(period='1C2024')
+        period.add_available_dates(dates)
+        expected = [dates[1].label(), dates[2].label()]
+
+        # Act & Assert
+        dates_filtered = period.find_mutual_dates([dates[1], dates[2]])
+        assert all(e in dates_filtered for e in expected)
+
+
