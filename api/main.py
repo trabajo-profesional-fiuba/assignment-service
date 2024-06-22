@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException
 from api.repository import Repository
+from api.service import TopicTutorService
 from api.models import TopicPreferencesItem
 
 app = FastAPI()
 repository = Repository()
+service = TopicTutorService(repository)
 
 
 @app.get(
@@ -19,5 +21,5 @@ async def root():
     description="This endpoint creates a new topic preferences.",
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
-    response = repository.add_topic_preferences(topic_preferences)
+    response = service.add_topic_preferences(topic_preferences)
     return response
