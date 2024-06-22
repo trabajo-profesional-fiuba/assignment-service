@@ -2,9 +2,12 @@ from fastapi import FastAPI, Depends, HTTPException
 from api.repository import Repository
 from api.service import TopicTutorService
 from api.models import TopicPreferencesItem
+from api.database import Database
 
 app = FastAPI()
-repository = Repository()
+database = Database()
+session = database.setup()
+repository = Repository(session)
 service = TopicTutorService(repository)
 
 
