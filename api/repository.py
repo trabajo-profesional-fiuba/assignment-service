@@ -19,7 +19,7 @@ class Repository:
             self._db.add(db_item)
             self._db.commit()
             self._db.refresh(db_item)
-            return topic_preferences
+            return db_item
         except Exception as e:
             self._db.rollback()
             print(f"An error occurred: {e}")

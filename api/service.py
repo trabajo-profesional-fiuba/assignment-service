@@ -7,5 +7,5 @@ class TopicTutorService:
         self._repository = repository
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
-        response = self._repository.add_topic_preferences(topic_preferences)
-        return response
+        self._repository.add_topic_preferences(topic_preferences)
+        return topic_preferences
