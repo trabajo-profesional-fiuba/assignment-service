@@ -317,15 +317,24 @@ class TestDeliveryFlowSolver:
     def test_evaluator_valid_flow(self, mocker):
         # Arrange
         dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 3, 4), DeliveryDate(1, 1, 2)]
-        tutor = Tutor(1, "fake@fi.uba.ar", "Jon Doe")
-        group1 = Group(1, tutor)
+        group1 = Group(1)
         group1.add_available_dates([dates[0], dates[1]])
-        group2 = Group(2, tutor)
+        group2 = Group(2)
         group2.add_available_dates([dates[2]])
-        evaluator = Evaluator(3, dates)
-        delivery_flow_solver = DeliveryFlowSolver(
-            [group1, group2], [tutor], None, dates, [evaluator]
-        )
+        
+        period = TutorPeriod(period='1C2024')
+        period.make_evaluator()
+        period.add_available_dates(dates)
+        mocker.patch.object(period,'id', return_value=3)
+
+
+        period2= TutorPeriod(period='1C2024')
+        mocker.patch.object(period2,'id', return_value=2)
+        period2.add_groups([group1,group2])
+        
+
+        delivery_flow_solver = DeliveryFlowSolver(tutor_periods=[period,period2],available_dates=dates)
+
 
         evaluator_edges = delivery_flow_solver._create_evaluators_edges()
         e_graph = nx.DiGraph()
@@ -345,17 +354,23 @@ class TestDeliveryFlowSolver:
     def test_complete_valid_flow(self, mocker):
         # Arrange
         dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 3, 4), DeliveryDate(1, 1, 2)]
-        tutor = Tutor(1, "fake@fi.uba.ar", "Jon Doe")
-        mocker.patch.object(tutor, "available_dates", return_value=dates)
-        group1 = Group(1, tutor)
+        
+        group1 = Group(1)
         group1.add_available_dates([dates[0], dates[1]])
-        group2 = Group(2, tutor)
+        group2 = Group(2)
         group2.add_available_dates([dates[2]])
         groups = [group1, group2]
-        evaluator = Evaluator(2, dates)
-        delivery_flow_solver = DeliveryFlowSolver(
-            groups, [tutor], None, dates, [evaluator]
-        )
+
+        period = TutorPeriod(period='1C2024')
+        period.make_evaluator()
+        period.add_available_dates(dates)
+        period.add_parent(Tutor(1, "f@fi.uba.ar", "Juan"))
+
+        period2= TutorPeriod(period='1C2024')
+        period2.add_parent(Tutor(2, "f@fi.uba.ar", "Pepe"))
+        period2.add_groups(groups)
+
+        delivery_flow_solver = DeliveryFlowSolver(tutor_periods=[period,period2],available_dates=dates)
 
         # Act
         max_flow_min_cost = delivery_flow_solver.solve()
