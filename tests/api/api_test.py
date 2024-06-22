@@ -3,6 +3,7 @@ import requests
 from fastapi.testclient import TestClient
 from api.main import app
 from datetime import datetime
+from api.models import TopicPreferencesItem
 
 
 class TestApi:
@@ -19,13 +20,15 @@ class TestApi:
     @pytest.mark.api
     def test_add_topic_preferences(self, test_app):
         """Test POST /topic_preferences/ endpoint."""
-        payload = {
-            "email": "test@example.com",
-            "group_id": "2024-06-21T12:00:00",
-            "topic1": "Topic 1",
-            "topic2": "Topic 2",
-            "topic3": "Topic 3",
-        }
+        payload = TopicPreferencesItem(
+            email="test@example.com",
+            group_id="2024-06-21T12:00:00",
+            topic1="Topic 2",
+            topic2="Topic 3",
+            topic3="Topic 1",
+        ).model_dump()
+        # Convert datetime.datetime to ISO 8601 string format
+        payload["group_id"] = payload["group_id"].isoformat()
 
         response = test_app.post("/topic_preferences/", json=payload)
         assert response.status_code == 201
@@ -34,13 +37,14 @@ class TestApi:
     @pytest.mark.api
     def test_add_duplicate_topic_preferences(self, test_app):
         """Test POST /topic_preferences/ endpoint."""
-        payload = {
-            "email": "test@example.com",
-            "group_id": "2024-06-21T12:00:00",
-            "topic1": "Topic 1",
-            "topic2": "Topic 2",
-            "topic3": "Topic 3",
-        }
+        payload = TopicPreferencesItem(
+            email="test@example.com",
+            group_id="2024-06-21T12:00:00",
+            topic1="Topic 2",
+            topic2="Topic 3",
+            topic3="Topic 1",
+        ).model_dump()
+        payload["group_id"] = payload["group_id"].isoformat()
 
         test_app.post("/topic_preferences/", json=payload)
         response = test_app.post("/topic_preferences/", json=payload)
@@ -50,21 +54,24 @@ class TestApi:
     @pytest.mark.api
     def test_update_topic_preferences(self, test_app):
         """Test PUT /topic_preferences/ endpoint."""
-        payload = {
-            "email": "test@example.com",
-            "group_id": "2024-06-21T12:00:00",
-            "topic1": "Topic 2",
-            "topic2": "Topic 3",
-            "topic3": "Topic 1",
-        }
+        payload = TopicPreferencesItem(
+            email="test@example.com",
+            group_id="2024-06-21T12:00:00",
+            topic1="Topic 2",
+            topic2="Topic 3",
+            topic3="Topic 1",
+        ).model_dump()
+        payload["group_id"] = payload["group_id"].isoformat()
         test_app.post("/topic_preferences/", json=payload)
-        updated_payload = {
-            "email": "test@example.com",
-            "group_id": "2024-06-25T12:00:00",
-            "topic1": "Topic 2",
-            "topic2": "Topic 3",
-            "topic3": "Topic 1",
-        }
+
+        updated_payload = TopicPreferencesItem(
+            email="test@example.com",
+            group_id="2024-06-25T12:00:00",
+            topic1="Topic 2",
+            topic2="Topic 3",
+            topic3="Topic 1",
+        ).model_dump()
+
         response = test_app.patch("/topic_preferences/test@example.com", json=payload)
         assert response.status_code == 200
         assert response.json() == payload
