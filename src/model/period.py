@@ -1,11 +1,13 @@
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.topic import Topic
+from src.model.group.group import Group
+
 
 import src.exceptions as e
 
 
-class Period:
+class TutorPeriod:
     def __init__(self, period: str):
         self._period = period
         self._available_dates = []
@@ -56,8 +58,14 @@ class Period:
 
     def add_parent(self, parent: Tutor):
         self._tutor = parent
+    
+    def add_groups(self, groups: list[Group]):
+        self._groups = groups
+    
+    def groups_ids(self):
+        return [g.id() for g in self._groups]
 
-    def tutor_id(self):
+    def id(self):
         if self._tutor:
             return self._tutor.id
 
@@ -89,7 +97,7 @@ class Period:
     def find_mutual_dates(self, dates: list[DeliveryDate]):
         labels = [d.label() for d in dates]
         mutual_dates = list()
-        
+
         for av in self._available_dates:
             available_date_label = av.label()
             if available_date_label in labels:

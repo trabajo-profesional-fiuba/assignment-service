@@ -11,7 +11,7 @@ class Group:
         self._tutor = tutor
         self._state = state
 
-    @property
+
     def id(self) -> str:
         return self._id
 
@@ -58,8 +58,7 @@ class Group:
         return self._state.assigned_date
 
     def filter_dates(self, dates):
-        tutor_dates = self._tutor.available_dates()
-        return self._state.filter_dates(tutor_dates, dates)
+        return self._state.filter_dates(dates)
 
     def cost_of_week(self, week):
         return self._state.cost_of_week(week)

@@ -15,13 +15,11 @@ class FinalStateGroup:
     def assign_date(self, date):
         self._assigned_date = date
 
-    def filter_dates(self, tutor_dates=[], dates=[]):
-        mutual_dates = list(set([d.label() for d in tutor_dates]) & set(dates))
+    def filter_dates(self, dates=[]):
         possible_dates = []
         for date in self._available_dates:
-            if date.label() in mutual_dates:
+            if date.label() in dates:
                 possible_dates.append(date)
-        self._available_dates = possible_dates
         return [d.label() for d in self._available_dates]
 
     def cost_of_week(self, week):
