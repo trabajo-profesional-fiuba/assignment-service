@@ -25,3 +25,17 @@ class Repository:
             print(f"An error occurred: {e}")
         finally:
             self._db.close()
+
+    def update_topic_preferences(
+        self, email: str, topic_preferences_update: TopicPreferencesItem
+    ):
+        db_item = (
+            self._db.query(TopicPreferences)
+            .filter(TopicPreferences.email == email)
+            .first()
+        )
+        for field, value in topic_preferences_update.dict(exclude_unset=True).items():
+            setattr(db_item, field, value)
+        self._db.commit()
+        self._db.refresh(db_item)
+        return db_item
