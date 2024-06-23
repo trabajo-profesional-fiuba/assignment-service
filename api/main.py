@@ -26,7 +26,7 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
         response = service.add_topic_preferences(topic_preferences)
         return response
-    except TopicPreferencesDuplicated as e:
+    except TopicPreferencesDuplicated:
         raise HTTPException(status_code=409, detail="Topic preference already exists.")
 
 
@@ -42,4 +42,4 @@ async def update_topic_preferences(
     updated_preferences = service.update_topic_preferences(
         email, topic_preferences_update
     )
-    return topic_preferences_update
+    return updated_preferences

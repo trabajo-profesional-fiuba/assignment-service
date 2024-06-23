@@ -71,18 +71,16 @@ class TestApi:
         ).model_dump()
         payload["group_id"] = payload["group_id"].isoformat()
         test_app.post("/topic_preferences/", json=payload)
+        topic_preferences_item = TopicPreferencesItem(**payload)
 
-        updated_payload = TopicPreferencesItem(
-            email="test@example.com",
-            email_student_group_2="test2@example.com",
-            email_student_group_3="test3@example.com",
-            email_student_group_4="test4@example.com",
-            group_id="2024-06-25T12:00:00",
-            topic1="Topic 2",
-            topic2="Topic 3",
-            topic3="Topic 1",
-        ).model_dump()
+        topic_preferences_item.group_id = "2024-06-25T12:00:00"
+        topic_preferences_item.topic1 = "Topic 2"
+        topic_preferences_item.topic2 = "Topic 3"
+        topic_preferences_item.topic3 = "Topic 4"
+        updated_payload = topic_preferences_item.model_dump()
 
-        response = test_app.patch("/topic_preferences/test@example.com", json=payload)
+        response = test_app.patch(
+            "/topic_preferences/test@example.com", json=updated_payload
+        )
         assert response.status_code == 200
-        assert response.json() == payload
+        assert response.json() == updated_payload

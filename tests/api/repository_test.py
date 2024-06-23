@@ -36,7 +36,7 @@ class TestRepository:
         assert result.topic2 == topic_preferences_item.topic2
         assert result.topic3 == topic_preferences_item.topic3
 
-    def test_update_topic_preferences(self, mock_repository):
+    def test_update_all_topic_preferences(self, mock_repository):
         payload = TopicPreferencesItem(
             email="test@example.com",
             email_student_group_2="test2@example.com",
@@ -47,21 +47,18 @@ class TestRepository:
             topic2="Topic 3",
             topic3="Topic 1",
         ).model_dump()
+        payload["group_id"] = payload["group_id"].isoformat()
         topic_preferences_item = TopicPreferencesItem(**payload)
         mock_repository.add_topic_preferences(
             topic_preferences_item.email, topic_preferences_item
         )
 
-        updated_payload = TopicPreferencesItem(
-            email="test@example.com",
-            email_student_group_2="test2@example.com",
-            email_student_group_3="test3@example.com",
-            email_student_group_4="test4@example.com",
-            group_id="2024-06-25T12:00:00",
-            topic1="Topic 2",
-            topic2="Topic 3",
-            topic3="Topic 1",
-        ).model_dump()
+        topic_preferences_item.group_id = "2024-06-25T12:00:00"
+        topic_preferences_item.topic1 = "Topic 2"
+        topic_preferences_item.topic2 = "Topic 3"
+        topic_preferences_item.topic3 = "Topic 4"
+        updated_payload = topic_preferences_item.model_dump()
+
         update_topic_preferences_item = TopicPreferencesItem(**updated_payload)
         result = mock_repository.update_topic_preferences(
             topic_preferences_item.email, update_topic_preferences_item

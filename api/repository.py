@@ -23,10 +23,11 @@ class Repository:
             self._db.commit()
             self._db.refresh(db_item)
             return db_item
-        except Exception as e:
+        except Exception as err:
             self._db.rollback()
             raise TopicPreferencesDuplicated(
-                f"Attempt to add a TopicPreferences duplicated for user '{topic_preferences.email}'."
+                f"Attempt to add a TopicPreferences duplicated for user\
+                '{topic_preferences.email}'."
             )
         finally:
             self._db.close()
