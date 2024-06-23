@@ -26,10 +26,12 @@ async def root():
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
-        new_item = service.add_topic_preferences(topic_preferences)
+        new_item = controller.add_topic_preferences(topic_preferences)
         return new_item
     except TopicPreferencesDuplicated:
         raise HTTPException(status_code=409, detail="Topic preference already exists.")
+    except Exception as err:
+        raise err
 
 
 @app.put(
@@ -41,5 +43,10 @@ async def update_topic_preferences(
     email: str,
     topic_preferences_update: TopicPreferencesUpdatedItem,
 ):
-    updated_items = controller.update_topic_preferences(email, topic_preferences_update)
-    return updated_items
+    try:
+        updated_items = controller.update_topic_preferences(
+            email, topic_preferences_update
+        )
+        return updated_items
+    except Exception as err:
+        raise err

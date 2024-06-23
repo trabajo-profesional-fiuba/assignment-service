@@ -24,20 +24,25 @@ class Service:
             return [item_1, item_2, item_3, item_4]
         except TopicPreferencesDuplicated as err:
             raise err
+        except Exception as err:
+            raise err
 
     def update_topic_preferences(
         self, email: str, topic_preferences_update: TopicPreferencesUpdatedItem
     ):
-        item_1 = self._repository.update_topic_preferences(
-            email, topic_preferences_update
-        )
-        item_2 = self._repository.update_topic_preferences(
-            topic_preferences_update.email_student_group_2, topic_preferences_update
-        )
-        item_3 = self._repository.update_topic_preferences(
-            topic_preferences_update.email_student_group_3, topic_preferences_update
-        )
-        item_4 = self._repository.update_topic_preferences(
-            topic_preferences_update.email_student_group_4, topic_preferences_update
-        )
-        return [item_1, item_2, item_3, item_4]
+        try:
+            item_1 = self._repository.update_topic_preferences(
+                email, topic_preferences_update
+            )
+            item_2 = self._repository.update_topic_preferences(
+                topic_preferences_update.email_student_group_2, topic_preferences_update
+            )
+            item_3 = self._repository.update_topic_preferences(
+                topic_preferences_update.email_student_group_3, topic_preferences_update
+            )
+            item_4 = self._repository.update_topic_preferences(
+                topic_preferences_update.email_student_group_4, topic_preferences_update
+            )
+            return [item_1, item_2, item_3, item_4]
+        except Exception as err:
+            raise err
