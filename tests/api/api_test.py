@@ -23,6 +23,9 @@ class TestApi:
         """Test POST /topic_preferences/ endpoint."""
         payload = TopicPreferencesItem(
             email="test@example.com",
+            email_student_group_2="test2@example.com",
+            email_student_group_3="test3@example.com",
+            email_student_group_4="test4@example.com",
             group_id="2024-06-21T12:00:00",
             topic1="Topic 2",
             topic2="Topic 3",
@@ -40,6 +43,9 @@ class TestApi:
         """Test POST /topic_preferences/ endpoint."""
         payload = TopicPreferencesItem(
             email="test@example.com",
+            email_student_group_2="test2@example.com",
+            email_student_group_3="test3@example.com",
+            email_student_group_4="test4@example.com",
             group_id="2024-06-21T12:00:00",
             topic1="Topic 2",
             topic2="Topic 3",
@@ -55,6 +61,9 @@ class TestApi:
         """Test PUT /topic_preferences/ endpoint."""
         payload = TopicPreferencesItem(
             email="test@example.com",
+            email_student_group_2="test2@example.com",
+            email_student_group_3="test3@example.com",
+            email_student_group_4="test4@example.com",
             group_id="2024-06-21T12:00:00",
             topic1="Topic 2",
             topic2="Topic 3",
@@ -65,6 +74,9 @@ class TestApi:
 
         updated_payload = TopicPreferencesItem(
             email="test@example.com",
+            email_student_group_2="test2@example.com",
+            email_student_group_3="test3@example.com",
+            email_student_group_4="test4@example.com",
             group_id="2024-06-25T12:00:00",
             topic1="Topic 2",
             topic2="Topic 3",

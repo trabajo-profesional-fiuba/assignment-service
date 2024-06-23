@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from api.repository import Repository
-from api.service import TopicTutorService
+from api.service import Service
 from api.models import TopicPreferencesItem
 from api.database import Database
 from api.exceptions import TopicPreferencesDuplicated
@@ -9,12 +9,10 @@ app = FastAPI()
 database = Database()
 session = database.setup()
 repository = Repository(session)
-service = TopicTutorService(repository)
+service = Service(repository)
 
 
-@app.get(
-    "/", summary="Root Endpoint", description="This endpoint returns a ping message."
-)
+@app.get("/", description="This endpoint returns a ping message.")
 async def root():
     return "Ping"
 

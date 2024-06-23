@@ -8,10 +8,12 @@ class Repository:
     def __init__(self, db):
         self._db = db
 
-    def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
+    def add_topic_preferences(
+        self, email: str, topic_preferences: TopicPreferencesItem
+    ):
         try:
             db_item = TopicPreferences(
-                email=topic_preferences.email,
+                email=email,
                 group_id=topic_preferences.group_id,
                 topic1=topic_preferences.topic1,
                 topic2=topic_preferences.topic2,
@@ -23,7 +25,6 @@ class Repository:
             return db_item
         except Exception as e:
             self._db.rollback()
-            print(f"[Repository]: {e}")
             raise TopicPreferencesDuplicated(
                 f"Attempt to add a TopicPreferences duplicated for user '{topic_preferences.email}'."
             )
