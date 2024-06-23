@@ -3,7 +3,7 @@ import requests
 from fastapi.testclient import TestClient
 from api.main import app
 from datetime import datetime
-from api.models import TopicPreferencesItem
+from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.exceptions import TopicPreferencesDuplicated
 
 
@@ -92,8 +92,7 @@ class TestApi:
     # @pytest.mark.skip(reason="Debug")
     def test_update_topic_preferences(self, test_app):
         """Test PUT /topic_preferences/ endpoint."""
-        updated_item = TopicPreferencesItem(
-            email="test1@example.com",
+        updated_item = TopicPreferencesUpdatedItem(
             email_student_group_2="test2@example.com",
             email_student_group_3="test3@example.com",
             email_student_group_4="test4@example.com",
