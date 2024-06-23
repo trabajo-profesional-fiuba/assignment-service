@@ -89,7 +89,6 @@ class TestApi:
         assert response.status_code == 409
 
     @pytest.mark.api
-    # @pytest.mark.skip(reason="Debug")
     def test_update_topic_preferences(self, test_app):
         """Test PUT /topic_preferences/ endpoint."""
         updated_item = TopicPreferencesUpdatedItem(

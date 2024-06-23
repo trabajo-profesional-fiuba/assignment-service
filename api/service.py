@@ -8,7 +8,7 @@ class Service:
     def __init__(self, repository: Repository):
         self._repository = repository
 
-    def create_items(self, emails: list, item: TopicPreferencesItem):
+    def add_items(self, emails: list, item: TopicPreferencesItem):
         created_items = []
         for email in emails:
             if email:
@@ -19,7 +19,7 @@ class Service:
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
-            new_items = self.create_items(
+            new_items = self.add_items(
                 [
                     topic_preferences.email,
                     topic_preferences.email_student_group_2,
