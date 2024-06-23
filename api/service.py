@@ -25,19 +25,6 @@ class Service:
         except TopicPreferencesDuplicated as err:
             raise err
 
-    def delete_other_students_email(self, items: list):
-        dict_items = []
-        for item in items:
-            dict_item = {
-                "email": item.email,
-                "group_id": item.group_id,
-                "topic1": item.topic1,
-                "topic2": item.topic2,
-                "topic3": item.topic3,
-            }
-            dict_items.append(dict_item)
-        return dict_items
-
     def update_topic_preferences(
         self, email: str, topic_preferences_update: TopicPreferencesUpdatedItem
     ):
@@ -53,5 +40,4 @@ class Service:
         item_4 = self._repository.update_topic_preferences(
             topic_preferences_update.email_student_group_4, topic_preferences_update
         )
-        items = self.delete_other_students_email([item_1, item_2, item_3, item_4])
-        return items
+        return [item_1, item_2, item_3, item_4]
