@@ -1,5 +1,6 @@
 from api.database import TopicPreferences
 from api.models import TopicPreferencesItem
+from api.exceptions import TopicPreferencesDuplicated
 
 
 class Repository:
@@ -22,7 +23,10 @@ class Repository:
             return db_item
         except Exception as e:
             self._db.rollback()
-            print(f"An error occurred: {e}")
+            print(f"[Repository]: {e}")
+            raise TopicPreferencesDuplicated(
+                f"Attempt to add a TopicPreferences duplicated for user '{topic_preferences.email}'."
+            )
         finally:
             self._db.close()
 

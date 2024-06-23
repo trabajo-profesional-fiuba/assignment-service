@@ -1,5 +1,6 @@
 from api.models import TopicPreferencesItem
 from api.repository import Repository
+from api.exceptions import TopicPreferencesDuplicated
 
 
 class TopicTutorService:
@@ -7,8 +8,12 @@ class TopicTutorService:
         self._repository = repository
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
-        self._repository.add_topic_preferences(topic_preferences)
-        return topic_preferences
+        try:
+            self._repository.add_topic_preferences(topic_preferences)
+            return topic_preferences
+        except TopicPreferencesDuplicated as e:
+            print(f"[Service]: {e}")
+            raise e
 
     def update_topic_preferences(
         self, email, topic_preferences_update: TopicPreferencesItem

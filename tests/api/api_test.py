@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from api.main import app
 from datetime import datetime
 from api.models import TopicPreferencesItem
+from api.exceptions import TopicPreferencesDuplicated
 
 
 class TestApi:
@@ -46,10 +47,8 @@ class TestApi:
         ).model_dump()
         payload["group_id"] = payload["group_id"].isoformat()
 
-        test_app.post("/topic_preferences/", json=payload)
         response = test_app.post("/topic_preferences/", json=payload)
-        assert response.status_code == 201
-        assert response.json() == payload
+        assert response.status_code == 409
 
     @pytest.mark.api
     def test_update_topic_preferences(self, test_app):

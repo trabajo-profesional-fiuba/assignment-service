@@ -3,6 +3,7 @@ from api.repository import Repository
 from api.service import TopicTutorService
 from api.models import TopicPreferencesItem
 from api.database import Database
+from api.exceptions import TopicPreferencesDuplicated
 
 app = FastAPI()
 database = Database()
@@ -24,8 +25,11 @@ async def root():
     description="This endpoint creates a new topic preferences.",
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
-    response = service.add_topic_preferences(topic_preferences)
-    return response
+    try:
+        response = service.add_topic_preferences(topic_preferences)
+        return response
+    except TopicPreferencesDuplicated as e:
+        raise HTTPException(status_code=409, detail="Topic preference already exists.")
 
 
 @app.patch(
