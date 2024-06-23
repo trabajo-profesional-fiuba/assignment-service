@@ -1,5 +1,5 @@
 from api.database import TopicPreferences
-from api.models import TopicPreferencesItem
+from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.exceptions import TopicPreferencesDuplicated
 
 
@@ -33,15 +33,24 @@ class Repository:
             self._db.close()
 
     def update_topic_preferences(
-        self, email: str, topic_preferences_update: TopicPreferencesItem
+        self, email: str, topic_preferences_update: TopicPreferencesUpdatedItem
     ):
-        db_item = (
-            self._db.query(TopicPreferences)
-            .filter(TopicPreferences.email == email)
-            .first()
-        )
-        for field, value in topic_preferences_update.dict(exclude_unset=True).items():
-            setattr(db_item, field, value)
-        self._db.commit()
-        self._db.refresh(db_item)
-        return db_item
+        try:
+            db_item = (
+                self._db.query(TopicPreferences)
+                .filter(TopicPreferences.email == email)
+                .first()
+            )
+
+            update_data = topic_preferences_update.dict(exclude_unset=True)
+            for field, value in update_data.items():
+                setattr(db_item, field, value)
+
+            self._db.commit()
+            self._db.refresh(db_item)
+            return db_item
+        except Exception as err:
+            self._db.rollback()
+            raise err
+        finally:
+            self._db.close()

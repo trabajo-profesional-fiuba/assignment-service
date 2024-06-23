@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from api.repository import Repository
 from api.service import Service
-from api.models import TopicPreferencesItem
+from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.database import Database
 from api.exceptions import TopicPreferencesDuplicated
 
@@ -24,22 +24,20 @@ async def root():
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
-        response = service.add_topic_preferences(topic_preferences)
-        return response
+        new_item = service.add_topic_preferences(topic_preferences)
+        return new_item
     except TopicPreferencesDuplicated:
         raise HTTPException(status_code=409, detail="Topic preference already exists.")
 
 
-@app.patch(
+@app.put(
     "/topic_preferences/{email}",
     status_code=200,
     description="Update an existing topic preferences.",
 )
 async def update_topic_preferences(
-    topic_preferences_update: TopicPreferencesItem,
+    email: str,
+    topic_preferences_update: TopicPreferencesUpdatedItem,
 ):
-    email = topic_preferences_update.email
-    updated_preferences = service.update_topic_preferences(
-        email, topic_preferences_update
-    )
-    return updated_preferences
+    updated_items = service.update_topic_preferences(email, topic_preferences_update)
+    return updated_items
