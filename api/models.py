@@ -21,3 +21,10 @@ class TopicPreferencesUpdatedItem(BaseModel):
     topic1: str
     topic2: str
     topic3: str
+
+class TopicPreferencesResponse(BaseModel):
+    email: str
+    group_id: datetime
+    topic1: str
+    topic2: str
+    topic3: str
