@@ -1,6 +1,7 @@
 from api.database import TopicPreferences
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.exceptions import TopicPreferencesDuplicated
+from sqlalchemy.exc import IntegrityError
 
 
 class Repository:
@@ -23,12 +24,12 @@ class Repository:
             self._db.commit()
             self._db.refresh(db_item)
             return db_item
-        except Exception as err:
-            self._db.rollback()
-            raise TopicPreferencesDuplicated(
-                f"Attempt to add a TopicPreferences duplicated for user\
-                '{topic_preferences.email}'."
-            )
+        except IntegrityError as err:
+            if email == topic_preferences.email:
+                self._db.rollback()
+                raise TopicPreferencesDuplicated(topic_preferences.email)
+            else:
+                return db_item
         finally:
             self._db.close()
 

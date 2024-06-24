@@ -29,8 +29,6 @@ class Service:
                 topic_preferences,
             )
             return new_items
-        except TopicPreferencesDuplicated as err:
-            raise err
         except Exception as err:
             raise err
 

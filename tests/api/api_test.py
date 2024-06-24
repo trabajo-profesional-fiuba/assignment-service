@@ -74,7 +74,7 @@ class TestApi:
     def test_add_duplicate_topic_preferences(self, test_app):
         """Test POST /topic_preferences/ endpoint."""
         item = TopicPreferencesItem(
-            email="test@example.com",
+            email="test1@example.com",
             email_student_group_2="test2@example.com",
             email_student_group_3="test3@example.com",
             email_student_group_4="test4@example.com",
@@ -87,6 +87,38 @@ class TestApi:
 
         response = test_app.post("/topic_preferences/", json=item)
         assert response.status_code == 409
+
+    @pytest.mark.api
+    def test_recover_from_duplicate_exception(self, test_app):
+        """Test POST /topic_preferences/ endpoint."""
+        item = TopicPreferencesItem(
+            email="test1@example.com",
+            email_student_group_2="test2@example.com",
+            email_student_group_3="test3@example.com",
+            email_student_group_4="test4@example.com",
+            group_id="2024-06-21T12:00:00",
+            topic1="Topic 2",
+            topic2="Topic 3",
+            topic3="Topic 1",
+        ).model_dump()
+        item["group_id"] = item["group_id"].isoformat()
+
+        response = test_app.post("/topic_preferences/", json=item)
+        assert response.status_code == 409
+
+        item = TopicPreferencesItem(
+            email="test21@example.com",
+            email_student_group_2="test2@example.com",
+            email_student_group_3="test3@example.com",
+            email_student_group_4="test4@example.com",
+            group_id="2024-06-21T12:00:00",
+            topic1="Topic 2",
+            topic2="Topic 3",
+            topic3="Topic 1",
+        ).model_dump()
+        item["group_id"] = item["group_id"].isoformat()
+        response = test_app.post("/topic_preferences/", json=item)
+        assert response.status_code == 201
 
     @pytest.mark.api
     def test_update_topic_preferences(self, test_app):
