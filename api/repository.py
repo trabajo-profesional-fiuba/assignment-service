@@ -43,7 +43,7 @@ class Repository:
                 .first()
             )
 
-            update_data = topic_preferences_update.dict(exclude_unset=True)
+            update_data = topic_preferences_update.model_dump()
             for field, value in update_data.items():
                 setattr(db_item, field, value)
 
