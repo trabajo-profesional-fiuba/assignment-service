@@ -3,7 +3,7 @@ from api.repository import Repository
 from api.service import Service
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.database import Database
-from api.exceptions import TopicPreferencesDuplicated
+from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from api.controller import Controller
 
 app = FastAPI()
@@ -41,5 +41,10 @@ async def update_topic_preferences(
     email: str,
     topic_preferences_update: TopicPreferencesUpdatedItem,
 ):
-    updated_items = controller.update_topic_preferences(email, topic_preferences_update)
-    return updated_items
+    try:
+        updated_items = controller.update_topic_preferences(
+            email, topic_preferences_update
+        )
+        return updated_items
+    except StudentNotFound:
+        raise HTTPException(status_code=409, detail="Student not found.")

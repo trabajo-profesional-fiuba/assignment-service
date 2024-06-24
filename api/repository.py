@@ -1,6 +1,6 @@
 from api.database import TopicPreferences
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.exceptions import TopicPreferencesDuplicated
+from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from sqlalchemy.exc import IntegrityError
 
 
@@ -42,6 +42,9 @@ class Repository:
                 .filter(TopicPreferences.email == email)
                 .first()
             )
+
+            if db_item is None:
+                raise StudentNotFound(email)
 
             update_data = topic_preferences_update.model_dump()
             for field, value in update_data.items():

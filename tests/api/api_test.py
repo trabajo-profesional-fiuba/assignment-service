@@ -170,3 +170,22 @@ class TestApi:
             },
         ]
         assert response.json() == expected_response
+
+    @pytest.mark.api
+    def test_update_topic_preferences_when_user_not_found(self, test_app):
+        """Test PUT /topic_preferences/ endpoint."""
+        updated_item = TopicPreferencesUpdatedItem(
+            email_student_group_2="test2@example.com",
+            email_student_group_3="test3@example.com",
+            email_student_group_4="test4@example.com",
+            group_id="2024-06-25T12:00:00",
+            topic1="Topic 1",
+            topic2="Topic 2",
+            topic3="Topic 3",
+        ).model_dump()
+        updated_item["group_id"] = updated_item["group_id"].isoformat()
+
+        response = test_app.put(
+            "/topic_preferences/test100@example.com", json=updated_item
+        )
+        assert response.status_code == 409
