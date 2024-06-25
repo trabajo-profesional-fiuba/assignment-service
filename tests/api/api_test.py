@@ -41,13 +41,13 @@ class TestApi:
         db_instance.delete_all_records_from_table(db_session, TopicPreferences)
         db_instance.engine.dispose()
 
-    @pytest.mark.api
+    @pytest.mark.integration
     def test_root(self, test_app):
         response = test_app.get("/")
         assert response.status_code == 200
         assert response.json() == "Ping"
 
-    @pytest.mark.api
+    @pytest.mark.integration
     def test_add_topic_preferences_with_completed_group(self, test_app):
         """Test POST /topic_preferences/ endpoint."""
         item = TopicPreferencesItem(
@@ -99,7 +99,7 @@ class TestApi:
         ]
         assert response.json() == expected_response
 
-    @pytest.mark.api
+    @pytest.mark.integration
     def test_add_duplicate_topic_preferences(self, test_app):
         """Test POST /topic_preferences/ endpoint."""
         item = TopicPreferencesItem(
@@ -118,7 +118,7 @@ class TestApi:
         assert response.status_code == 409
         assert response.json() == {"detail": "Topic preference already exists."}
 
-    @pytest.mark.api
+    @pytest.mark.integration
     def test_recover_from_duplicate_exception(self, test_app):
         """Test POST /topic_preferences/ endpoint."""
         item = TopicPreferencesItem(
@@ -151,7 +151,7 @@ class TestApi:
         response = test_app.post("/topic_preferences/", json=item)
         assert response.status_code == 201
 
-    @pytest.mark.api
+    @pytest.mark.integration
     def test_update_topic_preferences(self, test_app):
         """Test PUT /topic_preferences/ endpoint."""
         updated_item = TopicPreferencesUpdatedItem(
@@ -202,7 +202,7 @@ class TestApi:
         ]
         assert response.json() == expected_response
 
-    @pytest.mark.api
+    @pytest.mark.integration
     def test_update_topic_preferences_when_user_not_found(self, test_app):
         """Test PUT /topic_preferences/ endpoint."""
         updated_item = TopicPreferencesUpdatedItem(
@@ -222,7 +222,7 @@ class TestApi:
         assert response.status_code == 409
         assert response.json() == {"detail": "Student 'test100@example.com' not found."}
 
-    @pytest.mark.api
+    @pytest.mark.integration
     def test_update_topic_preferences_when_student_from_group_not_found(self, test_app):
         """Test PUT /topic_preferences/ endpoint."""
         updated_item = TopicPreferencesUpdatedItem(
