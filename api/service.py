@@ -1,11 +1,11 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.repository import Repository
+from api.topic_preferences_repository import TopicPreferencesRepository
 from api.exceptions import TopicPreferencesDuplicated
 from typing import Union
 
 
 class Service:
-    def __init__(self, repository: Repository):
+    def __init__(self, repository: TopicPreferencesRepository):
         self._repository = repository
 
     def add_items(self, emails: list, item: TopicPreferencesItem):

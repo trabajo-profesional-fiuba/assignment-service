@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from api.repository import Repository
+from api.topic_preferences_repository import TopicPreferencesRepository
 from api.service import Service
 from api.models import (
     TopicPreferencesItem,
@@ -14,7 +14,7 @@ from typing import List
 app = FastAPI(title="Assignment Service Api")
 database = Database()
 session = database.setup()
-repository = Repository(session)
+repository = TopicPreferencesRepository(session)
 service = Service(repository)
 controller = TopicPreferenceController(service)
 

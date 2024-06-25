@@ -1,14 +1,14 @@
 import pytest
 from unittest.mock import create_autospec
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.repository import Repository
+from api.topic_preferences_repository import TopicPreferencesRepository
 from api.service import Service
 from api.exceptions import TopicPreferencesDuplicated
 
 
 @pytest.fixture
 def mock_repository(mocker):
-    return create_autospec(Repository)
+    return create_autospec(TopicPreferencesRepository)
 
 
 @pytest.fixture

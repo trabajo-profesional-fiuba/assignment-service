@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from storage.topic_preferences_table import TopicPreferences
 
 
-class Repository:
+class TopicPreferencesRepository:
 
     def __init__(self, db):
         self._db = db
