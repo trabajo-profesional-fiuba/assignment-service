@@ -1,7 +1,7 @@
-from api.database import TopicPreferences
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from sqlalchemy.exc import IntegrityError
+from storage.topic_preferences_table import TopicPreferences
 
 
 class Repository:

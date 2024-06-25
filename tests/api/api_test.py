@@ -5,7 +5,8 @@ from api.main import app
 from datetime import datetime
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.exceptions import TopicPreferencesDuplicated
-from api.database import Database, TopicPreferences
+from storage.database import Database
+from storage.topic_preferences_table import TopicPreferences
 
 
 class TestApi:

@@ -6,7 +6,7 @@ from api.models import (
     TopicPreferencesUpdatedItem,
     TopicPreferencesResponse,
 )
-from api.database import Database
+from storage.database import Database
 from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from api.controller import Controller
 from typing import List

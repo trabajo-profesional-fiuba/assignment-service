@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import create_engine, Column, String, DateTime
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
@@ -8,16 +8,6 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 Base = declarative_base()
-
-
-class TopicPreferences(Base):
-    __tablename__ = "topic_preferences"
-
-    email = Column(String, primary_key=True, index=True)
-    group_id = Column(DateTime)
-    topic1 = Column(String)
-    topic2 = Column(String)
-    topic3 = Column(String)
 
 
 class Database:
