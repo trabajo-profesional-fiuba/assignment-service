@@ -4,7 +4,7 @@ from api.exceptions import TopicPreferencesDuplicated
 from typing import Union
 
 
-class Service:
+class TopicPreferencesService:
     def __init__(self, repository: TopicPreferencesRepository):
         self._repository = repository
 

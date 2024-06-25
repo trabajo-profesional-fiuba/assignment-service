@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from api.topic_preferences_repository import TopicPreferencesRepository
-from api.service import Service
+from api.topic_preferences_service import TopicPreferencesService
 from api.models import (
     TopicPreferencesItem,
     TopicPreferencesUpdatedItem,
@@ -11,11 +11,11 @@ from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from api.topic_preferences_controller import TopicPreferenceController
 from typing import List
 
-app = FastAPI(title="Assignment Service Api")
+app = FastAPI(title="Assignment TopicPreferencesService Api")
 database = Database()
 session = database.setup()
 repository = TopicPreferencesRepository(session)
-service = Service(repository)
+service = TopicPreferencesService(repository)
 controller = TopicPreferenceController(service)
 
 

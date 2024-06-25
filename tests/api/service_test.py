@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import create_autospec
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.topic_preferences_repository import TopicPreferencesRepository
-from api.service import Service
+from api.topic_preferences_service import TopicPreferencesService
 from api.exceptions import TopicPreferencesDuplicated
 
 
@@ -13,7 +13,7 @@ def mock_repository(mocker):
 
 @pytest.fixture
 def service(mock_repository):
-    return Service(mock_repository)
+    return TopicPreferencesService(mock_repository)
 
 
 @pytest.mark.integration
