@@ -65,5 +65,5 @@ async def update_topic_preferences(
             email, topic_preferences_update
         )
         return updated_items
-    except StudentNotFound:
-        raise HTTPException(status_code=409, detail="Student not found.")
+    except StudentNotFound as err:
+        raise HTTPException(status_code=409, detail=f"Student '{err}' not found.")

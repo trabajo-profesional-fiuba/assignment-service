@@ -116,6 +116,7 @@ class TestApi:
 
         response = test_app.post("/topic_preferences/", json=item)
         assert response.status_code == 409
+        assert response.json() == {"detail": "Topic preference already exists."}
 
     @pytest.mark.api
     def test_recover_from_duplicate_exception(self, test_app):
@@ -134,6 +135,7 @@ class TestApi:
 
         response = test_app.post("/topic_preferences/", json=item)
         assert response.status_code == 409
+        assert response.json() == {"detail": "Topic preference already exists."}
 
         item = TopicPreferencesItem(
             email="test21@example.com",
@@ -218,3 +220,24 @@ class TestApi:
             "/topic_preferences/test100@example.com", json=updated_item
         )
         assert response.status_code == 409
+        assert response.json() == {"detail": "Student 'test100@example.com' not found."}
+
+    @pytest.mark.api
+    def test_update_topic_preferences_when_student_from_group_not_found(self, test_app):
+        """Test PUT /topic_preferences/ endpoint."""
+        updated_item = TopicPreferencesUpdatedItem(
+            email_student_group_2="test100@example.com",
+            email_student_group_3="test3@example.com",
+            email_student_group_4="test4@example.com",
+            group_id="2024-06-25T12:00:00",
+            topic1="Topic 1",
+            topic2="Topic 2",
+            topic3="Topic 3",
+        ).model_dump()
+        updated_item["group_id"] = updated_item["group_id"].isoformat()
+
+        response = test_app.put(
+            "/topic_preferences/test100@example.com", json=updated_item
+        )
+        assert response.status_code == 409
+        assert response.json() == {"detail": "Student 'test100@example.com' not found."}
