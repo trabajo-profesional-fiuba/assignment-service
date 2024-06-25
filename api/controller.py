@@ -8,12 +8,13 @@ class Controller:
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
-            new_item = self._service.add_topic_preferences(topic_preferences)
-            return new_item
+            new_items = self._service.add_topic_preferences(topic_preferences)
+            formatted_items = self._format_items(new_items)
+            return formatted_items
         except Exception as err:
             raise err
 
-    def _format_updated_items(self, items: list):
+    def _format_items(self, items: list):
         """
         Deletes other students from the same group email.
         """
@@ -38,7 +39,7 @@ class Controller:
             updated_items = self._service.update_topic_preferences(
                 email, topic_preferences_update
             )
-            formatted_items = self._format_updated_items(updated_items)
+            formatted_items = self._format_items(updated_items)
             return formatted_items
         except Exception as err:
             raise err

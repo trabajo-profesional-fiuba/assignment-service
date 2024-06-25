@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import List
 
 
 class TopicPreferencesItem(BaseModel):
@@ -21,6 +22,7 @@ class TopicPreferencesUpdatedItem(BaseModel):
     topic1: str
     topic2: str
     topic3: str
+
 
 class TopicPreferencesResponse(BaseModel):
     email: str

@@ -1,10 +1,15 @@
 from fastapi import FastAPI, HTTPException
 from api.repository import Repository
 from api.service import Service
-from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem, TopicPreferencesResponse
+from api.models import (
+    TopicPreferencesItem,
+    TopicPreferencesUpdatedItem,
+    TopicPreferencesResponse,
+)
 from api.database import Database
 from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from api.controller import Controller
+from typing import List
 
 app = FastAPI(title="Assignment Service Api")
 database = Database()
@@ -24,12 +29,12 @@ async def root():
     status_code=201,
     description="This endpoint creates a new topic preferences answer of email sender and students from its group if it belongs to one.",
     response_description="List of created topic preferences answers of email sender and students from its group if it belongs to one.",
-    response_model=TopicPreferencesResponse,
+    response_model=List[TopicPreferencesResponse],
     responses={
         201: {"description": "Successfully added topic preferences"},
         409: {"description": "Topic preferences duplicated"},
         422: {"description": "Validation Error"},
-    }
+    },
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
@@ -44,12 +49,12 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     status_code=200,
     description="Update an existing topic preferences answer of email sender and students from its group if it belongs to one.",
     response_description="List of updated topic preferences answers of email sender and students from its group if it belongs to one.",
-    response_model=TopicPreferencesResponse,
+    response_model=List[TopicPreferencesResponse],
     responses={
         200: {"description": "Successfully updated topic preferences"},
         409: {"description": "Student not found"},
         422: {"description": "Validation Error"},
-    }
+    },
 )
 async def update_topic_preferences(
     email: str,

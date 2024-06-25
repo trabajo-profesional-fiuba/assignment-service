@@ -5,14 +5,43 @@ from api.main import app
 from datetime import datetime
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.exceptions import TopicPreferencesDuplicated
+from api.database import Database, TopicPreferences
 
 
 class TestApi:
+    # Dependency function for FastAPI
+    def get_db(self):
+        db = Database()
+        try:
+            yield db.setup()
+        finally:
+            db.engine.dispose()
+
     @pytest.fixture(scope="module")
     def test_app(self):
-        """Create a FastAPI test client."""
-        return TestClient(app)
+        """
+        Fixture to provide a FastAPI TestClient with a session dependency override.
+        """
+        db_instance = Database()
+        db_session = db_instance.setup()
+        db_instance.delete_all_records_from_table(db_session, TopicPreferences)
 
+        def override_get_db():
+            try:
+                yield db_session
+            finally:
+                db_session.close()
+
+        app.dependency_overrides[self.get_db] = override_get_db
+
+        with TestClient(app) as c:
+            yield c
+
+        # Clean up after all tests are done
+        db_instance.delete_all_records_from_table(db_session, TopicPreferences)
+        db_instance.engine.dispose()
+
+    @pytest.mark.api
     def test_root(self, test_app):
         response = test_app.get("/")
         assert response.status_code == 200

@@ -47,3 +47,17 @@ class Database:
         self.create_tables()
         session = self.get_session()
         return session
+
+    def delete_all_records_from_table(self, session, model):
+        """
+        Delete all records from the specified table.
+        """
+        try:
+            session.query(model).delete()
+            session.commit()
+            print(f"All records deleted from {model.__tablename__}.")
+        except Exception as e:
+            session.rollback()
+            print(f"Error deleting records: {e}")
+        finally:
+            session.close()

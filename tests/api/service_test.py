@@ -15,6 +15,7 @@ def mock_repository(mocker):
 def service(mock_repository):
     return Service(mock_repository)
 
+
 @pytest.mark.api
 def test_add_topic_preferences(service, mock_repository):
     topic_preferences = TopicPreferencesItem(
@@ -92,6 +93,7 @@ def test_add_topic_preferences(service, mock_repository):
     ]
     assert result == expected_result
 
+
 @pytest.mark.api
 def test_add_topic_preferences_duplicated_exception(service, mock_repository):
     topic_preferences = TopicPreferencesItem(
@@ -111,6 +113,7 @@ def test_add_topic_preferences_duplicated_exception(service, mock_repository):
 
     with pytest.raises(TopicPreferencesDuplicated) as err:
         service.add_topic_preferences(topic_preferences)
+
 
 @pytest.mark.api
 def test_add_items_with_completed_group(service, mock_repository):
@@ -194,6 +197,7 @@ def test_add_items_with_completed_group(service, mock_repository):
         },
     ]
     assert result == expected_result
+
 
 @pytest.mark.api
 def test_add_items_with_uncompleted_group(service, mock_repository):
@@ -282,6 +286,7 @@ def test_add_items_without_group(service, mock_repository):
     ]
     assert result == expected_result
 
+
 @pytest.mark.api
 def test_update_items_with_completed_group(service, mock_repository):
     emails = [
@@ -364,6 +369,7 @@ def test_update_items_with_completed_group(service, mock_repository):
     ]
     assert result == expected_result
 
+
 @pytest.mark.api
 def test_update_items_with_uncompleted_group(service, mock_repository):
     emails = ["test1@example.com", "test2@example.com", None, None]
@@ -412,6 +418,7 @@ def test_update_items_with_uncompleted_group(service, mock_repository):
         },
     ]
     assert result == expected_result
+
 
 @pytest.mark.api
 def test_update_items_without_group(service, mock_repository):
