@@ -1,7 +1,7 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 
 
-class Controller:
+class TopicPreferenceController:
 
     def __init__(self, service):
         self._service = service

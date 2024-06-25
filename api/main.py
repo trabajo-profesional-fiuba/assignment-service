@@ -8,7 +8,7 @@ from api.models import (
 )
 from storage.database import Database
 from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
-from api.controller import Controller
+from api.topic_preferences_controller import TopicPreferenceController
 from typing import List
 
 app = FastAPI(title="Assignment Service Api")
@@ -16,7 +16,7 @@ database = Database()
 session = database.setup()
 repository = Repository(session)
 service = Service(repository)
-controller = Controller(service)
+controller = TopicPreferenceController(service)
 
 
 @app.get("/", description="This endpoint returns a ping message.")
