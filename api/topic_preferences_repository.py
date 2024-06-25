@@ -13,6 +13,7 @@ class TopicPreferencesRepository:
         self, email: str, topic_preferences: TopicPreferencesItem
     ):
         try:
+            session = self._db.get_db()
             db_item = TopicPreferences(
                 email=email,
                 group_id=topic_preferences.group_id,
@@ -20,25 +21,24 @@ class TopicPreferencesRepository:
                 topic2=topic_preferences.topic2,
                 topic3=topic_preferences.topic3,
             )
-            self._db.add(db_item)
-            self._db.commit()
-            self._db.refresh(db_item)
+            session.add(db_item)
+            session.commit()
+            session.refresh(db_item)
             return db_item
         except IntegrityError as err:
             if email == topic_preferences.email:
-                self._db.rollback()
+                session.rollback()
                 raise TopicPreferencesDuplicated(topic_preferences.email)
             else:
                 return db_item
-        finally:
-            self._db.close()
 
     def update_topic_preferences(
         self, email: str, topic_preferences_update: TopicPreferencesUpdatedItem
     ):
         try:
+            session = self._db.get_db()
             db_item = (
-                self._db.query(TopicPreferences)
+                session.query(TopicPreferences)
                 .filter(TopicPreferences.email == email)
                 .first()
             )
@@ -50,11 +50,9 @@ class TopicPreferencesRepository:
             for field, value in update_data.items():
                 setattr(db_item, field, value)
 
-            self._db.commit()
-            self._db.refresh(db_item)
+            session.commit()
+            session.refresh(db_item)
             return db_item
         except Exception as err:
-            self._db.rollback()
+            session.rollback()
             raise err
-        finally:
-            self._db.close()

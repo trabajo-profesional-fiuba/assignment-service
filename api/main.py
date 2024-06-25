@@ -13,8 +13,7 @@ from typing import List
 
 app = FastAPI(title="Assignment TopicPreferencesService Api")
 database = Database()
-session = database.setup()
-repository = TopicPreferencesRepository(session)
+repository = TopicPreferencesRepository(database)
 service = TopicPreferencesService(repository)
 controller = TopicPreferenceController(service)
 

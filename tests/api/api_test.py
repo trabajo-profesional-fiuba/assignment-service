@@ -14,7 +14,7 @@ class TestApi:
     def get_db(self):
         db = Database()
         try:
-            yield db.setup()
+            yield db.get_db()
         finally:
             db.engine.dispose()
 
@@ -24,8 +24,8 @@ class TestApi:
         Fixture to provide a FastAPI TestClient with a session dependency override.
         """
         db_instance = Database()
-        db_session = db_instance.setup()
-        db_instance.delete_all_records_from_table(db_session, TopicPreferences)
+        db_instance.create_tables()
+        db_instance.delete_all_records_from_table(TopicPreferences)
 
         def override_get_db():
             try:
@@ -39,7 +39,7 @@ class TestApi:
             yield c
 
         # Clean up after all tests are done
-        db_instance.delete_all_records_from_table(db_session, TopicPreferences)
+        db_instance.delete_all_records_from_table(TopicPreferences)
         db_instance.engine.dispose()
 
     @pytest.mark.integration
