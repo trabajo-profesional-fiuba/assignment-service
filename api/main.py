@@ -57,7 +57,7 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
 
 
 @app.put(
-    "/topic_preferences/{email}",
+    "/topic_preferences/{email_sender}",
     status_code=200,
     description="Update an existing topic preferences answer of email sender and\
         students from its group if it belongs to one.",
@@ -71,12 +71,12 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     },
 )
 async def update_topic_preferences(
-    email: str,
+    email_sender: str,
     topic_preferences_update: TopicPreferencesUpdatedItem,
 ):
     try:
         updated_items = controller.update_topic_preferences(
-            email, topic_preferences_update
+            email_sender, topic_preferences_update
         )
         return updated_items
     except StudentNotFound as err:

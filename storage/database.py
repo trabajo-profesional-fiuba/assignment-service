@@ -2,18 +2,7 @@ from sqlalchemy import create_engine, Column, String, DateTime, Index
 from sqlalchemy.orm import sessionmaker, declarative_base
 from contextlib import contextmanager
 import sqlalchemy.exc
-
-Base = declarative_base()
-
-
-class TopicPreferences(Base):
-    __tablename__ = "topic_preferences"
-
-    email = Column(String, primary_key=True, index=True)
-    group_id = Column(DateTime)
-    topic1 = Column(String)
-    topic2 = Column(String)
-    topic3 = Column(String)
+from storage.topic_preferences_table import TopicPreferences, Base
 
 
 class Database:

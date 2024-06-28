@@ -23,21 +23,21 @@ class TopicPreferenceController:
             dict_item = {
                 "email": item.email,
                 "group_id": item.group_id,
-                "topic1": item.topic1,
-                "topic2": item.topic2,
-                "topic3": item.topic3,
+                "topic_1": item.topic_1,
+                "topic_2": item.topic_2,
+                "topic_3": item.topic_3,
             }
             dict_items.append(dict_item)
         return dict_items
 
     def update_topic_preferences(
         self,
-        email: str,
+        email_sender: str,
         topic_preferences_update: TopicPreferencesUpdatedItem,
     ):
         try:
             updated_items = self._service.update_topic_preferences(
-                email, topic_preferences_update
+                email_sender, topic_preferences_update
             )
             formatted_items = self._format_items(updated_items)
             return formatted_items
