@@ -1,17 +1,22 @@
+import os
 from sqlalchemy import create_engine, Column, String, DateTime, Index
 from sqlalchemy.orm import sessionmaker, declarative_base
 from contextlib import contextmanager
 import sqlalchemy.exc
 from storage.topic_preferences_table import TopicPreferences, Base
+from dotenv import load_dotenv
 
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 class Database:
     """
     Database class that manages the database setup and sessions.
     """
 
-    def __init__(self, url: str):
-        self.engine = create_engine(url)
+    def __init__(self):
+        self.engine = create_engine(DATABASE_URL)
         self.SessionLocal = sessionmaker(
             autocommit=False, autoflush=False, bind=self.engine
         )

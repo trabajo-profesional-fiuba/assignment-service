@@ -1,4 +1,3 @@
-import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from api.topic_preferences_repository import TopicPreferencesRepository
@@ -12,18 +11,13 @@ from storage.database import Database
 from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from api.topic_preferences_controller import TopicPreferenceController
 from typing import List
-from dotenv import load_dotenv
-
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
 
 app = FastAPI(title="Assignment TopicPreferencesService Api")
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"]
 )
 
-database = Database(DATABASE_URL)
+database = Database()
 repository = TopicPreferencesRepository(database)
 service = TopicPreferencesService(repository)
 controller = TopicPreferenceController(service)
