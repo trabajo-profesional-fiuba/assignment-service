@@ -1,10 +1,14 @@
+import os
 from sqlalchemy import create_engine, Column, String, DateTime, Index
 from sqlalchemy.orm import sessionmaker, declarative_base
 from contextlib import contextmanager
 import sqlalchemy.exc
 from storage.topic_preferences_table import TopicPreferences, Base
+from dotenv import load_dotenv
 
-DATABASE_URL = DATABASE_URL="postgresql://myuser:mypassword@db:5432/mydatabase"
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
 
 class Database:
     """

@@ -1,5 +1,5 @@
 # Usa una imagen base de Python
-FROM python:3.11
+FROM python:3.11-slim
 
 # Instala Poetry
 RUN pip install poetry
