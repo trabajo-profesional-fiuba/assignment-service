@@ -6,4 +6,19 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app  # Para asegurar que los cambios locales se reflejen en el contenedor
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+
+networks:
+  default:
+    name: assignment_network
