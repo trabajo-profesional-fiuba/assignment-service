@@ -8,7 +8,7 @@ import src.exceptions as e
 
 
 class TutorPeriod:
-    def __init__(self, period: str):
+    def __init__(self, period: str, tutor = None):
         self._period = period
         self._available_dates = []
         self._as_tutor_dates = []
@@ -17,10 +17,11 @@ class TutorPeriod:
         self._groups = []
         self._topics = []
         self._is_evaluator = False
-        self._tutor = None
+        self._tutor = tutor
         self._capacity = 0
 
     # Getters
+
     @property
     def available_dates(self):
         return self._available_dates
@@ -52,6 +53,9 @@ class TutorPeriod:
     @property
     def capacity(self):
         return self._capacity
+
+    def period_name(self):
+        return self._period
 
     def is_evaluator(self):
         return self._is_evaluator
