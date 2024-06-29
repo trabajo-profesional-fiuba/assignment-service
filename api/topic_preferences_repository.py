@@ -3,6 +3,7 @@ from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from sqlalchemy.exc import IntegrityError
 from storage.database import TopicPreferences
 
+
 class TopicPreferencesRepository:
 
     def __init__(self, db):

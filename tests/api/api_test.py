@@ -6,30 +6,12 @@ from storage.database import Database, Base
 from storage.topic_preferences_table import TopicPreferences
 
 
-@pytest.fixture(scope="module")
-def db_session():
-    database = Database()
-    Base.metadata.create_all(bind=database.engine)
-    yield database.get_db()
-    Base.metadata.drop_all(bind=database.engine)
-
-@pytest.fixture(scope="module")
-def test_app(db_session):
-    def override_get_db():
-        try:
-            yield db_session
-        finally:
-            db_session.close()
-
-    app.dependency_overrides[Database().get_db] = override_get_db
-
-    with TestClient(app) as client:
-        yield client
-
-    # Optional: Perform any cleanup after all tests using the app are done
-    # Such as closing any connections or clearing any state in the app
-
 class TestApi:
+    @pytest.fixture(scope="module")
+    def test_app(db_session):
+        with TestClient(app) as client:
+            yield client
+
     @pytest.mark.integration
     def test_root(self, test_app):
         response = test_app.get("/")
@@ -37,7 +19,7 @@ class TestApi:
         assert response.json() == "Ping"
 
     @pytest.mark.integration
-    def test_add_topic_preferences_with_completed(self, test_app, db_session):
+    def test_add_topic_preferences_with_completed(self, test_app):
         item = {
             "email_sender": "test1@example.com",
             "email_student_2": "test2@example.com",
@@ -85,7 +67,7 @@ class TestApi:
         assert response.json() == expected_response
 
     @pytest.mark.integration
-    def test_add_duplicate_topic_preferences(self, test_app, db_session):
+    def test_add_duplicate_topic_preferences(self, test_app):
         item = {
             "email_sender": "test1@example.com",
             "email_student_2": "test2@example.com",
@@ -102,7 +84,7 @@ class TestApi:
         assert response.json() == {"detail": "Topic preference already exists."}
 
     @pytest.mark.integration
-    def test_recover_from_duplicate_exception(self, test_app, db_session):
+    def test_recover_from_duplicate_exception(self, test_app):
         item = {
             "email_sender": "test1@example.com",
             "email_student_2": "test2@example.com",
@@ -133,7 +115,7 @@ class TestApi:
         assert response.status_code == 201
 
     @pytest.mark.integration
-    def test_update_topic_preferences(self, test_app, db_session):
+    def test_update_topic_preferences(self, test_app):
         updated_item = {
             "email_student_2": "test2@example.com",
             "email_student_3": "test3@example.com",
@@ -144,7 +126,9 @@ class TestApi:
             "topic_3": "Topic 3",
         }
 
-        response = test_app.put("/topic_preferences/test1@example.com", json=updated_item)
+        response = test_app.put(
+            "/topic_preferences/test1@example.com", json=updated_item
+        )
         assert response.status_code == 200
 
         expected_response = [
@@ -180,7 +164,7 @@ class TestApi:
         assert response.json() == expected_response
 
     @pytest.mark.integration
-    def test_update_topic_preferences_when_user_not_found(self, test_app, db_session):
+    def test_update_topic_preferences_when_user_not_found(self, test_app):
         updated_item = {
             "email_student_2": "test2@example.com",
             "email_student_3": "test3@example.com",
@@ -191,12 +175,14 @@ class TestApi:
             "topic_3": "Topic 3",
         }
 
-        response = test_app.put("/topic_preferences/test100@example.com", json=updated_item)
+        response = test_app.put(
+            "/topic_preferences/test100@example.com", json=updated_item
+        )
         assert response.status_code == 409
         assert response.json() == {"detail": "Student 'test100@example.com' not found."}
 
     @pytest.mark.integration
-    def test_update_topic_preferences_when_student_from_not_found(self, test_app, db_session):
+    def test_update_topic_preferences_when_student_from_not_found(self, test_app):
         updated_item = {
             "email_student_2": "test100@example.com",
             "email_student_3": "test3@example.com",
@@ -207,6 +193,8 @@ class TestApi:
             "topic_3": "Topic 3",
         }
 
-        response = test_app.put("/topic_preferences/test100@example.com", json=updated_item)
+        response = test_app.put(
+            "/topic_preferences/test100@example.com", json=updated_item
+        )
         assert response.status_code == 409
         assert response.json() == {"detail": "Student 'test100@example.com' not found."}
