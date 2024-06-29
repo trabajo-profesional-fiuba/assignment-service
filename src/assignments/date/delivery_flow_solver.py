@@ -66,7 +66,7 @@ class DeliveryFlowSolver():
             week, evaluator_id = clean_results[f"{GROUP_ID}-{group.id()}"]
             evaluators_dates = self._get_evaluator_dates(evaluator_id)
             group.filter_dates(evaluators_dates)
-            for date in group.available_dates():
+            for date in group.available_dates:
                 if date.week == week:
                     date_label = date.label()
                     cost_date = group.cost_of_date(date)
@@ -102,7 +102,7 @@ class DeliveryFlowSolver():
         groups = []
         for group in self._groups:
             if group.id() not in groups_ids:
-                group_dates = list(d.label() for d in group.available_dates())
+                group_dates = list(d.label() for d in group.available_dates)
                 weeks_dates = list(
                     filter(lambda x: x.split("-")[0] == str(week), dates)
                 )

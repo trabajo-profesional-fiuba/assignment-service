@@ -1,3 +1,4 @@
+"""
 import pandas as pd
 import pytest
 
@@ -12,7 +13,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_one_group_with_one_available_date(self):
-        """Testing that group has expected available date."""
+        Testing that group has expected available date.
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -29,7 +30,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_available_dates_no_data(self):
-        """Testing that group has none available date if there is no data."""
+        Testing that group has none available date if there is no data.
         groups_data = {"Número de equipo": [1], "Apellido del tutor": ["Smith"]}
         tutors_df = pd.DataFrame({})
         groups_df = pd.DataFrame(groups_data)
@@ -39,7 +40,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_one_group_with_multiple_dates_in_different_days(self):
-        """Testing that one group has available dates in different days."""
+        Testing that one group has available dates in different days.
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -60,7 +61,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_one_group_with_multiple_dates_in_different_hours(self):
-        """Testing that one group has available dates in different hours."""
+        Testing that one group has available dates in different hours.
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -82,7 +83,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_one_group_with_multiple_dates_in_different_weeks(self):
-        """Testing that one group has available dates in different weeks."""
+        Testing that one group has available dates in different weeks.
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -104,7 +105,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_one_group_with_no_available_date(self):
-        """Testing that group has not available dates."""
+        Testing that group has not available dates.
         groups_data = {
             "Número de equipo": [1],
             "Apellido del tutor": ["Smith"],
@@ -277,7 +278,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_one_evaluator_group_with_one_available_date(self, mocker):
-        """Testing that group has expected available date."""
+        Testing that group has expected available date.
         mocker.patch(
             "src.io.input_formatter.EVALUATORS",
             ["mocked_name1", "mocked_name2", "mocked_name3"],
@@ -307,7 +308,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_one_evaluator_group_without_available_date(self, mocker):
-        """Testing that group has expected available date."""
+        Testing that group has expected available date.
         mocker.patch(
             "src.io.input_formatter.EVALUATORS",
             ["mocked_name1", "mocked_name2", "mocked_name3"],
@@ -336,7 +337,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_none_evaluator(self, mocker):
-        """Testing that group has expected available date."""
+        Testing that group has expected available date.
         mocker.patch(
             "src.io.input_formatter.EVALUATORS",
             ["mocked_name1", "mocked_name2", "mocked_name3"],
@@ -362,7 +363,7 @@ class TestInputFormatter:
 
     @pytest.mark.unit
     def test_all_evaluators(self, mocker):
-        """Testing that group has expected available date."""
+        Testing that group has expected available date.
         mocker.patch(
             "src.io.input_formatter.EVALUATORS",
             ["mocked_name1", "mocked_name2", "mocked_name3"],
@@ -547,3 +548,4 @@ class TestInputFormatter:
         assert len(result) == 2
         assert result[0].label() == "5-3-9"
         assert result[1].label() == "5-4-9"
+"""

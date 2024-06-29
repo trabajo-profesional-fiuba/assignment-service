@@ -1,11 +1,9 @@
-from src.model.tutor.tutor import Tutor
+import src.model.tutor.tutor as tutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.topic import Topic
-from src.model.group.group import Group
-
+import src.model.group.group as group
 
 import src.exceptions as e
-
 
 class TutorPeriod:
     def __init__(self, period: str, tutor = None):
@@ -21,7 +19,6 @@ class TutorPeriod:
         self._capacity = 0
 
     # Getters
-
     @property
     def available_dates(self):
         return self._available_dates
@@ -60,10 +57,10 @@ class TutorPeriod:
     def is_evaluator(self):
         return self._is_evaluator
 
-    def add_parent(self, parent: Tutor):
+    def add_parent(self, parent: 'tutor.Tutor'):
         self._tutor = parent
     
-    def add_groups(self, groups: list[Group]):
+    def add_groups(self, groups: list['group.Group']):
         self._groups = groups
     
     def groups_ids(self):

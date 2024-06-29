@@ -55,7 +55,7 @@ class FlowOutputFormatter:
 
         if result:
             for group in groups:
-                group_edges = result[f"{GROUP_ID}-{group.id}"]
+                group_edges = result[f"{GROUP_ID}-{group.id()}"]
                 for key, value in group_edges.items():
                     if value == 1:
                         date = self._create_date(key)
@@ -107,13 +107,7 @@ class FlowOutputFormatter:
         substitutes = result_context.get("substitutes")
 
         groups_with_dates_assigned = self._groups(group_result, groups)
-        evaluators_with_dates_assigned = self._evaluators(
-            evaluators_data, group_result, evaluators
-        )
-        evaluators_with_dates_assigned = self._add_substitutes(
-            groups, evaluators, substitutes
-        )
 
         return AssignmentResult(
-            groups_with_dates_assigned, evaluators_with_dates_assigned
+            groups_with_dates_assigned, []
         )

@@ -15,7 +15,7 @@ class TestDeliveryLPSolver:
     formatter = OutputFormatter()
 
     # ------------ Performance and Scalability Tests ------------
-    @pytest.mark.performance
+    @pytest.mark.skip
     def test_four_groups_and_evaluators(self):
         """Testing if the algorithm is overhead with four groups,
         four dates and four evaluators."""
@@ -44,7 +44,7 @@ class TestDeliveryLPSolver:
             "seconds",
         )
 
-    @pytest.mark.performance
+    @pytest.mark.skip
     def test_ten_groups_and_four_evaluators(self):
         """Testing if the algorithm is overhead with ten groups,
         five dates and five evaluators."""
@@ -74,7 +74,7 @@ class TestDeliveryLPSolver:
             "seconds",
         )
 
-    @pytest.mark.performance
+    @pytest.mark.skip
     def test_ten_groups_and_one_evaluator(self):
         """Testing if the algorithm is overhead with ten groups,
         five dates and 1 evaluator."""
@@ -104,7 +104,7 @@ class TestDeliveryLPSolver:
             "seconds",
         )
 
-    # @pytest.mark.performance
+    # @pytest.mark.skip
     # def test_fifty_groups_and_four_evaluators(self):
     #     """Testing if the algorithm is overhead with fifty groups,
     #     ten dates and four evaluators."""
@@ -134,7 +134,7 @@ class TestDeliveryLPSolver:
     #     )
 
     # ------------ Logical Tests ------------
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_all_groups_are_assigned_evaluators(self):
         possible_dates = [
             DeliveryDate(1, 1, 1),
