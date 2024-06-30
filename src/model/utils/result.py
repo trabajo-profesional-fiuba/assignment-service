@@ -1,4 +1,4 @@
-from src.model.group.group import Group
+from src.model.group import Group
 
 
 class AssignmentResult:

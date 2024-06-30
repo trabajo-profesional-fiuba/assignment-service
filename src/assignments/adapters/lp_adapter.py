@@ -1,5 +1,5 @@
 from src.model.utils.result import AssignmentResult
-from src.model.group.group import Group
+from src.model.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.period import TutorPeriod
 from src.assignments.adapters.result_context import ResultContext

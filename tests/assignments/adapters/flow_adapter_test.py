@@ -3,7 +3,7 @@ import pytest
 from src.assignments.adapters.flow_adapter import FlowAdapter
 from src.assignments.adapters.result_context import ResultContext
 from src.model.period import TutorPeriod
-from src.model.group.group import Group
+from src.model.group import Group
 from src.model.utils.result import AssignmentResult
 from src.exceptions import WrongDateFormat
 from src.model.utils.delivery_date import DeliveryDate

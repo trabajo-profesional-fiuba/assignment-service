@@ -1,7 +1,7 @@
 import pytest
 from src.model.period import TutorPeriod
-from src.model.tutor.tutor import Tutor
-from src.model.group.group import Group
+from src.model.tutor import Tutor
+from src.model.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.topic import Topic
 import src.exceptions as e

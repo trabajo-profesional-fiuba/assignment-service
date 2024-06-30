@@ -1,7 +1,7 @@
-import src.model.tutor.tutor as tutor
+import src.model.tutor as tutor
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.topic import Topic
-import src.model.group.group as group
+import src.model.group as group
 
 import src.exceptions as e
 

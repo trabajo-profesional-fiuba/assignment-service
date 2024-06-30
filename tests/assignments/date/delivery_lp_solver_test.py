@@ -1,13 +1,13 @@
+"""
 import time
 import pytest
 
 from src.assignments.date.lp.delivery_lp_solver import DeliveryLPSolver
 from src.assignments.adapters.result_adapter import ResultAdapter
 
-from src.model.group.group import Group
-from src.model.tutor.tutor import Tutor
+from src.model.group import Group
+from src.model.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evaluator import Evaluator
 from tests.assignments.date.helper import TestLPHelper
 
 
@@ -18,8 +18,8 @@ class TestDeliveryLPSolver:
     # ------------ Performance and Scalability Tests ------------
     @pytest.mark.skip
     def test_four_groups_and_evaluators(self):
-        """Testing if the algorithm is overhead with four groups,
-        four dates and four evaluators."""
+        Testing if the algorithm is overhead with four groups,
+        four dates and four evaluators.
         num_groups = 4
         num_evaluators = 4
         num_tutors = 4
@@ -47,8 +47,8 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.skip
     def test_ten_groups_and_four_evaluators(self):
-        """Testing if the algorithm is overhead with ten groups,
-        five dates and five evaluators."""
+        Testing if the algorithm is overhead with ten groups,
+        five dates and five evaluators.
         num_groups = 10
         num_evaluators = 5
         num_tutors = 5
@@ -77,8 +77,8 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.skip
     def test_ten_groups_and_one_evaluator(self):
-        """Testing if the algorithm is overhead with ten groups,
-        five dates and 1 evaluator."""
+        Testing if the algorithm is overhead with ten groups,
+        five dates and 1 evaluator.
         num_groups = 10
         num_evaluators = 1
         num_tutors = 5
@@ -107,8 +107,8 @@ class TestDeliveryLPSolver:
 
     # @pytest.mark.skip
     # def test_fifty_groups_and_four_evaluators(self):
-    #     """Testing if the algorithm is overhead with fifty groups,
-    #     ten dates and four evaluators."""
+    #     Testing if the algorithm is overhead with fifty groups,
+    #     ten dates and four evaluators.
     #     num_groups = 50
     #     num_evaluators = 4
     #     num_tutors = 6
@@ -259,3 +259,4 @@ class TestDeliveryLPSolver:
 
         for key, value in evaluators_assignment:
             assert value <= 5
+"""

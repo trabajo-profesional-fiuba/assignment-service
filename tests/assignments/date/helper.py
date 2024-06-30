@@ -1,9 +1,8 @@
 """Module providing helpers function to create different use cases for testing."""
 
-from src.model.group.group import Group
-from src.model.tutor.tutor import Tutor
+from src.model.group import Group
+from src.model.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evaluator import Evaluator
 
 
 class TestLPHelper:
@@ -64,20 +63,20 @@ class TestLPHelper:
             tutors.append(tutor)
         return tutors
 
-    def create_evaluators(self, num_tutors: int, available_dates: list):
-        """
-        Creates a list of evaluators.
-
-        Args:
-            - num_evaluators: number of evaluators to create.
-            - available_dates: dates where the tutor is available
-
-        Returns: a list of evaluators with their with their ids and available dates.
-        """
-        return [
-            Evaluator(
-                i,
-                available_dates,
-            )
-            for i in range(10, num_tutors + 10)
-        ]
+#    def create_evaluators(self, num_tutors: int, available_dates: list):
+#        """
+#        Creates a list of evaluators.
+#
+#        Args:
+#            - num_evaluators: number of evaluators to create.
+#            - available_dates: dates where the tutor is available
+#
+#        Returns: a list of evaluators with their with their ids and available dates.
+#        """
+#        return [
+#            Evaluator(
+#                i,
+#                available_dates,
+#            )
+#            for i in range(10, num_tutors + 10)
+#        ]

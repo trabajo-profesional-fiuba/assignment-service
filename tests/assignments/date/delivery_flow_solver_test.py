@@ -2,10 +2,9 @@ import pytest
 import networkx as nx
 from src.assignments.date.delivery_flow_solver import DeliveryFlowSolver
 from src.assignments.adapters.result_adapter import ResultAdapter
-from src.model.group.group import Group
+from src.model.group import Group
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evaluator import Evaluator
-from src.model.tutor.tutor import Tutor
+from src.model.tutor import Tutor
 from src.model.period import TutorPeriod
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 
