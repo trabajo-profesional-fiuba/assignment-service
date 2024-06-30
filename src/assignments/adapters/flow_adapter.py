@@ -34,6 +34,24 @@ class FlowAdapter:
             f"Evaluator with id: {id} was not found in the current evaluator list"
         )
 
+    def _adapt_groups_and_evaluators(self,groups, evaluators, g_info, e_info ):
+        results = []
+        if g_info:
+            for group in groups:
+                group_key = f"{GROUP_ID}-{group.id()}"
+                group_edges = g_info[group_key]
+                evaluator_id = e_info[group_key][1]
+                for key, value in group_edges.items():
+                    if value == 1:
+                        date = self._create_date(key)
+                        evaluator = self._find_evaluator(evaluators, evaluator_id)
+
+                        group.assign_date(date)
+                        evaluator.evaluate_date(date)
+                        results.append((group.id(), evaluator_id, date.label()))
+        
+        return results
+
     def adapt_results(self, result_context) -> AssignmentResult:
         """
         Adapts the flow algorithm result into a standardized structure.
@@ -50,23 +68,9 @@ class FlowAdapter:
         evaluators_information = result_context.get("evaluators_data")
         evaluators = result_context.get("evaluators")
 
-        results = []
-
         if groups is None or evaluators is None:
             return []
 
-        if groups_information:
-            for group in groups:
-                group_key = f"{GROUP_ID}-{group.id()}"
-                group_edges = groups_information[group_key]
-                evaluator_id = evaluators_information[group_key][1]
-                for key, value in group_edges.items():
-                    if value == 1:
-                        date = self._create_date(key)
-                        evaluator = self._find_evaluator(evaluators, evaluator_id)
-
-                        group.assign_date(date)
-                        evaluator.evaluate_date(date)
-                        results.append((group.id(), evaluator_id, key))
+        results = self._adapt_groups_and_evaluators(groups,evaluators,groups_information,evaluators_information)
 
         return AssignmentResult(results)
