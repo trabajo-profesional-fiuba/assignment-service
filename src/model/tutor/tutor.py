@@ -29,19 +29,18 @@ class Tutor:
         return self._email
 
     @property
-    def periods(self) -> dict[str, 'period.TutorPeriod']:
+    def periods(self) -> dict[str, "period.TutorPeriod"]:
         return self._periods
 
-    def add_period(self, period: 'period.TutorPeriod'):
+    def add_period(self, period: "period.TutorPeriod"):
         period_key = period.period_name()
         if period_key in self._periods:
             raise e.PeriodAlreadyExists(f"{period_key} already in tutor's periods")
-        
+
         self._periods[period_key] = period
-    
+
     def get_period(self, period_name: str):
         if period_name not in self._periods:
             raise e.PeriodNotFound(f"{period_name} is not part of tutor's periods")
-        
-        return self._periods.get(period_name)
 
+        return self._periods.get(period_name)

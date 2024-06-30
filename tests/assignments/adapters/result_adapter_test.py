@@ -22,7 +22,7 @@ class TestResultAdapter:
         mocker.patch.object(
             FlowAdapter,
             "adapt_results",
-            return_value=AssignmentResult([('group-1','evaluator-1','date-1-2-3')]),
+            return_value=AssignmentResult([("group-1", "evaluator-1", "date-1-2-3")]),
         )
 
         formatted_result = formatter.adapt_results(context)
@@ -36,7 +36,7 @@ class TestResultAdapter:
         mocker.patch.object(
             LPAdapter,
             "adapt_results",
-            return_value=AssignmentResult([('group-1','evaluator-1','date-1-2-3')]),
+            return_value=AssignmentResult([("group-1", "evaluator-1", "date-1-2-3")]),
         )
 
         formatted_result = formatter.adapt_results(context)

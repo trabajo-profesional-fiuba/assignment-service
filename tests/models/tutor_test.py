@@ -18,26 +18,26 @@ class TestTutor:
         assert result == 0
 
     @pytest.mark.unit
-    def test_tutor_can_add_periods(self): 
+    def test_tutor_can_add_periods(self):
         tutor = Tutor(1, "test@fi.uba.ar", "Juan Perez")
         period = TutorPeriod("1C2024", tutor=tutor)
         tutor.add_period(period)
 
         result = len(tutor.periods)
-        
+
         assert result == 1
-    
+
     @pytest.mark.unit
-    def test_tutor_raise_error_if_duplicates_periods(self): 
+    def test_tutor_raise_error_if_duplicates_periods(self):
         tutor = Tutor(1, "test@fi.uba.ar", "Juan Perez")
         period = TutorPeriod("1C2024", tutor=tutor)
         tutor.add_period(period)
-        
+
         with pytest.raises(e.PeriodAlreadyExists) as ex:
             tutor.add_period(period)
 
     @pytest.mark.unit
-    def test_tutor_can_get_specific_period(self): 
+    def test_tutor_can_get_specific_period(self):
         tutor = Tutor(1, "test@fi.uba.ar", "Juan Perez")
         period1 = TutorPeriod("1C2024", tutor=tutor)
         period2 = TutorPeriod("2C2024", tutor=tutor)
@@ -48,14 +48,12 @@ class TestTutor:
         tutor.add_period(period3)
 
         period = tutor.get_period("1C2024")
-        
+
         assert period.period_name() == "1C2024"
 
-
     @pytest.mark.unit
-    def test_tutor_raise_error_if_tutor_has_not_period(self): 
+    def test_tutor_raise_error_if_tutor_has_not_period(self):
         tutor = Tutor(1, "test@fi.uba.ar", "Juan Perez")
-        
+
         with pytest.raises(e.PeriodNotFound) as ex:
             tutor.get_period("1C2024")
-            

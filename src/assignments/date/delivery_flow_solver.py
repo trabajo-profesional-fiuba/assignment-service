@@ -1,27 +1,30 @@
 import networkx as nx
-#from src.assignments.date.delivery_solver import DeliverySolver
+
+# from src.assignments.date.delivery_solver import DeliverySolver
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 from src.model.period import TutorPeriod
 
-class DeliveryFlowSolver():
 
-    def __init__(self, tutor_periods: list[TutorPeriod] = [], adapter = None, available_dates = []):
+class DeliveryFlowSolver:
+
+    def __init__(
+        self, tutor_periods: list[TutorPeriod] = [], adapter=None, available_dates=[]
+    ):
         self._evaluators = self.create_evaluators(tutor_periods)
         self._tutors = tutor_periods
         self._groups = self.get_all_groups(tutor_periods)
         self._available_dates = available_dates
         self._adapter = adapter
 
-
-    def create_evaluators(self, tutor_periods: list[TutorPeriod] = [] ):
+    def create_evaluators(self, tutor_periods: list[TutorPeriod] = []):
         evaluators = list(filter(lambda x: x.is_evaluator(), tutor_periods))
         return evaluators
-    
-    def get_all_groups(self, tutor_periods: list[TutorPeriod] = [] ):
+
+    def get_all_groups(self, tutor_periods: list[TutorPeriod] = []):
         groups = []
         for t in tutor_periods:
             groups += t.groups
-        
+
         return groups
 
     # Common methods
@@ -34,7 +37,11 @@ class DeliveryFlowSolver():
         """
         edges = []
         for node in nodes:
-            edge = ("s", f"{prefix_node}-{node.id()}", {"capacity": capacity, "cost": 1})
+            edge = (
+                "s",
+                f"{prefix_node}-{node.id()}",
+                {"capacity": capacity, "cost": 1},
+            )
             edges.append(edge)
 
         return edges

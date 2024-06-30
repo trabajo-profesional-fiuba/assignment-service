@@ -1,11 +1,8 @@
-
 import src.assignments.adapters.result_context as result_context
 from src.assignments.adapters.exceptions import ResultFormatNotFound
 from src.model.utils.result import AssignmentResult
 from src.assignments.adapters.flow_adapter import FlowAdapter
 from src.assignments.adapters.lp_adapter import LPAdapter
-
-
 
 
 class ResultAdapter:
@@ -17,16 +14,16 @@ class ResultAdapter:
     uses the appropriate adapter based on the type of result.
     """
 
-    def _build_adapter(
-        self, result_type: str
-    ):
+    def _build_adapter(self, result_type: str):
         ADAPTERS = {"flow": FlowAdapter(), "linear": LPAdapter()}
         try:
             return ADAPTERS.get(result_type)
         except:
             raise ResultFormatNotFound("Adapter type not found")
- 
-    def adapt_results(self, result_context: 'result_context.ResultContext') -> AssignmentResult:
+
+    def adapt_results(
+        self, result_context: "result_context.ResultContext"
+    ) -> AssignmentResult:
         """
         Adapts the algorithm result into a standardized structure.
 

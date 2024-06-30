@@ -9,12 +9,11 @@ from src.exceptions import WrongDateFormat
 from src.model.utils.delivery_date import DeliveryDate
 
 
-
-
 class TestFlowAdapter:
     """
     Test cases for the `FlowAdapter` class.
     """
+
     def create_groups(self, number, dates):
         groups = []
         for i in range(1, (number + 1)):
@@ -43,7 +42,7 @@ class TestFlowAdapter:
             assert "1-1-1" == formatter._create_date("1-1-1").label()
 
     @pytest.mark.unit
-    def test_adapt_results(self,mocker):
+    def test_adapt_results(self, mocker):
         """
         Tests adapt_results method for assigning delivery dates to evaluators based on the
         flow solver result.

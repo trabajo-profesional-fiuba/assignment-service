@@ -6,8 +6,6 @@ from src.model.utils.result import AssignmentResult
 from src.model.utils.delivery_date import DeliveryDate
 
 
-
-
 class TestLPAdapter:
 
     helper = TestLPHelper()

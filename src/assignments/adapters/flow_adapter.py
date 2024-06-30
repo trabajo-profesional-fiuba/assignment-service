@@ -30,17 +30,19 @@ class FlowAdapter:
             if evaluator.id() == id:
                 return evaluator
 
-        return EvaluatorNotFound(f"Evaluator with id: {id} was not found in the current evaluator list")
+        return EvaluatorNotFound(
+            f"Evaluator with id: {id} was not found in the current evaluator list"
+        )
 
     def adapt_results(self, result_context) -> AssignmentResult:
         """
-            Adapts the flow algorithm result into a standardized structure.
+        Adapts the flow algorithm result into a standardized structure.
 
-            Args:
-                result_context
+        Args:
+            result_context
 
-            Returns:
-                AssignmentResult instance.
+        Returns:
+            AssignmentResult instance.
         """
         groups_information = result_context.get("result")
         groups = result_context.get("groups")

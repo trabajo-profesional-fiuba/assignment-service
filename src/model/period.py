@@ -5,8 +5,9 @@ import src.model.group.group as group
 
 import src.exceptions as e
 
+
 class TutorPeriod:
-    def __init__(self, period: str, tutor = None):
+    def __init__(self, period: str, tutor=None):
         self._period = period
         self._available_dates = []
         self._as_tutor_dates = []
@@ -57,12 +58,12 @@ class TutorPeriod:
     def is_evaluator(self):
         return self._is_evaluator
 
-    def add_parent(self, parent: 'tutor.Tutor'):
+    def add_parent(self, parent: "tutor.Tutor"):
         self._tutor = parent
-    
-    def add_groups(self, groups: list['group.Group']):
+
+    def add_groups(self, groups: list["group.Group"]):
         self._groups = groups
-    
+
     def groups_ids(self):
         return [g.id() for g in self._groups]
 
@@ -70,7 +71,7 @@ class TutorPeriod:
         if self._tutor:
             return self._tutor.id
 
-        raise e.PeriodWithoutParentError('The period must have a parent')
+        raise e.PeriodWithoutParentError("The period must have a parent")
 
     def make_evaluator(self):
         self._is_evaluator = True
@@ -103,5 +104,5 @@ class TutorPeriod:
             available_date_label = av.label()
             if available_date_label in labels:
                 mutual_dates.append(available_date_label)
-        
+
         return mutual_dates

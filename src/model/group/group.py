@@ -23,7 +23,7 @@ class Group:
     @property
     def assigned_date(self):
         return self._assigned_date
-    
+
     @property
     def available_dates(self):
         return self._available_dates
