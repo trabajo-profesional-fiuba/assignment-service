@@ -1,18 +1,18 @@
 from src.model.utils.result import AssignmentResult
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evaluator import Evaluator
-from src.io.output.result_context import ResultContext
+from src.model.period import TutorPeriod
+from src.assignments.adapters.result_context import ResultContext
 
 
-class LPOutputFormatter:
+class LPAdapter:
     """
     Formats the output of a linear programming algorithm into a standardized structure.
     """
 
     def __init__(self) -> None:
         """
-        Initializes a `LPOutputFormatter` object.
+        Initializes a `LPAdapter` object.
         """
         pass
 
@@ -35,8 +35,8 @@ class LPOutputFormatter:
         return groups
 
     def _evaluators(
-        self, result: list[str], evaluators: list[Evaluator]
-    ) -> list[Evaluator]:
+        self, result: list[str], evaluators: list[TutorPeriod]
+    ) -> list[TutorPeriod]:
         for evaluator in evaluators:
             for assignment in result:
                 # get number_id of evaluator with evaluator-number_id as evaluator id
@@ -46,7 +46,7 @@ class LPOutputFormatter:
                     evaluator.assign_date(date)
         return evaluators
 
-    def get_result(self, result_context: ResultContext) -> AssignmentResult:
+    def adapt_results(self, result_context: ResultContext) -> AssignmentResult:
         """
         Formats the simplex algorithm result into a standardized structure.
 

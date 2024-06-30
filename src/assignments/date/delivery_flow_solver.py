@@ -5,12 +5,12 @@ from src.model.period import TutorPeriod
 
 class DeliveryFlowSolver():
 
-    def __init__(self, tutor_periods: list[TutorPeriod] = [], formatter = None, available_dates = []):
+    def __init__(self, tutor_periods: list[TutorPeriod] = [], adapter = None, available_dates = []):
         self._evaluators = self.create_evaluators(tutor_periods)
         self._tutors = tutor_periods
         self._groups = self.get_all_groups(tutor_periods)
         self._available_dates = available_dates
-        self._formatter = formatter
+        self._adapter = adapter
 
 
     def create_evaluators(self, tutor_periods: list[TutorPeriod] = [] ):
@@ -286,7 +286,7 @@ class DeliveryFlowSolver():
 
         # substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
 
-        # assignment_result = self._formatter.format_result(
+        # assignment_result = self._adapter.format_result(
         #    max_flow_min_cost_groups, self._groups, self._evaluators
         # )
 

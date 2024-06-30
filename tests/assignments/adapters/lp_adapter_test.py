@@ -1,10 +1,14 @@
 import pytest
-from src.io.output.lp_formatter import LPOutputFormatter
+from src.assignments.adapters.lp_adapter import LPAdapter
 from tests.assignments.date.helper import TestLPHelper
-from src.io.output.result_context import ResultContext
+from src.assignments.adapters.result_context import ResultContext
+from src.model.utils.result import AssignmentResult
+from src.model.utils.delivery_date import DeliveryDate
 
 
-class TestLPOutputFormatter:
+
+
+class TestLPAdapter:
 
     helper = TestLPHelper()
 
@@ -26,7 +30,7 @@ class TestLPOutputFormatter:
             type="linear", result=lp_solver_result, groups=groups, evaluators=[]
         )
 
-        formatter = LPOutputFormatter()
+        formatter = LPAdapter()
 
         # Act
         result = formatter.get_result(result_context)
@@ -53,7 +57,7 @@ class TestLPOutputFormatter:
             type="linear", result=lp_solver_result, groups=[], evaluators=evaluators
         )
 
-        formatter = LPOutputFormatter()
+        formatter = LPAdapter()
 
         # Act
         result = formatter.get_result(result_context)
@@ -75,7 +79,7 @@ class TestLPOutputFormatter:
             type="linear", result=[], groups=groups, evaluators=[]
         )
 
-        formatter = LPOutputFormatter()
+        formatter = LPAdapter()
 
         # Act
         result = formatter.get_result(result_context)
@@ -103,7 +107,7 @@ class TestLPOutputFormatter:
         result_context = ResultContext(
             type="linear", result=lp_solver_result, groups=[], evaluators=evaluators
         )
-        formatter = LPOutputFormatter()
+        formatter = LPAdapter()
 
         # Act
         result = formatter.get_result(result_context)
@@ -130,7 +134,7 @@ class TestLPOutputFormatter:
         groups = self.helper.create_groups(num_groups, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
 
-        formatter = LPOutputFormatter()
+        formatter = LPAdapter()
         result_context = ResultContext(
             type="linear", result=lp_solver_result, groups=groups, evaluators=[]
         )

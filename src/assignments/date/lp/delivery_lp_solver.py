@@ -1,7 +1,7 @@
 from src.assignments.date.delivery_solver import DeliverySolver
 from src.assignments.date.lp.delivery_tutors_lp_solver import DeliveryTutorsLPSolver
 from src.assignments.date.lp.delivery_evaluators_lp_solver import DateEvaluatorsLPSolver
-from src.io.output.result_context import ResultContext
+from src.assignments.adapters.result_context import ResultContext
 
 
 class DeliveryLPSolver(DeliverySolver):

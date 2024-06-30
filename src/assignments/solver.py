@@ -1,11 +1,11 @@
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
-from src.io.output.output_formatter import OutputFormatter
+from src.assignments.adapters.result_adapter import ResultAdapter
 
 
 class Solver:
     def __init__(
-        self, groups: list[Group], tutors: list[Tutor], formatter: OutputFormatter
+        self, groups: list[Group], tutors: list[Tutor], formatter: ResultAdapter
     ):
         self._groups = groups
         self._tutors = tutors

@@ -2,7 +2,8 @@ import time
 import pytest
 
 from src.assignments.date.lp.delivery_lp_solver import DeliveryLPSolver
-from src.io.output.output_formatter import OutputFormatter
+from src.assignments.adapters.result_adapter import ResultAdapter
+
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
@@ -12,7 +13,7 @@ from tests.assignments.date.helper import TestLPHelper
 
 class TestDeliveryLPSolver:
     helper = TestLPHelper()
-    formatter = OutputFormatter()
+    formatter = ResultAdapter()
 
     # ------------ Performance and Scalability Tests ------------
     @pytest.mark.skip

@@ -2,7 +2,7 @@ from solver import Solver
 from src.model.group.group import Group
 from src.model.tutor.tutor import Tutor
 from src.model.utils.topic import Topic
-from src.io.output.output_formatter import OutputFormatter
+from src.assignments.adapters.result_adapter import ResultAdapter
 
 
 class GroupTutorSolver(Solver):
@@ -11,7 +11,7 @@ class GroupTutorSolver(Solver):
         self,
         groups: list[Group],
         tutors: list[Tutor],
-        formatter: OutputFormatter,
+        formatter: ResultAdapter,
         topics: list[Topic],
     ):
         super().__init__(groups, tutors, formatter)

@@ -1,7 +1,7 @@
 import pytest
 import networkx as nx
 from src.assignments.date.delivery_flow_solver import DeliveryFlowSolver
-from src.io.output.output_formatter import OutputFormatter
+from src.assignments.adapters.result_adapter import ResultAdapter
 from src.model.group.group import Group
 from src.model.utils.delivery_date import DeliveryDate
 from src.model.utils.evaluator import Evaluator
