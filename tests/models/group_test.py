@@ -1,6 +1,8 @@
 import pytest
 
 from src.model.group import Group
+from src.model.tutor import Tutor
+from src.model.period import TutorPeriod
 from src.model.utils.topic import Topic
 from src.model.utils.delivery_date import DeliveryDate
 
@@ -13,6 +15,18 @@ class TestGroup:
         
         assert group.id() == 1
         assert group.tutor is None
+
+    @pytest.mark.unit
+    def test_group_can_be_assigned_to_a_tutor(self):
+        period = TutorPeriod("1C2024")
+        tutor = Tutor(1, "fake@fi.uba.ar", "Juan")
+        tutor.add_period(period)
+        group = Group(1)
+
+        period.add_groups([group])
+        group.assign_tutor(tutor)
+        
+        assert group.is_tutored_by(1) is True
     
     @pytest.mark.unit
     def test_group_can_have_topics(self):

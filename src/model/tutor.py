@@ -38,9 +38,16 @@ class Tutor:
             raise e.PeriodAlreadyExists(f"{period_key} already in tutor's periods")
 
         self._periods[period_key] = period
+        period.add_parent(self)
 
     def get_period(self, period_name: str):
         if period_name not in self._periods:
             raise e.PeriodNotFound(f"{period_name} is not part of tutor's periods")
 
         return self._periods.get(period_name)
+    
+    def add_groups_to_period(self, groups, period_name):
+        period = self.get_period(period_name)
+        for g in groups:
+            g.assign_tutor(self)
+        period.add_groups(groups)
