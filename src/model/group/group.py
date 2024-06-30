@@ -1,4 +1,3 @@
-from src.model.group.final_state_group import FinalStateGroup
 from src.model.tutor.tutor import Tutor
 from src.model.utils.topic import Topic
 from src.model.utils.delivery_date import DeliveryDate
