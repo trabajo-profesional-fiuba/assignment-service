@@ -1,7 +1,7 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from sqlalchemy.exc import IntegrityError
-from storage.topic_preferences_table import TopicPreferences
+from storage.database import TopicPreferences
 
 
 class TopicPreferencesRepository:
@@ -17,18 +17,18 @@ class TopicPreferencesRepository:
             db_item = TopicPreferences(
                 email=email,
                 group_id=topic_preferences.group_id,
-                topic1=topic_preferences.topic1,
-                topic2=topic_preferences.topic2,
-                topic3=topic_preferences.topic3,
+                topic_1=topic_preferences.topic_1,
+                topic_2=topic_preferences.topic_2,
+                topic_3=topic_preferences.topic_3,
             )
             session.add(db_item)
             session.commit()
             session.refresh(db_item)
             return db_item
-        except IntegrityError as err:
-            if email == topic_preferences.email:
+        except IntegrityError:
+            if email == topic_preferences.email_sender:
                 session.rollback()
-                raise TopicPreferencesDuplicated(topic_preferences.email)
+                raise TopicPreferencesDuplicated(topic_preferences.email_sender)
             else:
                 return db_item
 

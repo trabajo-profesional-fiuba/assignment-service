@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from api.topic_preferences_repository import TopicPreferencesRepository
 from api.topic_preferences_service import TopicPreferencesService
 from api.models import (
@@ -12,6 +13,10 @@ from api.topic_preferences_controller import TopicPreferenceController
 from typing import List
 
 app = FastAPI(title="Assignment TopicPreferencesService Api")
+app.add_middleware(
+    CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"]
+)
+
 database = Database()
 repository = TopicPreferencesRepository(database)
 service = TopicPreferencesService(repository)
@@ -26,8 +31,10 @@ async def root():
 @app.post(
     "/topic_preferences/",
     status_code=201,
-    description="This endpoint creates a new topic preferences answer of email sender and students from its group if it belongs to one.",
-    response_description="List of created topic preferences answers of email sender and students from its group if it belongs to one.",
+    description="This endpoint creates a new topic preferences answer of email sender\
+        and students from its group if it belongs to one.",
+    response_description="List of created topic preferences answers of email sender\
+        and students from its group if it belongs to one.",
     response_model=List[TopicPreferencesResponse],
     responses={
         201: {"description": "Successfully added topic preferences"},
@@ -44,10 +51,12 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
 
 
 @app.put(
-    "/topic_preferences/{email}",
+    "/topic_preferences/{email_sender}",
     status_code=200,
-    description="Update an existing topic preferences answer of email sender and students from its group if it belongs to one.",
-    response_description="List of updated topic preferences answers of email sender and students from its group if it belongs to one.",
+    description="Update an existing topic preferences answer of email sender and\
+        students from its group if it belongs to one.",
+    response_description="List of updated topic preferences answers of email sender and\
+        students from its group if it belongs to one.",
     response_model=List[TopicPreferencesResponse],
     responses={
         200: {"description": "Successfully updated topic preferences"},
@@ -56,12 +65,12 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     },
 )
 async def update_topic_preferences(
-    email: str,
+    email_sender: str,
     topic_preferences_update: TopicPreferencesUpdatedItem,
 ):
     try:
         updated_items = controller.update_topic_preferences(
-            email, topic_preferences_update
+            email_sender, topic_preferences_update
         )
         return updated_items
     except StudentNotFound as err:

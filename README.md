@@ -12,20 +12,12 @@ An assignment service designed to solve assignment problems such as:
 
 This project uses [Poetry](https://python-poetry.org/) for managing dependencies. Poetry simplifies the process of dependency management by providing a single tool for installing and managing project dependencies. To ensure that your environment is properly set up, follow the installation instructions below.
 
-### Installation
-
-To install the project dependencies using Poetry, run the following command in your terminal:
-
-```bash
-poetry install
-```
-
 ### Execution
 
-To execute the program using Poetry, run the following command in your terminal:
+To run the backend service using Docker, run the following command in the terminal:
 
 ```bash
-poetry run python main.py
+docker-compose up --build
 ```
 
 ### Tests
@@ -35,6 +27,10 @@ To run tests using Poetry, run the following command in your terminal:
 ```bash
 poetry run pytest
 ```
+
+### Important Note
+
+> **Ensure that the PostgreSQL container is running beforehand, as the integration tests require access to the PostgreSQL database.**
 
 ### Format
 
@@ -50,12 +46,4 @@ To check format code using Poetry, run the following command in your terminal:
 
 ```bash
 poetry run flake8
-```
-
-### Run Backend Service
-
-To run the backend service run the following command in the terminal:
-
-```bash
-uvicorn api.main:app --reload
 ```

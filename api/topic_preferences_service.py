@@ -1,7 +1,5 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.topic_preferences_repository import TopicPreferencesRepository
-from api.exceptions import TopicPreferencesDuplicated
-from typing import Union
 
 
 class TopicPreferencesService:
@@ -21,10 +19,10 @@ class TopicPreferencesService:
         try:
             new_items = self.add_items(
                 [
-                    topic_preferences.email,
-                    topic_preferences.email_student_group_2,
-                    topic_preferences.email_student_group_3,
-                    topic_preferences.email_student_group_4,
+                    topic_preferences.email_sender,
+                    topic_preferences.email_student_2,
+                    topic_preferences.email_student_3,
+                    topic_preferences.email_student_4,
                 ],
                 topic_preferences,
             )
@@ -42,15 +40,15 @@ class TopicPreferencesService:
         return updated_items
 
     def update_topic_preferences(
-        self, email: str, topic_preferences_update: TopicPreferencesUpdatedItem
+        self, email_sender: str, topic_preferences_update: TopicPreferencesUpdatedItem
     ):
         try:
             updated_items = self.update_items(
                 [
-                    email,
-                    topic_preferences_update.email_student_group_2,
-                    topic_preferences_update.email_student_group_3,
-                    topic_preferences_update.email_student_group_4,
+                    email_sender,
+                    topic_preferences_update.email_student_2,
+                    topic_preferences_update.email_student_3,
+                    topic_preferences_update.email_student_4,
                 ],
                 topic_preferences_update,
             )
