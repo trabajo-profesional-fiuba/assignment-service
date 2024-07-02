@@ -1,8 +1,5 @@
 import pytest
 from fastapi.testclient import TestClient
-from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from storage.database import Database, Base
-from storage.topic_preferences_table import TopicPreferences
 
 @pytest.mark.integration
 class TestApi:
@@ -11,7 +8,6 @@ class TestApi:
         from api.main import app
         with TestClient(app) as client:
             yield client
-
     
     def test_root(self, test_app):
         response = test_app.get("/")
