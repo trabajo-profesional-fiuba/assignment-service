@@ -4,13 +4,8 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from contextlib import contextmanager
 import sqlalchemy.exc
 from storage.topic_preferences_table import TopicPreferences, Base
-from dotenv import load_dotenv
 
-load_dotenv()
-
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres"
-)
+DATABASE_URL = "postgresql://postgres:postgres@db:5432/postgres"
 
 
 class Database:
@@ -20,9 +15,7 @@ class Database:
 
     def __init__(self):
         self.engine = create_engine(DATABASE_URL)
-        self.SessionLocal = sessionmaker(
-            autocommit=False, autoflush=False, bind=self.engine
-        )
+        self.SessionLocal = sessionmaker(bind=self.engine)
         self.drop_tables()
         self.create_tables()
 
