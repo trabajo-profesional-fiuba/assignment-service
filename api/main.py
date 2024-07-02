@@ -1,16 +1,18 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from api.topic_preferences_repository import TopicPreferencesRepository
-from api.topic_preferences_service import TopicPreferencesService
+from typing import List
+
 from api.models import (
     TopicPreferencesItem,
     TopicPreferencesUpdatedItem,
     TopicPreferencesResponse,
+    TopicCategoryItem
 )
-from storage.database import Database
-from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
 from api.topic_preferences_controller import TopicPreferenceController
-from typing import List
+from api.topic_preferences_service import TopicPreferencesService
+from api.topic_preferences_repository import TopicPreferencesRepository
+from storage.database import Database
+from api.exceptions import TopicPreferencesDuplicated, StudentNotFound, TopicCategoryDuplicated
 
 app = FastAPI(title="Assignment TopicPreferencesService Api")
 app.add_middleware(
@@ -18,10 +20,9 @@ app.add_middleware(
 )
 
 database = Database()
-repository = TopicPreferencesRepository(database)
-service = TopicPreferencesService(repository)
-controller = TopicPreferenceController(service)
-
+topic_preferences_repository = TopicPreferencesRepository(database)
+topic_preferences_service = TopicPreferencesService(topic_preferences_repository)
+topic_preferences_controller = TopicPreferenceController(topic_preferences_service)
 
 @app.get("/", description="This endpoint returns a ping message.")
 async def root():
@@ -44,7 +45,7 @@ async def root():
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
-        new_item = controller.add_topic_preferences(topic_preferences)
+        new_item = topic_preferences_controller.add_topic_preferences(topic_preferences)
         return new_item
     except TopicPreferencesDuplicated:
         raise HTTPException(status_code=409, detail="Topic preference already exists.")
@@ -69,9 +70,27 @@ async def update_topic_preferences(
     topic_preferences_update: TopicPreferencesUpdatedItem,
 ):
     try:
-        updated_items = controller.update_topic_preferences(
+        updated_items = topic_preferences_controller.update_topic_preferences(
             email_sender, topic_preferences_update
         )
         return updated_items
     except StudentNotFound as err:
         raise HTTPException(status_code=409, detail=f"Student '{err}' not found.")
+
+@app.post(
+    "/topic_category/",
+    status_code=201,
+    description="This endpoint creates a new topic category.",
+    response_description="Created topic category.",
+    response_model=TopicCategoryItem,
+    responses={
+        201: {"description": "Successfully added topic category"},
+        409: {"description": "Topic category duplicated"},
+        422: {"description": "Validation Error"},
+    },
+)
+async def add_topic_category(topic_category: TopicCategoryItem):
+    try:
+        return topic_category
+    except TopicCategoryDuplicated:
+        raise HTTPException(status_code=409, detail="Topic category already exists.")
