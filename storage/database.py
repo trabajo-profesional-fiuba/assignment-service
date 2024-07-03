@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 DATABASE_URL = "postgresql://postgres:postgres@db:5432/postgres"
 
+
 class Database:
     """
     Database class that manages the database setup and sessions.

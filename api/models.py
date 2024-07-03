@@ -30,5 +30,6 @@ class TopicPreferencesResponse(BaseModel):
     topic_2: str
     topic_3: str
 
+
 class TopicCategoryItem(BaseModel):
     name: str

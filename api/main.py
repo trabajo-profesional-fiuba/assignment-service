@@ -6,14 +6,19 @@ from api.models import (
     TopicPreferencesItem,
     TopicPreferencesUpdatedItem,
     TopicPreferencesResponse,
-    TopicCategoryItem
+    TopicCategoryItem,
 )
 from api.controllers.topic_preferences_controller import TopicPreferenceController
 from api.controllers.topic_category_controller import TopicCategoryController
-from api.topic_preferences_service import TopicPreferencesService
+from api.services.topic_preferences_service import TopicPreferencesService
+from api.services.topic_category_service import TopicCategoryService
 from api.topic_preferences_repository import TopicPreferencesRepository
 from storage.database import Database
-from api.exceptions import TopicPreferencesDuplicated, StudentNotFound, TopicCategoryDuplicated
+from api.exceptions import (
+    TopicPreferencesDuplicated,
+    StudentNotFound,
+    TopicCategoryDuplicated,
+)
 
 app = FastAPI(title="Assignment TopicPreferencesService Api")
 app.add_middleware(
@@ -24,7 +29,10 @@ database = Database()
 topic_preferences_repository = TopicPreferencesRepository(database)
 topic_preferences_service = TopicPreferencesService(topic_preferences_repository)
 topic_preferences_controller = TopicPreferenceController(topic_preferences_service)
-topic_category_controller = TopicCategoryController()
+
+topic_category_service = TopicCategoryService()
+topic_category_controller = TopicCategoryController(topic_category_service)
+
 
 @app.get("/", description="This endpoint returns a ping message.")
 async def root():
@@ -78,6 +86,7 @@ async def update_topic_preferences(
         return updated_items
     except StudentNotFound as err:
         raise HTTPException(status_code=409, detail=f"Student '{err}' not found.")
+
 
 @app.post(
     "/topic_category/",

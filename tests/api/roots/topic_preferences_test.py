@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
+
 @pytest.fixture()
 def test_app():
     from api.main import app
@@ -8,11 +9,13 @@ def test_app():
     with TestClient(app) as client:
         yield client
 
+
 @pytest.mark.integration
 def test_root(test_app):
     response = test_app.get("/")
     assert response.status_code == 200
     assert response.json() == "Ping"
+
 
 @pytest.mark.integration
 def test_add_topic_preferences_with_completed(test_app):
@@ -62,6 +65,7 @@ def test_add_topic_preferences_with_completed(test_app):
     ]
     assert response.json() == expected_response
 
+
 @pytest.mark.integration
 def test_add_duplicate_topic_preferences(test_app):
     item = {
@@ -78,6 +82,7 @@ def test_add_duplicate_topic_preferences(test_app):
     response = test_app.post("/topic_preferences/", json=item)
     assert response.status_code == 409
     assert response.json() == {"detail": "Topic preference already exists."}
+
 
 @pytest.mark.integration
 def test_recover_from_duplicate_exception(test_app):
@@ -110,6 +115,7 @@ def test_recover_from_duplicate_exception(test_app):
     response = test_app.post("/topic_preferences/", json=item)
     assert response.status_code == 201
 
+
 @pytest.mark.integration
 def test_update_topic_preferences(test_app):
     updated_item = {
@@ -122,9 +128,7 @@ def test_update_topic_preferences(test_app):
         "topic_3": "Topic 3",
     }
 
-    response = test_app.put(
-        "/topic_preferences/test1@example.com", json=updated_item
-    )
+    response = test_app.put("/topic_preferences/test1@example.com", json=updated_item)
     assert response.status_code == 200
 
     expected_response = [
@@ -159,6 +163,7 @@ def test_update_topic_preferences(test_app):
     ]
     assert response.json() == expected_response
 
+
 @pytest.mark.integration
 def test_update_topic_preferences_when_user_not_found(test_app):
     updated_item = {
@@ -171,11 +176,10 @@ def test_update_topic_preferences_when_user_not_found(test_app):
         "topic_3": "Topic 3",
     }
 
-    response = test_app.put(
-        "/topic_preferences/test100@example.com", json=updated_item
-    )
+    response = test_app.put("/topic_preferences/test100@example.com", json=updated_item)
     assert response.status_code == 409
     assert response.json() == {"detail": "Student 'test100@example.com' not found."}
+
 
 @pytest.mark.integration
 def test_update_topic_preferences_when_student_from_not_found(test_app):
@@ -189,8 +193,6 @@ def test_update_topic_preferences_when_student_from_not_found(test_app):
         "topic_3": "Topic 3",
     }
 
-    response = test_app.put(
-        "/topic_preferences/test100@example.com", json=updated_item
-    )
+    response = test_app.put("/topic_preferences/test100@example.com", json=updated_item)
     assert response.status_code == 409
     assert response.json() == {"detail": "Student 'test100@example.com' not found."}
