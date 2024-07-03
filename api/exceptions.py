@@ -16,3 +16,8 @@ class TopicCategoryDuplicated(Exception):
 class TopicCategoryNotFound(Exception):
     def __init__(self):
         pass
+
+
+class TopicDuplicated(Exception):
+    def __init__(self):
+        pass

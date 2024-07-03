@@ -1,6 +1,10 @@
 from api.models import TopicCategoryItem, TopicItem
 from api.repositories.topic_repository import TopicRepository
-from api.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound
+from api.exceptions import (
+    TopicCategoryDuplicated,
+    TopicCategoryNotFound,
+    TopicDuplicated,
+)
 
 
 class TopicService:
@@ -19,7 +23,9 @@ class TopicService:
     def add_topic(self, topic: TopicItem):
         try:
             if self._repository.get_topic_category_by_name(topic.category) is not None:
-                return self._repository.add_topic(topic)
+                if self._repository.get_topic(topic) is None:
+                    return self._repository.add_topic(topic)
+                raise TopicDuplicated()
             raise TopicCategoryNotFound()
         except Exception as err:
             raise err

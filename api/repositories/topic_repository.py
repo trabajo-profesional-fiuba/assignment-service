@@ -38,3 +38,16 @@ class TopicRepository:
             return db_item
         except Exception as err:
             raise err
+
+    def get_topic(self, topic: TopicItem):
+        try:
+            session = self._db.get_db()
+            db_item = (
+                session.query(Topic)
+                .filter(Topic.name == topic.name)
+                .filter(Topic.category == topic.category)
+                .first()
+            )
+            return db_item
+        except Exception as err:
+            raise err

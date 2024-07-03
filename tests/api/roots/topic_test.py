@@ -62,3 +62,14 @@ def test_add_topic_not_found(test_app):
     response = test_app.post("/topic/", json=topic)
     assert response.status_code == 409
     assert response.json() == {"detail": "Topic category 'category 2' not found."}
+
+
+@pytest.mark.integration
+def test_add_topic_duplicated(test_app):
+    topic = {
+        "name": "topic 1",
+        "category": "category 1",
+    }
+    response = test_app.post("/topic/", json=topic)
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Topic 'topic 1, category 1' already exists."}
