@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def test_app():
     from api.main import app
 
@@ -80,10 +80,7 @@ def test_add_topic_preferences_duplicated(test_app):
     }
 
     response = test_app.post("/topic_preferences/", json=topic_preferences)
-    assert response.status_code == 409
-    assert response.json() == {
-        "detail": "Topic preference of 'test1@example.com' already exists."
-    }
+    assert response.status_code == 201
 
 
 @pytest.mark.integration

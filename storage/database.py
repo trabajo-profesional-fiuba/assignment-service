@@ -5,6 +5,12 @@ from contextlib import contextmanager
 from storage.tables import Base
 from dotenv import load_dotenv
 
+load_dotenv()
+
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", "postgresql://postgres:postgres@db:5432/postgres"
+)
+
 
 class Database:
     """
@@ -13,18 +19,12 @@ class Database:
 
     def __init__(self):
         try:
-            DATABASE_URL = "postgresql://postgres:postgres@db:5432/postgres"
             self.engine = create_engine(DATABASE_URL)
             self.SessionLocal = sessionmaker(bind=self.engine)
             self.drop_tables()
             self.create_tables()
-        except Exception:
-            load_dotenv()
-            DATABASE_URL = os.getenv("DATABASE_URL")
-            self.engine = create_engine(DATABASE_URL)
-            self.SessionLocal = sessionmaker(bind=self.engine)
-            self.drop_tables()
-            self.create_tables()
+        except Exception as err:
+            raise err
 
     @contextmanager
     def get_session(self):
@@ -35,10 +35,9 @@ class Database:
         try:
             yield session
             session.commit()
-        except Exception as e:
+        except Exception as err:
             session.rollback()
-            print(f"Error during session: {e}")
-            raise
+            raise err
         finally:
             session.close()
 
@@ -48,8 +47,8 @@ class Database:
         """
         try:
             Base.metadata.create_all(bind=self.engine)
-        except Exception as e:
-            raise e
+        except Exception as err:
+            raise err
 
     def drop_tables(self):
         """
@@ -57,9 +56,8 @@ class Database:
         """
         try:
             Base.metadata.drop_all(bind=self.engine)
-        except Exception as e:
-            print(f"Error dropping tables: {e}")
-            raise
+        except Exception as err:
+            raise err
 
     def get_db(self):
         with self.get_session() as session:

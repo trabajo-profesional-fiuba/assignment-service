@@ -18,23 +18,16 @@ class TopicPreferencesService:
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
-            if (
-                self._repository.get_topic_preferences_by_email(
-                    topic_preferences.email_sender
-                )
-                is None
-            ):
-                new_items = self.add_items(
-                    [
-                        topic_preferences.email_sender,
-                        topic_preferences.email_student_2,
-                        topic_preferences.email_student_3,
-                        topic_preferences.email_student_4,
-                    ],
-                    topic_preferences,
-                )
-                return new_items
-            raise TopicPreferencesDuplicated()
+            new_items = self.add_items(
+                [
+                    topic_preferences.email_sender,
+                    topic_preferences.email_student_2,
+                    topic_preferences.email_student_3,
+                    topic_preferences.email_student_4,
+                ],
+                topic_preferences,
+            )
+            return new_items
         except Exception as err:
             raise err
 

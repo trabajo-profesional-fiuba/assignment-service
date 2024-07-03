@@ -1,6 +1,7 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from storage.tables import TopicPreferences
 from api.exceptions import TopicPreferencesNotFound
+from sqlalchemy.exc import IntegrityError
 
 
 class TopicPreferencesRepository:
@@ -23,6 +24,9 @@ class TopicPreferencesRepository:
             session.add(db_item)
             session.commit()
             session.refresh(db_item)
+            return db_item
+        except IntegrityError as err:
+            db_item = self.update_topic_preferences(email, topic_preferences)
             return db_item
         except Exception as err:
             session.rollback()

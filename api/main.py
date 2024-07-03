@@ -51,19 +51,16 @@ async def root():
     response_model=List[TopicPreferencesResponse],
     responses={
         201: {"description": "Successfully added topic preferences"},
-        409: {"description": "Topic preferences duplicated"},
         422: {"description": "Validation Error"},
+        500: {"description": "Internal Server Error"},
     },
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
         new_item = topic_preferences_controller.add_topic_preferences(topic_preferences)
         return new_item
-    except TopicPreferencesDuplicated:
-        raise HTTPException(
-            status_code=409,
-            detail=f"Topic preference of '{topic_preferences.email_sender}' already exists.",
-        )
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
 
 
 @app.put(
@@ -78,6 +75,7 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
         200: {"description": "Successfully updated topic preferences"},
         409: {"description": "Student not found"},
         422: {"description": "Validation Error"},
+        500: {"description": "Internal Server Error"},
     },
 )
 async def update_topic_preferences(
@@ -93,6 +91,8 @@ async def update_topic_preferences(
         raise HTTPException(
             status_code=409, detail=f"Topic preferences of '{email_sender}' not found."
         )
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
 
 
 @app.post(
@@ -105,6 +105,7 @@ async def update_topic_preferences(
         201: {"description": "Successfully added topic category"},
         409: {"description": "Topic category duplicated"},
         422: {"description": "Validation Error"},
+        500: {"description": "Internal Server Error"},
     },
 )
 async def add_topic_category(topic_category: TopicCategoryItem):
@@ -116,3 +117,5 @@ async def add_topic_category(topic_category: TopicCategoryItem):
             status_code=409,
             detail=f"Topic category '{topic_category.name}' already exists.",
         )
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
