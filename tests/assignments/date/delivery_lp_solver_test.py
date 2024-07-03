@@ -1,11 +1,11 @@
-"""
 import time
 import pytest
 
-from src.assignments.date.lp.delivery_lp_solver import DeliveryLPSolver
 from src.assignments.adapters.result_adapter import ResultAdapter
 
+from src.assignments.date.delivery_lp_solver import DeliveryLPSolver
 from src.model.group import Group
+from src.model.period import TutorPeriod
 from src.model.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
 from tests.assignments.date.helper import TestLPHelper
@@ -13,13 +13,13 @@ from tests.assignments.date.helper import TestLPHelper
 
 class TestDeliveryLPSolver:
     helper = TestLPHelper()
-    formatter = ResultAdapter()
+    adapter = ResultAdapter()
 
     # ------------ Performance and Scalability Tests ------------
-    @pytest.mark.skip
+    @pytest.mark.performance
     def test_four_groups_and_evaluators(self):
-        Testing if the algorithm is overhead with four groups,
-        four dates and four evaluators.
+        """Testing if the algorithm is overhead with four groups,
+        four dates and four evaluators."""
         num_groups = 4
         num_evaluators = 4
         num_tutors = 4
@@ -32,12 +32,24 @@ class TestDeliveryLPSolver:
         tutors = self.helper.create_tutors(num_tutors, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
 
-        solver = DeliveryLPSolver(groups, tutors, self.formatter, dates, evaluators)
+        for tutor in tutors:
+            groups_aux = []
+            for i in range(1, num_groups + 1):
+                for group in groups:
+                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                        groups_aux.append(group)
+            tutor.add_groups(groups_aux)
+
+        for e in evaluators:
+            tutors.append(e)
+
+
+        solver = DeliveryLPSolver(tutors, self.adapter, dates)
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
 
-        assert len(result.groups) > 0
+        assert len(result._results) == 4
 
         print(
             "4 groups, 4 evaluators, 2 tutors, 4 dates - Execution time:",
@@ -47,8 +59,8 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.skip
     def test_ten_groups_and_four_evaluators(self):
-        Testing if the algorithm is overhead with ten groups,
-        five dates and five evaluators.
+        """Testing if the algorithm is overhead with ten groups,
+        five dates and five evaluators."""
         num_groups = 10
         num_evaluators = 5
         num_tutors = 5
@@ -62,12 +74,23 @@ class TestDeliveryLPSolver:
         tutors = self.helper.create_tutors(num_tutors, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
 
-        solver = DeliveryLPSolver(groups, tutors, self.formatter, dates, evaluators)
+        for tutor in tutors:
+            groups_aux = []
+            for i in range(1, num_groups + 1):
+                for group in groups:
+                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                        groups_aux.append(group)
+            tutor.add_groups(groups_aux)
+
+        for e in evaluators:
+            tutors.append(e)
+
+        solver = DeliveryLPSolver(tutors, self.adapter, dates)
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
 
-        assert len(result.groups) > 0
+        assert len(result._results) == num_groups
 
         print(
             "10 groups, 5 evaluators, 5 tutors, 5 dates - Execution time:",
@@ -75,10 +98,10 @@ class TestDeliveryLPSolver:
             "seconds",
         )
 
-    @pytest.mark.skip
+    @pytest.mark.performance
     def test_ten_groups_and_one_evaluator(self):
-        Testing if the algorithm is overhead with ten groups,
-        five dates and 1 evaluator.
+        """Testing if the algorithm is overhead with ten groups,
+        five dates and 1 evaluator."""
         num_groups = 10
         num_evaluators = 1
         num_tutors = 5
@@ -92,12 +115,23 @@ class TestDeliveryLPSolver:
         tutors = self.helper.create_tutors(num_tutors, dates)
         evaluators = self.helper.create_evaluators(num_evaluators, dates)
 
-        solver = DeliveryLPSolver(groups, tutors, self.formatter, dates, evaluators)
+        for tutor in tutors:
+            groups_aux = []
+            for i in range(1, num_groups + 1):
+                for group in groups:
+                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                        groups_aux.append(group)
+            tutor.add_groups(groups_aux)
+
+        for e in evaluators:
+            tutors.append(e)
+
+        solver = DeliveryLPSolver(tutors, self.adapter, dates)
         start_time = time.time()
         result = solver.solve()
         end_time = time.time()
 
-        assert len(result.groups) > 0
+        assert len(result._results) == num_groups
 
         print(
             "10 groups, 1 evaluators, 5 tutors, 5 dates - Execution time:",
@@ -135,7 +169,7 @@ class TestDeliveryLPSolver:
     #     )
 
     # ------------ Logical Tests ------------
-    @pytest.mark.skip
+    @pytest.mark.unit
     def test_all_groups_are_assigned_evaluators(self):
         possible_dates = [
             DeliveryDate(1, 1, 1),
@@ -195,68 +229,101 @@ class TestDeliveryLPSolver:
             DeliveryDate(5, 5, 11),
         ]
 
+        tutor_period1 = TutorPeriod('1C2024')
         tutor1 = Tutor(1, "Tutor 1", "email@tutor1.com")
-        tutor1.add_available_dates(
+        tutor_period1.add_parent(tutor1)
+        tutor_period1.add_available_dates(
             possible_dates[0:11] + possible_dates[33:44] + possible_dates[44:55]
         )
+
+        tutor_period2 = TutorPeriod('1C2024')
         tutor2 = Tutor(2, "Tutor 2", "email@tutor2.com")
-        tutor2.add_available_dates(
+        tutor_period2.add_parent(tutor2)
+        tutor_period2.add_available_dates(
             possible_dates[11:22] + possible_dates[22:33] + possible_dates[44:55]
         )
-        tutor3 = Tutor(3, "Tutor 3", "email@tutor3.com")
-        tutor3.add_available_dates(possible_dates[22:33] + possible_dates[33:44])
-        group1 = Group(1, tutor1)
-        group1.add_available_dates(possible_dates[0:22])
-        group2 = Group(2, tutor2)
-        group2.add_available_dates(possible_dates[11:33])
-        group3 = Group(3, tutor3)
-        group3.add_available_dates(possible_dates[22:44])
-        group4 = Group(4, tutor1)
-        group4.add_available_dates(possible_dates[33:55])
-        group5 = Group(5, tutor3)
-        group5.add_available_dates(possible_dates[0:11] + possible_dates[33:44])
-        groups = [group1, group2, group3, group4, group5]
-        tutors = [tutor1, tutor2, tutor3]
-        evaluators = [
-            Evaluator(id=11, available_dates=possible_dates[0:22]),
-            Evaluator(id=12, available_dates=possible_dates[11:33]),
-            Evaluator(id=13, available_dates=possible_dates[22:44]),
-            Evaluator(id=14, available_dates=possible_dates[33:55]),
-        ]
 
+        tutor_period3 = TutorPeriod('1C2024')
+        tutor3 = Tutor(3, "Tutor 3", "email@tutor3.com")
+        tutor_period3.add_parent(tutor3)
+        tutor_period3.add_available_dates(possible_dates[22:33] + possible_dates[33:44])
+        
+        group1 = Group(1)
+        group1.add_available_dates(possible_dates[0:22])
+        group2 = Group(2)
+        group2.add_available_dates(possible_dates[11:33])
+        group3 = Group(3)
+        group3.add_available_dates(possible_dates[22:44])
+        group4 = Group(4)
+        group4.add_available_dates(possible_dates[33:55])
+        group5 = Group(5)
+        group5.add_available_dates(possible_dates[0:11] + possible_dates[33:44])
+        
+        tutor_period1.add_groups([group1, group4])
+        tutor_period2.add_groups([group2])
+        tutor_period3.add_groups([group3, group5])
+
+        tutors = [tutor_period1, tutor_period2, tutor_period3]
+
+        evaluator1 = TutorPeriod('1C2024')
+        evaluator1.add_parent(Tutor(11, "email", "name"))
+        evaluator1.make_evaluator()
+        evaluator1.add_available_dates(possible_dates[0:22])
+
+        evaluator2 = TutorPeriod('1C2024')
+        evaluator2.add_parent(Tutor(12, "email", "name"))
+        evaluator2.make_evaluator()
+        evaluator2.add_available_dates(possible_dates[11:33])
+
+        evaluator3 = TutorPeriod('1C2024')
+        evaluator3.add_parent(Tutor(13, "email", "name"))
+        evaluator3.make_evaluator()
+        evaluator3.add_available_dates(possible_dates[22:44])
+
+        evaluator4 = TutorPeriod('1C2024')
+        evaluator4.add_parent(Tutor(14, "email", "name"))
+        evaluator4.make_evaluator()
+        evaluator4.add_available_dates(possible_dates[33:55])
+
+        evaluators = [evaluator1, evaluator2, evaluator3, evaluator4]
+        
+        for e in evaluators:
+            tutors.append(e)
+        
         solver = DeliveryLPSolver(
-            groups, tutors, self.formatter, possible_dates, evaluators
+            tutors, self.adapter, possible_dates
         )
         result = solver.solve()
 
-        # Check that all groups have assigned evaluators
-        group_assignments = {group.id: 0 for group in result.groups}
-        for group in result.groups:
-            for evaluator in result.evaluators:
-                for assigned_date in result.delivery_date_evaluator(evaluator):
-                    if (
-                        assigned_date.label()
-                        == result.delivery_date_group(group).label()
-                    ):
-                        group_assignments[group.id] += 1
+        group_assignments = {}
 
+        # Inicializar todos los contadores de grupo en 0
+        for group, evaluator, date in result._results:
+            if group not in group_assignments:
+                group_assignments[group] = 0
+
+        # Contar las asignaciones para cada grupo
+        for group, evaluator, date in result._results:
+            group_assignments[group] += 1
+
+        # Verificar que cada grupo tenga entre 1 y 4 evaluadores asignados
         for group_id, evaluators_assigned in group_assignments.items():
-            assert 1 <= evaluators_assigned <= 4
+            assert 1 <= evaluators_assigned <= 4, f"Group {group_id} has {evaluators_assigned} evaluators assigned, which is out of allowed range."
 
+        # Inicializar un diccionario para contar asignaciones por evaluador y día
         evaluators_assignment = {
-            (evaluator.id, day_id): 0
-            for evaluator in result.evaluators
+            (evaluator, day_id): 0
+            for evaluator in {evaluator for _, evaluator, _ in result._results}
             for day_id in range(1, 6)
         }
 
-        # Check that the max number of groups per day is not exceeded
-        for evaluator_id, day_id in evaluators_assignment:
-            for evaluator in result.evaluators:
-                if evaluator.id == evaluator_id:
-                    for assigned_date in result.delivery_date_evaluator(evaluator):
-                        if assigned_date.day == day_id:
-                            evaluators_assignment[(evaluator_id, day_id)] += 1
+        # Contar las asignaciones por evaluador y día
+        for group, evaluator, date in result._results:
+            day_id = int(date.split('-')[2])
+            evaluators_assignment[(evaluator, day_id)] += 1
 
-        for key, value in evaluators_assignment:
-            assert value <= 5
-"""
+        # Verificar que cada evaluador no tenga más de 5 grupos asignados por día
+        for (evaluator_id, day_id), value in evaluators_assignment.items():
+            assert value <= 5, f"Evaluator {evaluator_id} has {value} groups assigned on day {day_id}, which exceeds the allowed limit."
+
+

@@ -60,6 +60,10 @@ class LPAdapter:
         groups = result_context.get("groups")
         evaluators = result_context.get("evaluators")
 
+        if groups is None or evaluators is None:
+            return []
+        
         return AssignmentResult(
-            self._groups(result, groups), self._evaluators(result, evaluators)
+            result
+            # self._groups(result, groups), self._evaluators(result, evaluators)
         )
