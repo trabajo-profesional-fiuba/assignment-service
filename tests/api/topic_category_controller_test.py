@@ -35,9 +35,7 @@ def test_add_topic_category_duplicated(controller, mock_service):
         name="data science",
     )
 
-    mock_service.add_topic_category.side_effect = TopicCategoryDuplicated(
-        "Topic category 'data science' already exists"
-    )
+    mock_service.add_topic_category.side_effect = TopicCategoryDuplicated()
 
     with pytest.raises(TopicCategoryDuplicated):
         controller.add_topic_category(topic_category)

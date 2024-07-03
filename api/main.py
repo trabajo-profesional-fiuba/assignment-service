@@ -17,7 +17,7 @@ from api.repositories.topic_category_repository import TopicCategoryRepository
 from storage.database import Database
 from api.exceptions import (
     TopicPreferencesDuplicated,
-    StudentNotFound,
+    TopicPreferencesNotFound,
     TopicCategoryDuplicated,
 )
 
@@ -60,7 +60,10 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
         new_item = topic_preferences_controller.add_topic_preferences(topic_preferences)
         return new_item
     except TopicPreferencesDuplicated:
-        raise HTTPException(status_code=409, detail="Topic preference already exists.")
+        raise HTTPException(
+            status_code=409,
+            detail=f"Topic preference of '{topic_preferences.email_sender}' already exists.",
+        )
 
 
 @app.put(
@@ -86,8 +89,10 @@ async def update_topic_preferences(
             email_sender, topic_preferences_update
         )
         return updated_items
-    except StudentNotFound as err:
-        raise HTTPException(status_code=409, detail=f"Student '{err}' not found.")
+    except TopicPreferencesNotFound as err:
+        raise HTTPException(
+            status_code=409, detail=f"Topic preferences of '{email_sender}' not found."
+        )
 
 
 @app.post(
@@ -107,4 +112,7 @@ async def add_topic_category(topic_category: TopicCategoryItem):
         new_item = topic_category_controller.add_topic_category(topic_category)
         return new_item
     except TopicCategoryDuplicated:
-        raise HTTPException(status_code=409, detail="Topic category already exists.")
+        raise HTTPException(
+            status_code=409,
+            detail=f"Topic category '{topic_category.name}' already exists.",
+        )

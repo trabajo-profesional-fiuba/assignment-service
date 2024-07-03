@@ -33,4 +33,6 @@ def test_add_topic_category_duplicated(test_app):
 
     response = test_app.post("/topic_category/", json=topic_category)
     assert response.status_code == 409
-    assert response.json() == {"detail": "Topic category already exists."}
+    assert response.json() == {
+        "detail": "Topic category 'data science' already exists."
+    }

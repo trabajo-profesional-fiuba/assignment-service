@@ -1,5 +1,6 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.repositories.topic_preferences_repository import TopicPreferencesRepository
+from api.exceptions import TopicPreferencesDuplicated, TopicPreferencesNotFound
 
 
 class TopicPreferencesService:
@@ -17,16 +18,23 @@ class TopicPreferencesService:
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
-            new_items = self.add_items(
-                [
-                    topic_preferences.email_sender,
-                    topic_preferences.email_student_2,
-                    topic_preferences.email_student_3,
-                    topic_preferences.email_student_4,
-                ],
-                topic_preferences,
-            )
-            return new_items
+            if (
+                self._repository.get_topic_preferences_by_email(
+                    topic_preferences.email_sender
+                )
+                is None
+            ):
+                new_items = self.add_items(
+                    [
+                        topic_preferences.email_sender,
+                        topic_preferences.email_student_2,
+                        topic_preferences.email_student_3,
+                        topic_preferences.email_student_4,
+                    ],
+                    topic_preferences,
+                )
+                return new_items
+            raise TopicPreferencesDuplicated()
         except Exception as err:
             raise err
 
@@ -43,15 +51,20 @@ class TopicPreferencesService:
         self, email_sender: str, topic_preferences_update: TopicPreferencesUpdatedItem
     ):
         try:
-            updated_items = self.update_items(
-                [
-                    email_sender,
-                    topic_preferences_update.email_student_2,
-                    topic_preferences_update.email_student_3,
-                    topic_preferences_update.email_student_4,
-                ],
-                topic_preferences_update,
-            )
-            return updated_items
+            if (
+                self._repository.get_topic_preferences_by_email(email_sender)
+                is not None
+            ):
+                updated_items = self.update_items(
+                    [
+                        email_sender,
+                        topic_preferences_update.email_student_2,
+                        topic_preferences_update.email_student_3,
+                        topic_preferences_update.email_student_4,
+                    ],
+                    topic_preferences_update,
+                )
+                return updated_items
+            raise TopicPreferencesNotFound()
         except Exception as err:
             raise err

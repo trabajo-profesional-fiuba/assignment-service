@@ -12,8 +12,6 @@ class TopicCategoryService:
         try:
             if self._repository.get_topic_category_by_name(topic_category.name) is None:
                 return self._repository.add_topic_category(topic_category)
-            raise TopicCategoryDuplicated(
-                f"Topic category '{topic_category.name}' already exists."
-            )
+            raise TopicCategoryDuplicated()
         except Exception as err:
             raise err

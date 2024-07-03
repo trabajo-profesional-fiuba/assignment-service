@@ -41,9 +41,7 @@ def test_add_topic_category_duplicated(service, mock_repository):
         "id": 1,
         "name": "data science",
     }
-    mock_repository.add_topic_category.side_effect = TopicCategoryDuplicated(
-        "Topic category 'data science' already exists"
-    )
+    mock_repository.add_topic_category.side_effect = TopicCategoryDuplicated()
 
     with pytest.raises(TopicCategoryDuplicated):
         service.add_topic_category(topic_category)

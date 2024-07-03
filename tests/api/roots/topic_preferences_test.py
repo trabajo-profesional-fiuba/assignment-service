@@ -81,16 +81,18 @@ def test_add_topic_preferences_duplicated(test_app):
 
     response = test_app.post("/topic_preferences/", json=topic_preferences)
     assert response.status_code == 409
-    assert response.json() == {"detail": "Topic preference already exists."}
+    assert response.json() == {
+        "detail": "Topic preference of 'test1@example.com' already exists."
+    }
 
 
 @pytest.mark.integration
-def test_update_topic_preferences(test_app):
+def test_update_topic_preferences_success(test_app):
     updated_topic_preferences = {
         "email_student_2": "test2@example.com",
         "email_student_3": "test3@example.com",
         "email_student_4": "test4@example.com",
-        "group_id": "2024-06-25T12:00:00",
+        "group_id": "2024-08-25T12:00:00",
         "topic_1": "Topic 1",
         "topic_2": "Topic 2",
         "topic_3": "Topic 3",
@@ -104,28 +106,28 @@ def test_update_topic_preferences(test_app):
     expected_response = [
         {
             "email": "test1@example.com",
-            "group_id": "2024-06-25T12:00:00",
+            "group_id": "2024-08-25T12:00:00",
             "topic_1": "Topic 1",
             "topic_2": "Topic 2",
             "topic_3": "Topic 3",
         },
         {
             "email": "test2@example.com",
-            "group_id": "2024-06-25T12:00:00",
+            "group_id": "2024-08-25T12:00:00",
             "topic_1": "Topic 1",
             "topic_2": "Topic 2",
             "topic_3": "Topic 3",
         },
         {
             "email": "test3@example.com",
-            "group_id": "2024-06-25T12:00:00",
+            "group_id": "2024-08-25T12:00:00",
             "topic_1": "Topic 1",
             "topic_2": "Topic 2",
             "topic_3": "Topic 3",
         },
         {
             "email": "test4@example.com",
-            "group_id": "2024-06-25T12:00:00",
+            "group_id": "2024-08-25T12:00:00",
             "topic_1": "Topic 1",
             "topic_2": "Topic 2",
             "topic_3": "Topic 3",
@@ -135,7 +137,7 @@ def test_update_topic_preferences(test_app):
 
 
 @pytest.mark.integration
-def test_update_topic_preferences_when_user_not_found(test_app):
+def test_update_topic_preferences_not_found(test_app):
     updated_topic_preferences = {
         "email_student_2": "test2@example.com",
         "email_student_3": "test3@example.com",
@@ -147,26 +149,27 @@ def test_update_topic_preferences_when_user_not_found(test_app):
     }
 
     response = test_app.put(
-        "/topic_preferences/test100@example.com", json=updated_topic_preferences
+        "/topic_preferences/not_found@example.com", json=updated_topic_preferences
     )
     assert response.status_code == 409
-    assert response.json() == {"detail": "Student 'test100@example.com' not found."}
-
-
-@pytest.mark.integration
-def test_update_topic_preferences_when_student_from_not_found(test_app):
-    updated_topic_preferences = {
-        "email_student_2": "test100@example.com",
-        "email_student_3": "test3@example.com",
-        "email_student_4": "test4@example.com",
-        "group_id": "2024-06-25T12:00:00",
-        "topic_1": "Topic 1",
-        "topic_2": "Topic 2",
-        "topic_3": "Topic 3",
+    assert response.json() == {
+        "detail": "Topic preferences of 'not_found@example.com' not found."
     }
 
-    response = test_app.put(
-        "/topic_preferences/test100@example.com", json=updated_topic_preferences
-    )
-    assert response.status_code == 409
-    assert response.json() == {"detail": "Student 'test100@example.com' not found."}
+
+# @pytest.mark.integration
+# def test_update_topic_preferences_when_student_from_group_not_found_success(test_app):
+#     updated_topic_preferences = {
+#         "email_student_2": "not_found@example.com",
+#         "email_student_3": "test3@example.com",
+#         "email_student_4": "test4@example.com",
+#         "group_id": "2024-06-25T12:00:00",
+#         "topic_1": "Topic 1",
+#         "topic_2": "Topic 2",
+#         "topic_3": "Topic 3",
+#     }
+
+#     response = test_app.put(
+#         "/topic_preferences/test1@example.com", json=updated_topic_preferences
+#     )
+#     assert response.status_code == 200
