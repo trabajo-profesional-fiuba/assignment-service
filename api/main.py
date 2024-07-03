@@ -10,11 +10,11 @@ from api.models import (
     TopicItem,
 )
 from api.controllers.topic_preferences_controller import TopicPreferenceController
-from api.controllers.topic_category_controller import TopicCategoryController
+from api.controllers.topic_controller import TopicController
 from api.services.topic_preferences_service import TopicPreferencesService
-from api.services.topic_category_service import TopicCategoryService
+from api.services.topic_service import TopicService
 from api.repositories.topic_preferences_repository import TopicPreferencesRepository
-from api.repositories.topic_category_repository import TopicCategoryRepository
+from api.repositories.topic_repository import TopicRepository
 from storage.database import Database
 from api.exceptions import (
     TopicPreferencesDuplicated,
@@ -32,9 +32,9 @@ topic_preferences_repository = TopicPreferencesRepository(database)
 topic_preferences_service = TopicPreferencesService(topic_preferences_repository)
 topic_preferences_controller = TopicPreferenceController(topic_preferences_service)
 
-topic_category_repository = TopicCategoryRepository(database)
-topic_category_service = TopicCategoryService(topic_category_repository)
-topic_category_controller = TopicCategoryController(topic_category_service)
+topic_category_repository = TopicRepository(database)
+topic_category_service = TopicService(topic_category_repository)
+topic_category_controller = TopicController(topic_category_service)
 
 
 @app.get("/", description="This endpoint returns a ping message.")

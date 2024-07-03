@@ -1,19 +1,19 @@
 import pytest
 from unittest.mock import create_autospec
 from api.models import TopicCategoryItem
-from api.services.topic_category_service import TopicCategoryService
-from api.repositories.topic_category_repository import TopicCategoryRepository
+from api.services.topic_service import TopicService
+from api.repositories.topic_repository import TopicRepository
 from api.exceptions import TopicCategoryDuplicated
 
 
 @pytest.fixture
 def mock_repository(mocker):
-    return create_autospec(TopicCategoryRepository)
+    return create_autospec(TopicRepository)
 
 
 @pytest.fixture
 def service(mock_repository):
-    return TopicCategoryService(mock_repository)
+    return TopicService(mock_repository)
 
 
 @pytest.mark.integration

@@ -1,11 +1,11 @@
 from api.models import TopicCategoryItem
-from api.repositories.topic_category_repository import TopicCategoryRepository
+from api.repositories.topic_repository import TopicRepository
 from api.exceptions import TopicCategoryDuplicated
 
 
-class TopicCategoryService:
+class TopicService:
 
-    def __init__(self, repository: TopicCategoryRepository):
+    def __init__(self, repository: TopicRepository):
         self._repository = repository
 
     def add_topic_category(self, topic_category: TopicCategoryItem):

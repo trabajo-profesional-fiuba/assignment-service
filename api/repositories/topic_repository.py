@@ -2,7 +2,7 @@ from api.models import TopicCategoryItem
 from storage.tables import TopicCategory
 
 
-class TopicCategoryRepository:
+class TopicRepository:
 
     def __init__(self, db):
         self._db = db
