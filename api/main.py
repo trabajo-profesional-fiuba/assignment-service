@@ -8,7 +8,8 @@ from api.models import (
     TopicPreferencesResponse,
     TopicCategoryItem
 )
-from api.topic_preferences_controller import TopicPreferenceController
+from api.controllers.topic_preferences_controller import TopicPreferenceController
+from api.controllers.topic_category_controller import TopicCategoryController
 from api.topic_preferences_service import TopicPreferencesService
 from api.topic_preferences_repository import TopicPreferencesRepository
 from storage.database import Database
@@ -23,6 +24,7 @@ database = Database()
 topic_preferences_repository = TopicPreferencesRepository(database)
 topic_preferences_service = TopicPreferencesService(topic_preferences_repository)
 topic_preferences_controller = TopicPreferenceController(topic_preferences_service)
+topic_category_controller = TopicCategoryController()
 
 @app.get("/", description="This endpoint returns a ping message.")
 async def root():
@@ -91,6 +93,7 @@ async def update_topic_preferences(
 )
 async def add_topic_category(topic_category: TopicCategoryItem):
     try:
-        return topic_category
+        new_item = topic_category_controller.add_topic_category(topic_category)
+        return new_item
     except TopicCategoryDuplicated:
         raise HTTPException(status_code=409, detail="Topic category already exists.")
