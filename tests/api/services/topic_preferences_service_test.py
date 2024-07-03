@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import create_autospec
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.topic_preferences_repository import TopicPreferencesRepository
+from api.repositories.topic_preferences_repository import TopicPreferencesRepository
 from api.services.topic_preferences_service import TopicPreferencesService
 from api.exceptions import TopicPreferencesDuplicated
 
@@ -111,7 +111,7 @@ def test_add_topic_preferences_duplicated_exception(service, mock_repository):
         "Duplicated entry"
     )
 
-    with pytest.raises(TopicPreferencesDuplicated) as err:
+    with pytest.raises(TopicPreferencesDuplicated):
         service.add_topic_preferences(topic_preferences)
 
 

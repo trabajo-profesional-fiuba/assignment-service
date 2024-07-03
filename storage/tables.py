@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Table
+from sqlalchemy import Column, String, DateTime, Integer
 from sqlalchemy.orm import declarative_base
 
 
@@ -13,3 +13,10 @@ class TopicPreferences(Base):
     topic_1 = Column(String)
     topic_2 = Column(String)
     topic_3 = Column(String)
+
+
+class TopicCategory(Base):
+    __tablename__ = "topic_category"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)

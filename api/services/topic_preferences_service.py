@@ -1,5 +1,5 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.topic_preferences_repository import TopicPreferencesRepository
+from api.repositories.topic_preferences_repository import TopicPreferencesRepository
 
 
 class TopicPreferencesService:
