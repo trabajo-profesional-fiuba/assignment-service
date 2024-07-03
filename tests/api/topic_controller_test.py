@@ -42,4 +42,6 @@ def test_add_topic_category_duplicated(controller, mock_service):
 def test_add_topic_with_success(controller, mock_service):
     topic = TopicItem(name="topic 1", category="category 1")
 
+    mock_service.add_topic.return_value = topic
+
     assert controller.add_topic(topic) == topic
