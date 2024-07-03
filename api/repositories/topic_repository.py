@@ -1,5 +1,5 @@
-from api.models import TopicCategoryItem
-from storage.tables import TopicCategory
+from api.models import TopicCategoryItem, TopicItem
+from storage.tables import TopicCategory, Topic
 
 
 class TopicRepository:
@@ -21,6 +21,17 @@ class TopicRepository:
         try:
             session = self._db.get_db()
             db_item = TopicCategory(name=topic_category.name)
+            session.add(db_item)
+            session.commit()
+            session.refresh(db_item)
+            return db_item
+        except Exception as err:
+            raise err
+
+    def add_topic(self, topic: TopicItem):
+        try:
+            session = self._db.get_db()
+            db_item = Topic(name=topic.name, category=topic.category)
             session.add(db_item)
             session.commit()
             session.refresh(db_item)

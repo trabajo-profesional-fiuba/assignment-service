@@ -20,3 +20,11 @@ class TopicCategory(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
+
+
+class Topic(Base):
+    __tablename__ = "topic"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    category = Column(String, nullable=False)

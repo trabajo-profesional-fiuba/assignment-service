@@ -22,7 +22,7 @@ from api.exceptions import (
     TopicCategoryDuplicated,
 )
 
-app = FastAPI(title="Assignment TopicPreferencesService Api")
+app = FastAPI(title="Assignment Service Api")
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"]
 )
@@ -32,9 +32,9 @@ topic_preferences_repository = TopicPreferencesRepository(database)
 topic_preferences_service = TopicPreferencesService(topic_preferences_repository)
 topic_preferences_controller = TopicPreferenceController(topic_preferences_service)
 
-topic_category_repository = TopicRepository(database)
-topic_category_service = TopicService(topic_category_repository)
-topic_category_controller = TopicController(topic_category_service)
+topic_repository = TopicRepository(database)
+topic_service = TopicService(topic_repository)
+topic_controller = TopicController(topic_service)
 
 
 @app.get("/", description="This endpoint returns a ping message.")
@@ -111,7 +111,7 @@ async def update_topic_preferences(
 )
 async def add_topic_category(topic_category: TopicCategoryItem):
     try:
-        new_item = topic_category_controller.add_topic_category(topic_category)
+        new_item = topic_controller.add_topic_category(topic_category)
         return new_item
     except TopicCategoryDuplicated:
         raise HTTPException(
@@ -136,6 +136,6 @@ async def add_topic_category(topic_category: TopicCategoryItem):
 )
 async def add_topic(topic: TopicItem):
     try:
-        return topic
+        return topic_controller.add_topic(topic)
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

@@ -18,6 +18,6 @@ class TopicService:
 
     def add_topic(self, topic: TopicItem):
         try:
-            return topic
+            return self._repository.add_topic(topic)
         except Exception as err:
             raise err

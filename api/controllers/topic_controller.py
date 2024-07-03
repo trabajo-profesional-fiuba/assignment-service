@@ -19,7 +19,6 @@ class TopicController:
 
     def add_topic(self, topic: TopicItem):
         try:
-            new_item = self._service.add_topic(topic)
-            return new_item
+            return self._service.add_topic(topic)
         except Exception as err:
             raise err
