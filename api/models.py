@@ -33,3 +33,8 @@ class TopicPreferencesResponse(BaseModel):
 
 class TopicCategoryItem(BaseModel):
     name: str
+
+
+class TopicItem(BaseModel):
+    name: str
+    category: str

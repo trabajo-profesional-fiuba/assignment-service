@@ -7,6 +7,7 @@ from api.models import (
     TopicPreferencesUpdatedItem,
     TopicPreferencesResponse,
     TopicCategoryItem,
+    TopicItem,
 )
 from api.controllers.topic_preferences_controller import TopicPreferenceController
 from api.controllers.topic_category_controller import TopicCategoryController
@@ -117,5 +118,24 @@ async def add_topic_category(topic_category: TopicCategoryItem):
             status_code=409,
             detail=f"Topic category '{topic_category.name}' already exists.",
         )
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
+
+
+@app.post(
+    "/topic/",
+    status_code=201,
+    description="This endpoint creates a new topic.",
+    response_description="Created topic.",
+    response_model=TopicItem,
+    responses={
+        201: {"description": "Successfully added topic"},
+        422: {"description": "Validation Error"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+async def add_topic(topic: TopicItem):
+    try:
+        return topic
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
