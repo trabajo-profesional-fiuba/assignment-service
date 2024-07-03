@@ -3,6 +3,7 @@ from unittest.mock import create_autospec
 from api.models import TopicCategoryItem
 from api.controllers.topic_category_controller import TopicCategoryController
 from api.services.topic_category_service import TopicCategoryService
+from api.exceptions import TopicCategoryDuplicated
 
 
 @pytest.fixture
@@ -26,3 +27,17 @@ def test_add_topic_category_success(controller, mock_service):
     )
 
     assert controller.add_topic_category(new_item) == {"name": "data science"}
+
+
+@pytest.mark.integration
+def test_add_topic_category_duplicated(controller, mock_service):
+    topic_category = TopicCategoryItem(
+        name="data science",
+    )
+
+    mock_service.add_topic_category.side_effect = TopicCategoryDuplicated(
+        "Topic category 'data science' already exists"
+    )
+
+    with pytest.raises(TopicCategoryDuplicated):
+        controller.add_topic_category(topic_category)

@@ -7,6 +7,16 @@ class TopicCategoryRepository:
     def __init__(self, db):
         self._db = db
 
+    def get_topic_category_by_name(self, name: str):
+        try:
+            session = self._db.get_db()
+            db_item = (
+                session.query(TopicCategory).filter(TopicCategory.name == name).first()
+            )
+            return db_item
+        except Exception as err:
+            raise err
+
     def add_topic_category(self, topic_category: TopicCategoryItem):
         try:
             session = self._db.get_db()
