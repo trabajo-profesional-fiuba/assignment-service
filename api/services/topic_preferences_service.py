@@ -1,6 +1,6 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from api.repositories.topic_preferences_repository import TopicPreferencesRepository
-from api.exceptions import TopicPreferencesDuplicated, TopicPreferencesNotFound
+from api.exceptions import TopicPreferencesNotFound
 
 
 class TopicPreferencesService:

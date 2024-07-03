@@ -1,6 +1,5 @@
 from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
 from storage.tables import TopicPreferences
-from api.exceptions import TopicPreferencesNotFound
 from sqlalchemy.exc import IntegrityError
 
 

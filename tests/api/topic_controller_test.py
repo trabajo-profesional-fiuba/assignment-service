@@ -3,7 +3,7 @@ from unittest.mock import create_autospec
 from api.models import TopicCategoryItem, TopicItem
 from api.controllers.topic_controller import TopicController
 from api.services.topic_service import TopicService
-from api.exceptions import TopicCategoryDuplicated
+from api.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound
 
 
 @pytest.fixture
@@ -43,5 +43,14 @@ def test_add_topic_with_success(controller, mock_service):
     topic = TopicItem(name="topic 1", category="category 1")
 
     mock_service.add_topic.return_value = topic
-
     assert controller.add_topic(topic) == topic
+
+
+@pytest.mark.integration
+def test_add_topic_not_found(controller, mock_service):
+    topic = TopicItem(name="topic 1", category="category 2")
+
+    mock_service.add_topic.side_effect = TopicCategoryNotFound()
+
+    with pytest.raises(TopicCategoryNotFound):
+        controller.add_topic(topic)

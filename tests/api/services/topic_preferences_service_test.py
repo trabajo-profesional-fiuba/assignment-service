@@ -373,12 +373,6 @@ def test_update_items_without_group_success(service, mock_repository):
 
 @pytest.mark.integration
 def test_update_items_not_found(service, mock_repository):
-    emails = [
-        "not_found@example.com",
-        "test2@example.com",
-        "test3@example.com",
-        "test14@example.com",
-    ]
     updated_item = TopicPreferencesUpdatedItem(
         email_student_2="test2@example.com",
         email_student_3="test3@example.com",

@@ -17,9 +17,9 @@ from api.repositories.topic_preferences_repository import TopicPreferencesReposi
 from api.repositories.topic_repository import TopicRepository
 from storage.database import Database
 from api.exceptions import (
-    TopicPreferencesDuplicated,
     TopicPreferencesNotFound,
     TopicCategoryDuplicated,
+    TopicCategoryNotFound,
 )
 
 app = FastAPI(title="Assignment Service Api")
@@ -88,7 +88,7 @@ async def update_topic_preferences(
             email_sender, topic_preferences_update
         )
         return updated_items
-    except TopicPreferencesNotFound as err:
+    except TopicPreferencesNotFound:
         raise HTTPException(
             status_code=409, detail=f"Topic preferences of '{email_sender}' not found."
         )
@@ -137,5 +137,10 @@ async def add_topic_category(topic_category: TopicCategoryItem):
 async def add_topic(topic: TopicItem):
     try:
         return topic_controller.add_topic(topic)
+    except TopicCategoryNotFound:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Topic category '{topic.category}' not found.",
+        )
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

@@ -51,3 +51,14 @@ def test_add_topic_with_success(test_app):
         "category": "category 1",
     }
     assert response.json() == expected_response
+
+
+@pytest.mark.integration
+def test_add_topic_not_found(test_app):
+    topic = {
+        "name": "topic 2",
+        "category": "category 2",
+    }
+    response = test_app.post("/topic/", json=topic)
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Topic category 'category 2' not found."}
