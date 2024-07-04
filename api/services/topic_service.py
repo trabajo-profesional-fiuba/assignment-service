@@ -22,9 +22,11 @@ class TopicService:
 
     def add_topic(self, topic: TopicItem):
         try:
-            if self._repository.get_topic_category_by_name(topic.category) is not None:
+            category = self._repository.get_topic_category_by_name(topic.category)
+            if category is not None:
                 if self._repository.get_topic(topic) is None:
-                    return self._repository.add_topic(topic)
+                    self._repository.add_topic(topic)
+                    return topic
                 raise TopicDuplicated()
             raise TopicCategoryNotFound()
         except Exception as err:

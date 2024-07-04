@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, DateTime, Integer
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
+from sqlalchemy.orm import declarative_base, relationship
 
 
 Base = declarative_base()
@@ -27,4 +27,6 @@ class Topic(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
-    category = Column(String, nullable=False)
+    category = Column(Integer, ForeignKey("topic_category.id"), nullable=False)
+
+    topic_category = relationship("TopicCategory")
