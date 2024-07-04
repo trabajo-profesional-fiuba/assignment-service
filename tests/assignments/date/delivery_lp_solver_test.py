@@ -57,7 +57,7 @@ class TestDeliveryLPSolver:
             "seconds",
         )
 
-    @pytest.mark.skip
+    @pytest.mark.performance
     def test_ten_groups_and_four_evaluators(self):
         """Testing if the algorithm is overhead with ten groups,
         five dates and five evaluators."""

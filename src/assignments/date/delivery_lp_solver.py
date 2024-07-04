@@ -57,7 +57,7 @@ class DeliveryLPSolver():
         self._adapter = adapter
         self._decision_variables = {}
         self._evaluator_day_vars = {}
-        self._tutor_day_vars = {}
+        # self._tutor_day_vars = {}
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
 
@@ -153,7 +153,7 @@ class DeliveryLPSolver():
                         group, tutor.id(), evaluator, week, day, hour
                     )
                     self._create_evaluator_day_variable(evaluator, week, day)
-                    self._create_tutor_day_variable(tutor, week, day)
+                    #self._create_tutor_day_variable(tutor, week, day)
 
     def _create_decision_variable(self, group, tutor_id, evaluator, week, day, hour):
         """
@@ -430,10 +430,11 @@ class DeliveryLPSolver():
                 week * self._evaluator_day_vars[(evaluator_id, week, day)]
                 for (evaluator_id, week, day) in self._evaluator_day_vars
             )
-            + scip.quicksum(
-                self._tutor_day_vars[(tutor_id, week, day)]
-                for (tutor_id, week, day) in self._tutor_day_vars
-            ),
+            # + scip.quicksum(
+            #     self._tutor_day_vars[(tutor_id, week, day)]
+            #     for (tutor_id, week, day) in self._tutor_day_vars
+            # )
+            ,
             "minimize",
         )
 
@@ -507,8 +508,8 @@ class DeliveryLPSolver():
         self.add_group_assignment_constraints()
         self.add_evaluator_minimization_constraints()
         self.add_evaluator_group_assignment_constraints()
-        self.tutor_max_groups_per_date_restriction()
-        self.tutor_day_minimization_restriction()
+        #self.tutor_max_groups_per_date_restriction()
+        #self.tutor_day_minimization_restriction()
         self.add_unique_group_per_date_constraint()
         self.add_assignment_count_constraints()
         self.add_balance_constraints()
@@ -540,10 +541,10 @@ class DeliveryLPSolver():
             var: round(self._model.getVal(self._evaluator_day_vars[var]))
             for var in self._evaluator_day_vars
         }
-        rounded_tutor_day_vars = {
-            var: round(self._model.getVal(self._tutor_day_vars[var]))
-            for var in self._tutor_day_vars
-        }
+        # rounded_tutor_day_vars = {
+        #     var: round(self._model.getVal(self._tutor_day_vars[var]))
+        #     for var in self._tutor_day_vars
+        # }
 
         print("Activated decision variables:")
         for var in rounded_decision_vars:
@@ -571,10 +572,10 @@ class DeliveryLPSolver():
             if rounded_evaluator_day_vars[var] > 0:
                 print(f"Additional variable {var}")
 
-        print("\nAdditional activated variables (Tutor, Week, Day):")
-        for var in rounded_tutor_day_vars:
-            if rounded_tutor_day_vars[var] > 0:
-                print(f"Additional variable {var}")
+        # print("\nAdditional activated variables (Tutor, Week, Day):")
+        # for var in rounded_tutor_day_vars:
+        #     if rounded_tutor_day_vars[var] > 0:
+        #         print(f"Additional variable {var}")
 
         result_context = ResultContext(
             type="linear", result=result, groups=self._groups, evaluators=self._evaluators)
