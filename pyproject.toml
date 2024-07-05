@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "An assignment service to solve assignment problems"
 authors = ["celedituro <cdituro@fi.uba.ar>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
