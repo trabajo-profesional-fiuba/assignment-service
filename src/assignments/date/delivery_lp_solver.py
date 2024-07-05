@@ -16,7 +16,7 @@ MAX_GROUPS_PER_DAY = 5
 MAX_DIF_EVALUATORS = 5
 
 
-class DeliveryLPSolver():
+class DeliveryLPSolver:
     """
     Class to solve the problem of assigning evaluators to groups
     using linear programming.
@@ -29,26 +29,22 @@ class DeliveryLPSolver():
         Decision variables for the assignment.
     _evaluator_day_vars : dict
         Variables to minimize the attendance days of evaluators.
-    _tutor_day_vars : dict
-        Variables to minimize the attendance days of tutors.
     _model : scip.Model
         SCIP model to solve the problem.
     """
 
-    def __init__(self, tutor_periods: list[TutorPeriod] = [], adapter = None, available_dates = []):
+    def __init__(
+        self, tutor_periods: list[TutorPeriod] = [], adapter=None, available_dates=[]
+    ):
         """
-        Initializes the class with dates, groups and evaluators.
+        Initializes the class with tutor_periods and dates.
 
         Parameters:
         -----------
-        dates : list
+        available_dates : list
             List of available dates.
-        groups : list
-            List of groups that need evaluators.
-        tutors : list
+        tutor_periods : list
             List of tutors.
-        evaluators : list
-            List of available evaluators.
         """
         self._evaluators = self.create_evaluators(tutor_periods)
         self._tutors = self.get_tutors(tutor_periods)
@@ -57,31 +53,30 @@ class DeliveryLPSolver():
         self._adapter = adapter
         self._decision_variables = {}
         self._evaluator_day_vars = {}
-        # self._tutor_day_vars = {}
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
 
-    def get_tutors(self, tutor_periods: list[TutorPeriod] = [] ):
+    def get_tutors(self, tutor_periods: list[TutorPeriod] = []):
         tutors = list(filter(lambda x: not x.is_evaluator(), tutor_periods))
         return tutors
-    
-    def get_all_groups(self, tutor_periods: list[TutorPeriod] = [] ):
+
+    def get_all_groups(self, tutor_periods: list[TutorPeriod] = []):
         groups = []
         for t in tutor_periods:
             groups += t.groups
         return groups
-    
-    def create_evaluators(self, tutor_periods: list[TutorPeriod] = [] ):
+
+    def create_evaluators(self, tutor_periods: list[TutorPeriod] = []):
         evaluators = list(filter(lambda x: x.is_evaluator(), tutor_periods))
         return evaluators
-    
+
     def create_decision_variables(self):
         """
         Creates decision variables for the assignment of evaluators to groups.
 
         This function iterates over each group and evaluator, determining the
         possible dates where the group and its tutors can meet with the evaluator.
-        For each valid combination of group, tutors, evaluator, and date, it
+        For each valid combination of group, tutor, evaluator, and date, it
         creates a decision variable to represent whether the evaluator is assigned
         to the group on that date.
         """
@@ -89,7 +84,9 @@ class DeliveryLPSolver():
             for group in tutor.groups:
                 group_tutor_possible_dates = self._find_common_dates(group, tutor)
                 for evaluator in self._evaluators:
-                    self._create_evaluator_decision_variables(group, tutor, evaluator, group_tutor_possible_dates)
+                    self._create_evaluator_decision_variables(
+                        group, tutor, evaluator, group_tutor_possible_dates
+                    )
 
     def _find_common_dates(self, group, tutor):
         """
@@ -99,8 +96,8 @@ class DeliveryLPSolver():
         -----------
         group : Group
             The group needing an evaluator.
-        tutors : list
-            List of tutors associated with the group.
+        tutor : TutorPeriod
+            The tutor associated with the group.
 
         Returns:
         --------
@@ -108,16 +105,15 @@ class DeliveryLPSolver():
             List of tuples representing common dates (week, day, hour).
         """
         return [
-        (date.week, date.day, date.hour)
-        for date in group.available_dates
-        if any(
-            t_date.week == date.week
-            and t_date.day == date.day
-            and date.hour == t_date.hour
-            for t_date in tutor.available_dates
-        )
-    ]
-
+            (date.week, date.day, date.hour)
+            for date in group.available_dates
+            if any(
+                t_date.week == date.week
+                and t_date.day == date.day
+                and date.hour == t_date.hour
+                for t_date in tutor.available_dates
+            )
+        ]
 
     def _create_evaluator_decision_variables(
         self, group, tutor, evaluator, group_tutor_possible_dates
@@ -134,6 +130,8 @@ class DeliveryLPSolver():
         -----------
         group : Group
             The group needing an evaluator.
+        tutor : TutorPeriod
+            The tutor associated with the group.
         evaluator : Evaluator
             The evaluator being considered for assignment.
         group_tutors_possible_dates : list
@@ -153,7 +151,6 @@ class DeliveryLPSolver():
                         group, tutor.id(), evaluator, week, day, hour
                     )
                     self._create_evaluator_day_variable(evaluator, week, day)
-                    #self._create_tutor_day_variable(tutor, week, day)
 
     def _create_decision_variable(self, group, tutor_id, evaluator, week, day, hour):
         """
@@ -166,9 +163,9 @@ class DeliveryLPSolver():
         -----------
         group : Group
             The group needing an evaluator.
-        tutor_ids : tuple
-            IDs of the tutors associated with the group.
-        evaluator : Evaluator
+        tutor_id : int
+            ID of the tutor associated with the group.
+        evaluator : TutorPeriod
             The evaluator being considered for assignment.
         week : int
             The week number of the assignment.
@@ -204,36 +201,14 @@ class DeliveryLPSolver():
                 day_var_name, vtype="B", obj=0, lb=0, ub=1
             )
 
-    def _create_tutor_day_variable(self, tutor, week, day):
-        """
-        Creates a day variable for a tutor.
-
-        This function creates a binary variable indicating whether a tutor is
-        assigned to any group on a specific day.
-
-        Parameters:
-        -----------
-        tutor : Tutor
-            The tutor being considered.
-        week : int
-            The week number of the assignment.
-        day : int
-            The day of the week of the assignment.
-        """
-        if (tutor.id(), week, day) not in self._tutor_day_vars:
-            day_var_name = f"{TUTOR_ID}-{tutor.id()}-{DATE_ID}-{week}-{day}"
-            self._tutor_day_vars[(tutor.id(), week, day)] = self._model.addVar(
-                day_var_name, vtype="B", obj=0, lb=0, ub=1
-            )
-
     def add_group_assignment_constraints(self):
         """
         Adds group assignment constraints to the model.
         """
         for tutor in self._tutors:
             for group in tutor.groups:
-                 self._add_unique_date_constraint(group, tutor)
-                 self._add_assignment_constraints(group)
+                self._add_unique_date_constraint(group, tutor)
+                self._add_assignment_constraints(group)
 
     def _add_unique_date_constraint(self, group, tutor):
         """
@@ -272,7 +247,8 @@ class DeliveryLPSolver():
             The group needing an evaluator.
         group_possible_dates : list
             List of possible dates (week, day, hour) for the group.
-
+        tutor : TutorPeriod
+            The tutor associated with the group.
         Returns:
         --------
         dict
@@ -292,10 +268,24 @@ class DeliveryLPSolver():
                 group_date_var
                 >= scip.quicksum(
                     self._decision_variables[
-                        (group.id(), tutor.id(), evaluator.id(), date[0], date[1], date[2])
+                        (
+                            group.id(),
+                            tutor.id(),
+                            evaluator.id(),
+                            date[0],
+                            date[1],
+                            date[2],
+                        )
                     ]
                     for evaluator in self._evaluators
-                    if (group.id(), tutor.id(), evaluator.id(), date[0], date[1], date[2])
+                    if (
+                        group.id(),
+                        tutor.id(),
+                        evaluator.id(),
+                        date[0],
+                        date[1],
+                        date[2],
+                    )
                     in self._decision_variables
                 )
                 / len(self._evaluators),
@@ -319,7 +309,8 @@ class DeliveryLPSolver():
         ]
         if variables:
             self._model.addCons(
-                scip.quicksum(variables) == 1, name=f"min-assign-{GROUP_ID}-{group.id()}"
+                scip.quicksum(variables) == 1,
+                name=f"min-assign-{GROUP_ID}-{group.id()}",
             )
 
     def add_unique_group_per_date_constraint(self):
@@ -353,39 +344,6 @@ class DeliveryLPSolver():
                     if var[EVALUATOR] == evaluator_id
                     and var[WEEK] == week
                     and var[DAY] == day
-                )
-                / len(self._available_dates)
-            )
-
-    def tutor_max_groups_per_date_restriction(self):
-        """
-        Adds the restriction that each tutor can have at most 5 groups per day.
-        """
-        for tutor in self._tutors:
-            week_days = set((date.week, date.day) for date in self._available_dates)
-
-            for week, day in week_days:
-                self._model.addCons(
-                    scip.quicksum(
-                        self._decision_variables[var]
-                        for var in self._decision_variables
-                        if var[TUTOR] == tutor.id() and var[WEEK] == week and var[DAY] == day
-                    )
-                    <= MAX_GROUPS_PER_DAY,  
-                    name=f"max-groups-week-{week}-day-{day}-{TUTOR_ID}-{tutor.id()}"
-                )
-
-    def tutor_day_minimization_restriction(self):
-        """
-        Minimizes tutor's attendance days.
-        """
-        for tutor_id, week, day in self._tutor_day_vars:
-            self._model.addCons(
-                self._tutor_day_vars[(tutor_id, week, day)]
-                >= scip.quicksum(
-                    self._decision_variables[var]
-                    for var in self._decision_variables
-                    if var[WEEK] == week and var[DAY] == day and var[TUTOR] == tutor_id
                 )
                 / len(self._available_dates)
             )
@@ -429,12 +387,7 @@ class DeliveryLPSolver():
             scip.quicksum(
                 week * self._evaluator_day_vars[(evaluator_id, week, day)]
                 for (evaluator_id, week, day) in self._evaluator_day_vars
-            )
-            # + scip.quicksum(
-            #     self._tutor_day_vars[(tutor_id, week, day)]
-            #     for (tutor_id, week, day) in self._tutor_day_vars
-            # )
-            ,
+            ),
             "minimize",
         )
 
@@ -484,14 +437,18 @@ class DeliveryLPSolver():
                         name=f"balance-{EVALUATOR_ID}-{evaluator_j.id()}-{evaluator_i.id()}",
                     )
 
-    def _find_substitutes_on_date(self, date, evaluator_id, tutors_ids):
-            substitutes = []
-            for evaluator in self._evaluators:
-                if evaluator.is_avaliable(date.label()) and evaluator.id() != evaluator_id and evaluator.id() not in tutors_ids:
-                    substitutes.append(evaluator.id())
-                    evaluator.add_substitute_date(date)
+    def _find_substitutes_on_date(self, date, evaluator_id, tutor_id):
+        substitutes = []
+        for evaluator in self._evaluators:
+            if (
+                evaluator.is_avaliable(date.label())
+                and evaluator.id() != evaluator_id
+                and evaluator.id() != tutor_id
+            ):
+                substitutes.append(evaluator.id())
+                evaluator.add_substitute_date(date)
 
-            return substitutes
+        return substitutes
 
     def solve(self):
         """
@@ -508,18 +465,16 @@ class DeliveryLPSolver():
         self.add_group_assignment_constraints()
         self.add_evaluator_minimization_constraints()
         self.add_evaluator_group_assignment_constraints()
-        #self.tutor_max_groups_per_date_restriction()
-        #self.tutor_day_minimization_restriction()
         self.add_unique_group_per_date_constraint()
         self.add_assignment_count_constraints()
         self.add_balance_constraints()
         self.define_objective()
-        print("Solving")
         self._model.optimize()
 
-
-        return self._get_results()
-
+        if self._model.getStatus() == "optimal":
+            return self._get_results()
+        else:
+            return None
     def _get_results(self):
         """
         Retrieves and prints the results from the solver.
@@ -541,10 +496,6 @@ class DeliveryLPSolver():
             var: round(self._model.getVal(self._evaluator_day_vars[var]))
             for var in self._evaluator_day_vars
         }
-        # rounded_tutor_day_vars = {
-        #     var: round(self._model.getVal(self._tutor_day_vars[var]))
-        #     for var in self._tutor_day_vars
-        # }
 
         print("Activated decision variables:")
         for var in rounded_decision_vars:
@@ -554,7 +505,11 @@ class DeliveryLPSolver():
                     "val:",
                     self._model.getVal(self._decision_variables[var]),
                 )
-                # substitue = self._find_substitutes_on_date(DeliveryDate(var[WEEK], var[DAY], var[HOUR]), var[EVALUATOR], var[TUTOR])
+                substitue = self._find_substitutes_on_date(
+                    DeliveryDate(var[WEEK], var[DAY], var[HOUR]),
+                    var[EVALUATOR],
+                    var[TUTOR],
+                )
                 result.append(
                     (
                         f"{GROUP_ID}-{var[GROUP]}",
@@ -572,16 +527,13 @@ class DeliveryLPSolver():
             if rounded_evaluator_day_vars[var] > 0:
                 print(f"Additional variable {var}")
 
-        # print("\nAdditional activated variables (Tutor, Week, Day):")
-        # for var in rounded_tutor_day_vars:
-        #     if rounded_tutor_day_vars[var] > 0:
-        #         print(f"Additional variable {var}")
-
         result_context = ResultContext(
-            type="linear", result=result, groups=self._groups, evaluators=self._evaluators)
-        
-        assignment_result = self._adapter.adapt_results(
-            result_context
+            type="linear",
+            result=result,
+            groups=self._groups,
+            evaluators=self._evaluators,
         )
+
+        assignment_result = self._adapter.adapt_results(result_context)
 
         return assignment_result

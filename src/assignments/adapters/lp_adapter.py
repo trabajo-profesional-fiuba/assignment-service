@@ -62,7 +62,7 @@ class LPAdapter:
 
         if groups is None or evaluators is None:
             return []
-        
+
         return AssignmentResult(
             result
             # self._groups(result, groups), self._evaluators(result, evaluators)

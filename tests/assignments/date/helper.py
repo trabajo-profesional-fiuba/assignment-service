@@ -61,7 +61,7 @@ class TestLPHelper:
         """
         tutors = []
         for i in range(1, num_tutors + 1):
-            tutor_period = TutorPeriod('1C2024')
+            tutor_period = TutorPeriod("1C2024")
             tutor = Tutor(i, "email", "name")
             tutor_period.add_parent(tutor)
             tutor_period.add_available_dates(available_dates)
@@ -79,16 +79,11 @@ class TestLPHelper:
         Returns: a list of evaluators with their with their ids and available dates.
         """
 
-        evaluators = [
-            TutorPeriod('1C2024')
-            for i in range(10, num_avaluators + 10)]
-        
-        for (i, e) in enumerate(evaluators):
-            e.make_evaluator()
-            e.add_parent(Tutor(i+10, "email", "name"))
-            e.add_available_dates(available_dates)
-       
-        return evaluators
+        evaluators = [TutorPeriod("1C2024") for i in range(10, num_avaluators + 10)]
 
-            
-        
+        for i, e in enumerate(evaluators):
+            e.make_evaluator()
+            e.add_parent(Tutor(i + 10, "email", "name"))
+            e.add_available_dates(available_dates)
+
+        return evaluators
