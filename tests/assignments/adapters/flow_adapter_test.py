@@ -66,7 +66,7 @@ class TestFlowAdapter:
         formatter = FlowAdapter()
         dates = [DeliveryDate(2, 2, 10), DeliveryDate(2, 2, 11)]
         groups = self.create_groups(2, dates)
-        expected = [(1,2,'2-2-10'), (2,2,'2-2-11')]
+        expected = [("group-1","evaluator-2",'date-2-2-10'), ("group-2","evaluator-2",'date-2-2-11')]
 
         result = formatter._adapt_groups_and_evaluators(
             groups, evaluators, flow_solver_result, clean_results)
