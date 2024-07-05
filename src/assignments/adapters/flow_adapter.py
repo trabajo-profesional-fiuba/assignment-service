@@ -62,17 +62,19 @@ class FlowAdapter:
         Returns:
             AssignmentResult instance.
         """
-        groups_information = result_context.get("result")
+        groups_information = result_context.get("groups_results")
         groups = result_context.get("groups")
 
-        evaluators_information = result_context.get("evaluators_data")
+        evaluators_information = result_context.get("evaluators_results")
         evaluators = result_context.get("evaluators")
 
+        substitutes = result_context.get("substitutes")
+
         if groups is None or evaluators is None:
-            return []
+            return AssignmentResult([], substitutes)
 
         results = self._adapt_groups_and_evaluators(
             groups, evaluators, groups_information, evaluators_information
         )
 
-        return AssignmentResult(results)
+        return AssignmentResult(results, substitutes)

@@ -360,9 +360,11 @@ class TestDeliveryFlowSolver:
         assert result is True
 
     @pytest.mark.unit
-    def test_complete_valid_flow(self, mocker):
+    def test_complete_valid_flow(self):
         # Arrange
         dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 3, 4), DeliveryDate(1, 1, 2)]
+
+        adapter = ResultAdapter()
 
         group1 = Group(1)
         group1.add_available_dates([dates[0], dates[1]])
@@ -380,13 +382,11 @@ class TestDeliveryFlowSolver:
         period2.add_groups(groups)
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period, period2], available_dates=dates
+            tutor_periods=[period, period2], available_dates=dates, adapter=adapter
         )
 
         # Act
-        max_flow_min_cost = delivery_flow_solver.solve()
+        result = delivery_flow_solver.solve()
 
         # Assertion
-        assert len(max_flow_min_cost["s"].keys()) == 2
-        for k, v in max_flow_min_cost["s"].items():
-            assert v == 1
+        assert len(result.get_results()) == 2 

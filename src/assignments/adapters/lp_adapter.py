@@ -57,5 +57,7 @@ class LPAdapter:
             AssignmentResult: An objects with groups.
         """
         result = result_context.get("result")
+        substitutes = result_context.get("substitutes")
 
-        return AssignmentResult(result)
+
+        return AssignmentResult(result, substitutes)

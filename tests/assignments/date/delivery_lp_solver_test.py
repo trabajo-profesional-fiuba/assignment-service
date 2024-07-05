@@ -48,7 +48,7 @@ class TestDeliveryLPSolver:
         result = solver.solve()
         end_time = time.time()
 
-        assert len(result._results) == 4
+        assert len(result.get_results()) == 4
 
         print(
             "4 groups, 4 evaluators, 2 tutors, 4 dates - Execution time:",
@@ -89,7 +89,7 @@ class TestDeliveryLPSolver:
         result = solver.solve()
         end_time = time.time()
 
-        assert len(result._results) == num_groups
+        assert len(result.get_results()) == num_groups
 
         print(
             "10 groups, 5 evaluators, 5 tutors, 5 dates - Execution time:",
@@ -130,7 +130,7 @@ class TestDeliveryLPSolver:
         result = solver.solve()
         end_time = time.time()
 
-        assert len(result._results) == num_groups
+        assert len(result.get_results()) == num_groups
 
         print(
             "10 groups, 1 evaluators, 5 tutors, 5 dates - Execution time:",
@@ -295,12 +295,12 @@ class TestDeliveryLPSolver:
         group_assignments = {}
 
         # Inicializar todos los contadores de grupo en 0
-        for group, evaluator, date in result._results:
+        for group, evaluator, date in result.get_results():
             if group not in group_assignments:
                 group_assignments[group] = 0
 
         # Contar las asignaciones para cada grupo
-        for group, evaluator, date in result._results:
+        for group, evaluator, date in result.get_results():
             group_assignments[group] += 1
 
         # Verificar que cada grupo tenga entre 1 y 4 evaluadores asignados
@@ -312,12 +312,12 @@ class TestDeliveryLPSolver:
         # Inicializar un diccionario para contar asignaciones por evaluador y día
         evaluators_assignment = {
             (evaluator, day_id): 0
-            for evaluator in {evaluator for _, evaluator, _ in result._results}
+            for evaluator in {evaluator for _, evaluator, _ in result.get_results()}
             for day_id in range(1, 6)
         }
 
         # Contar las asignaciones por evaluador y día
-        for group, evaluator, date in result._results:
+        for group, evaluator, date in result.get_results():
             day_id = int(date.split("-")[2])
             evaluators_assignment[(evaluator, day_id)] += 1
 
@@ -356,7 +356,7 @@ class TestDeliveryLPSolver:
         solver = DeliveryLPSolver(tutors, self.adapter, dates)
         result = solver.solve()
 
-        assert len(result._results) == 0
+        assert len(result.get_results()) == 0
 
     @pytest.mark.unit
     def test_no_evaluators(self):
@@ -387,7 +387,7 @@ class TestDeliveryLPSolver:
         solver = DeliveryLPSolver(tutors, self.adapter, dates)
         result = solver.solve()
 
-        assert len(result._results) == 0
+        assert len(result.get_results()) == 0
 
     @pytest.mark.unit
     def test_no_groups(self):
@@ -418,7 +418,7 @@ class TestDeliveryLPSolver:
         solver = DeliveryLPSolver(tutors, self.adapter, dates)
         result = solver.solve()
 
-        assert len(result._results) == 0
+        assert len(result.get_results()) == 0
 
     @pytest.mark.unit
     def test_conflicting_dates(self):
@@ -480,11 +480,11 @@ class TestDeliveryLPSolver:
 
         group_assignments = {}
 
-        for group, evaluator, date in result._results:
+        for group, evaluator, date in result.get_results():
             if group not in group_assignments:
                 group_assignments[group] = 0
 
-        for group, evaluator, date in result._results:
+        for group, evaluator, date in result.get_results():
             group_assignments[group] += 1
 
         for group_id, evaluators_assigned in group_assignments.items():
@@ -495,12 +495,12 @@ class TestDeliveryLPSolver:
         # Inicializar un diccionario para contar asignaciones por evaluador y día
         evaluators_assignment = {
             (evaluator, day_id): 0
-            for evaluator in {evaluator for _, evaluator, _ in result._results}
+            for evaluator in {evaluator for _, evaluator, _ in result.get_results()}
             for day_id in range(1, 6)
         }
 
         # Contar las asignaciones por evaluador y día
-        for group, evaluator, date in result._results:
+        for group, evaluator, date in result.get_results():
             day_id = int(date.split("-")[2])
             evaluators_assignment[(evaluator, day_id)] += 1
 
@@ -511,7 +511,7 @@ class TestDeliveryLPSolver:
             ), f"Evaluator {evaluator_id} has {value} groups assigned on day {day_id}, which exceeds the allowed limit."
 
         # Verificar que cada grupo tenga una fecha asignada
-        assigned_dates = {group: date for group, evaluator, date in result._results}
+        assigned_dates = {group: date for group, evaluator, date in result.get_results()}
         for group in groups:
             assert (
                 f"group-{group.id()}" in assigned_dates

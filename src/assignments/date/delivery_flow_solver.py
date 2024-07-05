@@ -295,9 +295,11 @@ class DeliveryFlowSolver:
 
         result_context = ResultContext(
             type="flow",
-            result=max_flow_min_cost_groups,
+            groups_results=max_flow_min_cost_groups,
+            evaluators_results=clean_results,
+            groups=self._groups,
+            evaluators= self._evaluators,
             substitutes=substitutes,
         )
-        assignment_result = self._adapter.format_result()
 
-        return assignment_result
+        return self._adapter.adapt_results(result_context)
