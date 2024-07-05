@@ -57,13 +57,7 @@ class LPAdapter:
             AssignmentResult: An objects with groups.
         """
         result = result_context.get("result")
-        groups = result_context.get("groups")
-        evaluators = result_context.get("evaluators")
-
-        if groups is None or evaluators is None:
-            return []
-
+        
         return AssignmentResult(
             result
-            # self._groups(result, groups), self._evaluators(result, evaluators)
         )
