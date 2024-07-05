@@ -1,6 +1,6 @@
 import networkx as nx
 
-# from src.assignments.date.delivery_solver import DeliverySolver
+from src.assignments.adapters.result_context import ResultContext
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 from src.model.period import TutorPeriod
 
@@ -291,10 +291,13 @@ class DeliveryFlowSolver:
         g_graph.add_edges_from(groups_edges)
         max_flow_min_cost_groups = self._max_flow_min_cost(g_graph)
 
-        # substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
+        substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
 
-        # assignment_result = self._adapter.format_result(
-        #    max_flow_min_cost_groups, self._groups, self._evaluators
-        # )
+        result_context = ResultContext(
+            type="flow",
+            result=max_flow_min_cost_groups,
+            substitutes=substitutes,
+        )
+        assignment_result = self._adapter.format_result()
 
-        return max_flow_min_cost_groups
+        return assignment_result

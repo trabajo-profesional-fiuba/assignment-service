@@ -57,7 +57,7 @@ class TestTutor:
 
         with pytest.raises(e.PeriodNotFound) as ex:
             tutor.get_period("1C2024")
-    
+
     @pytest.mark.unit
     def test_tutor_assign_groups(self):
         tutor = Tutor(1, "test@fi.uba.ar", "Juan Perez")
@@ -67,10 +67,8 @@ class TestTutor:
         g2 = Group(2)
         g3 = Group(3)
 
-
-        tutor.add_groups_to_period([g1,g2,g3], "1C2024")
+        tutor.add_groups_to_period([g1, g2, g3], "1C2024")
 
         assert g1.tutor == tutor
         assert g2.tutor == tutor
         assert g3.tutor == tutor
-

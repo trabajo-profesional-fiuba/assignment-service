@@ -45,7 +45,7 @@ class Tutor:
             raise e.PeriodNotFound(f"{period_name} is not part of tutor's periods")
 
         return self._periods.get(period_name)
-    
+
     def add_groups_to_period(self, groups, period_name):
         period = self.get_period(period_name)
         for g in groups:

@@ -34,7 +34,7 @@ class FlowAdapter:
             f"Evaluator with id: {id} was not found in the current evaluator list"
         )
 
-    def _adapt_groups_and_evaluators(self,groups, evaluators, g_info, e_info ):
+    def _adapt_groups_and_evaluators(self, groups, evaluators, g_info, e_info):
         results = []
         if g_info:
             for group in groups:
@@ -49,7 +49,7 @@ class FlowAdapter:
                         group.assign_date(date)
                         evaluator.evaluate_date(date)
                         results.append((group.id(), evaluator_id, date.label()))
-        
+
         return results
 
     def adapt_results(self, result_context) -> AssignmentResult:
@@ -71,6 +71,8 @@ class FlowAdapter:
         if groups is None or evaluators is None:
             return []
 
-        results = self._adapt_groups_and_evaluators(groups,evaluators,groups_information,evaluators_information)
+        results = self._adapt_groups_and_evaluators(
+            groups, evaluators, groups_information, evaluators_information
+        )
 
         return AssignmentResult(results)

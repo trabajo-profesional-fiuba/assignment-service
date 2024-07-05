@@ -478,7 +478,6 @@ class TestDeliveryLPSolver:
         solver = DeliveryLPSolver(tutors, self.adapter, dates)
         result = solver.solve()
 
-
         group_assignments = {}
 
         for group, evaluator, date in result._results:
@@ -510,14 +509,20 @@ class TestDeliveryLPSolver:
             assert (
                 value <= 5
             ), f"Evaluator {evaluator_id} has {value} groups assigned on day {day_id}, which exceeds the allowed limit."
-        
+
         # Verificar que cada grupo tenga una fecha asignada
         assigned_dates = {group: date for group, evaluator, date in result._results}
         for group in groups:
-            assert f"group-{group.id()}" in assigned_dates, f"Group {group.id()} does not have an assigned date."
+            assert (
+                f"group-{group.id()}" in assigned_dates
+            ), f"Group {group.id()} does not have an assigned date."
 
         # Verificar que las fechas asignadas estén dentro de las disponibles para los evaluadores
-        available_dates_labels = [f"date-{date.label()}" for date in evaluators[0].available_dates]
+        available_dates_labels = [
+            f"date-{date.label()}" for date in evaluators[0].available_dates
+        ]
         for group in groups:
             assigned_date = assigned_dates[f"group-{group.id()}"]
-            assert assigned_date in available_dates_labels, f"Group {group.id()} assigned date is not available for the evaluator."
+            assert (
+                assigned_date in available_dates_labels
+            ), f"Group {group.id()} assigned date is not available for the evaluator."

@@ -474,6 +474,7 @@ class DeliveryLPSolver:
             return self._get_results()
         else:
             return None
+
     def _get_results(self):
         """
         Retrieves and prints the results from the solver.
@@ -504,6 +505,7 @@ class DeliveryLPSolver:
                     "val:",
                     self._model.getVal(self._decision_variables[var]),
                 )
+                # FIXME: no olvidarnos de los subtitutos, (pondria un bool para calcularlos o no)
                 substitue = self._find_substitutes_on_date(
                     DeliveryDate(var[WEEK], var[DAY], var[HOUR]),
                     var[EVALUATOR],
@@ -517,7 +519,7 @@ class DeliveryLPSolver:
                     )
                 )
 
-                group_id, tutor_id, evaluator_id, week, day, hour = var
+                group_id, _, _, week, day, hour = var
                 group = next(g for g in self._groups if g.id() == group_id)
                 group.assign_date(DeliveryDate(week, day, hour))
 

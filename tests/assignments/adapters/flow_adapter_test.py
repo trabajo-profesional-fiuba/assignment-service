@@ -65,7 +65,6 @@ class TestFlowAdapter:
 
         formatter = FlowAdapter()
         dates = [DeliveryDate(2, 2, 10), DeliveryDate(2, 2, 11)]
-        dates_labels = [d.label() for d in dates]
         groups = self.create_groups(2, dates)
         result_context = ResultContext(
             type="flow",
@@ -74,12 +73,11 @@ class TestFlowAdapter:
             evaluators_data=clean_results,
             result=flow_solver_result,
         )
-        expected = [(1,2,'2-2-10'), (2,2,'2-2-11')]
+        expected = [(1, 2, "2-2-10"), (2, 2, "2-2-11")]
 
-        result = formatter._adapt_groups_and_evaluators(
-            groups, evaluators, flow_solver_result, clean_results)
-        
-        
+        result = formatter._adapt_groups_and_evaluators(result_context)
+        result = result.get_result()
+
         assert all(d in expected for d in result)
 
     @pytest.mark.unit
@@ -116,7 +114,7 @@ class TestFlowAdapter:
             result=flow_solver_result,
         )
 
-        result = formatter.adapt_results(result_context)
+        _ = formatter.adapt_results(result_context)
         assert all(d.label() in dates_labels for d in ev1.as_evaluator_dates)
         assert groups[0].assigned_date.label() == "2-2-10"
         assert groups[1].assigned_date.label() == "2-2-11"
