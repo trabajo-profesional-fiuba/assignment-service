@@ -1,8 +1,3 @@
-class TopicPreferencesDuplicated(Exception):
-    def __init__(self):
-        pass
-
-
 class TopicPreferencesNotFound(Exception):
     def __init__(self):
         pass

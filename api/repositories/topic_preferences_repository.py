@@ -24,7 +24,7 @@ class TopicPreferencesRepository:
             session.commit()
             session.refresh(db_item)
             return db_item
-        except IntegrityError as err:
+        except IntegrityError:
             db_item = self.update_topic_preferences(email, topic_preferences)
             return db_item
         except Exception as err:

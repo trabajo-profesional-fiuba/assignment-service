@@ -1,6 +1,9 @@
 import pytest
 from unittest.mock import create_autospec
-from api.models import TopicCategoryItem, TopicItem
+from api.models import (
+    TopicCategoryItem,
+    TopicItem,
+)
 from api.controllers.topic_controller import TopicController
 from api.services.topic_service import TopicService
 from api.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound

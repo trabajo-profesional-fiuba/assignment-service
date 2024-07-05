@@ -4,20 +4,16 @@ from typing import List
 
 from api.models import (
     TopicPreferencesItem,
-    TopicPreferencesUpdatedItem,
     TopicPreferencesResponse,
     TopicCategoryItem,
     TopicItem,
 )
-from api.controllers.topic_preferences_controller import TopicPreferenceController
 from api.controllers.topic_controller import TopicController
-from api.services.topic_preferences_service import TopicPreferencesService
 from api.services.topic_service import TopicService
 from api.repositories.topic_preferences_repository import TopicPreferencesRepository
 from api.repositories.topic_repository import TopicRepository
 from storage.database import Database
 from api.exceptions import (
-    TopicPreferencesNotFound,
     TopicCategoryDuplicated,
     TopicCategoryNotFound,
     TopicDuplicated,
@@ -30,11 +26,8 @@ app.add_middleware(
 
 database = Database()
 topic_preferences_repository = TopicPreferencesRepository(database)
-topic_preferences_service = TopicPreferencesService(topic_preferences_repository)
-topic_preferences_controller = TopicPreferenceController(topic_preferences_service)
-
 topic_repository = TopicRepository(database)
-topic_service = TopicService(topic_repository)
+topic_service = TopicService(topic_repository, topic_preferences_repository)
 topic_controller = TopicController(topic_service)
 
 
@@ -59,40 +52,8 @@ async def root():
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
-        new_item = topic_preferences_controller.add_topic_preferences(topic_preferences)
+        new_item = topic_controller.add_topic_preferences(topic_preferences)
         return new_item
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
-
-
-@app.put(
-    "/topic_preferences/{email_sender}",
-    status_code=200,
-    description="Update an existing topic preferences answer of email sender and\
-        students from its group if it belongs to one.",
-    response_description="List of updated topic preferences answers of email sender and\
-        students from its group if it belongs to one.",
-    response_model=List[TopicPreferencesResponse],
-    responses={
-        200: {"description": "Successfully updated topic preferences"},
-        409: {"description": "Student not found"},
-        422: {"description": "Validation Error"},
-        500: {"description": "Internal Server Error"},
-    },
-)
-async def update_topic_preferences(
-    email_sender: str,
-    topic_preferences_update: TopicPreferencesUpdatedItem,
-):
-    try:
-        updated_items = topic_preferences_controller.update_topic_preferences(
-            email_sender, topic_preferences_update
-        )
-        return updated_items
-    except TopicPreferencesNotFound:
-        raise HTTPException(
-            status_code=409, detail=f"Topic preferences of '{email_sender}' not found."
-        )
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
 
