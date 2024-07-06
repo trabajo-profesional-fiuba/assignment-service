@@ -1,9 +1,9 @@
 """Module providing helpers function to create different use cases for testing."""
 
-from src.model.group.group import Group
-from src.model.tutor.tutor import Tutor
+from src.model.group import Group
+from src.model.period import TutorPeriod
+from src.model.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.evaluator import Evaluator
 
 
 class TestLPHelper:
@@ -18,13 +18,15 @@ class TestLPHelper:
         Returns: a list of groups with their ids and available dates.
         """
         groups = []
-        for i in range(1, num_groups + 1):
-            tutor = Tutor((i % 4) + 1, "email", "name")
-            tutor.add_available_dates(available_dates)
-            groups.append(Group(i, tutor))
+        # for i in range(1, num_groups + 1):
+        #     tutor = Tutor((i % 4) + 1, "email", "name")
+        #     tutor.add_available_dates(available_dates)
+        #     groups.append(Group(i, tutor))
 
-        for group in groups:
+        for i in range(1, num_groups + 1):
+            group = Group(i)
             group.add_available_dates(available_dates)
+            groups.append(group)
 
         return groups
 
@@ -59,12 +61,14 @@ class TestLPHelper:
         """
         tutors = []
         for i in range(1, num_tutors + 1):
+            tutor_period = TutorPeriod("1C2024")
             tutor = Tutor(i, "email", "name")
-            tutor.add_available_dates(available_dates)
-            tutors.append(tutor)
+            tutor_period.add_parent(tutor)
+            tutor_period.add_available_dates(available_dates)
+            tutors.append(tutor_period)
         return tutors
 
-    def create_evaluators(self, num_tutors: int, available_dates: list):
+    def create_evaluators(self, num_avaluators: int, available_dates: list):
         """
         Creates a list of evaluators.
 
@@ -74,10 +78,12 @@ class TestLPHelper:
 
         Returns: a list of evaluators with their with their ids and available dates.
         """
-        return [
-            Evaluator(
-                i,
-                available_dates,
-            )
-            for i in range(10, num_tutors + 10)
-        ]
+
+        evaluators = [TutorPeriod("1C2024") for i in range(10, num_avaluators + 10)]
+
+        for i, e in enumerate(evaluators):
+            e.make_evaluator()
+            e.add_parent(Tutor(i + 10, "email", "name"))
+            e.add_available_dates(available_dates)
+
+        return evaluators

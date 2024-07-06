@@ -6,8 +6,8 @@ of groups to topics and tutors.
 import networkx as nx
 
 from src.constants import SOURCE_NODE_ID, SINK_NODE_ID, GROUP_ID, TOPIC_ID, TUTOR_ID
-from src.model.group.group import Group
-from src.model.tutor.tutor import Tutor
+from src.model.group import Group
+from src.model.tutor import Tutor
 
 
 class GroupTutorFlowSolver:

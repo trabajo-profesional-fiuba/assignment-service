@@ -1,13 +1,31 @@
 import networkx as nx
-from src.assignments.date.delivery_solver import DeliverySolver
+
+from src.assignments.adapters.result_context import ResultContext
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
+from src.model.period import TutorPeriod
 
 
-class DeliveryFlowSolver(DeliverySolver):
+class DeliveryFlowSolver:
 
-    def __init__(self, groups, tutors, formatter, available_dates, evaluators):
-        super().__init__(groups, tutors, formatter, available_dates)
-        self._evaluators = evaluators
+    def __init__(
+        self, tutor_periods: list[TutorPeriod] = [], adapter=None, available_dates=[]
+    ):
+        self._evaluators = self.create_evaluators(tutor_periods)
+        self._tutors = tutor_periods
+        self._groups = self.get_all_groups(tutor_periods)
+        self._available_dates = available_dates
+        self._adapter = adapter
+
+    def create_evaluators(self, tutor_periods: list[TutorPeriod] = []):
+        evaluators = list(filter(lambda x: x.is_evaluator(), tutor_periods))
+        return evaluators
+
+    def get_all_groups(self, tutor_periods: list[TutorPeriod] = []):
+        groups = []
+        for t in tutor_periods:
+            groups += t.groups
+
+        return groups
 
     # Common methods
     def _create_source_edges(
@@ -19,7 +37,11 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         edges = []
         for node in nodes:
-            edge = ("s", f"{prefix_node}-{node.id}", {"capacity": capacity, "cost": 1})
+            edge = (
+                "s",
+                f"{prefix_node}-{node.id()}",
+                {"capacity": capacity, "cost": 1},
+            )
             edges.append(edge)
 
         return edges
@@ -48,16 +70,16 @@ class DeliveryFlowSolver(DeliverySolver):
         edges = []
         final_dates = []
         for group in self._groups:
-            week, evaluator_id = clean_results[f"{GROUP_ID}-{group.id}"]
+            week, evaluator_id = clean_results[f"{GROUP_ID}-{group.id()}"]
             evaluators_dates = self._get_evaluator_dates(evaluator_id)
             group.filter_dates(evaluators_dates)
-            for date in group.available_dates():
+            for date in group.available_dates:
                 if date.week == week:
                     date_label = date.label()
                     cost_date = group.cost_of_date(date)
                     edges.append(
                         (
-                            f"{GROUP_ID}-{group.id}",
+                            f"{GROUP_ID}-{group.id()}",
                             f"{DATE_ID}-{date_label}",
                             {"capacity": 1, "cost": cost_date},
                         )
@@ -78,7 +100,7 @@ class DeliveryFlowSolver(DeliverySolver):
         return list(set(dates))
 
     def _get_groups_id_with_mutual_dates(
-        self, week: int, dates: list[str], evaluator_id: int
+        self, week: int, dates: list[str], groups_ids: list[int]
     ):
         """
         Search for at least mutual date between a group and an evaluator,
@@ -86,15 +108,15 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         groups = []
         for group in self._groups:
-            if group.is_tutored_by(evaluator_id) is False:
-                group_dates = list(d.label() for d in group.available_dates())
+            if group.id() not in groups_ids:
+                group_dates = list(d.label() for d in group.available_dates)
                 weeks_dates = list(
                     filter(lambda x: x.split("-")[0] == str(week), dates)
                 )
                 mutual_dates = list(set(group_dates) & set(weeks_dates))
                 if len(mutual_dates) > 0:
                     cost = group.cost_of_week(week)
-                    groups.append((group.id, cost))
+                    groups.append((group.id(), cost))
         return groups
 
     # Evaluators methods
@@ -116,13 +138,13 @@ class DeliveryFlowSolver(DeliverySolver):
                 if week not in weeks_checked:
                     weeks_checked.append(week)
                     week_edge = (
-                        f"evaluator-{evaluator.id}",
-                        f"{DATE_ID}-{week}-evaluator-{evaluator.id}",
+                        f"evaluator-{evaluator.id()}",
+                        f"{DATE_ID}-{week}-evaluator-{evaluator.id()}",
                         {"capacity": 5, "cost": 1},
                     )
                     edges.append(week_edge)
                     groups_info = self._get_groups_id_with_mutual_dates(
-                        week, evaluador_dates, evaluator.id
+                        week, evaluador_dates, evaluator.groups_ids()
                     )
 
                     for group in groups_info:
@@ -130,7 +152,7 @@ class DeliveryFlowSolver(DeliverySolver):
                             all_group_ids.append(group[0])
 
                         edge = (
-                            f"{DATE_ID}-{week}-evaluator-{evaluator.id}",
+                            f"{DATE_ID}-{week}-evaluator-{evaluator.id()}",
                             f"{GROUP_ID}-{group[0]}",
                             {"capacity": 1, "cost": group[1]},
                         )
@@ -144,7 +166,7 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         dates = []
         for e in self._evaluators:
-            dates += e.filter_dates(self._available_dates)
+            dates += e.find_mutual_dates(self._available_dates)
 
         return list(set(dates))
 
@@ -156,7 +178,7 @@ class DeliveryFlowSolver(DeliverySolver):
         """
         cleaned_results = {}
         for evaluator in self._evaluators:
-            evaluator_key = f"{EVALUATOR_ID}-{evaluator.id}"
+            evaluator_key = f"{EVALUATOR_ID}-{evaluator.id()}"
             evaluator_results = results[evaluator_key]
 
             for week, week_value in evaluator_results.items():
@@ -167,7 +189,7 @@ class DeliveryFlowSolver(DeliverySolver):
 
                     for group, group_value in results[week_key].items():
                         if group_value > 0:
-                            cleaned_results[group] = (int(week_num), evaluator.id)
+                            cleaned_results[group] = (int(week_num), evaluator.id())
 
         return cleaned_results
 
@@ -176,7 +198,7 @@ class DeliveryFlowSolver(DeliverySolver):
         Collect of the evaluators dates labels based on an id
         """
         for evaluator in self._evaluators:
-            if evaluator.id == evaluator_id:
+            if evaluator.id() == evaluator_id:
                 return [d.label() for d in evaluator._available_dates]
 
         return []
@@ -184,7 +206,7 @@ class DeliveryFlowSolver(DeliverySolver):
     def _find_substitutes_on_date(self, date, evaluator_id):
         substitutes = []
         for evaluator in self._evaluators:
-            if evaluator.is_avaliable(date) and evaluator.id != evaluator_id:
+            if evaluator.is_avaliable(date) and evaluator.id() != evaluator_id:
                 substitutes.append(evaluator)
 
         return substitutes
@@ -227,7 +249,7 @@ class DeliveryFlowSolver(DeliverySolver):
 
         all_evaluated = True
         for group in self._groups:
-            group_key = f"{GROUP_ID}-{group.id}"
+            group_key = f"{GROUP_ID}-{group.id()}"
             if group_key not in clean_results:
                 all_evaluated = False
 
@@ -269,10 +291,15 @@ class DeliveryFlowSolver(DeliverySolver):
         g_graph.add_edges_from(groups_edges)
         max_flow_min_cost_groups = self._max_flow_min_cost(g_graph)
 
-        # substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
+        substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
 
-        # assignment_result = self._formatter.format_result(
-        #    max_flow_min_cost_groups, self._groups, self._evaluators
-        # )
+        result_context = ResultContext(
+            type="flow",
+            groups_results=max_flow_min_cost_groups,
+            evaluators_results=clean_results,
+            groups=self._groups,
+            evaluators= self._evaluators,
+            substitutes=substitutes,
+        )
 
-        return max_flow_min_cost_groups
+        return self._adapter.adapt_results(result_context)
