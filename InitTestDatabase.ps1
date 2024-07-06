@@ -1,4 +1,7 @@
-
+Param(
+    [switch]
+    $StopDatabase
+)
 
 
 
@@ -16,26 +19,33 @@ function IsDockerInstalled(){
 
 
 if (IsDockerInstalled){
-    Write-Host "Starting PostgreSQL 15 container..."
-
-    docker run -d --rm `
-    -e POSTGRES_USER=postgres `
-    -e POSTGRES_PASSWORD=postgres `
-    -e POSTGRES_DB=postgres `
-    -p 5433:5432 `
-    --name postgres `
-    postgres:15
-
-    $postgresUrl = "postgres://postgres:postgres@localhost:5433/postgres"
-
-    Write-Host "PostgreSQL container started."
-    Write-Host -ForegroundColor Yellow "Container information r"
-    Write-Host  "Detached mode on"
-    Write-Host  "Username: postgres"
-    Write-Host  "Password: postgres"
-    Write-Host  "Database: postgres"
-    Write-Host  "Ports: 5433:5432"
-
-    Write-Host -ForegroundColor Cyan "URL Connection: $postgresUrl"    
+    
+    if (!$StopDatabase) {
+        Write-Host "Starting PostgreSQL 15 container..."
+    
+        docker run -d --rm `
+        -e POSTGRES_USER=postgres `
+        -e POSTGRES_PASSWORD=postgres `
+        -e POSTGRES_DB=postgres `
+        -p 5433:5432 `
+        --name postgres `
+        postgres:15
+    
+        $postgresUrl = "postgres://postgres:postgres@localhost:5433/postgres"
+    
+        Write-Host "PostgreSQL container started."
+        Write-Host -ForegroundColor Yellow "Container information"
+        Write-Host  "Detached mode on"
+        Write-Host  "Username: postgres"
+        Write-Host  "Password: postgres"
+        Write-Host  "Database: postgres"
+        Write-Host  "Ports: 5433:5432"
+    
+        Write-Host -ForegroundColor Cyan "URL Connection: $postgresUrl"
+    }
+    else {
+        Write-Host "Stopping and removing PostgreSQL 15 container..."
+        $_ = docker stop postgres
+    }
 }
 
