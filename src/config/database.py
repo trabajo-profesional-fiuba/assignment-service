@@ -3,7 +3,8 @@ from sqlalchemy import create_engine, Column, String, DateTime, Index
 from sqlalchemy.orm import sessionmaker, declarative_base
 from contextlib import contextmanager
 import sqlalchemy.exc
-from storage.topic_preferences_table import TopicPreferences, Base
+
+Base = declarative_base()
 
 DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/postgres"
 

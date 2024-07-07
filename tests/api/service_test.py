@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import create_autospec
-from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.topic_preferences_repository import TopicPreferencesRepository
-from api.topic_preferences_service import TopicPreferencesService
-from api.exceptions import TopicPreferencesDuplicated
+from src.api.topic.schemas import TopicPreferencesItem, TopicPreferencesUpdatedItem
+from src.api.topic.repository import TopicPreferencesRepository
+from src.api.topic.service import TopicPreferencesService
+from src.api.topic.exceptions import TopicPreferencesDuplicated
 
 
 @pytest.fixture

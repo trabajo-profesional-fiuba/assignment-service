@@ -1,8 +1,9 @@
 from sqlalchemy import Column, String, DateTime, Table
 from sqlalchemy.orm import declarative_base
+from src.config.database import Base
 
 
-Base = declarative_base()
+
 
 
 class TopicPreferences(Base):
