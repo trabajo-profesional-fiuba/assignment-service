@@ -1,15 +1,15 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from api.topic_preferences_repository import TopicPreferencesRepository
-from api.topic_preferences_service import TopicPreferencesService
-from api.models import (
+from api.topic.repository import TopicPreferencesRepository
+from api.topic.service import TopicPreferencesService
+from api.topic.schemas import (
     TopicPreferencesItem,
     TopicPreferencesUpdatedItem,
     TopicPreferencesResponse,
 )
-from storage.database import Database
-from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
-from api.topic_preferences_controller import TopicPreferenceController
+from src.config.database import Database
+from api.topic.exceptions import TopicPreferencesDuplicated, StudentNotFound
+from api.topic.router import TopicPreferenceController
 from typing import List
 
 app = FastAPI(title="Assignment TopicPreferencesService Api")
