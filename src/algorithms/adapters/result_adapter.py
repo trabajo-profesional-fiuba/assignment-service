@@ -1,8 +1,8 @@
-import src.assignments.adapters.result_context as result_context
-from src.assignments.adapters.exceptions import ResultFormatNotFound
+import src.algorithms.adapters.result_context as result_context
+from src.algorithms.adapters.exceptions import ResultFormatNotFound
 from src.model.utils.result import AssignmentResult
-from src.assignments.adapters.flow_adapter import FlowAdapter
-from src.assignments.adapters.lp_adapter import LPAdapter
+from src.algorithms.adapters.flow_adapter import FlowAdapter
+from src.algorithms.adapters.lp_adapter import LPAdapter
 
 
 class ResultAdapter:

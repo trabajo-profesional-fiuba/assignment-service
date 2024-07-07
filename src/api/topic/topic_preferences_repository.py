@@ -1,7 +1,6 @@
-from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
+from src.api.topic.schemas import TopicPreferencesItem, TopicPreferencesUpdatedItem
+from src.api.topic.models import TopicPreferences
 from sqlalchemy.exc import IntegrityError
-from storage.database import TopicPreferences
 
 
 class TopicPreferencesRepository:
@@ -26,11 +25,24 @@ class TopicPreferencesRepository:
             session.refresh(db_item)
             return db_item
         except IntegrityError:
-            if email == topic_preferences.email_sender:
-                session.rollback()
-                raise TopicPreferencesDuplicated(topic_preferences.email_sender)
-            else:
-                return db_item
+            db_item = self.update_topic_preferences(email, topic_preferences)
+            return db_item
+        except Exception as err:
+            session.rollback()
+            raise err
+
+    def get_topic_preferences_by_email(self, email: str):
+        try:
+            session = self._db.get_db()
+            db_item = (
+                session.query(TopicPreferences)
+                .filter(TopicPreferences.email == email)
+                .first()
+            )
+            return db_item
+        except Exception as err:
+            session.rollback()
+            raise err
 
     def update_topic_preferences(
         self, email: str, topic_preferences_update: TopicPreferencesUpdatedItem
@@ -42,9 +54,6 @@ class TopicPreferencesRepository:
                 .filter(TopicPreferences.email == email)
                 .first()
             )
-
-            if db_item is None:
-                raise StudentNotFound(email)
 
             update_data = topic_preferences_update.model_dump()
             for field, value in update_data.items():

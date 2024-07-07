@@ -29,3 +29,12 @@ class TopicPreferencesResponse(BaseModel):
     topic_1: str
     topic_2: str
     topic_3: str
+
+
+class TopicCategoryItem(BaseModel):
+    name: str
+
+
+class TopicItem(BaseModel):
+    name: str
+    category: str

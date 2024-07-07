@@ -1,4 +1,4 @@
-from src.assignments.adapters.exceptions import EvaluatorNotFound
+from src.algorithms.adapters.exceptions import EvaluatorNotFound
 from src.exceptions import WrongDateFormat
 from src.model.utils.result import AssignmentResult
 from src.model.utils.delivery_date import DeliveryDate
