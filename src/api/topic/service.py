@@ -1,11 +1,11 @@
-from api.models import (
+from src.api.topic.schemas import (
     TopicCategoryItem,
     TopicItem,
     TopicPreferencesItem,
 )
-from api.repositories.topic_repository import TopicRepository
-from api.repositories.topic_preferences_repository import TopicPreferencesRepository
-from api.exceptions import (
+from src.api.topic.repository import TopicRepository
+from src.api.topic.topic_preferences_repository import TopicPreferencesRepository
+from src.api.topic.exceptions import (
     TopicCategoryDuplicated,
     TopicCategoryNotFound,
     TopicDuplicated,

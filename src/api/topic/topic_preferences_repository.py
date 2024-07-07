@@ -1,5 +1,5 @@
-from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from storage.tables import TopicPreferences
+from src.api.topic.schemas import TopicPreferencesItem, TopicPreferencesUpdatedItem
+from src.api.topic.models import TopicPreferences
 from sqlalchemy.exc import IntegrityError
 
 

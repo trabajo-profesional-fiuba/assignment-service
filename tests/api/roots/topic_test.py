@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture()
 def test_app():
-    from api.main import app
+    from src.api.main import app
 
     with TestClient(app) as client:
         yield client

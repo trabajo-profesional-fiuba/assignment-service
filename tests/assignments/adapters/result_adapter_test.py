@@ -1,9 +1,9 @@
 import pytest
-from src.assignments.adapters.exceptions import ResultFormatNotFound
-from src.assignments.adapters.result_adapter import ResultAdapter
-from src.assignments.adapters.flow_adapter import FlowAdapter
-from src.assignments.adapters.lp_adapter import LPAdapter
-from src.assignments.adapters.result_context import ResultContext
+from src.algorithms.adapters.exceptions import ResultFormatNotFound
+from src.algorithms.adapters.result_adapter import ResultAdapter
+from src.algorithms.adapters.flow_adapter import FlowAdapter
+from src.algorithms.adapters.lp_adapter import LPAdapter
+from src.algorithms.adapters.result_context import ResultContext
 from src.model.utils.result import AssignmentResult
 
 

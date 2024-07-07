@@ -1,9 +1,9 @@
-from api.models import (
+from src.api.topic.schemas import (
     TopicCategoryItem,
     TopicItem,
     TopicPreferencesItem,
 )
-from api.services.topic_service import TopicService
+from src.api.topic.service import TopicService
 
 
 class TopicController:

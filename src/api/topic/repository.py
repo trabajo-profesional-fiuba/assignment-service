@@ -1,5 +1,5 @@
-from api.models import TopicCategoryItem, TopicItem
-from storage.tables import TopicCategory, Topic
+from src.api.topic.schemas import TopicCategoryItem, TopicItem
+from src.api.topic.models import TopicCategory, Topic
 
 
 class TopicRepository:

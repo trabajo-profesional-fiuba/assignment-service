@@ -2,7 +2,7 @@ from solver import Solver
 from src.model.group import Group
 from src.model.tutor import Tutor
 from src.model.utils.topic import Topic
-from src.assignments.adapters.result_adapter import ResultAdapter
+from src.algorithms.adapters.result_adapter import ResultAdapter
 
 
 class GroupTutorSolver(Solver):

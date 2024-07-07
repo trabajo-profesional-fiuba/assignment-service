@@ -1,6 +1,6 @@
 import networkx as nx
 
-from src.assignments.adapters.result_context import ResultContext
+from src.algorithms.adapters.result_context import ResultContext
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 from src.model.period import TutorPeriod
 
