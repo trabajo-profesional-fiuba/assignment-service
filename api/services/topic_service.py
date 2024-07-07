@@ -4,7 +4,6 @@ from api.models import (
     TopicPreferencesItem,
 )
 from api.repositories.topic_repository import TopicRepository
-from api.repositories.topic_preferences_repository import TopicPreferencesRepository
 from api.exceptions import (
     TopicCategoryDuplicated,
     TopicCategoryNotFound,
@@ -14,13 +13,8 @@ from api.exceptions import (
 
 class TopicService:
 
-    def __init__(
-        self,
-        topic_repository: TopicRepository,
-        topic_preferences_repository: TopicPreferencesRepository,
-    ):
+    def __init__(self, topic_repository: TopicRepository):
         self._topic_repository = topic_repository
-        self._topic_preferences_repository = topic_preferences_repository
 
     def add_topic_category(self, topic_category: TopicCategoryItem):
         try:
@@ -50,9 +44,7 @@ class TopicService:
         for email in emails:
             if email:
                 created_items.append(
-                    self._topic_preferences_repository.add_topic_preferences(
-                        email, item
-                    )
+                    self._topic_repository.add_topic_preferences(email, item)
                 )
         return created_items
 

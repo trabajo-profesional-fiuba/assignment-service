@@ -10,7 +10,6 @@ from api.models import (
 )
 from api.controllers.topic_controller import TopicController
 from api.services.topic_service import TopicService
-from api.repositories.topic_preferences_repository import TopicPreferencesRepository
 from api.repositories.topic_repository import TopicRepository
 from storage.database import Database
 from api.exceptions import (
@@ -25,9 +24,8 @@ app.add_middleware(
 )
 
 database = Database()
-topic_preferences_repository = TopicPreferencesRepository(database)
 topic_repository = TopicRepository(database)
-topic_service = TopicService(topic_repository, topic_preferences_repository)
+topic_service = TopicService(topic_repository)
 topic_controller = TopicController(topic_service)
 
 

@@ -1,19 +1,9 @@
 import pytest
 from unittest.mock import create_autospec
-from api.models import (
-    TopicCategoryItem,
-    TopicItem,
-    TopicPreferencesItem
-)
+from api.models import TopicCategoryItem, TopicItem, TopicPreferencesItem
 from api.services.topic_service import TopicService
-from api.repositories.topic_preferences_repository import TopicPreferencesRepository
 from api.repositories.topic_repository import TopicRepository
 from api.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound
-
-
-@pytest.fixture
-def mock_topic_preferences_repository(mocker):
-    return create_autospec(TopicPreferencesRepository)
 
 
 @pytest.fixture
@@ -22,8 +12,8 @@ def mock_topic_repository(mocker):
 
 
 @pytest.fixture
-def service(mock_topic_repository, mock_topic_preferences_repository):
-    return TopicService(mock_topic_repository, mock_topic_preferences_repository)
+def service(mock_topic_repository):
+    return TopicService(mock_topic_repository)
 
 
 @pytest.mark.integration
@@ -84,7 +74,7 @@ def test_add_topic_not_found(service, mock_topic_repository):
 
 @pytest.mark.integration
 def test_add_topic_preferences_with_completed_group_success(
-    service, mock_topic_preferences_repository
+    service, mock_topic_repository
 ):
     topic_preferences = TopicPreferencesItem(
         email_sender="test1@example.com",
@@ -97,8 +87,8 @@ def test_add_topic_preferences_with_completed_group_success(
         topic_3="Topic 1",
     )
 
-    mock_topic_preferences_repository.get_topic_preferences_by_email.return_value = None
-    mock_topic_preferences_repository.add_topic_preferences.side_effect = [
+    mock_topic_repository.get_topic_preferences_by_email.return_value = None
+    mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
@@ -164,9 +154,7 @@ def test_add_topic_preferences_with_completed_group_success(
 
 
 @pytest.mark.integration
-def test_add_items_with_uncompleted_group_success(
-    service, mock_topic_preferences_repository
-):
+def test_add_items_with_uncompleted_group_success(service, mock_topic_repository):
     emails = ["test1@example.com", "test2@example.com", None, None]
     item = TopicPreferencesItem(
         email_sender="test1@example.com",
@@ -179,7 +167,7 @@ def test_add_items_with_uncompleted_group_success(
         topic_3="Topic 3",
     )
 
-    mock_topic_preferences_repository.add_topic_preferences.side_effect = [
+    mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
@@ -217,7 +205,7 @@ def test_add_items_with_uncompleted_group_success(
 
 
 @pytest.mark.integration
-def test_add_items_without_group_success(service, mock_topic_preferences_repository):
+def test_add_items_without_group_success(service, mock_topic_repository):
     emails = ["test1@example.com", None, None, None]
     item = TopicPreferencesItem(
         email_sender="test1@example.com",
@@ -230,7 +218,7 @@ def test_add_items_without_group_success(service, mock_topic_preferences_reposit
         topic_3="Topic 3",
     )
 
-    mock_topic_preferences_repository.add_topic_preferences.side_effect = [
+    mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
