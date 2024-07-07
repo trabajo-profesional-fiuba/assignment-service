@@ -298,7 +298,7 @@ class DeliveryFlowSolver:
             groups_results=max_flow_min_cost_groups,
             evaluators_results=clean_results,
             groups=self._groups,
-            evaluators= self._evaluators,
+            evaluators=self._evaluators,
             substitutes=substitutes,
         )
 

@@ -59,5 +59,4 @@ class LPAdapter:
         result = result_context.get("result")
         substitutes = result_context.get("substitutes")
 
-
         return AssignmentResult(result, substitutes)

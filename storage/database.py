@@ -5,7 +5,7 @@ from contextlib import contextmanager
 import sqlalchemy.exc
 from storage.topic_preferences_table import TopicPreferences, Base
 
-DATABASE_URL = "postgresql://postgres:postgres@db:5432/postgres"
+DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/postgres"
 
 
 class Database:

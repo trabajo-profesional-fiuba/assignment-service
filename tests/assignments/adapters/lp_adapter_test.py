@@ -24,9 +24,7 @@ class TestLPAdapter:
         hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
         groups = self.helper.create_groups(num_groups, dates)
-        result_context = ResultContext(
-            type="linear", result=lp_solver_result
-        )
+        result_context = ResultContext(type="linear", result=lp_solver_result)
 
         formatter = LPAdapter()
 
@@ -37,13 +35,10 @@ class TestLPAdapter:
         assert "date-2-2-10" == result.get_results()[0][2]
         assert "date-2-2-11" == result.get_results()[1][2]
 
-
     @pytest.mark.unit
     def test_get_result_with_empty_result(self):
         # Arrange
-        result_context = ResultContext(
-            type="linear", result=[]
-        )
+        result_context = ResultContext(type="linear", result=[])
 
         formatter = LPAdapter()
 
@@ -52,4 +47,3 @@ class TestLPAdapter:
 
         # Assert
         assert len(result.get_results()) == 0
-
