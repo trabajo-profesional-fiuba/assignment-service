@@ -1,14 +1,14 @@
 import pytest
 from unittest.mock import create_autospec
-from api.models import (
+from src.api.topic.schemas import (
     TopicCategoryItem,
     TopicItem,
     TopicPreferencesItem
 )
-from api.services.topic_service import TopicService
-from api.repositories.topic_preferences_repository import TopicPreferencesRepository
-from api.repositories.topic_repository import TopicRepository
-from api.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound
+from src.api.topic.service import TopicService
+from src.api.topic.topic_preferences_repository import TopicPreferencesRepository
+from src.api.topic.repository import TopicRepository
+from src.api.topic.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound
 
 
 @pytest.fixture

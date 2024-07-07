@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import create_autospec
-from api.models import (
+from src.api.topic.schemas import (
     TopicCategoryItem,
     TopicItem,
 )
-from api.controllers.topic_controller import TopicController
-from api.services.topic_service import TopicService
-from api.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound
+from src.api.topic.router import TopicController
+from src.api.topic.service import TopicService
+from src.api.topic.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound
 
 
 @pytest.fixture
