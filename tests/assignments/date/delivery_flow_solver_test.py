@@ -389,4 +389,4 @@ class TestDeliveryFlowSolver:
         result = delivery_flow_solver.solve()
 
         # Assertion
-        assert len(result.get_results()) == 2 
+        assert len(result.get_results()) == 2

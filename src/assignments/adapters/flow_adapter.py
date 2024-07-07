@@ -2,7 +2,7 @@ from src.assignments.adapters.exceptions import EvaluatorNotFound
 from src.exceptions import WrongDateFormat
 from src.model.utils.result import AssignmentResult
 from src.model.utils.delivery_date import DeliveryDate
-from src.constants import GROUP_ID,EVALUATOR_ID
+from src.constants import GROUP_ID, EVALUATOR_ID
 
 
 class FlowAdapter:
@@ -48,7 +48,9 @@ class FlowAdapter:
 
                         group.assign_date(date)
                         evaluator.evaluate_date(date)
-                        results.append((group_key, f"{EVALUATOR_ID}-{evaluator_id}", key))
+                        results.append(
+                            (group_key, f"{EVALUATOR_ID}-{evaluator_id}", key)
+                        )
 
         return results
 

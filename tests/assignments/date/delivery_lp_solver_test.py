@@ -511,7 +511,9 @@ class TestDeliveryLPSolver:
             ), f"Evaluator {evaluator_id} has {value} groups assigned on day {day_id}, which exceeds the allowed limit."
 
         # Verificar que cada grupo tenga una fecha asignada
-        assigned_dates = {group: date for group, evaluator, date in result.get_results()}
+        assigned_dates = {
+            group: date for group, evaluator, date in result.get_results()
+        }
         for group in groups:
             assert (
                 f"group-{group.id()}" in assigned_dates

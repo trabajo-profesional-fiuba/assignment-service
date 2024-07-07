@@ -66,12 +66,15 @@ class TestFlowAdapter:
         formatter = FlowAdapter()
         dates = [DeliveryDate(2, 2, 10), DeliveryDate(2, 2, 11)]
         groups = self.create_groups(2, dates)
-        expected = [("group-1","evaluator-2",'date-2-2-10'), ("group-2","evaluator-2",'date-2-2-11')]
+        expected = [
+            ("group-1", "evaluator-2", "date-2-2-10"),
+            ("group-2", "evaluator-2", "date-2-2-11"),
+        ]
 
         result = formatter._adapt_groups_and_evaluators(
-            groups, evaluators, flow_solver_result, clean_results)
-        
-        
+            groups, evaluators, flow_solver_result, clean_results
+        )
+
         assert all(d in expected for d in result)
 
     @pytest.mark.unit

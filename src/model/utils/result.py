@@ -1,6 +1,6 @@
 class AssignmentResult:
 
-    def __init__(self, results, substitutes = None) -> None:
+    def __init__(self, results, substitutes=None) -> None:
         self._results = results
         self._substitutes = substitutes
 
