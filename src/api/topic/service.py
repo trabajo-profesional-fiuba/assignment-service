@@ -1,17 +1,58 @@
-from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.topic_preferences_repository import TopicPreferencesRepository
+from api.models import (
+    TopicCategoryItem,
+    TopicItem,
+    TopicPreferencesItem,
+)
+from api.repositories.topic_repository import TopicRepository
+from api.repositories.topic_preferences_repository import TopicPreferencesRepository
+from api.exceptions import (
+    TopicCategoryDuplicated,
+    TopicCategoryNotFound,
+    TopicDuplicated,
+)
 
 
-class TopicPreferencesService:
-    def __init__(self, repository: TopicPreferencesRepository):
-        self._repository = repository
+class TopicService:
+
+    def __init__(
+        self,
+        topic_repository: TopicRepository,
+        topic_preferences_repository: TopicPreferencesRepository,
+    ):
+        self._topic_repository = topic_repository
+        self._topic_preferences_repository = topic_preferences_repository
+
+    def add_topic_category(self, topic_category: TopicCategoryItem):
+        try:
+            if (
+                self._topic_repository.get_topic_category_by_name(topic_category.name)
+                is None
+            ):
+                return self._topic_repository.add_topic_category(topic_category)
+            raise TopicCategoryDuplicated()
+        except Exception as err:
+            raise err
+
+    def add_topic(self, topic: TopicItem):
+        try:
+            category = self._topic_repository.get_topic_category_by_name(topic.category)
+            if category is not None:
+                if self._topic_repository.get_topic(topic) is None:
+                    self._topic_repository.add_topic(topic)
+                    return topic
+                raise TopicDuplicated()
+            raise TopicCategoryNotFound()
+        except Exception as err:
+            raise err
 
     def add_items(self, emails: list, item: TopicPreferencesItem):
         created_items = []
         for email in emails:
             if email:
                 created_items.append(
-                    self._repository.add_topic_preferences(email, item)
+                    self._topic_preferences_repository.add_topic_preferences(
+                        email, item
+                    )
                 )
         return created_items
 
@@ -27,31 +68,5 @@ class TopicPreferencesService:
                 topic_preferences,
             )
             return new_items
-        except Exception as err:
-            raise err
-
-    def update_items(self, emails: list, item: TopicPreferencesUpdatedItem):
-        updated_items = []
-        for email in emails:
-            if email:
-                updated_items.append(
-                    self._repository.update_topic_preferences(email, item)
-                )
-        return updated_items
-
-    def update_topic_preferences(
-        self, email_sender: str, topic_preferences_update: TopicPreferencesUpdatedItem
-    ):
-        try:
-            updated_items = self.update_items(
-                [
-                    email_sender,
-                    topic_preferences_update.email_student_2,
-                    topic_preferences_update.email_student_3,
-                    topic_preferences_update.email_student_4,
-                ],
-                topic_preferences_update,
-            )
-            return updated_items
         except Exception as err:
             raise err

@@ -1,58 +1,55 @@
-from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
-from api.exceptions import TopicPreferencesDuplicated, StudentNotFound
-from sqlalchemy.exc import IntegrityError
-from storage.database import TopicPreferences
+from api.models import TopicCategoryItem, TopicItem
+from storage.tables import TopicCategory, Topic
 
 
-class TopicPreferencesRepository:
+class TopicRepository:
 
     def __init__(self, db):
         self._db = db
 
-    def add_topic_preferences(
-        self, email: str, topic_preferences: TopicPreferencesItem
-    ):
+    def get_topic_category_by_name(self, name: str):
         try:
             session = self._db.get_db()
-            db_item = TopicPreferences(
-                email=email,
-                group_id=topic_preferences.group_id,
-                topic_1=topic_preferences.topic_1,
-                topic_2=topic_preferences.topic_2,
-                topic_3=topic_preferences.topic_3,
+            db_item = (
+                session.query(TopicCategory).filter(TopicCategory.name == name).first()
             )
+            return db_item
+        except Exception as err:
+            raise err
+
+    def add_topic_category(self, topic_category: TopicCategoryItem):
+        try:
+            session = self._db.get_db()
+            db_item = TopicCategory(name=topic_category.name)
             session.add(db_item)
             session.commit()
             session.refresh(db_item)
             return db_item
-        except IntegrityError:
-            if email == topic_preferences.email_sender:
-                session.rollback()
-                raise TopicPreferencesDuplicated(topic_preferences.email_sender)
-            else:
-                return db_item
+        except Exception as err:
+            raise err
 
-    def update_topic_preferences(
-        self, email: str, topic_preferences_update: TopicPreferencesUpdatedItem
-    ):
+    def add_topic(self, topic):
         try:
             session = self._db.get_db()
-            db_item = (
-                session.query(TopicPreferences)
-                .filter(TopicPreferences.email == email)
-                .first()
-            )
-
-            if db_item is None:
-                raise StudentNotFound(email)
-
-            update_data = topic_preferences_update.model_dump()
-            for field, value in update_data.items():
-                setattr(db_item, field, value)
-
+            category = self.get_topic_category_by_name(topic.category)
+            db_item = Topic(name=topic.name, category=category.id)
+            session.add(db_item)
             session.commit()
             session.refresh(db_item)
             return db_item
         except Exception as err:
-            session.rollback()
+            raise err
+
+    def get_topic(self, topic: TopicItem):
+        try:
+            session = self._db.get_db()
+            category = self.get_topic_category_by_name(topic.category)
+            db_item = (
+                session.query(Topic)
+                .filter(Topic.name == topic.name)
+                .filter(Topic.category == category.id)
+                .first()
+            )
+            return db_item
+        except Exception as err:
             raise err

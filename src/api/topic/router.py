@@ -1,10 +1,31 @@
-from api.models import TopicPreferencesItem, TopicPreferencesUpdatedItem
+from api.models import (
+    TopicCategoryItem,
+    TopicItem,
+    TopicPreferencesItem,
+)
+from api.services.topic_service import TopicService
 
 
-class TopicPreferenceController:
+class TopicController:
 
-    def __init__(self, service):
+    def __init__(self, service: TopicService):
         self._service = service
+
+    def _format_topic_category(self, item):
+        return {"name": item.name}
+
+    def add_topic_category(self, topic_category: TopicCategoryItem):
+        try:
+            new_item = self._service.add_topic_category(topic_category)
+            return self._format_topic_category(new_item)
+        except Exception as err:
+            raise err
+
+    def add_topic(self, topic: TopicItem):
+        try:
+            return self._service.add_topic(topic)
+        except Exception as err:
+            raise err
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
@@ -29,17 +50,3 @@ class TopicPreferenceController:
             }
             dict_items.append(dict_item)
         return dict_items
-
-    def update_topic_preferences(
-        self,
-        email_sender: str,
-        topic_preferences_update: TopicPreferencesUpdatedItem,
-    ):
-        try:
-            updated_items = self._service.update_topic_preferences(
-                email_sender, topic_preferences_update
-            )
-            formatted_items = self._format_items(updated_items)
-            return formatted_items
-        except Exception as err:
-            raise err
