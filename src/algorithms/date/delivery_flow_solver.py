@@ -3,6 +3,7 @@ import networkx as nx
 from src.algorithms.adapters.result_context import ResultContext
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 from src.model.period import TutorPeriod
+from src.algorithms.exceptions import AssigmentIsNotPossible
 
 
 class DeliveryFlowSolver:
@@ -255,6 +256,16 @@ class DeliveryFlowSolver:
 
         return all_evaluated
 
+    def _valid_groups_result(self, groups_results):
+        all_evaluated = True
+        for group in self._groups:
+            group_key = f"{GROUP_ID}-{group.id()}"
+            group_dates = sum(groups_results[group_key].values())
+            if group_dates <= 0:
+                all_evaluated = False
+
+        return all_evaluated
+
     def solve(self):
         """
         Based on mutual dates between the evaluators, tutors and groups
@@ -286,10 +297,17 @@ class DeliveryFlowSolver:
 
         clean_results = self._clean_evaluators_results(max_flow_min_cost_evaluator)
 
+        if (self._valid_evaluator_results(clean_results) is False):
+            raise AssigmentIsNotPossible("There are groups without avaliable evaluator")
+
+
         groups_edges = self._create_group_date_edges(clean_results)
         g_graph = nx.DiGraph()
         g_graph.add_edges_from(groups_edges)
         max_flow_min_cost_groups = self._max_flow_min_cost(g_graph)
+        
+        if (self._valid_groups_result(max_flow_min_cost_groups)):
+            raise AssigmentIsNotPossible("There are groups without assigned dates")
 
         substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)
 
