@@ -5,16 +5,6 @@ from sqlalchemy.orm import declarative_base, relationship
 Base = declarative_base()
 
 
-class TopicPreferences(Base):
-    __tablename__ = "topic_preferences"
-
-    email = Column(String, primary_key=True, index=True)
-    group_id = Column(DateTime)
-    topic_1 = Column(String)
-    topic_2 = Column(String)
-    topic_3 = Column(String)
-
-
 class TopicCategory(Base):
     __tablename__ = "topic_category"
 
@@ -30,3 +20,29 @@ class Topic(Base):
     category = Column(Integer, ForeignKey("topic_category.id"), nullable=False)
 
     topic_category = relationship("TopicCategory")
+
+
+class TopicPreferences(Base):
+    __tablename__ = "topic_preferences"
+
+    email = Column(String, primary_key=True)
+    group_id = Column(DateTime)
+    topic_1 = Column(Integer, ForeignKey("topic.id"), nullable=False)
+    topic_2 = Column(Integer, ForeignKey("topic.id"), nullable=False)
+    topic_3 = Column(Integer, ForeignKey("topic.id"), nullable=False)
+
+    topic_1_rel = relationship(
+        "Topic",
+        primaryjoin="TopicPreferences.topic_1 == Topic.id",
+        foreign_keys=[topic_1],
+    )
+    topic_2_rel = relationship(
+        "Topic",
+        primaryjoin="TopicPreferences.topic_2 == Topic.id",
+        foreign_keys=[topic_2],
+    )
+    topic_3_rel = relationship(
+        "Topic",
+        primaryjoin="TopicPreferences.topic_3 == Topic.id",
+        foreign_keys=[topic_3],
+    )

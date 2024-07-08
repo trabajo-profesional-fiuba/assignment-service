@@ -35,28 +35,6 @@ async def root():
 
 
 @app.post(
-    "/topic_preferences/",
-    status_code=201,
-    description="This endpoint creates a new topic preferences answer of email sender\
-        and students from its group if it belongs to one.",
-    response_description="List of created topic preferences answers of email sender\
-        and students from its group if it belongs to one.",
-    response_model=List[TopicPreferencesResponse],
-    responses={
-        201: {"description": "Successfully added topic preferences"},
-        422: {"description": "Validation Error"},
-        500: {"description": "Internal Server Error"},
-    },
-)
-async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
-    try:
-        new_item = topic_controller.add_topic_preferences(topic_preferences)
-        return new_item
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
-
-
-@app.post(
     "/topic_category/",
     status_code=201,
     description="This endpoint creates a new topic category.",
@@ -107,5 +85,27 @@ async def add_topic(topic: TopicItem):
             status_code=409,
             detail=f"Topic '{topic.name}, {topic.category}' already exists.",
         )
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
+
+
+@app.post(
+    "/topic_preferences/",
+    status_code=201,
+    description="This endpoint creates a new topic preferences answer of email sender\
+        and students from its group if it belongs to one.",
+    response_description="List of created topic preferences answers of email sender\
+        and students from its group if it belongs to one.",
+    response_model=List[TopicPreferencesResponse],
+    responses={
+        201: {"description": "Successfully added topic preferences"},
+        422: {"description": "Validation Error"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
+    try:
+        new_item = topic_controller.add_topic_preferences(topic_preferences)
+        return new_item
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

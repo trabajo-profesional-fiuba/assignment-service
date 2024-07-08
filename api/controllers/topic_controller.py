@@ -27,26 +27,28 @@ class TopicController:
         except Exception as err:
             raise err
 
-    def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
-        try:
-            new_items = self._service.add_topic_preferences(topic_preferences)
-            formatted_items = self._format_items(new_items)
-            return formatted_items
-        except Exception as err:
-            raise err
-
-    def _format_items(self, items: list):
+    def _format_topic_preferences(self, new_items: list, request: TopicPreferencesItem):
         """
         Deletes other students from the same group email.
         """
-        dict_items = []
-        for item in items:
-            dict_item = {
-                "email": item.email,
-                "group_id": item.group_id,
-                "topic_1": item.topic_1,
-                "topic_2": item.topic_2,
-                "topic_3": item.topic_3,
+        formatted_list = []
+        for new_item in new_items:
+            formatted_item = {
+                "email": new_item.email,
+                "group_id": new_item.group_id,
+                "topic_1": request.topic_1,
+                "topic_2": request.topic_2,
+                "topic_3": request.topic_3,
             }
-            dict_items.append(dict_item)
-        return dict_items
+            formatted_list.append(formatted_item)
+        return formatted_list
+
+    def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
+        try:
+            new_items = self._service.add_topic_preferences(topic_preferences)
+            formatted_items = self._format_topic_preferences(
+                new_items, topic_preferences
+            )
+            return formatted_items
+        except Exception as err:
+            raise err

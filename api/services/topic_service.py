@@ -40,13 +40,16 @@ class TopicService:
             raise err
 
     def add_items(self, emails: list, item: TopicPreferencesItem):
-        created_items = []
-        for email in emails:
-            if email:
-                created_items.append(
-                    self._topic_repository.add_topic_preferences(email, item)
-                )
-        return created_items
+        try:
+            created_items = []
+            for email in emails:
+                if email is not None:
+                    created_items.append(
+                        self._topic_repository.add_topic_preferences(email, item)
+                    )
+            return created_items
+        except Exception as err:
+            raise err
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
