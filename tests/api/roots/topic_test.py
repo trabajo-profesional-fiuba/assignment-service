@@ -91,8 +91,11 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
         "email_student_4": "test4@example.com",
         "group_id": "2024-06-21T12:00:00",
         "topic_1": "topic 1",
+        "category_1": "category 1",
         "topic_2": "topic 1",
+        "category_2": "category 1",
         "topic_3": "topic 1",
+        "category_3": "category 1",
     }
 
     response = test_app.post("/topic_preferences/", json=topic_preferences)
@@ -103,29 +106,41 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test2@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test3@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test4@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
     ]
     assert response.json() == expected_response
@@ -140,8 +155,11 @@ def test_add_topic_preferences_duplicated(test_app):
         "email_student_4": "test4@example.com",
         "group_id": "2024-06-21T12:00:00",
         "topic_1": "topic 1",
+        "category_1": "category 1",
         "topic_2": "topic 1",
+        "category_2": "category 1",
         "topic_3": "topic 1",
+        "category_3": "category 1",
     }
     response = test_app.post("/topic_preferences/", json=topic_preferences)
-    assert response.status_code == 201
+    assert response.status_code == 500

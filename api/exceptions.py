@@ -16,3 +16,7 @@ class TopicCategoryNotFound(Exception):
 class TopicDuplicated(Exception):
     def __init__(self):
         pass
+    
+class DuplicatedEmail(Exception):
+    def __init__(self):
+        pass

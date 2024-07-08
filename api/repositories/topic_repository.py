@@ -1,11 +1,11 @@
 from api.models import (
     TopicCategoryItem,
     TopicItem,
-    TopicPreferencesItem,
-    TopicPreferencesUpdatedItem,
+    TopicPreferencesItem
 )
 from storage.tables import TopicCategory, Topic, TopicPreferences
 from sqlalchemy.exc import IntegrityError
+from api.exceptions import DuplicatedEmail
 
 
 class TopicRepository:
@@ -60,10 +60,11 @@ class TopicRepository:
         except Exception as err:
             raise err
 
-    def get_topic_by_name(self, topic_name: str):
+    def get_topic_by_name_and_category(self, topic_name: str, topic_category: str):
         try:
             session = self._db.get_db()
-            db_item = session.query(Topic).filter(Topic.name == topic_name).first()
+            category = self.get_topic_category_by_name(topic_category)
+            db_item = session.query(Topic).filter(Topic.name == topic_name).filter(Topic.category == category.id).first()
             return db_item
         except Exception as err:
             raise err
@@ -90,19 +91,9 @@ class TopicRepository:
         try:
             session = self._db.get_db()
 
-            existing_item = (
-                session.query(TopicPreferences)
-                .filter(TopicPreferences.email == email)
-                .first()
-            )
-
-            if existing_item:
-                session.delete(existing_item)
-                session.commit()
-
-            topic_1 = self.get_topic_by_name(topic_preferences.topic_1).id
-            topic_2 = self.get_topic_by_name(topic_preferences.topic_2).id
-            topic_3 = self.get_topic_by_name(topic_preferences.topic_3).id
+            topic_1 = self.get_topic_by_name_and_category(topic_preferences.topic_1, topic_preferences.category_1).id
+            topic_2 = self.get_topic_by_name_and_category(topic_preferences.topic_2, topic_preferences.category_2).id
+            topic_3 = self.get_topic_by_name_and_category(topic_preferences.topic_3, topic_preferences.category_3).id
 
             db_item = TopicPreferences(
                 email=email,
@@ -115,7 +106,6 @@ class TopicRepository:
             session.commit()
             session.refresh(db_item)
             return db_item
-
         except Exception as err:
             session.rollback()
             raise err

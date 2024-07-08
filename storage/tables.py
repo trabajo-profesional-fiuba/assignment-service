@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
+from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, Index
 from sqlalchemy.orm import declarative_base, relationship
 
 
@@ -20,7 +20,7 @@ class Topic(Base):
     category = Column(Integer, ForeignKey("topic_category.id"), nullable=False)
 
     topic_category = relationship("TopicCategory")
-
+    Index('idx_name_category', name, category)
 
 class TopicPreferences(Base):
     __tablename__ = "topic_preferences"

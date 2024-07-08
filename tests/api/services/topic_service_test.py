@@ -83,39 +83,53 @@ def test_add_topic_preferences_with_completed_group_success(
         email_student_4="test4@example.com",
         group_id="2024-06-21T12:00:00",
         topic_1="topic 1",
+        category_1="topic 1",
         topic_2="topic 1",
+        category_2="topic 1",
         topic_3="topic 1",
+        category_3="topic 1",
     )
-
-    mock_topic_repository.get_topic_preferences_by_email.return_value = None
+    
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test2@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test3@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test4@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
     ]
 
@@ -125,36 +139,48 @@ def test_add_topic_preferences_with_completed_group_success(
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test2@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test3@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test4@example.com",
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
+            "category_1": "category 1",
             "topic_2": "topic 1",
+            "category_2": "category 1",
             "topic_3": "topic 1",
+            "category_3": "category 1",
         },
     ]
     assert result == expected_result
 
 
 @pytest.mark.integration
-def test_add_items_with_uncompleted_group_success(service, mock_topic_repository):
+def test_add_topic_preferences_with_uncompleted_group_success(service, mock_topic_repository):
     emails = ["test1@example.com", "test2@example.com", None, None]
     item = TopicPreferencesItem(
         email_sender="test1@example.com",
@@ -162,25 +188,34 @@ def test_add_items_with_uncompleted_group_success(service, mock_topic_repository
         email_student_3=None,
         email_student_4=None,
         group_id="2024-06-25T12:00:00",
-        topic_1="Topic 1",
-        topic_2="Topic 2",
-        topic_3="Topic 3",
+        topic_1="topic 1",
+        category_1="topic 1",
+        topic_2="topic 1",
+        category_2="topic 1",
+        topic_3="topic 1",
+        category_3="topic 1",
     )
 
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 1",
-            "topic_2": "Topic 2",
-            "topic_3": "Topic 3",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test2@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 1",
-            "topic_2": "Topic 2",
-            "topic_3": "Topic 3",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         },
     ]
 
@@ -189,23 +224,29 @@ def test_add_items_with_uncompleted_group_success(service, mock_topic_repository
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 1",
-            "topic_2": "Topic 2",
-            "topic_3": "Topic 3",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test2@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 1",
-            "topic_2": "Topic 2",
-            "topic_3": "Topic 3",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         },
     ]
     assert result == expected_result
 
 
 @pytest.mark.integration
-def test_add_items_without_group_success(service, mock_topic_repository):
+def test_add_topic_preferences_without_group_success(service, mock_topic_repository):
     emails = ["test1@example.com", None, None, None]
     item = TopicPreferencesItem(
         email_sender="test1@example.com",
@@ -213,18 +254,24 @@ def test_add_items_without_group_success(service, mock_topic_repository):
         email_student_3=None,
         email_student_4=None,
         group_id="2024-06-25T12:00:00",
-        topic_1="Topic 1",
-        topic_2="Topic 2",
-        topic_3="Topic 3",
+        topic_1="topic 1",
+        category_1="category 1",
+        topic_2="topic 1",
+        category_2="category 1",
+        topic_3="topic 1",
+        category_3="category 1",
     )
 
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 1",
-            "topic_2": "Topic 2",
-            "topic_3": "Topic 3",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         }
     ]
 
@@ -233,9 +280,12 @@ def test_add_items_without_group_success(service, mock_topic_repository):
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 1",
-            "topic_2": "Topic 2",
-            "topic_3": "Topic 3",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         }
     ]
     assert result == expected_result

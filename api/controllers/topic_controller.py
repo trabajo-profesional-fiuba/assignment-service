@@ -37,8 +37,11 @@ class TopicController:
                 "email": new_item.email,
                 "group_id": new_item.group_id,
                 "topic_1": request.topic_1,
+                "category_1": request.category_1,
                 "topic_2": request.topic_2,
+                "category_2": request.category_2,
                 "topic_3": request.topic_3,
+                "category_3": request.category_3,
             }
             formatted_list.append(formatted_item)
         return formatted_list
