@@ -422,3 +422,66 @@ class TestDeliveryFlowSolver:
         result = delivery_flow_solver._valid_groups_result(groups_result)
 
         assert result is False
+
+    
+    @pytest.mark.unit
+    def test_group_without_date_raises_error(self):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3)]
+
+        adapter = ResultAdapter()
+
+        group1 = Group(1)
+        group1.add_available_dates([dates[0]])
+        group2 = Group(2)
+        group2.add_available_dates([dates[0]])
+        groups = [group1, group2]
+
+        period = TutorPeriod(period="1C2024")
+        period.make_evaluator()
+        period.add_available_dates(dates)
+        period.add_parent(Tutor(1, "f@fi.uba.ar", "Juan"))
+
+        period2 = TutorPeriod(period="1C2024")
+        period2.add_parent(Tutor(2, "f@fi.uba.ar", "Pepe"))
+        period2.add_groups(groups)
+
+        delivery_flow_solver = DeliveryFlowSolver(
+            tutor_periods=[period, period2], available_dates=dates, adapter=adapter
+        )
+
+        # Act & Assert
+        with pytest.raises(AssigmentIsNotPossible, match="There are groups without assigned dates"):
+            delivery_flow_solver.solve()
+
+
+    @pytest.mark.unit
+    def test_group_without_evaluator_raises_error(self):
+        # Arrange
+        dates = [DeliveryDate(1, 2, 3)]
+
+        adapter = ResultAdapter()
+
+        group1 = Group(1)
+        group1.add_available_dates([dates[0]])
+        group2 = Group(2)
+        groups = [group1, group2]
+
+        period = TutorPeriod(period="1C2024")
+        period.make_evaluator()
+        period.add_available_dates(dates)
+        period.add_parent(Tutor(1, "f@fi.uba.ar", "Juan"))
+
+        period2 = TutorPeriod(period="1C2024")
+        period2.add_parent(Tutor(2, "f@fi.uba.ar", "Pepe"))
+        period2.add_groups(groups)
+
+        delivery_flow_solver = DeliveryFlowSolver(
+            tutor_periods=[period, period2], available_dates=dates, adapter=adapter
+        )
+
+        # Act & Assert
+        with pytest.raises(AssigmentIsNotPossible, match="There are groups without avaliable evaluator"):
+            delivery_flow_solver.solve()
+
+        
