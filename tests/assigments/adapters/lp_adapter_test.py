@@ -1,9 +1,8 @@
 import pytest
 from src.algorithms.adapters.lp_adapter import LPAdapter
-from tests.algorithms.date.helper import TestLPHelper
+from tests.assigments.date.helper import TestLPHelper
 from src.algorithms.adapters.result_context import ResultContext
-from src.model.utils.result import AssignmentResult
-from src.model.utils.delivery_date import DeliveryDate
+
 
 
 class TestLPAdapter:

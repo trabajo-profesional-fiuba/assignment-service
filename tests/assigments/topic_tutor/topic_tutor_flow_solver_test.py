@@ -3,7 +3,7 @@
 # from src.algorithms.group_tutor_flow_solver import (
 #     GroupTutorFlowSolver,
 # )
-# from tests.algorithms.helper import TestHelper
+# from tests.assigments.helper import TestHelper
 # from src.io.output.output_formatter import OutputFormatter
 
 
