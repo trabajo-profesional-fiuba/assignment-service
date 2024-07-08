@@ -16,7 +16,6 @@ from api.exceptions import (
     TopicCategoryDuplicated,
     TopicCategoryNotFound,
     TopicDuplicated,
-    DuplicatedEmail
 )
 
 app = FastAPI(title="Assignment Service Api")
@@ -108,7 +107,5 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
         new_item = topic_controller.add_topic_preferences(topic_preferences)
         return new_item
-    except DuplicatedEmail as err:
-        raise HTTPException(status_code=409, detail=f"Email '{err}' Topic Preferences already exists.")
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

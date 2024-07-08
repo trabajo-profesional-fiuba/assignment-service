@@ -1,11 +1,5 @@
-from api.models import (
-    TopicCategoryItem,
-    TopicItem,
-    TopicPreferencesItem
-)
+from api.models import TopicCategoryItem, TopicItem, TopicPreferencesItem
 from storage.tables import TopicCategory, Topic, TopicPreferences
-from sqlalchemy.exc import IntegrityError
-from api.exceptions import DuplicatedEmail
 
 
 class TopicRepository:
@@ -64,7 +58,12 @@ class TopicRepository:
         try:
             session = self._db.get_db()
             category = self.get_topic_category_by_name(topic_category)
-            db_item = session.query(Topic).filter(Topic.name == topic_name).filter(Topic.category == category.id).first()
+            db_item = (
+                session.query(Topic)
+                .filter(Topic.name == topic_name)
+                .filter(Topic.category == category.id)
+                .first()
+            )
             return db_item
         except Exception as err:
             raise err
@@ -91,9 +90,15 @@ class TopicRepository:
         try:
             session = self._db.get_db()
 
-            topic_1 = self.get_topic_by_name_and_category(topic_preferences.topic_1, topic_preferences.category_1).id
-            topic_2 = self.get_topic_by_name_and_category(topic_preferences.topic_2, topic_preferences.category_2).id
-            topic_3 = self.get_topic_by_name_and_category(topic_preferences.topic_3, topic_preferences.category_3).id
+            topic_1 = self.get_topic_by_name_and_category(
+                topic_preferences.topic_1, topic_preferences.category_1
+            ).id
+            topic_2 = self.get_topic_by_name_and_category(
+                topic_preferences.topic_2, topic_preferences.category_2
+            ).id
+            topic_3 = self.get_topic_by_name_and_category(
+                topic_preferences.topic_3, topic_preferences.category_3
+            ).id
 
             db_item = TopicPreferences(
                 email=email,

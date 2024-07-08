@@ -89,7 +89,7 @@ def test_add_topic_preferences_with_completed_group_success(
         topic_3="topic 1",
         category_3="topic 1",
     )
-    
+
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
@@ -180,7 +180,9 @@ def test_add_topic_preferences_with_completed_group_success(
 
 
 @pytest.mark.integration
-def test_add_topic_preferences_with_uncompleted_group_success(service, mock_topic_repository):
+def test_add_topic_preferences_with_uncompleted_group_success(
+    service, mock_topic_repository
+):
     emails = ["test1@example.com", "test2@example.com", None, None]
     item = TopicPreferencesItem(
         email_sender="test1@example.com",
