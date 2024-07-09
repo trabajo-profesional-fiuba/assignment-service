@@ -120,12 +120,7 @@ def test_add_topic_preferences_with_completed_group_success(
         category_3="topic 1",
     )
 
-    mock_topic_repository.get_topic_preferences_by_email.side_effect = [
-        None,
-        None,
-        None,
-        None,
-    ]
+    mock_topic_repository.get_topic_preferences_by_email.return_value = None
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
@@ -234,12 +229,7 @@ def test_add_topic_preferences_with_uncompleted_group_success(
         category_3="topic 1",
     )
 
-    mock_topic_repository.get_topic_preferences_by_email.side_effect = [
-        None,
-        None,
-        None,
-        None,
-    ]
+    mock_topic_repository.get_topic_preferences_by_email.return_value = None
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
@@ -306,12 +296,7 @@ def test_add_topic_preferences_without_group_success(service, mock_topic_reposit
         category_3="category 1",
     )
 
-    mock_topic_repository.get_topic_preferences_by_email.side_effect = [
-        None,
-        None,
-        None,
-        None,
-    ]
+    mock_topic_repository.get_topic_preferences_by_email.return_value = None
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
