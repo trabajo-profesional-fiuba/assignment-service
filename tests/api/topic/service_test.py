@@ -72,6 +72,33 @@ def test_add_topic_not_found(service, mock_topic_repository):
 
 
 @pytest.mark.integration
+def test_filter_student_emails_without_none_emails(service):
+    emails = ["test1", "test2", "test3", "test4"]
+    result = service.filter_student_emails(emails)
+
+    assert len(result) == 4
+    assert result == emails
+
+
+@pytest.mark.integration
+def test_filter_student_emails_with_some_none_emails(service):
+    emails = ["test1", "test2", None, None]
+    result = service.filter_student_emails(emails)
+
+    assert len(result) == 2
+    assert result == ["test1", "test2"]
+
+
+@pytest.mark.integration
+def test_filter_student_emails_with_all_none_emails(service):
+    emails = [None, None, None, None]
+    result = service.filter_student_emails(emails)
+
+    assert len(result) == 0
+    assert result == []
+
+
+@pytest.mark.integration
 def test_add_topic_preferences_with_completed_group_success(
     service, mock_topic_repository
 ):
@@ -182,7 +209,7 @@ def test_add_topic_preferences_with_completed_group_success(
 def test_add_topic_preferences_with_uncompleted_group_success(
     service, mock_topic_repository
 ):
-    emails = ["test1@example.com", "test2@example.com", None, None]
+    emails = ["test1@example.com", "test2@example.com"]
     item = TopicPreferencesItem(
         email_sender="test1@example.com",
         email_student_2="test2@example.com",
@@ -220,7 +247,7 @@ def test_add_topic_preferences_with_uncompleted_group_success(
         },
     ]
 
-    result = service.add_items(emails, item)
+    result = service.add_all_topic_preferences(emails, item)
     expected_result = [
         {
             "email": "test1@example.com",
@@ -248,7 +275,7 @@ def test_add_topic_preferences_with_uncompleted_group_success(
 
 @pytest.mark.integration
 def test_add_topic_preferences_without_group_success(service, mock_topic_repository):
-    emails = ["test1@example.com", None, None, None]
+    emails = ["test1@example.com"]
     item = TopicPreferencesItem(
         email_sender="test1@example.com",
         email_student_2=None,
@@ -276,7 +303,7 @@ def test_add_topic_preferences_without_group_success(service, mock_topic_reposit
         }
     ]
 
-    result = service.add_items(emails, item)
+    result = service.add_all_topic_preferences(emails, item)
     expected_result = [
         {
             "email": "test1@example.com",
