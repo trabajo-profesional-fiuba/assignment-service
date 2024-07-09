@@ -17,6 +17,7 @@ from src.api.topic.exceptions import (
     TopicCategoryNotFound,
     TopicDuplicated,
     StudentEmailDuplicated,
+    TopicNotFound,
 )
 
 app = FastAPI(title="Assignment Service Api")
@@ -76,10 +77,10 @@ async def add_topic_category(topic_category: TopicCategoryItem):
 async def add_topic(topic: TopicItem):
     try:
         return topic_controller.add_topic(topic)
-    except TopicCategoryNotFound:
+    except TopicCategoryNotFound as category:
         raise HTTPException(
             status_code=409,
-            detail=f"Topic category '{topic.category}' not found.",
+            detail=f"Topic category '{category}' not found.",
         )
     except TopicDuplicated:
         raise HTTPException(
@@ -111,6 +112,16 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
         raise HTTPException(
             status_code=409,
             detail=f"Student email '{email}' already exists.",
+        )
+    except TopicNotFound as topic:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Topic '{topic.name}', '{topic.category}' not found.",
+        )
+    except TopicCategoryNotFound as category:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Topic category '{category}' not found.",
         )
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

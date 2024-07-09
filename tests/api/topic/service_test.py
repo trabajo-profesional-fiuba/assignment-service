@@ -7,6 +7,7 @@ from src.api.topic.exceptions import (
     TopicCategoryDuplicated,
     TopicCategoryNotFound,
     StudentEmailDuplicated,
+    TopicNotFound,
 )
 
 
@@ -70,7 +71,7 @@ def test_add_topic_not_found(service, mock_topic_repository):
     topic = TopicItem(name="topic 1", category="category 2")
 
     mock_topic_repository.get_topic_category_by_name.side_effect = (
-        TopicCategoryNotFound()
+        TopicCategoryNotFound("category 2")
     )
     with pytest.raises(TopicCategoryNotFound):
         service.add_topic_category_if_not_duplicated(topic)
@@ -356,4 +357,30 @@ def test_add_topic_preferences_duplicated(service, mock_topic_repository):
     }
 
     with pytest.raises(StudentEmailDuplicated):
+        service.add_all_topic_preferences(emails, item)
+
+
+@pytest.mark.integration
+def test_add_topic_preferences_with_topic_not_found(service, mock_topic_repository):
+    emails = ["test1@example.com"]
+    item = TopicPreferencesItem(
+        email_sender="test1@example.com",
+        email_student_2=None,
+        email_student_3=None,
+        email_student_4=None,
+        group_id="2024-06-25T12:00:00",
+        topic_1="topic 2",
+        category_1="category 1",
+        topic_2="topic 1",
+        category_2="category 1",
+        topic_3="topic 1",
+        category_3="category 1",
+    )
+
+    mock_topic_repository.get_topic_preferences_by_email.return_value = None
+    mock_topic_repository.add_topic_preferences.side_effect = TopicNotFound(
+        "topic 2", "category 1"
+    )
+
+    with pytest.raises(TopicNotFound):
         service.add_all_topic_preferences(emails, item)

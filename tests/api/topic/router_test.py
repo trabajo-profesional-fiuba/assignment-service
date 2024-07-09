@@ -53,7 +53,7 @@ def test_add_topic_with_success(controller, mock_service):
 def test_add_topic_not_found(controller, mock_service):
     topic = TopicItem(name="topic 1", category="category 2")
 
-    mock_service.add_topic.side_effect = TopicCategoryNotFound()
+    mock_service.add_topic.side_effect = TopicCategoryNotFound("category 2")
 
     with pytest.raises(TopicCategoryNotFound):
         controller.add_topic(topic)

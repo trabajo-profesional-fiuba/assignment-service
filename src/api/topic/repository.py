@@ -1,6 +1,6 @@
 from src.api.topic.schemas import TopicCategoryItem, TopicItem, TopicPreferencesItem
 from src.api.topic.models import TopicCategory, Topic, TopicPreferences
-from src.api.topic.exceptions import TopicCategoryNotFound
+from src.api.topic.exceptions import TopicCategoryNotFound, TopicNotFound
 
 
 class TopicRepository:
@@ -33,8 +33,8 @@ class TopicRepository:
         try:
             session = self._db.get_db()
             category = self.get_topic_category_by_name(topic.category)
-            if category is None:
-                raise TopicCategoryNotFound()
+            if not category:
+                raise TopicCategoryNotFound(topic.category)
             db_item = Topic(name=topic.name, category=category.id)
             session.add(db_item)
             session.commit()
@@ -43,16 +43,16 @@ class TopicRepository:
         except Exception as err:
             raise err
 
-    def get_topic_by_name_and_category(self, topic_name: str, topic_category: str):
+    def get_topic_by_name_and_category(self, name: str, category: str):
         try:
             session = self._db.get_db()
-            category = self.get_topic_category_by_name(topic_category)
-            if category is None:
-                raise TopicCategoryNotFound()
+            category_item = self.get_topic_category_by_name(category)
+            if not category_item:
+                raise TopicCategoryNotFound(category)
             db_item = (
                 session.query(Topic)
-                .filter(Topic.name == topic_name)
-                .filter(Topic.category == category.id)
+                .filter(Topic.name == name)
+                .filter(Topic.category == category_item.id)
                 .first()
             )
             return db_item
@@ -95,20 +95,32 @@ class TopicRepository:
 
             topic_1 = self.get_topic_by_name_and_category(
                 topic_preferences.topic_1, topic_preferences.category_1
-            ).id
+            )
+            if not topic_1:
+                raise TopicNotFound(
+                    topic_preferences.topic_1, topic_preferences.category_1
+                )
             topic_2 = self.get_topic_by_name_and_category(
                 topic_preferences.topic_2, topic_preferences.category_2
-            ).id
+            )
+            if not topic_2:
+                raise TopicNotFound(
+                    topic_preferences.topic_2, topic_preferences.category_2
+                )
             topic_3 = self.get_topic_by_name_and_category(
                 topic_preferences.topic_3, topic_preferences.category_3
-            ).id
+            )
+            if not topic_3:
+                raise TopicNotFound(
+                    topic_preferences.topic_3, topic_preferences.category_3
+                )
 
             db_item = TopicPreferences(
                 email=email,
                 group_id=topic_preferences.group_id,
-                topic_1=topic_1,
-                topic_2=topic_2,
-                topic_3=topic_3,
+                topic_1=topic_1.id,
+                topic_2=topic_2.id,
+                topic_3=topic_3.id,
             )
             session.add(db_item)
             session.commit()
