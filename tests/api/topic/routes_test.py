@@ -90,9 +90,12 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
         "email_student_3": "test3@example.com",
         "email_student_4": "test4@example.com",
         "group_id": "2024-06-21T12:00:00",
-        "topic_1": "Topic 2",
-        "topic_2": "Topic 3",
-        "topic_3": "Topic 1",
+        "topic_1": "topic 1",
+        "category_1": "category 1",
+        "topic_2": "topic 1",
+        "category_2": "category 1",
+        "topic_3": "topic 1",
+        "category_3": "category 1",
     }
 
     response = test_app.post("/topic_preferences/", json=topic_preferences)
@@ -102,30 +105,42 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
         {
             "email": "test1@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 2",
-            "topic_2": "Topic 3",
-            "topic_3": "Topic 1",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test2@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 2",
-            "topic_2": "Topic 3",
-            "topic_3": "Topic 1",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test3@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 2",
-            "topic_2": "Topic 3",
-            "topic_3": "Topic 1",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         },
         {
             "email": "test4@example.com",
             "group_id": "2024-06-21T12:00:00",
-            "topic_1": "Topic 2",
-            "topic_2": "Topic 3",
-            "topic_3": "Topic 1",
+            "topic_1": "topic 1",
+            "category_1": "category 1",
+            "topic_2": "topic 1",
+            "category_2": "category 1",
+            "topic_3": "topic 1",
+            "category_3": "category 1",
         },
     ]
     assert response.json() == expected_response
@@ -139,10 +154,55 @@ def test_add_topic_preferences_duplicated(test_app):
         "email_student_3": "test3@example.com",
         "email_student_4": "test4@example.com",
         "group_id": "2024-06-21T12:00:00",
-        "topic_1": "Topic 2",
-        "topic_2": "Topic 3",
-        "topic_3": "Topic 1",
+        "topic_1": "topic 1",
+        "category_1": "category 1",
+        "topic_2": "topic 1",
+        "category_2": "category 1",
+        "topic_3": "topic 1",
+        "category_3": "category 1",
+    }
+    response = test_app.post("/topic_preferences/", json=topic_preferences)
+    assert response.status_code == 409
+    assert response.json() == {
+        "detail": "Student email 'test1@example.com' already exists."
     }
 
+
+@pytest.mark.integration
+def test_add_topic_preferences_with_category_not_found(test_app):
+    topic_preferences = {
+        "email_sender": "test5@example.com",
+        "email_student_2": "test2@example.com",
+        "email_student_3": "test3@example.com",
+        "email_student_4": "test4@example.com",
+        "group_id": "2024-06-21T12:00:00",
+        "topic_1": "topic 1",
+        "category_1": "category 3",
+        "topic_2": "topic 1",
+        "category_2": "category 1",
+        "topic_3": "topic 1",
+        "category_3": "category 1",
+    }
     response = test_app.post("/topic_preferences/", json=topic_preferences)
-    assert response.status_code == 201
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Topic category 'category 3' not found."}
+
+
+@pytest.mark.integration
+def test_add_topic_preferences_with_topic_not_found(test_app):
+    topic_preferences = {
+        "email_sender": "test6@example.com",
+        "email_student_2": "test2@example.com",
+        "email_student_3": "test3@example.com",
+        "email_student_4": "test4@example.com",
+        "group_id": "2024-06-21T12:00:00",
+        "topic_1": "topic 3",
+        "category_1": "category 1",
+        "topic_2": "topic 1",
+        "category_2": "category 1",
+        "topic_3": "topic 1",
+        "category_3": "category 1",
+    }
+    response = test_app.post("/topic_preferences/", json=topic_preferences)
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Topic 'topic 3', 'category 1' not found."}

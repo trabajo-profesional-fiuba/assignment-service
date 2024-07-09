@@ -4,7 +4,6 @@ from tests.assigments.date.helper import TestLPHelper
 from src.algorithms.adapters.result_context import ResultContext
 
 
-
 class TestLPAdapter:
 
     helper = TestLPHelper()

@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import create_autospec
 from src.api.topic.schemas import (
-    TopicCategoryItem,
-    TopicItem,
+    TopicCategoryRequest,
+    TopicRequest,
 )
 from src.api.topic.router import TopicController
 from src.api.topic.service import TopicService
@@ -21,7 +21,7 @@ def controller(mock_service):
 
 @pytest.mark.integration
 def test_add_topic_category_with_success(controller, mock_service):
-    topic_category = TopicCategoryItem(
+    topic_category = TopicCategoryRequest(
         name="category 1",
     )
 
@@ -31,7 +31,7 @@ def test_add_topic_category_with_success(controller, mock_service):
 
 @pytest.mark.integration
 def test_add_topic_category_duplicated(controller, mock_service):
-    topic_category = TopicCategoryItem(
+    topic_category = TopicCategoryRequest(
         name="category 1",
     )
 
@@ -43,7 +43,7 @@ def test_add_topic_category_duplicated(controller, mock_service):
 
 @pytest.mark.integration
 def test_add_topic_with_success(controller, mock_service):
-    topic = TopicItem(name="topic 1", category="category 1")
+    topic = TopicRequest(name="topic 1", category="category 1")
 
     mock_service.add_topic.return_value = topic
     assert controller.add_topic(topic) == topic
@@ -51,9 +51,9 @@ def test_add_topic_with_success(controller, mock_service):
 
 @pytest.mark.integration
 def test_add_topic_not_found(controller, mock_service):
-    topic = TopicItem(name="topic 1", category="category 2")
+    topic = TopicRequest(name="topic 1", category="category 2")
 
-    mock_service.add_topic.side_effect = TopicCategoryNotFound()
+    mock_service.add_topic.side_effect = TopicCategoryNotFound("category 2")
 
     with pytest.raises(TopicCategoryNotFound):
         controller.add_topic(topic)

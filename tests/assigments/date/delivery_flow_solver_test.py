@@ -391,13 +391,13 @@ class TestDeliveryFlowSolver:
 
         # Assertion
         assert len(result.get_results()) == 2
-    
+
     @pytest.mark.unit
     def test_some_groups_does_not_contains_evaluators(self):
         group1 = Group(1)
         group2 = Group(2)
         period = TutorPeriod(period="1C2024")
-        period.add_groups([group1,group2])
+        period.add_groups([group1, group2])
         delivery_flow_solver = DeliveryFlowSolver([period])
 
         group_info = {"group-1": (1, 1)}
@@ -411,7 +411,7 @@ class TestDeliveryFlowSolver:
         group1 = Group(1)
         group2 = Group(2)
         period = TutorPeriod(period="1C2024")
-        period.add_groups([group1,group2])
+        period.add_groups([group1, group2])
         delivery_flow_solver = DeliveryFlowSolver([period])
 
         groups_result = {
@@ -423,7 +423,6 @@ class TestDeliveryFlowSolver:
 
         assert result is False
 
-    
     @pytest.mark.unit
     def test_group_without_date_raises_error(self):
         # Arrange
@@ -451,9 +450,10 @@ class TestDeliveryFlowSolver:
         )
 
         # Act & Assert
-        with pytest.raises(AssigmentIsNotPossible, match="There are groups without assigned dates"):
+        with pytest.raises(
+            AssigmentIsNotPossible, match="There are groups without assigned dates"
+        ):
             delivery_flow_solver.solve()
-
 
     @pytest.mark.unit
     def test_group_without_evaluator_raises_error(self):
@@ -481,7 +481,7 @@ class TestDeliveryFlowSolver:
         )
 
         # Act & Assert
-        with pytest.raises(AssigmentIsNotPossible, match="There are groups without avaliable evaluator"):
+        with pytest.raises(
+            AssigmentIsNotPossible, match="There are groups without avaliable evaluator"
+        ):
             delivery_flow_solver.solve()
-
-        

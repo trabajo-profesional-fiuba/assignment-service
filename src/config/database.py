@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from contextlib import contextmanager
 import sqlalchemy.exc
 from dotenv import load_dotenv
+
 load_dotenv()
 
 DATABASE_URL = os.getenv(
@@ -19,7 +20,11 @@ class Database:
 
     def __init__(self):
         try:
-            self.engine = create_engine(DATABASE_URL)
+            self.engine = create_engine(
+                DATABASE_URL,
+                pool_size=10,  # Max number of connections
+                pool_timeout=10,  # Time until a connection fails
+            )
             self.SessionLocal = sessionmaker(bind=self.engine)
             self.drop_tables()
             self.create_tables()

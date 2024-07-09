@@ -23,4 +23,4 @@ COPY . .
 EXPOSE 8000
 
 # Define el comando por defecto para ejecutar la aplicación
-CMD ["poetry", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["poetry", "run", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

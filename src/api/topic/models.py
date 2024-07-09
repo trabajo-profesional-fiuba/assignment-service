@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from src.config.database import Base
 
 
-
 class TopicPreferences(Base):
     __tablename__ = "topic_preferences"
 
