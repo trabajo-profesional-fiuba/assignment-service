@@ -1,5 +1,6 @@
 from src.api.topic.schemas import TopicCategoryItem, TopicItem, TopicPreferencesItem
 from src.api.topic.models import TopicCategory, Topic, TopicPreferences
+from src.api.topic.exceptions import TopicCategoryNotFound
 
 
 class TopicRepository:
@@ -32,6 +33,8 @@ class TopicRepository:
         try:
             session = self._db.get_db()
             category = self.get_topic_category_by_name(topic.category)
+            if category is None:
+                raise TopicCategoryNotFound()
             db_item = Topic(name=topic.name, category=category.id)
             session.add(db_item)
             session.commit()
@@ -44,6 +47,8 @@ class TopicRepository:
         try:
             session = self._db.get_db()
             category = self.get_topic_category_by_name(topic_category)
+            if category is None:
+                raise TopicCategoryNotFound()
             db_item = (
                 session.query(Topic)
                 .filter(Topic.name == topic_name)

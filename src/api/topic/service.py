@@ -6,7 +6,6 @@ from src.api.topic.schemas import (
 from src.api.topic.repository import TopicRepository
 from src.api.topic.exceptions import (
     TopicCategoryDuplicated,
-    TopicCategoryNotFound,
     TopicDuplicated,
     StudentEmailDuplicated,
 )
@@ -38,9 +37,7 @@ class TopicService:
         except Exception as err:
             raise err
 
-    def add_topic_if_not_duplicated(
-        self, topic: TopicItem, category: TopicCategoryItem
-    ):
+    def add_topic_if_not_duplicated(self, topic: TopicItem):
         """
         Adds a topic if it does not already exists.
         Raise a 'TopicDuplicated' exception otherwise.
@@ -48,7 +45,7 @@ class TopicService:
         try:
             if (
                 self._repository.get_topic_by_name_and_category(
-                    topic.name, category.name
+                    topic.name, topic.category
                 )
                 is None
             ):
@@ -58,25 +55,12 @@ class TopicService:
         except Exception as err:
             raise err
 
-    def add_topic_if_category_found(self, topic: TopicItem):
-        """
-        Adds a topic if its category already exists.
-        Raises a 'TopicCategoryNotFound' otherwise.
-        """
-        try:
-            category = self._repository.get_topic_category_by_name(topic.category)
-            if category is not None:
-                return self.add_topic_if_not_duplicated(topic, category)
-            raise TopicCategoryNotFound()
-        except Exception as err:
-            raise err
-
     def add_topic(self, topic: TopicItem):
         """
         Adds a topic.
         """
         try:
-            return self.add_topic_if_category_found(topic)
+            return self.add_topic_if_not_duplicated(topic)
         except Exception as err:
             raise err
 

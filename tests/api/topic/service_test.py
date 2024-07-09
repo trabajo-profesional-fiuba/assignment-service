@@ -69,10 +69,11 @@ def test_add_topic_with_success(service, mock_topic_repository):
 def test_add_topic_not_found(service, mock_topic_repository):
     topic = TopicItem(name="topic 1", category="category 2")
 
-    mock_topic_repository.get_topic_category_by_name.return_value = None
-    mock_topic_repository.add_topic_category.side_effect = TopicCategoryNotFound()
+    mock_topic_repository.get_topic_category_by_name.side_effect = (
+        TopicCategoryNotFound()
+    )
     with pytest.raises(TopicCategoryNotFound):
-        service.add_topic(topic)
+        service.add_topic_category_if_not_duplicated(topic)
 
 
 @pytest.mark.integration
