@@ -49,10 +49,6 @@ class TopicController:
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
             new_items = self._service.add_topic_preferences(topic_preferences)
-            formatted_items = self._format_topic_preferences(
-                new_items, topic_preferences
-            )
-            print("formatted items: ", formatted_items)
-            return formatted_items
+            return self._format_topic_preferences(new_items, topic_preferences)
         except Exception as err:
             raise err

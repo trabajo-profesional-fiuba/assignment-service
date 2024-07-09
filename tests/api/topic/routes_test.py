@@ -146,7 +146,7 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
     assert response.json() == expected_response
 
 
-@pytest.mark.skip(reason="Not implemented")
+@pytest.mark.integration
 def test_add_topic_preferences_duplicated(test_app):
     topic_preferences = {
         "email_sender": "test1@example.com",
@@ -163,3 +163,6 @@ def test_add_topic_preferences_duplicated(test_app):
     }
     response = test_app.post("/topic_preferences/", json=topic_preferences)
     assert response.status_code == 409
+    assert response.json() == {
+        "detail": "Student email 'test1@example.com' already exists."
+    }

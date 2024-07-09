@@ -18,11 +18,12 @@ class TopicDuplicated(Exception):
         pass
 
 
+class StudentEmailDuplicated(Exception):
+    def __init__(self, email: str):
+        self.email = email
+        super().__init__(self.email)
+
+
 class TopicPreferencesDuplicated(Exception):
-    def __init__(self):
-        pass
-
-
-class StudentNotFound(Exception):
     def __init__(self):
         pass

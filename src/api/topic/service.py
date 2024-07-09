@@ -8,6 +8,7 @@ from src.api.topic.exceptions import (
     TopicCategoryDuplicated,
     TopicCategoryNotFound,
     TopicDuplicated,
+    StudentEmailDuplicated,
 )
 
 
@@ -70,11 +71,14 @@ class TopicService:
         try:
             created = []
             for email in student_emails:
-                created.append(
-                    self._topic_repository.add_topic_preferences(
-                        email, topic_preferences
+                if self._topic_repository.get_topic_preferences_by_email(email) is None:
+                    created.append(
+                        self._topic_repository.add_topic_preferences(
+                            email, topic_preferences
+                        )
                     )
-                )
+                else:
+                    raise StudentEmailDuplicated(email)
             return created
         except Exception as err:
             raise err
