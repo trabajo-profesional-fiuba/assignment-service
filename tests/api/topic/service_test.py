@@ -3,7 +3,11 @@ from unittest.mock import create_autospec
 from src.api.topic.schemas import TopicCategoryItem, TopicItem, TopicPreferencesItem
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
-from src.api.topic.exceptions import TopicCategoryDuplicated, TopicCategoryNotFound
+from src.api.topic.exceptions import (
+    TopicCategoryDuplicated,
+    TopicCategoryNotFound,
+    StudentEmailDuplicated,
+)
 
 
 @pytest.fixture
@@ -116,6 +120,12 @@ def test_add_topic_preferences_with_completed_group_success(
         category_3="topic 1",
     )
 
+    mock_topic_repository.get_topic_preferences_by_email.side_effect = [
+        None,
+        None,
+        None,
+        None,
+    ]
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
@@ -224,6 +234,12 @@ def test_add_topic_preferences_with_uncompleted_group_success(
         category_3="topic 1",
     )
 
+    mock_topic_repository.get_topic_preferences_by_email.side_effect = [
+        None,
+        None,
+        None,
+        None,
+    ]
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
@@ -290,6 +306,12 @@ def test_add_topic_preferences_without_group_success(service, mock_topic_reposit
         category_3="category 1",
     )
 
+    mock_topic_repository.get_topic_preferences_by_email.side_effect = [
+        None,
+        None,
+        None,
+        None,
+    ]
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
             "email": "test1@example.com",
@@ -317,3 +339,35 @@ def test_add_topic_preferences_without_group_success(service, mock_topic_reposit
         }
     ]
     assert result == expected_result
+
+
+@pytest.mark.integration
+def test_add_topic_preferences_duplicated(service, mock_topic_repository):
+    emails = ["test1@example.com"]
+    item = TopicPreferencesItem(
+        email_sender="test1@example.com",
+        email_student_2=None,
+        email_student_3=None,
+        email_student_4=None,
+        group_id="2024-06-25T12:00:00",
+        topic_1="topic 1",
+        category_1="category 1",
+        topic_2="topic 1",
+        category_2="category 1",
+        topic_3="topic 1",
+        category_3="category 1",
+    )
+
+    mock_topic_repository.get_topic_preferences_by_email.return_value = {
+        "email": "test1@example.com",
+        "group_id": "2024-06-21T12:00:00",
+        "topic_1": "topic 1",
+        "category_1": "category 1",
+        "topic_2": "topic 1",
+        "category_2": "category 1",
+        "topic_3": "topic 1",
+        "category_3": "category 1",
+    }
+
+    with pytest.raises(StudentEmailDuplicated):
+        service.add_all_topic_preferences(emails, item)

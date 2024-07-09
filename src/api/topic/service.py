@@ -15,20 +15,24 @@ from src.api.topic.exceptions import (
 class TopicService:
 
     def __init__(self, topic_repository: TopicRepository):
-        self._topic_repository = topic_repository
+        self._repository = topic_repository
 
     def add_topic_category_if_not_duplicated(self, topic_category: TopicCategoryItem):
+        """
+        Adds a topic category if it does not already exists.
+        Raises a 'TopicCategoryDuplicated' exception otherwise.
+        """
         try:
-            if (
-                self._topic_repository.get_topic_category_by_name(topic_category.name)
-                is None
-            ):
-                return self._topic_repository.add_topic_category(topic_category)
+            if self._repository.get_topic_category_by_name(topic_category.name) is None:
+                return self._repository.add_topic_category(topic_category)
             raise TopicCategoryDuplicated()
         except Exception as err:
             raise err
 
     def add_topic_category(self, topic_category: TopicCategoryItem):
+        """
+        Adds a topic category.
+        """
         try:
             return self.add_topic_category_if_not_duplicated(topic_category)
         except Exception as err:
@@ -37,22 +41,30 @@ class TopicService:
     def add_topic_if_not_duplicated(
         self, topic: TopicItem, category: TopicCategoryItem
     ):
+        """
+        Adds a topic if it does not already exists.
+        Raise a 'TopicDuplicated' exception otherwise.
+        """
         try:
             if (
-                self._topic_repository.get_topic_by_name_and_category(
+                self._repository.get_topic_by_name_and_category(
                     topic.name, category.name
                 )
                 is None
             ):
-                self._topic_repository.add_topic(topic)
+                self._repository.add_topic(topic)
                 return topic
             raise TopicDuplicated()
         except Exception as err:
             raise err
 
     def add_topic_if_category_found(self, topic: TopicItem):
+        """
+        Adds a topic if its category already exists.
+        Raises a 'TopicCategoryNotFound' otherwise.
+        """
         try:
-            category = self._topic_repository.get_topic_category_by_name(topic.category)
+            category = self._repository.get_topic_category_by_name(topic.category)
             if category is not None:
                 return self.add_topic_if_not_duplicated(topic, category)
             raise TopicCategoryNotFound()
@@ -60,6 +72,9 @@ class TopicService:
             raise err
 
     def add_topic(self, topic: TopicItem):
+        """
+        Adds a topic.
+        """
         try:
             return self.add_topic_if_category_found(topic)
         except Exception as err:
@@ -68,14 +83,16 @@ class TopicService:
     def add_all_topic_preferences(
         self, student_emails: list, topic_preferences: TopicPreferencesItem
     ):
+        """
+        Adds a topic preference for each student of the group if it does not already exists.
+        Raises a 'StudentEmailDuplicate' exception otherwise.
+        """
         try:
             created = []
             for email in student_emails:
-                if self._topic_repository.get_topic_preferences_by_email(email) is None:
+                if self._repository.get_topic_preferences_by_email(email) is None:
                     created.append(
-                        self._topic_repository.add_topic_preferences(
-                            email, topic_preferences
-                        )
+                        self._repository.add_topic_preferences(email, topic_preferences)
                     )
                 else:
                     raise StudentEmailDuplicated(email)
@@ -84,6 +101,9 @@ class TopicService:
             raise err
 
     def filter_student_emails(self, student_emails: list):
+        """
+        Returns not none student emails.
+        """
         filtered = []
         for email in student_emails:
             if email is not None:
@@ -91,17 +111,20 @@ class TopicService:
         return filtered
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
+        """
+        Adds a topic preferences for every student in the group.
+        Returns created topic preferences.
+        """
         try:
-            not_none_emails = self.filter_student_emails(
-                [
-                    topic_preferences.email_sender,
-                    topic_preferences.email_student_2,
-                    topic_preferences.email_student_3,
-                    topic_preferences.email_student_4,
-                ]
-            )
             return self.add_all_topic_preferences(
-                not_none_emails,
+                self.filter_student_emails(
+                    [
+                        topic_preferences.email_sender,
+                        topic_preferences.email_student_2,
+                        topic_preferences.email_student_3,
+                        topic_preferences.email_student_4,
+                    ]
+                ),
                 topic_preferences,
             )
         except Exception as err:
