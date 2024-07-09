@@ -40,20 +40,6 @@ class TopicRepository:
         except Exception as err:
             raise err
 
-    def get_topic(self, topic: TopicItem):
-        try:
-            session = self._db.get_db()
-            category = self.get_topic_category_by_name(topic.category)
-            db_item = (
-                session.query(Topic)
-                .filter(Topic.name == topic.name)
-                .filter(Topic.category == category.id)
-                .first()
-            )
-            return db_item
-        except Exception as err:
-            raise err
-
     def get_topic_by_name_and_category(self, topic_name: str, topic_category: str):
         try:
             session = self._db.get_db()

@@ -53,11 +53,10 @@ def test_add_topic_category_duplicated(service, mock_topic_repository):
 def test_add_topic_with_success(service, mock_topic_repository):
     topic = TopicItem(name="topic 1", category="category 1")
 
-    mock_topic_repository.get_topic_category_by_name.return_value = {
-        "id": 1,
-        "name": "category 1",
-    }
-    mock_topic_repository.get_topic.return_value = None
+    mock_topic_repository.get_topic_category_by_name.return_value = TopicCategoryItem(
+        name="category 1",
+    )
+    mock_topic_repository.get_topic_by_name_and_category.return_value = None
     mock_topic_repository.add_topic.return_value = topic
     assert service.add_topic(topic) == topic
 

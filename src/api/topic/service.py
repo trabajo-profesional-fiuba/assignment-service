@@ -31,7 +31,12 @@ class TopicService:
         try:
             category = self._topic_repository.get_topic_category_by_name(topic.category)
             if category is not None:
-                if self._topic_repository.get_topic(topic) is None:
+                if (
+                    self._topic_repository.get_topic_by_name_and_category(
+                        topic.name, category.name
+                    )
+                    is None
+                ):
                     self._topic_repository.add_topic(topic)
                     return topic
                 raise TopicDuplicated()
