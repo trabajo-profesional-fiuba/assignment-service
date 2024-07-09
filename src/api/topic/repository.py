@@ -56,17 +56,14 @@ class TopicRepository:
 
     def get_topic_by_name_and_category(self, topic_name: str, topic_category: str):
         try:
-            print(f"get_topic_by_name_and_category repo: {topic_name} {topic_category}")
             session = self._db.get_db()
             category = self.get_topic_category_by_name(topic_category)
-            print("category: ", category)
             db_item = (
                 session.query(Topic)
                 .filter(Topic.name == topic_name)
                 .filter(Topic.category == category.id)
                 .first()
             )
-            print("topic: ", db_item)
             return db_item
         except Exception as err:
             raise err
@@ -90,21 +87,17 @@ class TopicRepository:
         self, email: str, topic_preferences: TopicPreferencesItem
     ):
         try:
-            print(f"add_topic_preferences repo {topic_preferences}")
             session = self._db.get_db()
 
             topic_1 = self.get_topic_by_name_and_category(
                 topic_preferences.topic_1, topic_preferences.category_1
             ).id
-            print(topic_1)
             topic_2 = self.get_topic_by_name_and_category(
                 topic_preferences.topic_2, topic_preferences.category_2
             ).id
-            print(topic_2)
             topic_3 = self.get_topic_by_name_and_category(
                 topic_preferences.topic_3, topic_preferences.category_3
             ).id
-            print(topic_3)
 
             db_item = TopicPreferences(
                 email=email,
@@ -113,7 +106,6 @@ class TopicRepository:
                 topic_2=topic_2,
                 topic_3=topic_3,
             )
-            print(db_item)
             session.add(db_item)
             session.commit()
             session.refresh(db_item)

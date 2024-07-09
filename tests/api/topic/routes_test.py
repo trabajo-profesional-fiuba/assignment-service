@@ -82,7 +82,7 @@ def test_add_topic_duplicated(test_app):
     assert response.json() == {"detail": "Topic 'topic 1, category 1' already exists."}
 
 
-@pytest.mark.skip(reason="To be fixed")
+@pytest.mark.integration
 def test_add_topic_preferences_with_completed_group_success(test_app):
     topic_preferences = {
         "email_sender": "test1@example.com",

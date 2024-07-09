@@ -20,15 +20,14 @@ class Database:
 
     def __init__(self):
         try:
-            self.engine = create_engine(DATABASE_URL,
+            self.engine = create_engine(
+                DATABASE_URL,
                 pool_size=10,  # Max number of connections
                 max_overflow=20,  # Max number of overflow connections
                 pool_timeout=30,  # Time until a connection fails
                 pool_recycle=1800,  # Time to recycle a connection
             )
-            self.SessionLocal = sessionmaker(
-                bind=self.engine
-            )
+            self.SessionLocal = sessionmaker(bind=self.engine)
             self.drop_tables()
             self.create_tables()
         except Exception as err:

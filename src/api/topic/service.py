@@ -41,22 +41,18 @@ class TopicService:
 
     def add_items(self, emails: list, item: TopicPreferencesItem):
         try:
-            print("add_items service {item} {emails}")
             created_items = []
             for email in emails:
-                print("email: ", email)
                 if email is not None:
                     created_items.append(
                         self._topic_repository.add_topic_preferences(email, item)
                     )
-            print("created items: ", created_items)
             return created_items
         except Exception as err:
             raise err
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
-            print("add_topic_preferences service: ", topic_preferences)
             new_items = self.add_items(
                 [
                     topic_preferences.email_sender,
@@ -66,7 +62,6 @@ class TopicService:
                 ],
                 topic_preferences,
             )
-            print("new items", new_items)
             return new_items
         except Exception as err:
             raise err

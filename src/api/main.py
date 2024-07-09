@@ -105,9 +105,7 @@ async def add_topic(topic: TopicItem):
 )
 async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
     try:
-        print("main: ", topic_preferences)
         new_item = topic_controller.add_topic_preferences(topic_preferences)
-        print("main: ", new_item)
         return new_item
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

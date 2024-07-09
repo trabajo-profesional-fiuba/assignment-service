@@ -48,9 +48,7 @@ class TopicController:
 
     def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
         try:
-            print("controller: ", topic_preferences)
             new_items = self._service.add_topic_preferences(topic_preferences)
-            print("new items: ", new_items)
             formatted_items = self._format_topic_preferences(
                 new_items, topic_preferences
             )
