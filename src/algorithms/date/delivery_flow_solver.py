@@ -297,16 +297,15 @@ class DeliveryFlowSolver:
 
         clean_results = self._clean_evaluators_results(max_flow_min_cost_evaluator)
 
-        if (self._valid_evaluator_results(clean_results) is False):
+        if self._valid_evaluator_results(clean_results) is False:
             raise AssigmentIsNotPossible("There are groups without avaliable evaluator")
-
 
         groups_edges = self._create_group_date_edges(clean_results)
         g_graph = nx.DiGraph()
         g_graph.add_edges_from(groups_edges)
         max_flow_min_cost_groups = self._max_flow_min_cost(g_graph)
-        
-        if (self._valid_groups_result(max_flow_min_cost_groups) is False):
+
+        if self._valid_groups_result(max_flow_min_cost_groups) is False:
             raise AssigmentIsNotPossible("There are groups without assigned dates")
 
         substitutes = self._find_substitutes(clean_results, max_flow_min_cost_groups)

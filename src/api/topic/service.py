@@ -16,7 +16,9 @@ class TopicService:
     def __init__(self, topic_repository: TopicRepository):
         self._repository = topic_repository
 
-    def add_topic_category_if_not_duplicated(self, topic_category: TopicCategoryRequest):
+    def add_topic_category_if_not_duplicated(
+        self, topic_category: TopicCategoryRequest
+    ):
         """
         Adds a topic category if it does not already exists.
         Raises a 'TopicCategoryDuplicated' exception otherwise.

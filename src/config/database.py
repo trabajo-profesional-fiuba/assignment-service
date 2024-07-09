@@ -23,9 +23,7 @@ class Database:
             self.engine = create_engine(
                 DATABASE_URL,
                 pool_size=10,  # Max number of connections
-                max_overflow=20,  # Max number of overflow connections
-                pool_timeout=30,  # Time until a connection fails
-                pool_recycle=1800,  # Time to recycle a connection
+                pool_timeout=10,  # Time until a connection fails
             )
             self.SessionLocal = sessionmaker(bind=self.engine)
             self.drop_tables()
