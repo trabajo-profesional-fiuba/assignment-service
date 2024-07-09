@@ -22,7 +22,11 @@ docker-compose up --build
 
 ### Tests
 
-To run tests using Poetry, run the following command in your terminal:
+To run tests using Poetry, run the following commands in your terminal:
+
+```bash
+.\InitTestDatabase.ps1
+```
 
 ```bash
 poetry run pytest
