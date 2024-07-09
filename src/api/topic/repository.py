@@ -1,7 +1,7 @@
 from src.api.topic.schemas import (
-    TopicCategorySchema,
-    TopicSchema,
-    TopicPreferencesSchema,
+    TopicCategoryRequest,
+    TopicRequest,
+    TopicPreferencesRequest,
 )
 from src.api.topic.models import TopicCategory, Topic, TopicPreferences
 from src.api.topic.exceptions import TopicCategoryNotFound, TopicNotFound
@@ -22,7 +22,7 @@ class TopicRepository:
         except Exception as err:
             raise err
 
-    def add_topic_category(self, topic_category: TopicCategorySchema):
+    def add_topic_category(self, topic_category: TopicCategoryRequest):
         try:
             session = self._db.get_db()
             db_item = TopicCategory(name=topic_category.name)
@@ -42,7 +42,6 @@ class TopicRepository:
             db_item = Topic(name=topic.name, category=category.id)
             session.add(db_item)
             session.commit()
-            session.refresh(db_item)
             return db_item
         except Exception as err:
             raise err
@@ -92,7 +91,7 @@ class TopicRepository:
             raise err
 
     def add_topic_preferences(
-        self, email: str, topic_preferences: TopicPreferencesSchema
+        self, email: str, topic_preferences: TopicPreferencesRequest
     ):
         try:
             session = self._db.get_db()

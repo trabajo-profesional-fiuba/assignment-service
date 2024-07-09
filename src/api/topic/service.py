@@ -1,7 +1,7 @@
 from src.api.topic.schemas import (
-    TopicCategorySchema,
-    TopicSchema,
-    TopicPreferencesSchema,
+    TopicCategoryRequest,
+    TopicRequest,
+    TopicPreferencesRequest,
 )
 from src.api.topic.repository import TopicRepository
 from src.api.topic.exceptions import (
@@ -16,7 +16,7 @@ class TopicService:
     def __init__(self, topic_repository: TopicRepository):
         self._repository = topic_repository
 
-    def add_topic_category_if_not_duplicated(self, topic_category: TopicCategorySchema):
+    def add_topic_category_if_not_duplicated(self, topic_category: TopicCategoryRequest):
         """
         Adds a topic category if it does not already exists.
         Raises a 'TopicCategoryDuplicated' exception otherwise.
@@ -28,7 +28,7 @@ class TopicService:
         except Exception as err:
             raise err
 
-    def add_topic_category(self, topic_category: TopicCategorySchema):
+    def add_topic_category(self, topic_category: TopicCategoryRequest):
         """
         Adds a topic category.
         """
@@ -37,7 +37,7 @@ class TopicService:
         except Exception as err:
             raise err
 
-    def add_topic_if_not_duplicated(self, topic: TopicSchema):
+    def add_topic_if_not_duplicated(self, topic: TopicRequest):
         """
         Adds a topic if it does not already exists.
         Raise a 'TopicDuplicated' exception otherwise.
@@ -55,7 +55,7 @@ class TopicService:
         except Exception as err:
             raise err
 
-    def add_topic(self, topic: TopicSchema):
+    def add_topic(self, topic: TopicRequest):
         """
         Adds a topic.
         """
@@ -65,7 +65,7 @@ class TopicService:
             raise err
 
     def add_all_topic_preferences(
-        self, student_emails: list, topic_preferences: TopicPreferencesSchema
+        self, student_emails: list, topic_preferences: TopicPreferencesRequest
     ):
         """
         Adds a topic preference for each student of the group if it does not already exists.
@@ -94,7 +94,7 @@ class TopicService:
                 filtered.append(email)
         return filtered
 
-    def add_topic_preferences(self, topic_preferences: TopicPreferencesSchema):
+    def add_topic_preferences(self, topic_preferences: TopicPreferencesRequest):
         """
         Adds a topic preferences for every student in the group.
         Returns created topic preferences.
