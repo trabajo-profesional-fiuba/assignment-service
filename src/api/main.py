@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
 from src.api.topic.schemas import (
-    TopicPreferencesItem,
+    TopicPreferencesSchema,
     TopicPreferencesResponse,
-    TopicCategoryItem,
-    TopicItem,
+    TopicCategorySchema,
+    TopicSchema,
 )
 from src.api.topic.router import TopicController
 from src.api.topic.service import TopicService
@@ -41,7 +41,7 @@ async def root():
     status_code=201,
     description="This endpoint creates a new topic category.",
     response_description="Created topic category.",
-    response_model=TopicCategoryItem,
+    response_model=TopicCategorySchema,
     responses={
         201: {"description": "Successfully added topic category"},
         409: {"description": "Topic category duplicated"},
@@ -49,7 +49,7 @@ async def root():
         500: {"description": "Internal Server Error"},
     },
 )
-async def add_topic_category(topic_category: TopicCategoryItem):
+async def add_topic_category(topic_category: TopicCategorySchema):
     try:
         new_item = topic_controller.add_topic_category(topic_category)
         return new_item
@@ -67,14 +67,14 @@ async def add_topic_category(topic_category: TopicCategoryItem):
     status_code=201,
     description="This endpoint creates a new topic.",
     response_description="Created topic.",
-    response_model=TopicItem,
+    response_model=TopicSchema,
     responses={
         201: {"description": "Successfully added topic"},
         422: {"description": "Validation Error"},
         500: {"description": "Internal Server Error"},
     },
 )
-async def add_topic(topic: TopicItem):
+async def add_topic(topic: TopicSchema):
     try:
         return topic_controller.add_topic(topic)
     except TopicCategoryNotFound as category:
@@ -105,7 +105,7 @@ async def add_topic(topic: TopicItem):
         500: {"description": "Internal Server Error"},
     },
 )
-async def add_topic_preferences(topic_preferences: TopicPreferencesItem):
+async def add_topic_preferences(topic_preferences: TopicPreferencesSchema):
     try:
         return topic_controller.add_topic_preferences(topic_preferences)
     except StudentEmailDuplicated as email:

@@ -1,6 +1,10 @@
 import pytest
 from unittest.mock import create_autospec
-from src.api.topic.schemas import TopicCategoryItem, TopicItem, TopicPreferencesItem
+from src.api.topic.schemas import (
+    TopicCategorySchema,
+    TopicSchema,
+    TopicPreferencesSchema,
+)
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
 from src.api.topic.exceptions import (
@@ -23,7 +27,7 @@ def service(mock_topic_repository):
 
 @pytest.mark.integration
 def test_add_topic_category_with_success(service, mock_topic_repository):
-    topic_category = TopicCategoryItem(
+    topic_category = TopicCategorySchema(
         name="category 1",
     )
 
@@ -40,7 +44,7 @@ def test_add_topic_category_with_success(service, mock_topic_repository):
 
 @pytest.mark.integration
 def test_add_topic_category_duplicated(service, mock_topic_repository):
-    topic_category = TopicCategoryItem(
+    topic_category = TopicCategorySchema(
         name="category 1",
     )
 
@@ -56,9 +60,9 @@ def test_add_topic_category_duplicated(service, mock_topic_repository):
 
 @pytest.mark.integration
 def test_add_topic_with_success(service, mock_topic_repository):
-    topic = TopicItem(name="topic 1", category="category 1")
+    topic = TopicSchema(name="topic 1", category="category 1")
 
-    mock_topic_repository.get_topic_category_by_name.return_value = TopicCategoryItem(
+    mock_topic_repository.get_topic_category_by_name.return_value = TopicCategorySchema(
         name="category 1",
     )
     mock_topic_repository.get_topic_by_name_and_category.return_value = None
@@ -68,7 +72,7 @@ def test_add_topic_with_success(service, mock_topic_repository):
 
 @pytest.mark.integration
 def test_add_topic_not_found(service, mock_topic_repository):
-    topic = TopicItem(name="topic 1", category="category 2")
+    topic = TopicSchema(name="topic 1", category="category 2")
 
     mock_topic_repository.get_topic_category_by_name.side_effect = (
         TopicCategoryNotFound("category 2")
@@ -108,7 +112,7 @@ def test_filter_student_emails_with_all_none_emails(service):
 def test_add_topic_preferences_with_completed_group_success(
     service, mock_topic_repository
 ):
-    topic_preferences = TopicPreferencesItem(
+    topic_preferences = TopicPreferencesSchema(
         email_sender="test1@example.com",
         email_student_2="test2@example.com",
         email_student_3="test3@example.com",
@@ -217,7 +221,7 @@ def test_add_topic_preferences_with_uncompleted_group_success(
     service, mock_topic_repository
 ):
     emails = ["test1@example.com", "test2@example.com"]
-    item = TopicPreferencesItem(
+    item = TopicPreferencesSchema(
         email_sender="test1@example.com",
         email_student_2="test2@example.com",
         email_student_3=None,
@@ -284,7 +288,7 @@ def test_add_topic_preferences_with_uncompleted_group_success(
 @pytest.mark.integration
 def test_add_topic_preferences_without_group_success(service, mock_topic_repository):
     emails = ["test1@example.com"]
-    item = TopicPreferencesItem(
+    item = TopicPreferencesSchema(
         email_sender="test1@example.com",
         email_student_2=None,
         email_student_3=None,
@@ -331,7 +335,7 @@ def test_add_topic_preferences_without_group_success(service, mock_topic_reposit
 @pytest.mark.integration
 def test_add_topic_preferences_duplicated(service, mock_topic_repository):
     emails = ["test1@example.com"]
-    item = TopicPreferencesItem(
+    item = TopicPreferencesSchema(
         email_sender="test1@example.com",
         email_student_2=None,
         email_student_3=None,
@@ -363,7 +367,7 @@ def test_add_topic_preferences_duplicated(service, mock_topic_repository):
 @pytest.mark.integration
 def test_add_topic_preferences_with_topic_not_found(service, mock_topic_repository):
     emails = ["test1@example.com"]
-    item = TopicPreferencesItem(
+    item = TopicPreferencesSchema(
         email_sender="test1@example.com",
         email_student_2=None,
         email_student_3=None,

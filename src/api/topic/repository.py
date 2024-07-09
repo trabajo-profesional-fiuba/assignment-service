@@ -1,4 +1,8 @@
-from src.api.topic.schemas import TopicCategoryItem, TopicItem, TopicPreferencesItem
+from src.api.topic.schemas import (
+    TopicCategorySchema,
+    TopicSchema,
+    TopicPreferencesSchema,
+)
 from src.api.topic.models import TopicCategory, Topic, TopicPreferences
 from src.api.topic.exceptions import TopicCategoryNotFound, TopicNotFound
 
@@ -18,7 +22,7 @@ class TopicRepository:
         except Exception as err:
             raise err
 
-    def add_topic_category(self, topic_category: TopicCategoryItem):
+    def add_topic_category(self, topic_category: TopicCategorySchema):
         try:
             session = self._db.get_db()
             db_item = TopicCategory(name=topic_category.name)
@@ -88,7 +92,7 @@ class TopicRepository:
             raise err
 
     def add_topic_preferences(
-        self, email: str, topic_preferences: TopicPreferencesItem
+        self, email: str, topic_preferences: TopicPreferencesSchema
     ):
         try:
             session = self._db.get_db()

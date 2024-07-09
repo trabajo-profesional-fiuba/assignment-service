@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class TopicPreferencesItem(BaseModel):
+class TopicPreferencesSchema(BaseModel):
     email_sender: str
     email_student_2: str | None
     email_student_3: str | None
@@ -27,10 +27,10 @@ class TopicPreferencesResponse(BaseModel):
     category_3: str
 
 
-class TopicCategoryItem(BaseModel):
+class TopicCategorySchema(BaseModel):
     name: str
 
 
-class TopicItem(BaseModel):
+class TopicSchema(BaseModel):
     name: str
     category: str

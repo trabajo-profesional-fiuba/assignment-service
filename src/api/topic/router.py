@@ -1,7 +1,7 @@
 from src.api.topic.schemas import (
-    TopicCategoryItem,
-    TopicItem,
-    TopicPreferencesItem,
+    TopicCategorySchema,
+    TopicSchema,
+    TopicPreferencesSchema,
 )
 from src.api.topic.service import TopicService
 
@@ -14,20 +14,22 @@ class TopicController:
     def _format_topic_category(self, item):
         return {"name": item.name}
 
-    def add_topic_category(self, topic_category: TopicCategoryItem):
+    def add_topic_category(self, topic_category: TopicCategorySchema):
         try:
             new_item = self._service.add_topic_category(topic_category)
             return self._format_topic_category(new_item)
         except Exception as err:
             raise err
 
-    def add_topic(self, topic: TopicItem):
+    def add_topic(self, topic: TopicSchema):
         try:
             return self._service.add_topic(topic)
         except Exception as err:
             raise err
 
-    def _format_topic_preferences(self, new_items: list, request: TopicPreferencesItem):
+    def _format_topic_preferences(
+        self, new_items: list, request: TopicPreferencesSchema
+    ):
         """
         Deletes other students from the same group email.
         """
@@ -46,7 +48,7 @@ class TopicController:
             formatted_list.append(formatted_item)
         return formatted_list
 
-    def add_topic_preferences(self, topic_preferences: TopicPreferencesItem):
+    def add_topic_preferences(self, topic_preferences: TopicPreferencesSchema):
         try:
             new_items = self._service.add_topic_preferences(topic_preferences)
             return self._format_topic_preferences(new_items, topic_preferences)
