@@ -1,7 +1,8 @@
 class Topic:
-    def __init__(self, id: int, title: str, cost: int, capacity=0):
+    def __init__(self, id: int, title: str, cost: int, capacity=0, categories=[]):
         self._id = id
         self._title = title
+        self._categories = categories
         self._cost = cost
         self._capacity = capacity
 
@@ -26,3 +27,10 @@ class Topic:
     @property
     def capacity(self):
         return self._capacity
+    
+    @property
+    def categories(self):
+        return self._categories
+    
+    def add_category(self, category):
+        self._categories.append(category)
