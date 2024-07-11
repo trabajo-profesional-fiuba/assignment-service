@@ -1,6 +1,4 @@
-from io import StringIO
-import pandas as pd
-
+from src.api.student.utils import StudentCsvFile
 class StudentService:
 
     def __init__(self,repository: None) -> None:
@@ -8,6 +6,5 @@ class StudentService:
 
     
     def create_students_from_string(self, csv: str):
-        file = StringIO(csv)
-        df = pd.read_csv(file)
-        return df
+        csv_file = StudentCsvFile(csv=csv)
+        return csv_file
