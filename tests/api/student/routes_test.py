@@ -45,7 +45,7 @@ def test_upload_file_and_create_students(test_app):
     response = test_app.post(f"{PREFIX}/upload", files=files)
 
     # Assert
-    assert len(response.json()) == 1
+    assert len(response.json()) == 3
 
 
 

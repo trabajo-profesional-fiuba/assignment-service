@@ -1,7 +1,7 @@
 from src.config.database import Base
 from sqlalchemy import Column, String
 
-class Student(Base):
+class StudentModel(Base):
 
     __tablename__ = "students"
 
