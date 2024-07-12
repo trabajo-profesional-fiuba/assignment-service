@@ -1,7 +1,7 @@
 import hashlib
 
 
-class SHA1Hasher:
+class ShaHasher:
 
     def hash(self, message: str):
         sha256_hash = hashlib.sha256()

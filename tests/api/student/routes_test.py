@@ -4,7 +4,6 @@ from fastapi.testclient import TestClient
 from src.api.student.router import router
 from fastapi import status
 
-
 PREFIX = '/students'
 
 @pytest.fixture()

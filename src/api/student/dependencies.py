@@ -1,5 +1,5 @@
-from src.api.auth.hasher import SHA1Hasher
+from src.api.auth.hasher import ShaHasher
 
 
 def get_hash():
-    return SHA1Hasher()
+    return ShaHasher()

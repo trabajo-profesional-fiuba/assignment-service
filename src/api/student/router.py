@@ -6,7 +6,7 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 
 
-from src.api.student.schemas import StudentResponse
+from src.api.student.schemas import Student
 from src.api.student.service import StudentService
 import src.api.student.dependencies as dependencies  
 
@@ -14,7 +14,7 @@ import src.api.student.dependencies as dependencies
 router = APIRouter(prefix="/students")
 
 
-@router.post('/upload', status_code=status.HTTP_201_CREATED, response_model=list[StudentResponse])
+@router.post('/upload', status_code=status.HTTP_201_CREATED, response_model=list[Student])
 async def upload_csv_file(file: UploadFile, hasher: Annotated[object, Depends(dependencies.get_hash)]):
     try:
         # Check if content-type is a text/csv
@@ -28,6 +28,5 @@ async def upload_csv_file(file: UploadFile, hasher: Annotated[object, Depends(de
         res = service.create_students_from_string(content, hasher)
         
         return res
-    except Exception as e:
-        # Re-raise the HTTPException to let FastAPI handle it
+    except HTTPException as e:
         raise e
