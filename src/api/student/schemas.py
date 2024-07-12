@@ -6,6 +6,3 @@ class Student(BaseModel):
     last_name: str
     email: str
     password: str
-
-    class Config:
-        orm_mode = True
