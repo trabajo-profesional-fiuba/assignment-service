@@ -10,6 +10,7 @@ class StudentService:
     def __init__(self, repository) -> None:
         self._repository = repository
 
+
     def create_students_from_string(self, csv: str, hasher: ShaHasher):
         try:
             students = []
@@ -25,8 +26,8 @@ class StudentService:
                 )
                 students.append(student)
 
-            if self._repository:
-                self._repository.add_students(students)
+            self._repository.add_students(students)
+            
             return students
         except:
             raise CsvNotLoaded("csv suffered error during its insert to db")
