@@ -8,6 +8,8 @@ from fastapi.exceptions import HTTPException
 
 from src.api.student.schemas import Student
 from src.api.student.service import StudentService
+from src.api.student.repository import StudentRepository
+
 import src.api.student.dependencies as dependencies  
 
 
