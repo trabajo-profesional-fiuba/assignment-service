@@ -17,3 +17,10 @@ class StudentCsvFile:
     def _validate_csv_headers(self, df):
         if list(df.columns.values) != ["NOMBRE", "APELLIDO", "PADRON", "MAIL"]:
             raise InvalidStudentCsv("Columns don't match with expected ones")
+    
+    def get_info_as_rows(self):
+        rows = []
+        self._df.apply(lambda row: rows.append((row["NOMBRE"],row["APELLIDO"], row["PADRON"], row["MAIL"])), axis=1)
+        
+        return rows
+

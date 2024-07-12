@@ -24,7 +24,7 @@ async def upload_csv_file(file: UploadFile):
 
         res = service.create_students_from_string(content)
         
-        return []
-    except HTTPException as e:
+        return res
+    except Exception as e:
         # Re-raise the HTTPException to let FastAPI handle it
         raise e

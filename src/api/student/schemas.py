@@ -5,7 +5,7 @@ class Student(BaseModel):
     last_name: str
     email: str
     student_number: str
-
+    password: str
 
 
 class StudentResponse(Student):

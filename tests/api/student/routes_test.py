@@ -15,7 +15,7 @@ def test_app():
         yield client
 
 @pytest.mark.integration
-def test_upload_file_and_create_students(test_app):
+def test_upload_file_and_create_students_respond_201(test_app):
 
     # Arrange 
     with open('tests/api/student/test_data.csv', 'rb') as file:
@@ -30,6 +30,24 @@ def test_upload_file_and_create_students(test_app):
 
     # Assert
     assert response.status_code == 201
+
+@pytest.mark.integration
+def test_upload_file_and_create_students(test_app):
+
+    # Arrange 
+    with open('tests/api/student/test_data.csv', 'rb') as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    files  = {'file': (filename, content, content_type)}
+    
+    # Act
+    response = test_app.post(f"{PREFIX}/upload", files=files)
+
+    # Assert
+    assert len(response.json()) == 1
+
 
 
 @pytest.mark.integration
