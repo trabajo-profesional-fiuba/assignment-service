@@ -2,9 +2,12 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from src.api.student.router import router
+from src.api.student.repository import StudentRepository
 from fastapi import status
+from unittest.mock import create_autospec
 
 PREFIX = '/students'
+
 
 @pytest.fixture()
 def test_app():
