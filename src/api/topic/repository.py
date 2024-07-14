@@ -62,27 +62,12 @@ class TopicRepository:
         except Exception as err:
             raise err
 
-    def delete_topic_preferences(self, email: str):
+    def get_topic_preferences_by_uid(self, uid: int):
         try:
             session = self._db.get_db()
             db_item = (
                 session.query(TopicPreferences)
-                .filter(TopicPreferences.email == email)
-                .first()
-            )
-            session.delete(db_item)
-            session.commit()
-            return db_item
-        except Exception as err:
-            session.rollback()
-            raise err
-
-    def get_topic_preferences_by_email(self, email: str):
-        try:
-            session = self._db.get_db()
-            db_item = (
-                session.query(TopicPreferences)
-                .filter(TopicPreferences.email == email)
+                .filter(TopicPreferences.uid == uid)
                 .first()
             )
             return db_item
@@ -91,7 +76,7 @@ class TopicRepository:
             raise err
 
     def add_topic_preferences(
-        self, email: str, topic_preferences: TopicPreferencesRequest
+        self, uid: int, topic_preferences: TopicPreferencesRequest
     ):
         try:
             session = self._db.get_db()
@@ -119,7 +104,7 @@ class TopicRepository:
                 )
 
             db_item = TopicPreferences(
-                email=email,
+                uid=uid,
                 group_id=topic_preferences.group_id,
                 topic_1=topic_1.id,
                 topic_2=topic_2.id,

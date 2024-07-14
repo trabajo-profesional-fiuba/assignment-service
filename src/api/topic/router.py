@@ -36,7 +36,7 @@ class TopicController:
         formatted_list = []
         for new_item in new_items:
             formatted_item = {
-                "email": new_item.email,
+                "uid": new_item.uid,
                 "group_id": new_item.group_id,
                 "topic_1": request.topic_1,
                 "category_1": request.category_1,

@@ -85,10 +85,10 @@ def test_add_topic_duplicated(test_app):
 @pytest.mark.integration
 def test_add_topic_preferences_with_completed_group_success(test_app):
     topic_preferences = {
-        "email_sender": "test1@example.com",
-        "email_student_2": "test2@example.com",
-        "email_student_3": "test3@example.com",
-        "email_student_4": "test4@example.com",
+        "uid_sender": 111111,
+        "uid_student_2": 111112,
+        "uid_student_3": 111113,
+        "uid_student_4": 111114,
         "group_id": "2024-06-21T12:00:00",
         "topic_1": "topic 1",
         "category_1": "category 1",
@@ -103,7 +103,7 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
 
     expected_response = [
         {
-            "email": "test1@example.com",
+            "uid": 111111,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -113,7 +113,7 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
             "category_3": "category 1",
         },
         {
-            "email": "test2@example.com",
+            "uid": 111112,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -123,7 +123,7 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
             "category_3": "category 1",
         },
         {
-            "email": "test3@example.com",
+            "uid": 111113,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -133,7 +133,7 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
             "category_3": "category 1",
         },
         {
-            "email": "test4@example.com",
+            "uid": 111114,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -149,10 +149,10 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
 @pytest.mark.integration
 def test_add_topic_preferences_duplicated(test_app):
     topic_preferences = {
-        "email_sender": "test1@example.com",
-        "email_student_2": "test2@example.com",
-        "email_student_3": "test3@example.com",
-        "email_student_4": "test4@example.com",
+        "uid_sender": 111111,
+        "uid_student_2": 111112,
+        "uid_student_3": 111113,
+        "uid_student_4": 111114,
         "group_id": "2024-06-21T12:00:00",
         "topic_1": "topic 1",
         "category_1": "category 1",
@@ -163,18 +163,16 @@ def test_add_topic_preferences_duplicated(test_app):
     }
     response = test_app.post("/topic_preferences/", json=topic_preferences)
     assert response.status_code == 409
-    assert response.json() == {
-        "detail": "Student email 'test1@example.com' already exists."
-    }
+    assert response.json() == {"detail": "Student uid '111111' already exists."}
 
 
 @pytest.mark.integration
 def test_add_topic_preferences_with_category_not_found(test_app):
     topic_preferences = {
-        "email_sender": "test5@example.com",
-        "email_student_2": "test2@example.com",
-        "email_student_3": "test3@example.com",
-        "email_student_4": "test4@example.com",
+        "uid_sender": 111115,
+        "uid_student_2": 111112,
+        "uid_student_3": 111113,
+        "uid_student_4": 111114,
         "group_id": "2024-06-21T12:00:00",
         "topic_1": "topic 1",
         "category_1": "category 3",
@@ -191,10 +189,10 @@ def test_add_topic_preferences_with_category_not_found(test_app):
 @pytest.mark.integration
 def test_add_topic_preferences_with_topic_not_found(test_app):
     topic_preferences = {
-        "email_sender": "test6@example.com",
-        "email_student_2": "test2@example.com",
-        "email_student_3": "test3@example.com",
-        "email_student_4": "test4@example.com",
+        "uid_sender": 111116,
+        "uid_student_2": 111112,
+        "uid_student_3": 111113,
+        "uid_student_4": 111114,
         "group_id": "2024-06-21T12:00:00",
         "topic_1": "topic 3",
         "category_1": "category 1",

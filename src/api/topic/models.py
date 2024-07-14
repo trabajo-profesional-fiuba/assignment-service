@@ -6,11 +6,11 @@ from src.config.database import Base
 class TopicPreferences(Base):
     __tablename__ = "topic_preferences"
 
-    email = Column(String, primary_key=True, index=True)
+    uid = Column(Integer, primary_key=True)
     group_id = Column(DateTime)
-    topic_1 = Column(String)
-    topic_2 = Column(String)
-    topic_3 = Column(String)
+    topic_1 = Column(String, nullable=False)
+    topic_2 = Column(String, nullable=False)
+    topic_3 = Column(String, nullable=False)
 
 
 class TopicCategory(Base):
