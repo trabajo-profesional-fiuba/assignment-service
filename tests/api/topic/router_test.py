@@ -61,7 +61,11 @@ def test_add_topic_not_found(controller, mock_service):
 
 @pytest.mark.integration
 def test_get_all_topic_categories_with_success(controller, mock_service):
-    topic_categories = ["category 1", "category 2", "category 3"]
+    topic_categories = [
+        {"name": "category 1"},
+        {"name": "category 2"},
+        {"name": "category 3"},
+    ]
     mock_service.get_all_topic_categories.return_value = topic_categories
 
     result = controller.get_all_topic_categories()
