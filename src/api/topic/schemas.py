@@ -3,10 +3,10 @@ from datetime import datetime
 
 
 class TopicPreferencesRequest(BaseModel):
-    email_sender: str
-    email_student_2: str | None
-    email_student_3: str | None
-    email_student_4: str | None
+    uid_sender: int
+    uid_student_2: int | None
+    uid_student_3: int | None
+    uid_student_4: int | None
     group_id: datetime
     topic_1: str
     category_1: str
@@ -17,7 +17,7 @@ class TopicPreferencesRequest(BaseModel):
 
 
 class TopicPreferencesResponse(BaseModel):
-    email: str
+    uid: int
     group_id: datetime
     topic_1: str
     category_1: str

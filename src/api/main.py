@@ -16,7 +16,7 @@ from src.api.topic.exceptions import (
     TopicCategoryDuplicated,
     TopicCategoryNotFound,
     TopicDuplicated,
-    StudentEmailDuplicated,
+    UidDuplicated,
     TopicNotFound,
 )
 
@@ -108,10 +108,10 @@ async def add_topic(topic: TopicRequest):
 async def add_topic_preferences(topic_preferences: TopicPreferencesRequest):
     try:
         return topic_controller.add_topic_preferences(topic_preferences)
-    except StudentEmailDuplicated as email:
+    except UidDuplicated as uid:
         raise HTTPException(
             status_code=409,
-            detail=f"Student email '{email}' already exists.",
+            detail=f"Student uid '{uid}' already exists.",
         )
     except TopicNotFound as topic:
         raise HTTPException(

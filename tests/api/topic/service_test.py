@@ -10,7 +10,7 @@ from src.api.topic.repository import TopicRepository
 from src.api.topic.exceptions import (
     TopicCategoryDuplicated,
     TopicCategoryNotFound,
-    StudentEmailDuplicated,
+    UidDuplicated,
     TopicNotFound,
 )
 
@@ -84,27 +84,27 @@ def test_add_topic_not_found(service, mock_topic_repository):
 
 
 @pytest.mark.integration
-def test_filter_student_emails_without_none_emails(service):
-    emails = ["test1", "test2", "test3", "test4"]
-    result = service.filter_student_emails(emails)
+def test_filter_student_uids_without_none_uids(service):
+    uids = [111111, 111112, 111113, 111114]
+    result = service.filter_student_uids(uids)
 
     assert len(result) == 4
-    assert result == emails
+    assert result == uids
 
 
 @pytest.mark.integration
-def test_filter_student_emails_with_some_none_emails(service):
-    emails = ["test1", "test2", None, None]
-    result = service.filter_student_emails(emails)
+def test_filter_student_uids_with_some_none_uids(service):
+    uids = [111111, 111112, None, None]
+    result = service.filter_student_uids(uids)
 
     assert len(result) == 2
-    assert result == ["test1", "test2"]
+    assert result == [111111, 111112]
 
 
 @pytest.mark.integration
-def test_filter_student_emails_with_all_none_emails(service):
-    emails = [None, None, None, None]
-    result = service.filter_student_emails(emails)
+def test_filter_student_uids_with_all_none_uids(service):
+    uids = [None, None, None, None]
+    result = service.filter_student_uids(uids)
 
     assert len(result) == 0
     assert result == []
@@ -115,10 +115,10 @@ def test_add_topic_preferences_with_completed_group_success(
     service, mock_topic_repository
 ):
     topic_preferences = TopicPreferencesRequest(
-        email_sender="test1@example.com",
-        email_student_2="test2@example.com",
-        email_student_3="test3@example.com",
-        email_student_4="test4@example.com",
+        uid_sender=111111,
+        uid_student_2=111112,
+        uid_student_3=111113,
+        uid_student_4=111114,
         group_id="2024-06-21T12:00:00",
         topic_1="topic 1",
         category_1="topic 1",
@@ -128,10 +128,10 @@ def test_add_topic_preferences_with_completed_group_success(
         category_3="topic 1",
     )
 
-    mock_topic_repository.get_topic_preferences_by_email.return_value = None
+    mock_topic_repository.get_topic_preferences_by_uid.return_value = None
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
-            "email": "test1@example.com",
+            "uid": 111111,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -141,7 +141,7 @@ def test_add_topic_preferences_with_completed_group_success(
             "category_3": "category 1",
         },
         {
-            "email": "test2@example.com",
+            "uid": 111112,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -151,7 +151,7 @@ def test_add_topic_preferences_with_completed_group_success(
             "category_3": "category 1",
         },
         {
-            "email": "test3@example.com",
+            "uid": 111113,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -161,7 +161,7 @@ def test_add_topic_preferences_with_completed_group_success(
             "category_3": "category 1",
         },
         {
-            "email": "test4@example.com",
+            "uid": 111114,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -175,7 +175,7 @@ def test_add_topic_preferences_with_completed_group_success(
     result = service.add_topic_preferences(topic_preferences)
     expected_result = [
         {
-            "email": "test1@example.com",
+            "uid": 111111,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -185,7 +185,7 @@ def test_add_topic_preferences_with_completed_group_success(
             "category_3": "category 1",
         },
         {
-            "email": "test2@example.com",
+            "uid": 111112,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -195,7 +195,7 @@ def test_add_topic_preferences_with_completed_group_success(
             "category_3": "category 1",
         },
         {
-            "email": "test3@example.com",
+            "uid": 111113,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -205,7 +205,7 @@ def test_add_topic_preferences_with_completed_group_success(
             "category_3": "category 1",
         },
         {
-            "email": "test4@example.com",
+            "uid": 111114,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -222,12 +222,12 @@ def test_add_topic_preferences_with_completed_group_success(
 def test_add_topic_preferences_with_uncompleted_group_success(
     service, mock_topic_repository
 ):
-    emails = ["test1@example.com", "test2@example.com"]
+    uids = [111111, 111112]
     item = TopicPreferencesRequest(
-        email_sender="test1@example.com",
-        email_student_2="test2@example.com",
-        email_student_3=None,
-        email_student_4=None,
+        uid_sender=111111,
+        uid_student_2=111112,
+        uid_student_3=None,
+        uid_student_4=None,
         group_id="2024-06-25T12:00:00",
         topic_1="topic 1",
         category_1="topic 1",
@@ -237,10 +237,10 @@ def test_add_topic_preferences_with_uncompleted_group_success(
         category_3="topic 1",
     )
 
-    mock_topic_repository.get_topic_preferences_by_email.return_value = None
+    mock_topic_repository.get_topic_preferences_by_uid.return_value = None
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
-            "email": "test1@example.com",
+            "uid": 111111,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -250,7 +250,7 @@ def test_add_topic_preferences_with_uncompleted_group_success(
             "category_3": "category 1",
         },
         {
-            "email": "test2@example.com",
+            "uid": 111112,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -261,10 +261,10 @@ def test_add_topic_preferences_with_uncompleted_group_success(
         },
     ]
 
-    result = service.add_all_topic_preferences(emails, item)
+    result = service.add_all_topic_preferences(uids, item)
     expected_result = [
         {
-            "email": "test1@example.com",
+            "uid": 111111,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -274,7 +274,7 @@ def test_add_topic_preferences_with_uncompleted_group_success(
             "category_3": "category 1",
         },
         {
-            "email": "test2@example.com",
+            "uid": 111112,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -289,12 +289,12 @@ def test_add_topic_preferences_with_uncompleted_group_success(
 
 @pytest.mark.integration
 def test_add_topic_preferences_without_group_success(service, mock_topic_repository):
-    emails = ["test1@example.com"]
+    uids = [111111]
     item = TopicPreferencesRequest(
-        email_sender="test1@example.com",
-        email_student_2=None,
-        email_student_3=None,
-        email_student_4=None,
+        uid_sender=111111,
+        uid_student_2=None,
+        uid_student_3=None,
+        uid_student_4=None,
         group_id="2024-06-25T12:00:00",
         topic_1="topic 1",
         category_1="category 1",
@@ -304,10 +304,10 @@ def test_add_topic_preferences_without_group_success(service, mock_topic_reposit
         category_3="category 1",
     )
 
-    mock_topic_repository.get_topic_preferences_by_email.return_value = None
+    mock_topic_repository.get_topic_preferences_by_uid.return_value = None
     mock_topic_repository.add_topic_preferences.side_effect = [
         {
-            "email": "test1@example.com",
+            "uid": 111111,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -318,10 +318,10 @@ def test_add_topic_preferences_without_group_success(service, mock_topic_reposit
         }
     ]
 
-    result = service.add_all_topic_preferences(emails, item)
+    result = service.add_all_topic_preferences(uids, item)
     expected_result = [
         {
-            "email": "test1@example.com",
+            "uid": 111111,
             "group_id": "2024-06-21T12:00:00",
             "topic_1": "topic 1",
             "category_1": "category 1",
@@ -336,12 +336,12 @@ def test_add_topic_preferences_without_group_success(service, mock_topic_reposit
 
 @pytest.mark.integration
 def test_add_topic_preferences_duplicated(service, mock_topic_repository):
-    emails = ["test1@example.com"]
+    uids = [111111]
     item = TopicPreferencesRequest(
-        email_sender="test1@example.com",
-        email_student_2=None,
-        email_student_3=None,
-        email_student_4=None,
+        uid_sender=111111,
+        uid_student_2=None,
+        uid_student_3=None,
+        uid_student_4=None,
         group_id="2024-06-25T12:00:00",
         topic_1="topic 1",
         category_1="category 1",
@@ -351,8 +351,8 @@ def test_add_topic_preferences_duplicated(service, mock_topic_repository):
         category_3="category 1",
     )
 
-    mock_topic_repository.get_topic_preferences_by_email.return_value = {
-        "email": "test1@example.com",
+    mock_topic_repository.get_topic_preferences_by_uid.return_value = {
+        "uid": 111111,
         "group_id": "2024-06-21T12:00:00",
         "topic_1": "topic 1",
         "category_1": "category 1",
@@ -362,18 +362,18 @@ def test_add_topic_preferences_duplicated(service, mock_topic_repository):
         "category_3": "category 1",
     }
 
-    with pytest.raises(StudentEmailDuplicated):
-        service.add_all_topic_preferences(emails, item)
+    with pytest.raises(UidDuplicated):
+        service.add_all_topic_preferences(uids, item)
 
 
 @pytest.mark.integration
 def test_add_topic_preferences_with_topic_not_found(service, mock_topic_repository):
-    emails = ["test1@example.com"]
+    uids = [111111]
     item = TopicPreferencesRequest(
-        email_sender="test1@example.com",
-        email_student_2=None,
-        email_student_3=None,
-        email_student_4=None,
+        uid_sender=111111,
+        uid_student_2=None,
+        uid_student_3=None,
+        uid_student_4=None,
         group_id="2024-06-25T12:00:00",
         topic_1="topic 2",
         category_1="category 1",
@@ -383,10 +383,10 @@ def test_add_topic_preferences_with_topic_not_found(service, mock_topic_reposito
         category_3="category 1",
     )
 
-    mock_topic_repository.get_topic_preferences_by_email.return_value = None
+    mock_topic_repository.get_topic_preferences_by_uid.return_value = None
     mock_topic_repository.add_topic_preferences.side_effect = TopicNotFound(
         "topic 2", "category 1"
     )
 
     with pytest.raises(TopicNotFound):
-        service.add_all_topic_preferences(emails, item)
+        service.add_all_topic_preferences(uids, item)
