@@ -47,6 +47,7 @@ def test_upload_file_and_create_students(test_app):
     # Act
     response = test_app.post(f"{PREFIX}/upload", files=files)
 
+
     # Assert
     assert len(response.json()) == 3
 
@@ -62,6 +63,7 @@ def test_upload_file_raise_execption_if_type_is_not_csv(test_app):
     
     # Act
     response = test_app.post(f"{PREFIX}/upload", files=files)
+    
 
     # Assert
     assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE

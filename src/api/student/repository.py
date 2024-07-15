@@ -1,6 +1,7 @@
 from src.api.student.schemas import Student
 from src.api.student.model import StudentModel
 from src.config.database import Database
+from src.api.student.exceptions import StudentDuplicated
 
 
 class StudentRepository:
@@ -14,6 +15,7 @@ class StudentRepository:
         try:
             with self._db.get_session() as session:
                 with session.begin():
+                    students_objs = []
                     for student in students:
                         student_obj = StudentModel(
                             id=student.id,
@@ -22,8 +24,11 @@ class StudentRepository:
                             email=student.email,
                             password=student.password,
                         )
-                        session.add(student_obj)
+                        students_objs.append(student_obj)
+                    
+                    session.add_all(students_objs)
+                    
                 # inner context calls session.commit(), if there were no exceptions
             # outer context calls session.close()
-        except Exception as err:
-            raise err
+        except:
+            raise StudentDuplicated("Could not insert a student in the database")

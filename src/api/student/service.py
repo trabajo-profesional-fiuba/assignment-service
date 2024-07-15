@@ -1,7 +1,7 @@
 from src.api.student.utils import StudentCsvFile
 from src.api.student.schemas import Student
 from src.api.auth.hasher import ShaHasher
-from src.api.student.exceptions import CsvNotLoaded
+from src.api.student.exceptions import InvalidStudentCsv, StudentDuplicated
 
 
 
@@ -29,8 +29,8 @@ class StudentService:
             self._repository.add_students(students)
             
             return students
-        except:
-            raise CsvNotLoaded("csv suffered error during its insert to db")
+        except (InvalidStudentCsv, StudentDuplicated) as e :
+            raise e
             
 
 

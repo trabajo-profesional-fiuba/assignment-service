@@ -2,7 +2,7 @@ import pytest
 
 from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
-from src.api.student.exceptions import CsvNotLoaded
+from src.api.student.exceptions import StudentDuplicated, InvalidStudentCsv
 from src.api.auth.hasher import ShaHasher
 
 
@@ -49,5 +49,5 @@ class TestStudentService:
         hash = ShaHasher()
         service = StudentService(repo)
 
-        with pytest.raises(CsvNotLoaded):
+        with pytest.raises(InvalidStudentCsv):
             _ = service.create_students_from_string("bla,bla,bla",hash)
