@@ -115,3 +115,9 @@ class TopicService:
             )
         except Exception as err:
             raise err
+
+    def get_all_topic_categories(self):
+        try:
+            return self._repository.get_all_topic_categories()
+        except Exception as err:
+            raise err

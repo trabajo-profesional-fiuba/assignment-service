@@ -125,3 +125,21 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesRequest):
         )
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
+
+
+@app.get(
+    "/topic_categories/",
+    status_code=200,
+    description="This endpoint get all topic categories.",
+    response_description="List of topic categories.",
+    response_model=List[TopicCategoryRequest],
+    responses={
+        200: {"description": "Successfully get all topic categories"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+async def get_all_topic_categories():
+    try:
+        return topic_controller.get_all_topic_categories()
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

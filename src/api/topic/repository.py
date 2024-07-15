@@ -117,3 +117,11 @@ class TopicRepository:
         except Exception as err:
             session.rollback()
             raise err
+
+    def get_all_topic_categories(self):
+        try:
+            session = self._db.get_db()
+            db_item = session.query(TopicCategory).all()
+            return db_item
+        except Exception as err:
+            raise err

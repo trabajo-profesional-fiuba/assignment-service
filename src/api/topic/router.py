@@ -54,3 +54,9 @@ class TopicController:
             return self._format_topic_preferences(new_items, topic_preferences)
         except Exception as err:
             raise err
+
+    def get_all_topic_categories(self):
+        try:
+            return self._service.get_all_topic_categories()
+        except Exception as err:
+            raise err
