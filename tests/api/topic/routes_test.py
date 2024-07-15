@@ -18,6 +18,13 @@ def test_root(test_app):
 
 
 @pytest.mark.integration
+def test_get_empty_all_topic_categories_with_success(test_app):
+    response = test_app.get("/topic_categories/")
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+@pytest.mark.integration
 def test_add_topic_category_with_success(test_app):
     topic_category = {
         "name": "category 1",
@@ -204,3 +211,10 @@ def test_add_topic_preferences_with_topic_not_found(test_app):
     response = test_app.post("/topic_preferences/", json=topic_preferences)
     assert response.status_code == 409
     assert response.json() == {"detail": "Topic 'topic 3', 'category 1' not found."}
+
+
+@pytest.mark.integration
+def test_get_all_topic_categories_with_success(test_app):
+    response = test_app.get("/topic_categories/")
+    assert response.status_code == 200
+    assert response.json() == [{"name": "category 1"}]

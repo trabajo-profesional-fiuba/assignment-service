@@ -390,3 +390,24 @@ def test_add_topic_preferences_with_topic_not_found(service, mock_topic_reposito
 
     with pytest.raises(TopicNotFound):
         service.add_all_topic_preferences(uids, item)
+
+
+@pytest.mark.integration
+def test_get_all_topic_categories_with_success(service, mock_topic_repository):
+    topic_categories = ["category 1", "category 2", "category 3"]
+
+    mock_topic_repository.get_all_topic_categories.return_value = topic_categories
+
+    result = service.get_all_topic_categories()
+    assert len(result) == 3
+    assert result == topic_categories
+
+
+@pytest.mark.integration
+def test_get_empty_all_topic_categories_with_success(service, mock_topic_repository):
+    topic_categories = []
+    mock_topic_repository.get_all_topic_categories.return_value = topic_categories
+
+    result = service.get_all_topic_categories()
+    assert len(result) == 0
+    assert result == topic_categories

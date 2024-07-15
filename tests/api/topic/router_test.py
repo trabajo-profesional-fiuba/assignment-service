@@ -57,3 +57,22 @@ def test_add_topic_not_found(controller, mock_service):
 
     with pytest.raises(TopicCategoryNotFound):
         controller.add_topic(topic)
+
+
+@pytest.mark.integration
+def test_get_all_topic_categories_with_success(controller, mock_service):
+    topic_categories = ["category 1", "category 2", "category 3"]
+    mock_service.get_all_topic_categories.return_value = topic_categories
+
+    result = controller.get_all_topic_categories()
+    assert len(result) == 3
+    assert result == topic_categories
+
+
+def test_empty_all_topic_categories_with_success(controller, mock_service):
+    topic_categories = []
+    mock_service.get_all_topic_categories.return_value = topic_categories
+
+    result = controller.get_all_topic_categories()
+    assert len(result) == 0
+    assert result == topic_categories
