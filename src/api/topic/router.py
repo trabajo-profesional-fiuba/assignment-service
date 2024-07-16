@@ -17,7 +17,7 @@ import src.api.topic.exceptions as exceptions
 from src.config.database import get_db
 
 
-router = APIRouter(prefix="/topics")
+router = APIRouter(prefix="/topics", tags=["topics"])
 
 
 @router.post(

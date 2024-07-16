@@ -9,7 +9,7 @@ from src.api.form.repository import FormRepository
 
 from src.config.database import get_db
 
-router = APIRouter(prefix="/forms")
+router = APIRouter(prefix="/forms", tags=["forms"])
 
 
 @router.post(
