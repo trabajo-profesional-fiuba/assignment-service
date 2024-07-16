@@ -22,7 +22,7 @@ class TopicRepository:
         except Exception as err:
             raise err
 
-    def add_topic_category(self, topic_category: TopicCategoryRequest):
+    def add_category(self, topic_category: TopicCategoryRequest):
         try:
             session = self._db.get_db()
             db_item = TopicCategory(name=topic_category.name)
@@ -75,7 +75,7 @@ class TopicRepository:
             session.rollback()
             raise err
 
-    def add_topic_preferences(
+    def add_preferences(
         self, uid: int, topic_preferences: TopicPreferencesRequest
     ):
         try:
@@ -116,4 +116,12 @@ class TopicRepository:
             return db_item
         except Exception as err:
             session.rollback()
+            raise err
+
+    def get_categories(self):
+        try:
+            session = self._db.get_db()
+            db_item = session.query(TopicCategory).all()
+            return db_item
+        except Exception as err:
             raise err

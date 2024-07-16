@@ -25,12 +25,12 @@ class TopicService:
         """
         try:
             if self._repository.get_topic_category_by_name(topic_category.name) is None:
-                return self._repository.add_topic_category(topic_category)
+                return self._repository.add_category(topic_category)
             raise TopicCategoryDuplicated()
         except Exception as err:
             raise err
 
-    def add_topic_category(self, topic_category: TopicCategoryRequest):
+    def add_category(self, topic_category: TopicCategoryRequest):
         """
         Adds a topic category.
         """
@@ -78,7 +78,7 @@ class TopicService:
             for email in student_emails:
                 if self._repository.get_topic_preferences_by_uid(email) is None:
                     created.append(
-                        self._repository.add_topic_preferences(email, topic_preferences)
+                        self._repository.add_preferences(email, topic_preferences)
                     )
                 else:
                     raise UidDuplicated(email)
@@ -96,7 +96,7 @@ class TopicService:
                 filtered.append(email)
         return filtered
 
-    def add_topic_preferences(self, topic_preferences: TopicPreferencesRequest):
+    def add_preferences(self, topic_preferences: TopicPreferencesRequest):
         """
         Adds a topic preferences for every student in the group.
         Returns created topic preferences.
@@ -113,5 +113,11 @@ class TopicService:
                 ),
                 topic_preferences,
             )
+        except Exception as err:
+            raise err
+
+    def get_categories(self):
+        try:
+            return self._repository.get_categories()
         except Exception as err:
             raise err

@@ -25,8 +25,8 @@ def test_add_topic_category_with_success(controller, mock_service):
         name="category 1",
     )
 
-    mock_service.add_topic_category.return_value = topic_category
-    assert controller.add_topic_category(topic_category) == {"name": "category 1"}
+    mock_service.add_category.return_value = topic_category
+    assert controller.add_category(topic_category) == {"name": "category 1"}
 
 
 @pytest.mark.integration
@@ -35,10 +35,10 @@ def test_add_topic_category_duplicated(controller, mock_service):
         name="category 1",
     )
 
-    mock_service.add_topic_category.side_effect = TopicCategoryDuplicated()
+    mock_service.add_category.side_effect = TopicCategoryDuplicated()
 
     with pytest.raises(TopicCategoryDuplicated):
-        controller.add_topic_category(topic_category)
+        controller.add_category(topic_category)
 
 
 @pytest.mark.integration
@@ -57,3 +57,26 @@ def test_add_topic_not_found(controller, mock_service):
 
     with pytest.raises(TopicCategoryNotFound):
         controller.add_topic(topic)
+
+
+@pytest.mark.integration
+def test_get_all_topic_categories_with_success(controller, mock_service):
+    topic_categories = [
+        {"name": "category 1"},
+        {"name": "category 2"},
+        {"name": "category 3"},
+    ]
+    mock_service.get_categories.return_value = topic_categories
+
+    result = controller.get_categories()
+    assert len(result) == 3
+    assert result == topic_categories
+
+
+def test_empty_all_topic_categories_with_success(controller, mock_service):
+    topic_categories = []
+    mock_service.get_categories.return_value = topic_categories
+
+    result = controller.get_categories()
+    assert len(result) == 0
+    assert result == topic_categories

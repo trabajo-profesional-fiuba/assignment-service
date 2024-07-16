@@ -37,7 +37,7 @@ async def root():
 
 
 @app.post(
-    "/topic_category/",
+    "/topic/category/",
     status_code=201,
     description="This endpoint creates a new topic category.",
     response_description="Created topic category.",
@@ -49,9 +49,9 @@ async def root():
         500: {"description": "Internal Server Error"},
     },
 )
-async def add_topic_category(topic_category: TopicCategoryRequest):
+async def add_category(topic_category: TopicCategoryRequest):
     try:
-        new_item = topic_controller.add_topic_category(topic_category)
+        new_item = topic_controller.add_category(topic_category)
         return new_item
     except TopicCategoryDuplicated:
         raise HTTPException(
@@ -92,7 +92,7 @@ async def add_topic(topic: TopicRequest):
 
 
 @app.post(
-    "/topic_preferences/",
+    "/topic/preferences/",
     status_code=201,
     description="This endpoint creates a new topic preferences answer of email sender\
         and students from its group if it belongs to one.",
@@ -105,9 +105,9 @@ async def add_topic(topic: TopicRequest):
         500: {"description": "Internal Server Error"},
     },
 )
-async def add_topic_preferences(topic_preferences: TopicPreferencesRequest):
+async def add_preferences(topic_preferences: TopicPreferencesRequest):
     try:
-        return topic_controller.add_topic_preferences(topic_preferences)
+        return topic_controller.add_preferences(topic_preferences)
     except UidDuplicated as uid:
         raise HTTPException(
             status_code=409,
@@ -123,5 +123,23 @@ async def add_topic_preferences(topic_preferences: TopicPreferencesRequest):
             status_code=409,
             detail=f"Topic category '{category}' not found.",
         )
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
+
+
+@app.get(
+    "/topic/categories/",
+    status_code=200,
+    description="This endpoint get all topic categories.",
+    response_description="List of topic categories.",
+    response_model=List[TopicCategoryRequest],
+    responses={
+        200: {"description": "Successfully get all topic categories"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+async def get_categories():
+    try:
+        return topic_controller.get_categories()
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
