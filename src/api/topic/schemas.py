@@ -7,7 +7,7 @@ class CategoryResponse(CategoryRequest):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TopicRequest(BaseModel):
@@ -19,4 +19,4 @@ class TopicReponse(TopicRequest):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
