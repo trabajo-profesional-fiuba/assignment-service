@@ -1,15 +1,10 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from contextlib import contextmanager
-from dotenv import load_dotenv
+from src.config.config import get_configuration
 
-load_dotenv()
-
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://postgres:postgres@db:5432/postgres"
-)
 Base = declarative_base()
+config = get_configuration()
 
 
 class Database:
@@ -19,31 +14,21 @@ class Database:
 
     def __init__(self):
         try:
-            self.engine = create_engine(
-                DATABASE_URL,
-                pool_size=10,  # Max number of connections
-                pool_timeout=10,  # Time until a connection fails
-            )
-            self.SessionLocal = sessionmaker(bind=self.engine)
-            self.drop_tables()
-            self.create_tables()
+            database_url = config.get("database_url")
+            if database_url:
+                self.engine = create_engine(
+                    database_url,
+                    pool_size=config.get("pool_size"),  # Max number of connections
+                    pool_timeout=config.get("pool_timeout"),  # Time until a connection fails
+                )
+                self.Session = sessionmaker(bind=self.engine)
+            else:
+                raise Exception("database_url not found.")
         except Exception as err:
             raise err
 
-    @contextmanager
     def get_session(self):
-        """
-        Context manager to handle SQLAlchemy sessions.
-        """
-        session = self.SessionLocal()
-        try:
-            yield session
-            session.commit()
-        except Exception as err:
-            session.rollback()
-            raise err
-        finally:
-            session.close()
+        return self.Session()
 
     def create_tables(self):
         """
@@ -62,7 +47,3 @@ class Database:
             Base.metadata.drop_all(bind=self.engine)
         except Exception as err:
             raise err
-
-    def get_db(self):
-        with self.get_session() as session:
-            return session

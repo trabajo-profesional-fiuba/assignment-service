@@ -8,5 +8,5 @@ class StudentModel(Base):
     id = Column(String, primary_key=True)
     name = Column(String)
     last_name = Column(String)
-    email = Column(String, index=True, unique=True)
+    email = Column(String,)
     password = Column(String)

@@ -26,6 +26,7 @@ app.add_middleware(
 )
 
 database = Database()
+database.create_tables()
 topic_repository = TopicRepository(database)
 topic_service = TopicService(topic_repository)
 topic_controller = TopicController(topic_service)

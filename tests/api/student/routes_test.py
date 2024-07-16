@@ -5,14 +5,24 @@ from src.api.student.router import router
 from src.api.student.repository import StudentRepository
 from fastapi import status
 from unittest.mock import create_autospec
+from src.config.database import Database
+from src.api.student.model import StudentModel
 
 PREFIX = '/students'
+
+
+
 
 
 @pytest.fixture()
 def test_app():
     app = FastAPI()
     app.include_router(router)
+    database = Database()
+    with database.get_session() as sess:
+        sess.query(StudentModel).delete()
+        sess.commit()
+        
     with TestClient(app) as client:
         yield client
 
