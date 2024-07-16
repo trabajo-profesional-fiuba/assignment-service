@@ -1,7 +1,6 @@
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, UploadFile, Depends
-from fastapi.requests import Request
 from fastapi import status
 from fastapi.exceptions import HTTPException
 
@@ -9,8 +8,9 @@ from fastapi.exceptions import HTTPException
 from src.api.student.schemas import Student
 from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
+from src.api.auth.hasher import get_hasher 
+from src.config.database import get_db
 
-import src.api.student.dependencies as dependencies
 
 
 router = APIRouter(prefix="/students")
@@ -21,8 +21,8 @@ router = APIRouter(prefix="/students")
 )
 async def upload_csv_file(
     file: UploadFile,
-    hasher: Annotated[object, Depends(dependencies.get_hash)],
-    db: Annotated[object, Depends(dependencies.get_db)],
+    hasher: Annotated[object, Depends(get_hasher)],
+    db: Annotated[object, Depends(get_db)],
 ):
     try:
         # Check if content-type is a text/csv

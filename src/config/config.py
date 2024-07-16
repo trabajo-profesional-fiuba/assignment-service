@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 
 def get_configuration():
+    load_dotenv()
     database_url = os.getenv("DATABASE_URL", None)
     pool_size =  os.getenv("DATABASE_POOL_SIZE", 10)
     pool_timeout =  os.getenv("DATABASE_TIMEOUT", 10)
