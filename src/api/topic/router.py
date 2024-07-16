@@ -14,9 +14,9 @@ class TopicController:
     def _format_topic_category(self, item):
         return {"name": item.name}
 
-    def add_topic_category(self, topic_category: TopicCategoryRequest):
+    def add_category(self, topic_category: TopicCategoryRequest):
         try:
-            new_item = self._service.add_topic_category(topic_category)
+            new_item = self._service.add_category(topic_category)
             return self._format_topic_category(new_item)
         except Exception as err:
             raise err
@@ -48,15 +48,15 @@ class TopicController:
             formatted_list.append(formatted_item)
         return formatted_list
 
-    def add_topic_preferences(self, topic_preferences: TopicPreferencesRequest):
+    def add_preferences(self, topic_preferences: TopicPreferencesRequest):
         try:
-            new_items = self._service.add_topic_preferences(topic_preferences)
+            new_items = self._service.add_preferences(topic_preferences)
             return self._format_topic_preferences(new_items, topic_preferences)
         except Exception as err:
             raise err
 
-    def get_all_topic_categories(self):
+    def get_categories(self):
         try:
-            return self._service.get_all_topic_categories()
+            return self._service.get_categories()
         except Exception as err:
             raise err

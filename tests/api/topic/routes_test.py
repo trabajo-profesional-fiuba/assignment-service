@@ -19,7 +19,7 @@ def test_root(test_app):
 
 @pytest.mark.integration
 def test_get_empty_all_topic_categories_with_success(test_app):
-    response = test_app.get("/topic_categories/")
+    response = test_app.get("/topic/categories/")
     assert response.status_code == 200
     assert response.json() == []
 
@@ -30,7 +30,7 @@ def test_add_topic_category_with_success(test_app):
         "name": "category 1",
     }
 
-    response = test_app.post("/topic_category/", json=topic_category)
+    response = test_app.post("/topic/category/", json=topic_category)
     assert response.status_code == 201
 
     expected_response = {
@@ -45,7 +45,7 @@ def test_add_topic_category_duplicated(test_app):
         "name": "category 1",
     }
 
-    response = test_app.post("/topic_category/", json=topic_category)
+    response = test_app.post("/topic/category/", json=topic_category)
     assert response.status_code == 409
     assert response.json() == {"detail": "Topic category 'category 1' already exists."}
 
@@ -105,7 +105,7 @@ def test_add_topic_preferences_with_completed_group_success(test_app):
         "category_3": "category 1",
     }
 
-    response = test_app.post("/topic_preferences/", json=topic_preferences)
+    response = test_app.post("/topic/preferences/", json=topic_preferences)
     assert response.status_code == 201
 
     expected_response = [
@@ -168,7 +168,7 @@ def test_add_topic_preferences_duplicated(test_app):
         "topic_3": "topic 1",
         "category_3": "category 1",
     }
-    response = test_app.post("/topic_preferences/", json=topic_preferences)
+    response = test_app.post("/topic/preferences/", json=topic_preferences)
     assert response.status_code == 409
     assert response.json() == {"detail": "Student uid '111111' already exists."}
 
@@ -188,7 +188,7 @@ def test_add_topic_preferences_with_category_not_found(test_app):
         "topic_3": "topic 1",
         "category_3": "category 1",
     }
-    response = test_app.post("/topic_preferences/", json=topic_preferences)
+    response = test_app.post("/topic/preferences/", json=topic_preferences)
     assert response.status_code == 409
     assert response.json() == {"detail": "Topic category 'category 3' not found."}
 
@@ -208,13 +208,13 @@ def test_add_topic_preferences_with_topic_not_found(test_app):
         "topic_3": "topic 1",
         "category_3": "category 1",
     }
-    response = test_app.post("/topic_preferences/", json=topic_preferences)
+    response = test_app.post("/topic/preferences/", json=topic_preferences)
     assert response.status_code == 409
     assert response.json() == {"detail": "Topic 'topic 3', 'category 1' not found."}
 
 
 @pytest.mark.integration
 def test_get_all_topic_categories_with_success(test_app):
-    response = test_app.get("/topic_categories/")
+    response = test_app.get("/topic/categories/")
     assert response.status_code == 200
     assert response.json() == [{"name": "category 1"}]
