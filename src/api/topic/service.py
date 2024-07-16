@@ -1,11 +1,11 @@
 from src.api.topic.schemas import (
-    TopicCategoryRequest,
+    CategoryRequest,
     TopicRequest,
     TopicPreferencesRequest,
 )
 from src.api.topic.repository import TopicRepository
 from src.api.topic.exceptions import (
-    TopicCategoryDuplicated,
+    CategoryDuplicated,
     TopicDuplicated,
     UidDuplicated,
 )
@@ -16,45 +16,11 @@ class TopicService:
     def __init__(self, topic_repository: TopicRepository):
         self._repository = topic_repository
 
-    def add_topic_category_if_not_duplicated(
-        self, topic_category: TopicCategoryRequest
-    ):
-        """
-        Adds a topic category if it does not already exists.
-        Raises a 'TopicCategoryDuplicated' exception otherwise.
-        """
-        try:
-            if self._repository.get_topic_category_by_name(topic_category.name) is None:
-                return self._repository.add_topic_category(topic_category)
-            raise TopicCategoryDuplicated()
-        except Exception as err:
-            raise err
 
-    def add_topic_category(self, topic_category: TopicCategoryRequest):
-        """
-        Adds a topic category.
-        """
+    def add_category(self, category: CategoryRequest):
         try:
-            return self.add_topic_category_if_not_duplicated(topic_category)
-        except Exception as err:
-            raise err
-
-    def add_topic_if_not_duplicated(self, topic: TopicRequest):
-        """
-        Adds a topic if it does not already exists.
-        Raise a 'TopicDuplicated' exception otherwise.
-        """
-        try:
-            if (
-                self._repository.get_topic_by_name_and_category(
-                    topic.name, topic.category
-                )
-                is None
-            ):
-                self._repository.add_topic(topic)
-                return topic
-            raise TopicDuplicated()
-        except Exception as err:
+            return self._repository.add_category(category)
+        except CategoryDuplicated as err:
             raise err
 
     def add_topic(self, topic: TopicRequest):
@@ -62,7 +28,7 @@ class TopicService:
         Adds a topic.
         """
         try:
-            return self.add_topic_if_not_duplicated(topic)
+            return self._repository.add_topic(topic)
         except Exception as err:
             raise err
 

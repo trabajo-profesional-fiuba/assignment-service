@@ -1,19 +1,20 @@
+from sqlalchemy.orm import Session
+
 from src.api.student.schemas import Student
 from src.api.student.model import StudentModel
-from src.config.database import Database
 from src.api.student.exceptions import StudentDuplicated
 
 
 class StudentRepository:
 
-    def __init__(self, db: Database):
-        self._db = db
+    def __init__(self, sess: Session):
+        self.Session = sess
 
     def add_students(self, students: list[Student]):
         # create session and add objects
         # Si se hace como transaccion y luego el commit, es mas optimo.
         try:
-            with self._db.get_session() as session:
+            with self.Session() as session:
                 with session.begin():
                     students_objs = []
                     for student in students:
