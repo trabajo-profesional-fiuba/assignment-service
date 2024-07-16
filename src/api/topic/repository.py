@@ -14,63 +14,63 @@ class TopicRepository:
 
     def get_topic_category_by_name(self, name: str):
         try:
-            session = self._db.get_db()
-            db_item = (
-                session.query(TopicCategory).filter(TopicCategory.name == name).first()
-            )
-            return db_item
+            with self._db.get_session() as session:
+                db_item = (
+                    session.query(TopicCategory).filter(TopicCategory.name == name).first()
+                )
+                return db_item
         except Exception as err:
             raise err
 
     def add_topic_category(self, topic_category: TopicCategoryRequest):
         try:
-            session = self._db.get_db()
-            db_item = TopicCategory(name=topic_category.name)
-            session.add(db_item)
-            session.commit()
-            session.refresh(db_item)
-            return db_item
+            with self._db.get_session() as session:
+                db_item = TopicCategory(name=topic_category.name)
+                session.add(db_item)
+                session.commit()
+
+                return db_item
         except Exception as err:
             raise err
 
     def add_topic(self, topic):
         try:
-            session = self._db.get_db()
-            category = self.get_topic_category_by_name(topic.category)
-            if not category:
-                raise TopicCategoryNotFound(topic.category)
-            db_item = Topic(name=topic.name, category=category.id)
-            session.add(db_item)
-            session.commit()
-            return db_item
+            with self._db.get_session() as session:
+                category = self.get_topic_category_by_name(topic.category)
+                if not category:
+                    raise TopicCategoryNotFound(topic.category)
+                db_item = Topic(name=topic.name, category=category.id)
+                session.add(db_item)
+                session.commit()
+                return db_item
         except Exception as err:
             raise err
 
     def get_topic_by_name_and_category(self, name: str, category: str):
         try:
-            session = self._db.get_db()
-            category_item = self.get_topic_category_by_name(category)
-            if not category_item:
-                raise TopicCategoryNotFound(category)
-            db_item = (
-                session.query(Topic)
-                .filter(Topic.name == name)
-                .filter(Topic.category == category_item.id)
-                .first()
-            )
-            return db_item
+            with self._db.get_session() as session:
+                category_item = self.get_topic_category_by_name(category)
+                if not category_item:
+                    raise TopicCategoryNotFound(category)
+                db_item = (
+                    session.query(Topic)
+                    .filter(Topic.name == name)
+                    .filter(Topic.category == category_item.id)
+                    .first()
+                )
+                return db_item
         except Exception as err:
             raise err
 
     def get_topic_preferences_by_uid(self, uid: int):
         try:
-            session = self._db.get_db()
-            db_item = (
-                session.query(TopicPreferences)
-                .filter(TopicPreferences.uid == uid)
-                .first()
-            )
-            return db_item
+            with self._db.get_session() as session:
+                db_item = (
+                    session.query(TopicPreferences)
+                    .filter(TopicPreferences.uid == uid)
+                    .first()
+                )
+                return db_item
         except Exception as err:
             session.rollback()
             raise err
@@ -79,41 +79,39 @@ class TopicRepository:
         self, uid: int, topic_preferences: TopicPreferencesRequest
     ):
         try:
-            session = self._db.get_db()
-
-            topic_1 = self.get_topic_by_name_and_category(
-                topic_preferences.topic_1, topic_preferences.category_1
-            )
-            if not topic_1:
-                raise TopicNotFound(
+            with self._db.get_session() as session:
+                topic_1 = self.get_topic_by_name_and_category(
                     topic_preferences.topic_1, topic_preferences.category_1
                 )
-            topic_2 = self.get_topic_by_name_and_category(
-                topic_preferences.topic_2, topic_preferences.category_2
-            )
-            if not topic_2:
-                raise TopicNotFound(
+                if not topic_1:
+                    raise TopicNotFound(
+                        topic_preferences.topic_1, topic_preferences.category_1
+                    )
+                topic_2 = self.get_topic_by_name_and_category(
                     topic_preferences.topic_2, topic_preferences.category_2
                 )
-            topic_3 = self.get_topic_by_name_and_category(
-                topic_preferences.topic_3, topic_preferences.category_3
-            )
-            if not topic_3:
-                raise TopicNotFound(
+                if not topic_2:
+                    raise TopicNotFound(
+                        topic_preferences.topic_2, topic_preferences.category_2
+                    )
+                topic_3 = self.get_topic_by_name_and_category(
                     topic_preferences.topic_3, topic_preferences.category_3
                 )
+                if not topic_3:
+                    raise TopicNotFound(
+                        topic_preferences.topic_3, topic_preferences.category_3
+                    )
 
-            db_item = TopicPreferences(
-                uid=uid,
-                group_id=topic_preferences.group_id,
-                topic_1=topic_1.id,
-                topic_2=topic_2.id,
-                topic_3=topic_3.id,
-            )
-            session.add(db_item)
-            session.commit()
-            session.refresh(db_item)
-            return db_item
+                db_item = TopicPreferences(
+                    uid=uid,
+                    group_id=topic_preferences.group_id,
+                    topic_1=topic_1.id,
+                    topic_2=topic_2.id,
+                    topic_3=topic_3.id,
+                )
+                session.add(db_item)
+                session.commit()
+                return db_item
         except Exception as err:
             session.rollback()
             raise err
