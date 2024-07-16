@@ -18,7 +18,7 @@ class StudentRepository:
                     students_objs = []
                     for student in students:
                         student_obj = StudentModel(
-                            id=student.id,
+                            uid=student.id,
                             name=student.name,
                             last_name=student.last_name,
                             email=student.email,

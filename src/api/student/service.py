@@ -17,12 +17,13 @@ class StudentService:
             csv_file = StudentCsvFile(csv=csv)
             rows = csv_file.get_info_as_rows()
             for i in rows:
+                name,last_name,uid,email = i
                 student = Student(
-                    name=i[0],
-                    last_name=i[1],
-                    id=str(i[2]),
-                    email=i[3],
-                    password=hasher.hash(str(i[2])),
+                    name=name,
+                    last_name=last_name,
+                    uid=uid,
+                    email=email,
+                    password=hasher.hash(str(uid)),
                 )
                 students.append(student)
 
