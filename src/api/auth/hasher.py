@@ -8,4 +8,4 @@ class ShaHasher:
         return sha256_hash.hexdigest()
 
 def get_hasher():
-    return ShaHasher
+    yield ShaHasher()

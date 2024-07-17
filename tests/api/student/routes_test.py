@@ -4,30 +4,30 @@ from fastapi.testclient import TestClient
 from src.api.student.router import router
 from src.api.student.repository import StudentRepository
 from fastapi import status
-from unittest.mock import create_autospec
-from src.config.database import Database
 from src.api.student.model import StudentModel
+from src.config.database import create_tables,drop_tables
 
 PREFIX = '/students'
 
+@pytest.fixture(scope='session')
+def tables():
+    # Create all tables
+    create_tables()
+    yield
+    # Drop all tables
+    drop_tables()
 
-
-
-
-@pytest.fixture()
-def test_app():
+@pytest.fixture(scope='session')
+def fastapi(tables):
     app = FastAPI()
     app.include_router(router)
-    database = Database()
-    with database.get_session() as sess:
-        sess.query(StudentModel).delete()
-        sess.commit()
-        
-    with TestClient(app) as client:
-        yield client
+    client = TestClient(app)
+    yield client
+
+
 
 @pytest.mark.integration
-def test_upload_file_and_create_students_respond_201(test_app):
+def test_upload_file_and_create_students_respond_201(fastapi):
 
     # Arrange 
     with open('tests/api/student/test_data.csv', 'rb') as file:
@@ -38,13 +38,13 @@ def test_upload_file_and_create_students_respond_201(test_app):
     files  = {'file': (filename, content, content_type)}
     
     # Act
-    response = test_app.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
 
     # Assert
     assert response.status_code == 201
 
 @pytest.mark.integration
-def test_upload_file_and_create_students(test_app):
+def test_upload_file_and_create_students(fastapi):
 
     # Arrange 
     with open('tests/api/student/test_data.csv', 'rb') as file:
@@ -55,7 +55,7 @@ def test_upload_file_and_create_students(test_app):
     files  = {'file': (filename, content, content_type)}
     
     # Act
-    response = test_app.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
 
 
     # Assert
@@ -64,7 +64,7 @@ def test_upload_file_and_create_students(test_app):
 
 
 @pytest.mark.integration
-def test_upload_file_raise_execption_if_type_is_not_csv(test_app):
+def test_upload_file_raise_execption_if_type_is_not_csv(fastapi):
 
     # Arrange 
     filename = "test_data"
@@ -72,7 +72,7 @@ def test_upload_file_raise_execption_if_type_is_not_csv(test_app):
     files  = {'file': (filename, "test".encode(), content_type)}
     
     # Act
-    response = test_app.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
     
 
     # Assert

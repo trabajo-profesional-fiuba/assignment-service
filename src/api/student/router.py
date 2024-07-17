@@ -30,6 +30,7 @@ async def upload_csv_file(
             )
         content = await file.read()
         content = content.decode("utf-8")
+        print(content)
 
         service = StudentService(StudentRepository(session))
         res = service.create_students_from_string(content, hasher)
