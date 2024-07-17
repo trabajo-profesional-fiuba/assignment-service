@@ -47,5 +47,7 @@ class TopicRepository:
                 session.commit()
                 response = TopicReponse.from_orm(db_item)
                 return response
+        except TopicCategoryNotFound as err:
+            raise err
         except Exception as _:
             raise InsertTopicException(f"{topic.__str__} coud not be inserted into db")

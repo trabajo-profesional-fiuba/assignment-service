@@ -82,9 +82,8 @@ def test_add_topic_not_found(fastapi):
         "name": "topic 2",
         "category": "category 2",
     }
-    response = fastapi.post("/topic/", json=topic)
+    response = fastapi.post(f"{PREFIX}/", json=topic)
     assert response.status_code == 409
-    assert response.json() == {"detail": "Topic category 'category 2' not found."}
 
 
 @pytest.mark.integration

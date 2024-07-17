@@ -66,7 +66,7 @@ async def add_topic(topic: TopicRequest, session: Annotated[Session, Depends(get
         return topic_added
     except (exceptions.InsertTopicException, exceptions.TopicCategoryNotFound) as error:
         raise HTTPException(
-            status_code=error.status_code,
+            status_code=status.HTTP_409_CONFLICT,
             detail=error.message,
         )
     except Exception as err:
