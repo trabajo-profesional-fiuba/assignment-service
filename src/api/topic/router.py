@@ -21,7 +21,7 @@ router = APIRouter(prefix="/topics", tags=["topics"])
 
 
 @router.post(
-    "/categories",
+    "/category",
     status_code=status.HTTP_201_CREATED,
     description="This endpoint creates a new category for a topic.",
     response_description="Created topic category.",
@@ -38,7 +38,7 @@ async def add_category(category: CategoryRequest, session: Annotated[Session, De
         service = TopicService(TopicRepository(session))
         category_added = service.add_category(category)
         return category_added
-    except exceptions.TopicCategoryDuplicated:
+    except exceptions.CategoryDuplicated:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Topic category '{category.name}' already exists.",
@@ -62,8 +62,8 @@ async def add_category(category: CategoryRequest, session: Annotated[Session, De
 async def add_topic(topic: TopicRequest, session: Annotated[Session, Depends(get_db)]):
     try:
         service = TopicService(TopicRepository(session))
-        topic_added = service.add_topic(category)
-        return topic_added.add_topic(topic)
+        topic_added = service.add_topic(topic)
+        return topic_added
     except (exceptions.InsertTopicException, exceptions.TopicCategoryNotFound) as error:
         raise HTTPException(
             status_code=error.status_code,

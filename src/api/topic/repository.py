@@ -2,10 +2,12 @@ from sqlalchemy.orm import Session
 
 from src.api.topic.schemas import (
     CategoryRequest,
+    CategoryResponse,
     TopicRequest,
+    TopicReponse
 )
 from src.api.topic.models import TopicCategory, Topic
-from src.api.topic.exceptions import TopicCategoryNotFound, TopicNotFound, InsertTopicException
+from src.api.topic.exceptions import TopicCategoryNotFound, TopicNotFound, InsertTopicException, CategoryDuplicated
 
 
 class TopicRepository:
@@ -18,11 +20,12 @@ class TopicRepository:
         try:
             with self.Session() as session:
                 db_item = TopicCategory(name=category.name)
-                session.add(session)
+                session.add(db_item)
                 session.commit()
-                return db_item
+                response = CategoryResponse.from_orm(db_item)
+                return response
         except Exception as err:
-            raise err
+            raise CategoryDuplicated()
 
     
     def get_category_by_name(self, name: str):
@@ -42,6 +45,7 @@ class TopicRepository:
                 db_item = Topic(name=topic.name, category_id=category.id)
                 session.add(db_item)
                 session.commit()
-                return db_item
+                response = TopicReponse.from_orm(db_item)
+                return response
         except Exception as _:
             raise InsertTopicException(f"{topic.__str__} coud not be inserted into db")

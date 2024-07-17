@@ -1,13 +1,14 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
 
 class CategoryRequest(BaseModel):
     name: str
 
+
 class CategoryResponse(CategoryRequest):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TopicRequest(BaseModel):
@@ -15,8 +16,9 @@ class TopicRequest(BaseModel):
     category: str
 
 
-class TopicReponse(TopicRequest):
+class TopicReponse(BaseModel):
     id: int
+    name: str
+    category_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

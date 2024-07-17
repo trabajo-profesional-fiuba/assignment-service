@@ -5,9 +5,9 @@ class TopicCategory(Base):
     __tablename__ = "categories"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
 
-    topics = relationship("Topic", back_populates="topics")
+    topics = relationship("Topic", back_populates="category", lazy='joined')
 
 
 class Topic(Base):
@@ -17,4 +17,4 @@ class Topic(Base):
     name = Column(String, nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
 
-    category = relationship("TopicCategory", back_populates="categories")
+    category = relationship("TopicCategory", back_populates="topics")

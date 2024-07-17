@@ -9,7 +9,7 @@ from src.config.database import create_tables,drop_tables
 
 PREFIX = '/students'
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def tables():
     # Create all tables
     create_tables()
@@ -18,7 +18,7 @@ def tables():
     drop_tables()
 
 @pytest.fixture(scope='session')
-def fastapi(tables):
+def fastapi():
     app = FastAPI()
     app.include_router(router)
     client = TestClient(app)
@@ -27,7 +27,7 @@ def fastapi(tables):
 
 
 @pytest.mark.integration
-def test_upload_file_and_create_students_respond_201(fastapi):
+def test_upload_file_and_create_students_respond_201(fastapi, tables):
 
     # Arrange 
     with open('tests/api/student/test_data.csv', 'rb') as file:
@@ -44,7 +44,7 @@ def test_upload_file_and_create_students_respond_201(fastapi):
     assert response.status_code == 201
 
 @pytest.mark.integration
-def test_upload_file_and_create_students(fastapi):
+def test_upload_file_and_create_students(fastapi, tables):
 
     # Arrange 
     with open('tests/api/student/test_data.csv', 'rb') as file:
@@ -64,7 +64,7 @@ def test_upload_file_and_create_students(fastapi):
 
 
 @pytest.mark.integration
-def test_upload_file_raise_execption_if_type_is_not_csv(fastapi):
+def test_upload_file_raise_execption_if_type_is_not_csv(fastapi, tables):
 
     # Arrange 
     filename = "test_data"
