@@ -12,10 +12,14 @@ class FormRepository:
     def add_group_form(self, group_form: GroupFormRequest):
         try:
             with self.Session() as session:
-                topics = session.query(Topic).fiter(
-                    (Topic.name == group_form.topic_1)
-                    | (Topic.name == group_form.topic_2)
-                    | (Topic.name == group_form.topic_3)
+                topics = (
+                    session.query(Topic)
+                    .filter(
+                        (Topic.name == group_form.topic_1)
+                        | (Topic.name == group_form.topic_2)
+                        | (Topic.name == group_form.topic_3)
+                    )
+                    .all()
                 )
                 uids = (
                     group_form.uid_sender,
@@ -24,20 +28,20 @@ class FormRepository:
                     group_form.uid_student_4,
                 )
 
-                if len(topics) == 3:
-                    db_items = []
-                    for uid in uids:
-                        if uid is not None:
-                            db_item = GroupFormSubmittion(
-                                uid=uid,
-                                group_id=group_form.group_id,
-                                topic_1=group_form.topic_1,
-                                topic_2=group_form.topic_2,
-                                topic_3=group_form.topic_3,
-                            )
-                    session.add(db_item)
-                    session.commit()
-                    return db_item
+                db_items = []
+                for uid in uids:
+                    if uid is not None:
+                        db_item = GroupFormSubmittion(
+                            uid=uid,
+                            group_id=group_form.group_id,
+                            topic_1=group_form.topic_1,
+                            topic_2=group_form.topic_2,
+                            topic_3=group_form.topic_3,
+                        )
+                        db_items.append(db_item)
+                session.add_all(db_items)
+                session.commit()
+                return db_items
         except Exception as err:
             session.rollback()
             raise err

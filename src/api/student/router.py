@@ -15,7 +15,7 @@ router = APIRouter(prefix="/students", tags=["students"])
 
 
 @router.post(
-    "/upload", status_code=status.HTTP_201_CREATED, response_model=list[Student]
+    "/upload", response_model=list[Student], status_code=status.HTTP_201_CREATED
 )
 async def upload_csv_file(
     file: UploadFile,
