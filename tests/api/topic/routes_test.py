@@ -3,11 +3,12 @@ from fastapi.testclient import TestClient
 from fastapi import FastAPI
 
 from src.api.topic.router import router
-from src.config.database import create_tables,drop_tables
+from src.config.database import create_tables, drop_tables
 
-PREFIX = '/topics'
+PREFIX = "/topics"
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def tables():
     # Create all tables
     create_tables()
@@ -16,13 +17,12 @@ def tables():
     drop_tables()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def fastapi():
     app = FastAPI()
     app.include_router(router)
     client = TestClient(app)
     yield client
-
 
 
 @pytest.mark.integration
@@ -95,4 +95,3 @@ def test_add_topic_duplicated(fastapi):
     response = fastapi.post("/topic/", json=topic)
     assert response.status_code == 409
     assert response.json() == {"detail": "Topic 'topic 1, category 1' already exists."}
-

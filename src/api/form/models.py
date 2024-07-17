@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, DateTime, Integer
 
 from src.config.database import Base
 
+
 class GroupFormSubmittion(Base):
     __tablename__ = "group_submitions"
 

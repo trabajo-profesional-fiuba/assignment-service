@@ -11,7 +11,8 @@ from src.api.student.repository import StudentRepository
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database import get_db
 
-router = APIRouter(prefix="/students", tags=["students"] )
+router = APIRouter(prefix="/students", tags=["students"])
+
 
 @router.post(
     "/upload", status_code=status.HTTP_201_CREATED, response_model=list[Student]

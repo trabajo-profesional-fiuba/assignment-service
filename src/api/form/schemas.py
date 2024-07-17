@@ -13,6 +13,7 @@ class GroupFormRequest(BaseModel):
     topic_2: str
     topic_3: str
 
+
 class GroupFormResponse(BaseModel):
     uid: int
     group_id: datetime

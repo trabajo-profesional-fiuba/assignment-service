@@ -15,7 +15,6 @@ class TopicService:
     def __init__(self, topic_repository: TopicRepository):
         self._repository = topic_repository
 
-
     def add_category(self, category: CategoryRequest):
         try:
             return self._repository.add_category(category)

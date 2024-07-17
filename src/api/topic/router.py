@@ -8,7 +8,7 @@ from src.api.topic.schemas import (
     CategoryRequest,
     CategoryResponse,
     TopicRequest,
-    TopicReponse
+    TopicReponse,
 )
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
@@ -33,7 +33,9 @@ router = APIRouter(prefix="/topics", tags=["topics"])
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
     },
 )
-async def add_category(category: CategoryRequest, session: Annotated[Session, Depends(get_db)]):
+async def add_category(
+    category: CategoryRequest, session: Annotated[Session, Depends(get_db)]
+):
     try:
         service = TopicService(TopicRepository(session))
         category_added = service.add_category(category)
@@ -44,8 +46,11 @@ async def add_category(category: CategoryRequest, session: Annotated[Session, De
             detail=f"Topic category '{category.name}' already exists.",
         )
     except Exception as err:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal Server Error {err}")
-    
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal Server Error {err}",
+        )
+
 
 @router.post(
     "/",

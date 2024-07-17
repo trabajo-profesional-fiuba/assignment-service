@@ -26,9 +26,9 @@ class StudentRepository:
                             password=student.password,
                         )
                         students_objs.append(student_obj)
-                    
+
                     session.add_all(students_objs)
-                    
+
                 # inner context calls session.commit(), if there were no exceptions
             # outer context calls session.close()
         except:

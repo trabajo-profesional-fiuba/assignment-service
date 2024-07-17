@@ -13,7 +13,9 @@ class FormRepository:
         try:
             with self.Session() as session:
                 topics = session.query(Topic).fiter(
-                    (Topic.name == group_form.topic_1) | (Topic.name == group_form.topic_2) | (Topic.name == group_form.topic_3)
+                    (Topic.name == group_form.topic_1)
+                    | (Topic.name == group_form.topic_2)
+                    | (Topic.name == group_form.topic_3)
                 )
                 uids = (
                     group_form.uid_sender,
@@ -22,7 +24,7 @@ class FormRepository:
                     group_form.uid_student_4,
                 )
 
-                if (len(topics) == 3):
+                if len(topics) == 3:
                     db_items = []
                     for uid in uids:
                         if uid is not None:

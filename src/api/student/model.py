@@ -1,6 +1,7 @@
 from src.config.database import Base
 from sqlalchemy import Column, String, Integer
 
+
 class StudentModel(Base):
 
     __tablename__ = "students"
@@ -8,5 +9,7 @@ class StudentModel(Base):
     uid = Column(Integer, primary_key=True)
     name = Column(String)
     last_name = Column(String)
-    email = Column(String,)
+    email = Column(
+        String,
+    )
     password = Column(String)

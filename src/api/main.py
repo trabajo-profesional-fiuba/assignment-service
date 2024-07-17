@@ -18,10 +18,11 @@ app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"]
 )
 
+
 @app.get("/", description="This endpoint returns a ping message.")
 async def root():
     return "Ping"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
