@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 from src.config.database import create_tables
 from src.api.student.router import router as student_router
@@ -21,7 +22,7 @@ app.add_middleware(
 
 @app.get("/", description="This endpoint returns a ping message.")
 async def root():
-    return "Ping"
+    return RedirectResponse("/docs")
 
 
 if __name__ == "__main__":

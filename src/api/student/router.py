@@ -15,7 +15,7 @@ router = APIRouter(prefix="/students", tags=["students"])
 
 
 @router.post(
-    "/upload", response_model=list[Student], status_code=status.HTTP_201_CREATED
+    "/upload", response_model=list[Student], description="Creates list of students based on a csv file", status_code=status.HTTP_201_CREATED
 )
 async def upload_csv_file(
     file: UploadFile,
@@ -29,10 +29,7 @@ async def upload_csv_file(
                 status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
                 detail="CSV file must be provided",
             )
-        content = await file.read()
-        content = content.decode("utf-8")
-        print(content)
-
+        content = (await file.read()).decode("utf-8")
         service = StudentService(StudentRepository(session))
         res = service.create_students_from_string(content, hasher)
 

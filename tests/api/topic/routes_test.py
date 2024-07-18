@@ -31,7 +31,7 @@ def test_add_topic_category_with_success(fastapi, tables):
         "name": "category 1",
     }
 
-    response = fastapi.post(f"{PREFIX}/category", json=category)
+    response = fastapi.post(f"{PREFIX}/categories", json=category)
     assert response.status_code == 201
 
     expected_response = {
@@ -47,8 +47,8 @@ def test_add_topic_category_duplicated(fastapi, tables):
         "name": "category 1",
     }
 
-    response = fastapi.post(f"{PREFIX}/category", json=category)
-    response = fastapi.post(f"{PREFIX}/category", json=category)
+    response = fastapi.post(f"{PREFIX}/categories", json=category)
+    response = fastapi.post(f"{PREFIX}/categories", json=category)
     assert response.status_code == 409
     assert response.json() == {"detail": "Topic category 'category 1' already exists."}
 
@@ -63,7 +63,7 @@ def test_add_topic_with_success(fastapi, tables):
         "category": "category 1",
     }
 
-    response = fastapi.post(f"{PREFIX}/category", json=category)
+    response = fastapi.post(f"{PREFIX}/categories", json=category)
     response = fastapi.post(f"{PREFIX}/", json=topic)
 
     assert response.status_code == 201

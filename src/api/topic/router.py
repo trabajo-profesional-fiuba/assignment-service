@@ -21,8 +21,7 @@ router = APIRouter(prefix="/topics", tags=["topics"])
 
 
 @router.post(
-    "/category",
-    status_code=status.HTTP_201_CREATED,
+    "/categories",
     description="This endpoint creates a new category for a topic.",
     response_description="Created topic category.",
     response_model=CategoryResponse,
@@ -32,6 +31,7 @@ router = APIRouter(prefix="/topics", tags=["topics"])
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
     },
+    status_code=status.HTTP_201_CREATED,
 )
 async def add_category(
     category: CategoryRequest, session: Annotated[Session, Depends(get_db)]
@@ -54,7 +54,6 @@ async def add_category(
 
 @router.post(
     "/",
-    status_code=status.HTTP_201_CREATED,
     description="This endpoint creates a new topic.",
     response_description="Created topic.",
     response_model=TopicReponse,
@@ -63,6 +62,7 @@ async def add_category(
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
     },
+    status_code=status.HTTP_201_CREATED,
 )
 async def add_topic(topic: TopicRequest, session: Annotated[Session, Depends(get_db)]):
     try:

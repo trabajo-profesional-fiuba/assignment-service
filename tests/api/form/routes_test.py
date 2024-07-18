@@ -37,9 +37,9 @@ def test_upload_form_and_create_students_respond_201(fastapi, tables):
         "uid_student_3": 105287,
         "uid_student_4": 105288,
         "group_id": str(dt.datetime.today()),
-        "topic_1": "Machine Learning",
-        "topic_2": "Fiuba",
-        "topic_3": "Topic3"
+        "topic_1": "topic1",
+        "topic_2": "topic2",
+        "topic_3": "topic3"
     }
     # Act
     response = fastapi.post(f"{PREFIX}/groups", json=body)
