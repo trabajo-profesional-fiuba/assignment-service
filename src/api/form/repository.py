@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.api.form.schemas import GroupFormRequest
+from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.models import GroupFormSubmittion
 from src.api.topic.models import Topic, TopicCategory
 
@@ -29,6 +29,7 @@ class FormRepository:
                 )
 
                 db_items = []
+                responses = []
                 for uid in uids:
                     if uid is not None:
                         db_item = GroupFormSubmittion(
@@ -39,9 +40,10 @@ class FormRepository:
                             topic_3=group_form.topic_3,
                         )
                         db_items.append(db_item)
+                        responses.append(GroupFormResponse.from_orm(db_item))
                 session.add_all(db_items)
                 session.commit()
-                return db_items
+                return responses
         except Exception as err:
             session.rollback()
             raise err
