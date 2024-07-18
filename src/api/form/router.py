@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
+from src.api.form.exceptions import UidDuplicated, TopicNotFound 
 
 from src.config.database import get_db
 
@@ -31,24 +32,19 @@ router = APIRouter(prefix="/forms", tags=["forms"])
 async def add_topic_preferences(
     group_form: GroupFormRequest, session: Annotated[Session, Depends(get_db)]
 ):
-    
+    try:
         service = FormService(FormRepository(session))
         res = service.add_group_submition(group_form)
         return res
-    #except UidDuplicated as uid:
-    #    raise HTTPException(
-    #        status_code=409,
-    #        detail=f"Student uid '{uid}' already exists.",
-    #    )
-    #except TopicNotFound as topic:
-    #    raise HTTPException(
-    #        status_code=409,
-    #        detail=f"Topic '{topic.name}', '{topic.category}' not found.",
-    #    )
-    #except TopicCategoryNotFound as category:
-    #    raise HTTPException(
-    #        status_code=409,
-    #        detail=f"Topic category '{category}' not found.",
-    #    )
-    #except Exception as err:
-    #    raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")
+    except UidDuplicated as uid:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Student uid '{uid}' already exists.",
+        )
+    except TopicNotFound as topic:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Topic '{topic.name}', '' not found.",
+        )
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

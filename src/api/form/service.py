@@ -8,5 +8,4 @@ class FormService:
         self._repository = form_repository
 
     def add_group_submition(self, group_form: GroupFormRequest):
-
         resp = self._repository.add_group_form(group_form)
