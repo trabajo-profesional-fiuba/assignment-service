@@ -1,69 +1,48 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from contextlib import contextmanager
-import sqlalchemy.exc
-from dotenv import load_dotenv
 
-load_dotenv()
+from src.config.config import get_configuration
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://postgres:postgres@db:5432/postgres"
-)
 Base = declarative_base()
+config = get_configuration()
+
+""" 
+En Fast API lo mejor es tener solo una instancia del engine, y que ese es el encargado de crear
+las sessiones que luego se van a usar
+"""
+
+# Database Configurations
+database_url = config.get("database_url")
+pool_size = config.get("pool_size")
+pool_timeout = config.get("pool_timeout")
+
+engine = create_engine(
+    database_url,
+    pool_size=config.get("pool_size"),
+    pool_timeout=config.get("pool_timeout"),
+)
 
 
-class Database:
+def create_tables():
     """
-    Database class that manages the database setup and sessions.
+    Creates all tables in the database.
     """
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as err:
+        raise err
 
-    def __init__(self):
-        try:
-            self.engine = create_engine(
-                DATABASE_URL,
-                pool_size=10,  # Max number of connections
-                pool_timeout=10,  # Time until a connection fails
-            )
-            self.SessionLocal = sessionmaker(bind=self.engine)
-            self.drop_tables()
-            self.create_tables()
-        except Exception as err:
-            raise err
 
-    @contextmanager
-    def get_session(self):
-        """
-        Context manager to handle SQLAlchemy sessions.
-        """
-        session = self.SessionLocal()
-        try:
-            yield session
-            session.commit()
-        except Exception as err:
-            session.rollback()
-            raise err
-        finally:
-            session.close()
+def drop_tables():
+    """
+    Drop all tables in the database.
+    """
+    try:
+        Base.metadata.drop_all(bind=engine)
+    except Exception as err:
+        raise err
 
-    def create_tables(self):
-        """
-        Creates all tables in the database.
-        """
-        try:
-            Base.metadata.create_all(bind=self.engine)
-        except Exception as err:
-            raise err
 
-    def drop_tables(self):
-        """
-        Drop all tables in the database.
-        """
-        try:
-            Base.metadata.drop_all(bind=self.engine)
-        except Exception as err:
-            raise err
-
-    def get_db(self):
-        with self.get_session() as session:
-            return session
+def get_db():
+    Session = sessionmaker(bind=engine)
+    yield Session
