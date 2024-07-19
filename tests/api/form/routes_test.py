@@ -29,17 +29,47 @@ def fastapi():
 
 
 @pytest.mark.integration
-def test_upload_form_and_create_students_respond_201(fastapi, tables):
+def test_add_form_with_success(fastapi, tables):
+    today = str(dt.datetime.today())
     body = {
         "uid_sender": 105285,
         "uid_student_2": 105286,
         "uid_student_3": 105287,
         "uid_student_4": 105288,
-        "group_id": str(dt.datetime.today()),
+        "group_id": today,
         "topic_1": "topic1",
         "topic_2": "topic2",
         "topic_3": "topic3",
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
-    # assert response.status_code == 201
-    assert 1 == 1
+    assert response.status_code == 201
+    # assert response.json() == [
+    #     {
+    #         "uid": 105285,
+    #         "group_id": today,
+    #         "topic_1": "topic1",
+    #         "topic_2": "topic2",
+    #         "topic_3": "topic3",
+    #     },
+    #     {
+    #         "uid": 105286,
+    #         "group_id": today,
+    #         "topic_1": "topic1",
+    #         "topic_2": "topic2",
+    #         "topic_3": "topic3",
+    #     },
+    #     {
+    #         "uid": 105287,
+    #         "group_id": today,
+    #         "topic_1": "topic1",
+    #         "topic_2": "topic2",
+    #         "topic_3": "topic3",
+    #     },
+    #     {
+    #         "uid": 105288,
+    #         "group_id": today,
+    #         "topic_1": "topic1",
+    #         "topic_2": "topic2",
+    #         "topic_3": "topic3",
+    #     }
+    # ]

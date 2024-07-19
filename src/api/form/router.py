@@ -34,10 +34,8 @@ async def add_topic_preferences(
 ):
     try:
         service = FormService(FormRepository(session))
-        res = service.add_group_preferences(group_form)
-        if res is None:
-            res = []
-        return res
+        resp = service.add_group_preferences(group_form)
+        return resp
     except UidDuplicated as uid:
         raise HTTPException(
             status_code=409,
