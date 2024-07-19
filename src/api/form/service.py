@@ -7,5 +7,5 @@ class FormService:
     def __init__(self, form_repository: FormRepository):
         self._repository = form_repository
 
-    def add_group_submition(self, group_form: GroupFormRequest):
+    def add_group_preferences(self, group_form: GroupFormRequest):
         resp = self._repository.add_group_form(group_form)

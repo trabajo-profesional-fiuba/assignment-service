@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
-from src.api.form.exceptions import UidDuplicated, TopicNotFound 
+from src.api.form.exceptions import UidDuplicated, TopicNotFound
 
 from src.config.database import get_db
 
@@ -34,7 +34,9 @@ async def add_topic_preferences(
 ):
     try:
         service = FormService(FormRepository(session))
-        res = service.add_group_submition(group_form)
+        res = service.add_group_preferences(group_form)
+        if res is None:
+            res = []
         return res
     except UidDuplicated as uid:
         raise HTTPException(

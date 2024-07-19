@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
-from src.api.form.models import GroupFormSubmittion
+from src.api.form.models import GroupFormPreferences
 from src.api.topic.models import Topic, TopicCategory
 
 
@@ -32,7 +32,7 @@ class FormRepository:
                 responses = []
                 for uid in uids:
                     if uid is not None:
-                        db_item = GroupFormSubmittion(
+                        db_item = GroupFormPreferences(
                             uid=uid,
                             group_id=group_form.group_id,
                             topic_1=group_form.topic_1,

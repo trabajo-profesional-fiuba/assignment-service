@@ -1,4 +1,3 @@
-"""
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -9,6 +8,7 @@ from src.api.topic.router import router as topic_router
 from src.config.database import create_tables, drop_tables
 
 PREFIX = "/forms"
+
 
 @pytest.fixture(scope="function")
 def tables():
@@ -30,7 +30,6 @@ def fastapi():
 
 @pytest.mark.integration
 def test_upload_form_and_create_students_respond_201(fastapi, tables):
-     Arrange
     body = {
         "uid_sender": 105285,
         "uid_student_2": 105286,
@@ -39,11 +38,8 @@ def test_upload_form_and_create_students_respond_201(fastapi, tables):
         "group_id": str(dt.datetime.today()),
         "topic_1": "topic1",
         "topic_2": "topic2",
-        "topic_3": "topic3"
+        "topic_3": "topic3",
     }
-     Act
     response = fastapi.post(f"{PREFIX}/groups", json=body)
-     Assert
-    #assert response.status_code == 201
-    assert 1==1
-    """
+    # assert response.status_code == 201
+    assert 1 == 1

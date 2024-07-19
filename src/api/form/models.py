@@ -3,8 +3,8 @@ from sqlalchemy import Column, String, DateTime, Integer
 from src.config.database import Base
 
 
-class GroupFormSubmittion(Base):
-    __tablename__ = "group_submitions"
+class GroupFormPreferences(Base):
+    __tablename__ = "group_preferences"
 
     uid = Column(Integer, primary_key=True)
     group_id = Column(DateTime)
