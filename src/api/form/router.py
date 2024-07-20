@@ -34,7 +34,7 @@ async def add_topic_preferences(
 ):
     try:
         service = FormService(FormRepository(session))
-        return service.add_group_preferences(group_form)
+        return service.add_group_form(group_form)
     except StudentNotFound as uid:
         raise HTTPException(
             status_code=415,
