@@ -7,6 +7,8 @@ from src.config.database import create_tables
 from src.api.student.router import router as student_router
 from src.api.topic.router import router as topic_router
 from src.api.form.router import router as form_router
+from src.api.tutors.router import router as tutors_router
+
 
 
 create_tables()
