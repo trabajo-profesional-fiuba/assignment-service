@@ -47,62 +47,58 @@ def test_add_group_form_with_student_not_found(fastapi, tables):
     assert response.json() == {"detail": "Student uid not found."}
 
 
-# @pytest.mark.integration
-# def test_add_group_form_with_success(fastapi, tables):
-#     content = """
-#     NOMBRE,APELLIDO,PADRON,MAIL
-#     nombre1,apellido1,105285,mail1@fi.uba.ar
-#     nombre2,apellido2,105286,mail2@fi.uba.ar
-#     nombre3,apellido3,105287,mail3@fi.uba.ar
-#     nombre4,apellido4,105288,mail4@fi.uba.ar
-#     """
-#     filename = "test_data"
-#     content_type = "text/csv"
-#     files = {"file": (filename, content, content_type)}
+@pytest.mark.skip
+def test_add_group_form_with_success(fastapi, tables):
+    with open("tests/api/student/test_data.csv", "rb") as file:
+        content = file.read()
 
-#     response = fastapi.post(f"students/upload", files=files)
-#     assert response.status_code == 201
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
 
-#     today = str(dt.datetime.today())
-#     body = {
-#         "uid_sender": 105285,
-#         "uid_student_2": 105286,
-#         "uid_student_3": 105287,
-#         "uid_student_4": 105288,
-#         "group_id": today,
-#         "topic_1": "topic1",
-#         "topic_2": "topic2",
-#         "topic_3": "topic3",
-#     }
-#     response = fastapi.post(f"{PREFIX}/groups", json=body)
-#     assert response.status_code == 201
-#     assert response.json() == [
-#         GroupFormResponse(
-#             uid=105285,
-#             group_id=today,
-#             topic_1="topic1",
-#             topic_2="topic2",
-#             topic_3="topic3",
-#         ),
-#         GroupFormResponse(
-#             uid=105286,
-#             group_id=today,
-#             topic_1="topic1",
-#             topic_2="topic2",
-#             topic_3="topic3",
-#         ),
-#         GroupFormResponse(
-#             uid=105287,
-#             group_id=today,
-#             topic_1="topic1",
-#             topic_2="topic2",
-#             topic_3="topic3",
-#         ),
-#         GroupFormResponse(
-#             uid=105288,
-#             group_id=today,
-#             topic_1="topic1",
-#             topic_2="topic2",
-#             topic_3="topic3",
-#         ),
-#     ]
+    response = fastapi.post("students/upload", files=files)
+    assert response.status_code == 201
+
+    today = str(dt.datetime.today())
+    body = {
+        "uid_sender": 105285,
+        "uid_student_2": 105286,
+        "uid_student_3": 105287,
+        "uid_student_4": 105288,
+        "group_id": today,
+        "topic_1": "topic1",
+        "topic_2": "topic2",
+        "topic_3": "topic3",
+    }
+    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    assert response.status_code == 201
+    assert response.json() == [
+        GroupFormResponse(
+            uid=105285,
+            group_id=today,
+            topic_1="topic1",
+            topic_2="topic2",
+            topic_3="topic3",
+        ),
+        GroupFormResponse(
+            uid=105286,
+            group_id=today,
+            topic_1="topic1",
+            topic_2="topic2",
+            topic_3="topic3",
+        ),
+        GroupFormResponse(
+            uid=105287,
+            group_id=today,
+            topic_1="topic1",
+            topic_2="topic2",
+            topic_3="topic3",
+        ),
+        GroupFormResponse(
+            uid=105288,
+            group_id=today,
+            topic_1="topic1",
+            topic_2="topic2",
+            topic_3="topic3",
+        ),
+    ]
