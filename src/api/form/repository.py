@@ -29,6 +29,9 @@ class FormRepository:
                 session.add_all(db_items)
                 session.commit()
                 return responses
-        except Exception as err:
+        except exc.IntegrityError:
             session.rollback()
             raise StudentNotFound()
+        except Exception as err:
+            session.rollback()
+            raise err

@@ -37,7 +37,7 @@ async def add_topic_preferences(
         return service.add_group_form(group_form)
     except StudentNotFound as uid:
         raise HTTPException(
-            status_code=415,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Student uid not found.",
         )
     except Exception as err:
