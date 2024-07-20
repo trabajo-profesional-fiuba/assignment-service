@@ -1,7 +1,9 @@
+from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.models import GroupFormPreferences
 from src.api.topic.models import Topic, TopicCategory
+from src.api.form.exceptions import StudentNotFound
 
 
 class FormRepository:
@@ -29,4 +31,4 @@ class FormRepository:
                 return responses
         except Exception as err:
             session.rollback()
-            raise err
+            raise StudentNotFound()

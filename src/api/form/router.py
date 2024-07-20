@@ -38,7 +38,7 @@ async def add_topic_preferences(
     except StudentNotFound as uid:
         raise HTTPException(
             status_code=415,
-            detail=f"Student uid '{uid}' not found.",
+            detail=f"Student uid not found.",
         )
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

@@ -29,7 +29,7 @@ def fastapi():
 
 
 @pytest.mark.integration
-def test_add_form_with_success(fastapi, tables):
+def test_add_form_with_student_not_found(fastapi, tables):
     today = str(dt.datetime.today())
     body = {
         "uid_sender": 105285,
@@ -42,34 +42,5 @@ def test_add_form_with_success(fastapi, tables):
         "topic_3": "topic3",
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
-    assert response.status_code == 201
-    # assert response.json() == [
-    #     {
-    #         "uid": 105285,
-    #         "group_id": today,
-    #         "topic_1": "topic1",
-    #         "topic_2": "topic2",
-    #         "topic_3": "topic3",
-    #     },
-    #     {
-    #         "uid": 105286,
-    #         "group_id": today,
-    #         "topic_1": "topic1",
-    #         "topic_2": "topic2",
-    #         "topic_3": "topic3",
-    #     },
-    #     {
-    #         "uid": 105287,
-    #         "group_id": today,
-    #         "topic_1": "topic1",
-    #         "topic_2": "topic2",
-    #         "topic_3": "topic3",
-    #     },
-    #     {
-    #         "uid": 105288,
-    #         "group_id": today,
-    #         "topic_1": "topic1",
-    #         "topic_2": "topic2",
-    #         "topic_3": "topic3",
-    #     }
-    # ]
+    assert response.status_code == 415
+    assert response.json() == {"detail": "Student uid not found."}

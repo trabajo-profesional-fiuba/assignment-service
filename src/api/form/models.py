@@ -1,13 +1,16 @@
-from sqlalchemy import Column, String, DateTime, Integer
-
+from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 from src.config.database import Base
 
 
 class GroupFormPreferences(Base):
     __tablename__ = "group_preferences"
 
-    uid = Column(Integer, primary_key=True)
+    uid = Column(Integer, ForeignKey("students.uid"), primary_key=True)
     group_id = Column(DateTime)
     topic_1 = Column(String, nullable=False)
     topic_2 = Column(String, nullable=False)
     topic_3 = Column(String, nullable=False)
+
+    # Set relationship with StudentModel
+    student = relationship("StudentModel", back_populates="group_preferences")
