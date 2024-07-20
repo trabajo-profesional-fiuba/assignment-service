@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
-from src.api.form.exceptions import UidDuplicated, TopicNotFound 
+from src.api.form.exceptions import UidDuplicated, TopicNotFound
 
 from src.config.database import get_db
 
