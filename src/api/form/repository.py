@@ -12,15 +12,6 @@ class FormRepository:
     def add_group_form(self, group_form: GroupFormRequest, uids: list[int]):
         try:
             with self.Session() as session:
-                topics = (
-                    session.query(Topic)
-                    .filter(
-                        (Topic.name == group_form.topic_1)
-                        | (Topic.name == group_form.topic_2)
-                        | (Topic.name == group_form.topic_3)
-                    )
-                    .all()
-                )
                 db_items = []
                 responses = []
                 for uid in uids:
