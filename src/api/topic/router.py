@@ -26,9 +26,16 @@ router = APIRouter(prefix="/topics", tags=["topics"])
     description="Creates a list of topics based on a csv file",
     status_code=status.HTTP_201_CREATED,
     responses={
-        status.HTTP_201_CREATED: {"description": "Successfully added topic"},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error"},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
+        status.HTTP_201_CREATED: {"description": "Successfully added topics."},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Columns don't match with expected."
+        },
+        status.HTTP_409_CONFLICT: {"description": "Topic already exists."},
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"description": "Invalid file type."},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error."},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error."
+        },
     },
 )
 async def upload_csv_file(
