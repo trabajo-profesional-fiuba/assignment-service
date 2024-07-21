@@ -1,7 +1,7 @@
 import pytest
 
-from src.assignments.adapters.flow_adapter import FlowAdapter
-from src.assignments.adapters.result_context import ResultContext
+from src.algorithms.adapters.flow_adapter import FlowAdapter
+from src.algorithms.adapters.result_context import ResultContext
 from src.model.period import TutorPeriod
 from src.model.group import Group
 from src.model.utils.result import AssignmentResult
