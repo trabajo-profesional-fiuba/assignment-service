@@ -8,7 +8,7 @@ class TopicAlreadyExist(Exception):
 class InvalidTopicCsv(Exception):
     def __init__(self, message):
         self.message = message
-        self.status_code = 415
+        self.status_code = 400
         super().__init__(message)
 
 

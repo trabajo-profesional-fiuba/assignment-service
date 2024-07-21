@@ -84,3 +84,17 @@ def test_upload_wrong_type_file(fastapi):
     response = fastapi.post(f"{PREFIX}/upload", files=files)
 
     assert response.status_code == 415
+
+
+@pytest.mark.integration
+def test_upload_wrong_format_file(fastapi):
+    with open("tests/api/topic/data/wrong_format.csv", "rb") as file:
+        content = file.read()
+
+    filename = "wrong_format"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
+
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+
+    assert response.status_code == 400
