@@ -16,24 +16,34 @@ class TopicRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def add_category(self, category: CategoryRequest):
+    def add_categories(self, categories: list[CategoryRequest]):
         try:
             with self.Session() as session:
                 with session.begin():
-                    db_item = Category(name=category.name)
-                    session.add(db_item)
-                    return CategoryResponse.from_orm(db_item)
+                    db_items = []
+                    response = []
+                    for category in categories:
+                        db_item = Category(name=category.name)
+                        db_items.append(db_item)
+                        response.append(CategoryResponse.from_orm(db_item))
+                    session.add_all(db_items)
+                    return response
         except IntegrityError:
             raise CategoryAlreadyExist(f"Category '{category.name}' already exists.")
         except Exception as err:
             raise err
 
-    def add_topic(self, topic: TopicRequest):
+    def add_topics(self, topics: list[TopicRequest]):
         try:
             with self.Session() as session:
                 with session.begin():
-                    db_item = Topic(name=topic.name, category=topic.category)
-                    session.add(db_item)
-                    return TopicResponse.from_orm(db_item)
+                    db_items = []
+                    response = []
+                    for topic in topics:
+                        db_item = Topic(name=topic.name, category=topic.category)
+                        db_items.append(db_item)
+                        response.append(TopicResponse.from_orm(db_item))
+                    session.add_all(db_items)
+                    return response
         except Exception:
             raise CategoryNotFound(f"Category '{topic.category}' not found.")

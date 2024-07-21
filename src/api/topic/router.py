@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, UploadFile
 from fastapi.exceptions import HTTPException
 from typing_extensions import Annotated
 from sqlalchemy.orm import Session
@@ -13,60 +13,38 @@ from src.api.topic.schemas import (
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
 import src.api.topic.exceptions as exceptions
+from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database import get_db
-
 
 router = APIRouter(prefix="/topics", tags=["topics"])
 
 
 @router.post(
-    "/categories",
-    description="This endpoint creates a new category for a topic.",
-    response_description="Created topic category.",
-    response_model=CategoryResponse,
-    responses={
-        status.HTTP_201_CREATED: {"description": "Successfully added topic category"},
-        status.HTTP_409_CONFLICT: {"description": "Category duplicated"},
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error"},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
-    },
+    "/upload",
+    response_model=list[TopicResponse],
+    description="Creates a list of topics based on a csv file",
     status_code=status.HTTP_201_CREATED,
-)
-async def add_category(
-    category: CategoryRequest, session: Annotated[Session, Depends(get_db)]
-):
-    try:
-        service = TopicService(TopicRepository(session))
-        return service.add_category(category)
-    except exceptions.CategoryAlreadyExist as err:
-        raise HTTPException(
-            status_code=err.status_code,
-            detail=err.message,
-        )
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal Server Error {err}",
-        )
-
-
-@router.post(
-    "/",
-    description="This endpoint creates a new topic.",
-    response_description="Created topic.",
-    response_model=TopicResponse,
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully added topic"},
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
     },
-    status_code=status.HTTP_201_CREATED,
 )
-async def add_topic(topic: TopicRequest, session: Annotated[Session, Depends(get_db)]):
+async def upload_csv_file(
+    file: UploadFile,
+    hasher: Annotated[ShaHasher, Depends(get_hasher)],
+    session: Annotated[Session, Depends(get_db)],
+):
     try:
+        if file.content_type != "text/csv":
+            raise HTTPException(
+                status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                detail="CSV file must be provided",
+            )
+        content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
-        return service.add_topic(topic)
-    except exceptions.CategoryNotFound as err:
+        return service.create_topics_from_string(content, hasher)
+    except (exceptions.CategoryNotFound, exceptions.CategoryAlreadyExist) as err:
         raise HTTPException(
             status_code=err.status_code,
             detail=err.message,
