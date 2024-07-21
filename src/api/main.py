@@ -10,7 +10,6 @@ from src.api.form.router import router as form_router
 from src.api.tutors.router import router as tutors_router
 
 
-
 create_tables()
 
 app = FastAPI(title="Assignment Service Api")

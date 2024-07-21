@@ -4,7 +4,7 @@ from src.api.topic.schemas import (
     CategoryRequest,
     CategoryResponse,
     TopicRequest,
-    TopicReponse,
+    TopicResponse,
 )
 from src.api.topic.models import TopicCategory, Topic
 from src.api.topic.exceptions import (
@@ -58,7 +58,7 @@ class TopicRepository:
                 db_item = Topic(name=topic.name, category_id=category.id)
                 session.add(db_item)
                 session.commit()
-                response = TopicReponse.from_orm(db_item)
+                response = TopicResponse.from_orm(db_item)
                 return response
         except TopicCategoryNotFound as err:
             raise err

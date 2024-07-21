@@ -94,4 +94,4 @@ def test_add_topic_duplicated(fastapi):
     }
     response = fastapi.post(f"{PREFIX}/", json=topic)
     assert response.status_code == 409
-    #assert response.json() == {"detail": "Topic 'topic 1, category 1' already exists."}
+    # assert response.json() == {"detail": "Topic 'topic 1, category 1' already exists."}

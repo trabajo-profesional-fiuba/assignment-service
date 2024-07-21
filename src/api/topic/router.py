@@ -8,7 +8,7 @@ from src.api.topic.schemas import (
     CategoryRequest,
     CategoryResponse,
     TopicRequest,
-    TopicReponse,
+    TopicResponse,
 )
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
@@ -56,7 +56,7 @@ async def add_category(
     "/",
     description="This endpoint creates a new topic.",
     response_description="Created topic.",
-    response_model=TopicReponse,
+    response_model=TopicResponse,
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully added topic"},
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error"},
