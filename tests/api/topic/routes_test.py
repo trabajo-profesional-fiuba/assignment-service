@@ -36,57 +36,57 @@ def test_add_topic_category_with_success(fastapi, tables):
     assert response.json() == category
 
 
-# @pytest.mark.integration
-# def test_add_topic_category_duplicated(fastapi, tables):
-#     category = {
-#         "name": "category 1",
-#     }
+@pytest.mark.integration
+def test_add_topic_category_duplicated(fastapi, tables):
+    category = {
+        "name": "category 1",
+    }
 
-#     response = fastapi.post(f"{PREFIX}/categories", json=category)
-#     response = fastapi.post(f"{PREFIX}/categories", json=category)
-#     assert response.status_code == 409
-#     assert response.json() == {"detail": "Topic category 'category 1' already exists."}
-
-
-# @pytest.mark.integration
-# def test_add_topic_with_success(fastapi, tables):
-#     category = {
-#         "name": "category 1",
-#     }
-#     topic = {
-#         "name": "topic 1",
-#         "category": "category 1",
-#     }
-
-#     response = fastapi.post(f"{PREFIX}/categories", json=category)
-#     response = fastapi.post(f"{PREFIX}/", json=topic)
-
-#     assert response.status_code == 201
-
-#     expected_response = {
-#         "id": 1,
-#         "name": "topic 1",
-#         "category_id": 1,
-#     }
-#     assert response.json() == expected_response
+    response = fastapi.post(f"{PREFIX}/categories", json=category)
+    response = fastapi.post(f"{PREFIX}/categories", json=category)
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Category 'category 1' already exists."}
 
 
-# @pytest.mark.integration
-# def test_add_topic_not_found(fastapi):
-#     topic = {
-#         "name": "topic 2",
-#         "category": "category 2",
-#     }
-#     response = fastapi.post(f"{PREFIX}/", json=topic)
-#     assert response.status_code == 409
+@pytest.mark.integration
+def test_add_topic_with_success(fastapi, tables):
+    category = {
+        "name": "category 1",
+    }
+    topic = {
+        "name": "topic 1",
+        "category": "category 1",
+    }
+
+    response = fastapi.post(f"{PREFIX}/categories", json=category)
+    response = fastapi.post(f"{PREFIX}/", json=topic)
+
+    assert response.status_code == 201
+    assert response.json() == topic
 
 
-# @pytest.mark.integration
-# def test_add_topic_duplicated(fastapi):
-#     topic = {
-#         "name": "topic 1",
-#         "category": "category 1",
-#     }
-#     response = fastapi.post(f"{PREFIX}/", json=topic)
-#     assert response.status_code == 409
-#     # assert response.json() == {"detail": "Topic 'topic 1, category 1' already exists."}
+@pytest.mark.integration
+def test_add_topic_with_category_not_found(fastapi):
+    topic = {
+        "name": "topic 2",
+        "category": "category 1",
+    }
+
+    response = fastapi.post(f"{PREFIX}/", json=topic)
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Category 'category 1' not found."}
+
+
+@pytest.mark.skip
+def test_add_already_exist_topic(fastapi):
+    topic = {
+        "name": "topic 1",
+        "category": "category 1",
+    }
+
+    response = fastapi.post(f"{PREFIX}/", json=topic)
+    response = fastapi.post(f"{PREFIX}/", json=topic)
+
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Topic 'topic 1, category 1' already exists."}

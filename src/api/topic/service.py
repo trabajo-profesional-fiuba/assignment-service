@@ -3,11 +3,6 @@ from src.api.topic.schemas import (
     TopicRequest,
 )
 from src.api.topic.repository import TopicRepository
-from src.api.topic.exceptions import (
-    CategoryAlreadyExist,
-    TopicDuplicated,
-    UidDuplicated,
-)
 
 
 class TopicService:

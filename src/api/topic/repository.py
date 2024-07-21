@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+import psycopg2
 
 from src.api.topic.schemas import (
     CategoryRequest,
@@ -9,8 +10,9 @@ from src.api.topic.schemas import (
 )
 from src.api.topic.models import Category, Topic
 from src.api.topic.exceptions import (
-    CategoryNotFound,
     CategoryAlreadyExist,
+    CategoryNotFound,
+    TopicAlreadyExist,
 )
 
 
@@ -27,33 +29,16 @@ class TopicRepository:
                     session.add(db_item)
                     return CategoryResponse.from_orm(db_item)
         except IntegrityError:
-            raise CategoryAlreadyExist()
-        except Exception as err:
-            raise err
-
-    def get_category_by_name(self, name: str):
-        try:
-            with self.Session() as session:
-                db_item = session.query(Category).filter(Category.name == name).scalar()
-                return db_item
+            raise CategoryAlreadyExist(f"Category '{category.name}' already exists.")
         except Exception as err:
             raise err
 
     def add_topic(self, topic: TopicRequest):
         try:
             with self.Session() as session:
-                category = (
-                    session.query(Category)
-                    .filter(Category.name == topic.category)
-                    .scalar()
-                )
-                if not category:
-                    raise CategoryNotFound(
-                        f"{topic.category} does not exist in the database"
-                    )
-                db_item = Topic(name=topic.name, category=category.name)
-                session.add(db_item)
-                session.commit()
-                return TopicResponse.from_orm(db_item)
+                with session.begin():
+                    db_item = Topic(name=topic.name, category=topic.category)
+                    session.add(db_item)
+                    return TopicResponse.from_orm(db_item)
         except Exception as err:
-            raise err
+            raise CategoryNotFound(f"Category '{topic.category}' not found.")
