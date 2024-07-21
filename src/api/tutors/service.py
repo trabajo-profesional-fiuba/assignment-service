@@ -23,8 +23,6 @@ class TutorService:
                 password=hasher.hash(str(uid)),
             )
             tutors.append(tutor)
-
-        print(tutors)
         self._repository.add_tutors(tutors)
-
+        
         return tutors
