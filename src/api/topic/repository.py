@@ -8,7 +8,7 @@ from src.api.topic.schemas import (
     TopicResponse,
 )
 from src.api.topic.models import Category, Topic
-from src.api.topic.exceptions import CategoryAlreadyExist, CategoryNotFound
+from src.api.topic.exceptions import CategoryNotFound
 
 
 class TopicRepository:
@@ -28,8 +28,6 @@ class TopicRepository:
                         response.append(CategoryResponse.from_orm(db_item))
                     session.add_all(db_items)
                     return response
-        except IntegrityError:
-            raise CategoryAlreadyExist(f"Category '{category.name}' already exists.")
         except Exception as err:
             raise err
 

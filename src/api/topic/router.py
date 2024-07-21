@@ -44,7 +44,7 @@ async def upload_csv_file(
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
         return service.create_topics_from_string(content, hasher)
-    except (exceptions.CategoryNotFound, exceptions.CategoryAlreadyExist) as err:
+    except exceptions.CategoryNotFound as err:
         raise HTTPException(
             status_code=err.status_code,
             detail=err.message,
