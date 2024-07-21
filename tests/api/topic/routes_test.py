@@ -3,13 +3,14 @@ from fastapi.testclient import TestClient
 from fastapi import FastAPI
 
 from src.api.topic.router import router
-from src.config.database import create_tables, drop_tables
 
 PREFIX = "/topics"
 
 
 @pytest.fixture(scope="function")
 def tables():
+    from src.config.database import create_tables, drop_tables
+
     # Create all tables
     create_tables()
     yield

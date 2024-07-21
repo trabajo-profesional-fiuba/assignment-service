@@ -2,16 +2,15 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from src.api.student.router import router
-from src.api.student.repository import StudentRepository
 from fastapi import status
-from src.api.student.model import StudentModel
-from src.config.database import create_tables, drop_tables
 
 PREFIX = "/students"
 
 
 @pytest.fixture(scope="function")
 def tables():
+    from src.config.database import create_tables, drop_tables
+
     # Create all tables
     create_tables()
     yield
