@@ -21,9 +21,3 @@ class TopicService:
             return self._repository.add_topic(topic)
         except Exception as err:
             raise err
-
-    def get_categories(self):
-        try:
-            return self._repository.get_categories()
-        except Exception as err:
-            raise err
