@@ -16,7 +16,7 @@ class TopicRequest(BaseModel):
     category: str
 
 
-class TopicReponse(BaseModel):
+class TopicResponse(BaseModel):
     id: int
     name: str
     category_id: int

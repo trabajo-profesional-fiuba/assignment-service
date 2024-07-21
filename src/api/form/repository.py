@@ -1,7 +1,9 @@
+from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
-from src.api.form.models import GroupFormSubmittion
+from src.api.form.models import GroupFormPreferences
 from src.api.topic.models import Topic, TopicCategory
+from src.api.form.exceptions import StudentNotFound
 
 
 class FormRepository:
@@ -9,30 +11,14 @@ class FormRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def add_group_form(self, group_form: GroupFormRequest):
+    def add_group_form(self, group_form: GroupFormRequest, uids: list[int]):
         try:
             with self.Session() as session:
-                topics = (
-                    session.query(Topic)
-                    .filter(
-                        (Topic.name == group_form.topic_1)
-                        | (Topic.name == group_form.topic_2)
-                        | (Topic.name == group_form.topic_3)
-                    )
-                    .all()
-                )
-                uids = (
-                    group_form.uid_sender,
-                    group_form.uid_student_2,
-                    group_form.uid_student_3,
-                    group_form.uid_student_4,
-                )
-
-                db_items = []
-                responses = []
-                for uid in uids:
-                    if uid is not None:
-                        db_item = GroupFormSubmittion(
+                with session.begin():
+                    db_items = []
+                    responses = []
+                    for uid in uids:
+                        db_item = GroupFormPreferences(
                             uid=uid,
                             group_id=group_form.group_id,
                             topic_1=group_form.topic_1,
@@ -41,9 +27,9 @@ class FormRepository:
                         )
                         db_items.append(db_item)
                         responses.append(GroupFormResponse.from_orm(db_item))
-                session.add_all(db_items)
-                session.commit()
-                return responses
+                    session.add_all(db_items)
+                    return responses
+        except exc.IntegrityError:
+            raise StudentNotFound()
         except Exception as err:
-            session.rollback()
             raise err

@@ -8,7 +8,7 @@ from src.model.group import Group
 from src.model.period import TutorPeriod
 from src.model.tutor import Tutor
 from src.model.utils.delivery_date import DeliveryDate
-from tests.assignments.date.helper import TestLPHelper
+from tests.algorithms.date.helper import TestLPHelper
 
 
 class TestDeliveryLPSolver:
