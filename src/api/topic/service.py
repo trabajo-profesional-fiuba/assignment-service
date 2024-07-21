@@ -17,7 +17,9 @@ class TopicService:
         topics = []
         for i in rows:
             name, category = i
-            categories.append(CategoryRequest(name=category))
+            new_category = CategoryRequest(name=category)
+            if new_category not in categories:
+                categories.append(new_category)
             topics.append(TopicRequest(name=name, category=category))
         return categories, topics
 

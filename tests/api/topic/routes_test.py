@@ -26,8 +26,8 @@ def fastapi():
 
 
 @pytest.mark.integration
-def test_upload_file_and_create_students_respond_201(fastapi, tables):
-    with open("tests/api/topic/test_data_success.csv", "rb") as file:
+def test_add_topics_with_different_categories_success(fastapi, tables):
+    with open("tests/api/topic/test_data_01.csv", "rb") as file:
         content = file.read()
 
     filename = "test_data"
@@ -43,21 +43,21 @@ def test_upload_file_and_create_students_respond_201(fastapi, tables):
     ]
 
 
-# @pytest.mark.integration
-# def test_add_topic_with_success(fastapi, tables):
-#     category = {
-#         "name": "category 1",
-#     }
-#     topic = {
-#         "name": "topic 1",
-#         "category": "category 1",
-#     }
+def test_add_topics_with_same_category_success(fastapi, tables):
+    with open("tests/api/topic/test_data_02.csv", "rb") as file:
+        content = file.read()
 
-#     response = fastapi.post(f"{PREFIX}/categories", json=category)
-#     response = fastapi.post(f"{PREFIX}/", json=topic)
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
 
-#     assert response.status_code == 201
-#     assert response.json() == topic
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    assert response.status_code == 201
+    assert response.json() == [
+        {"name": "topic 1", "category": "category 1"},
+        {"name": "topic 2", "category": "category 1"},
+        {"name": "topic 3", "category": "category 3"},
+    ]
 
 
 # @pytest.mark.integration
