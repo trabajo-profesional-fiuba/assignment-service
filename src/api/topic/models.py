@@ -3,20 +3,20 @@ from sqlalchemy.orm import relationship
 from src.config.database import Base
 
 
-class TopicCategory(Base):
+class Category(Base):
     __tablename__ = "categories"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String, unique=True)
 
-    topics = relationship("Topic", back_populates="category", lazy="joined")
+    topic = relationship("Topic", back_populates="topic_category", lazy="joined")
 
 
 class Topic(Base):
     __tablename__ = "topics"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
+    name = Column(String, unique=True)
+    category = Column(String, ForeignKey("categories.name"), nullable=False)
 
-    category = relationship("TopicCategory", back_populates="topics")
+    topic_category = relationship("Category", back_populates="topic")

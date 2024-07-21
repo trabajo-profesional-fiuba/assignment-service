@@ -38,9 +38,8 @@ async def add_category(
 ):
     try:
         service = TopicService(TopicRepository(session))
-        category_added = service.add_category(category)
-        return category_added
-    except exceptions.CategoryDuplicated:
+        return service.add_category(category)
+    except exceptions.CategoryAlreadyExist:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Topic category '{category.name}' already exists.",
@@ -67,9 +66,8 @@ async def add_category(
 async def add_topic(topic: TopicRequest, session: Annotated[Session, Depends(get_db)]):
     try:
         service = TopicService(TopicRepository(session))
-        topic_added = service.add_topic(topic)
-        return topic_added
-    except (exceptions.InsertTopicException, exceptions.TopicCategoryNotFound) as error:
+        return service.add_topic(topic)
+    except (exceptions.InsertTopicException, exceptions.CategoryNotFound) as error:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=error.message,

@@ -4,7 +4,7 @@ from src.api.topic.schemas import (
 )
 from src.api.topic.repository import TopicRepository
 from src.api.topic.exceptions import (
-    CategoryDuplicated,
+    CategoryAlreadyExist,
     TopicDuplicated,
     UidDuplicated,
 )
@@ -18,13 +18,10 @@ class TopicService:
     def add_category(self, category: CategoryRequest):
         try:
             return self._repository.add_category(category)
-        except CategoryDuplicated as err:
+        except Exception as err:
             raise err
 
     def add_topic(self, topic: TopicRequest):
-        """
-        Adds a topic.
-        """
         try:
             return self._repository.add_topic(topic)
         except Exception as err:
