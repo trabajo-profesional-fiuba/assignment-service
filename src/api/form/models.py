@@ -12,5 +12,5 @@ class GroupFormPreferences(Base):
     topic_2 = Column(String, nullable=False)
     topic_3 = Column(String, nullable=False)
 
-    # Set relationship with StudentModel
-    student = relationship("StudentModel", back_populates="group_preferences")
+    # Set relationship with Student
+    student = relationship("Student", back_populates="group_preferences")

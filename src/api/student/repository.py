@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from src.api.student.schemas import Student
-from src.api.student.model import StudentModel
+from src.api.student.model import Student
 from src.api.student.exceptions import StudentDuplicated
 
 
@@ -18,7 +18,7 @@ class StudentRepository:
                 with session.begin():
                     students_objs = []
                     for student in students:
-                        student_obj = StudentModel(
+                        student_obj = Student(
                             uid=student.uid,
                             name=student.name,
                             last_name=student.last_name,
