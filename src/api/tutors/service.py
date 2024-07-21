@@ -2,7 +2,6 @@ from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.schemas import Tutor
 from src.api.tutors.repository import TutorRepository
 from src.api.auth.hasher import ShaHasher
-from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated
 
 
 class TutorService:
@@ -11,24 +10,21 @@ class TutorService:
         self._repository = repository
 
     def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
-        try:
-            tutors = []
-            csv_file = TutorCsvFile(csv=csv)
-            rows = csv_file.get_info_as_rows()
-            for i in rows:
-                name, last_name, uid, email = i
-                student = Tutor(
-                    name=name,
-                    last_name=last_name,
-                    dni=int(uid),
-                    email=email,
-                    password=hasher.hash(str(uid)),
-                )
-                tutors.append(student)
+        tutors = []
+        csv_file = TutorCsvFile(csv=csv)
+        rows = csv_file.get_info_as_rows()
+        for i in rows:
+            name, last_name, uid, email = i
+            tutor = Tutor(
+                name=name,
+                last_name=last_name,
+                dni=int(uid),
+                email=email,
+                password=hasher.hash(str(uid)),
+            )
+            tutors.append(tutor)
 
-            print(tutors)
-            self._repository.add_tutors(tutors)
+        print(tutors)
+        self._repository.add_tutors(tutors)
 
-            return tutors
-        except (InvalidTutorCsv, TutorDuplicated) as e:
-            raise e
+        return tutors
