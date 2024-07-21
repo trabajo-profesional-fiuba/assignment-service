@@ -60,15 +60,16 @@ def test_add_topics_with_same_category_success(fastapi, tables):
     ]
 
 
-# @pytest.mark.skip
-# def test_add_already_exist_topic(fastapi):
-#     topic = {
-#         "name": "topic 1",
-#         "category": "category 1",
-#     }
+@pytest.mark.integration
+def test_add_already_exist_topic(fastapi):
+    with open("tests/api/topic/test_data_03.csv", "rb") as file:
+        content = file.read()
 
-#     response = fastapi.post(f"{PREFIX}/", json=topic)
-#     response = fastapi.post(f"{PREFIX}/", json=topic)
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
 
-#     assert response.status_code == 409
-#     assert response.json() == {"detail": "Topic 'topic 1, category 1' already exists."}
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Topic already exists."}

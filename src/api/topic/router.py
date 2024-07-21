@@ -11,6 +11,7 @@ from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database import get_db
+from src.api.topic.exceptions import TopicAlreadyExist
 
 router = APIRouter(prefix="/topics", tags=["topics"])
 
@@ -40,6 +41,11 @@ async def upload_csv_file(
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
         return service.create_topics_from_string(content, hasher)
+    except TopicAlreadyExist as err:
+        raise HTTPException(
+            status_code=err.status_code,
+            detail=err.message,
+        )
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
