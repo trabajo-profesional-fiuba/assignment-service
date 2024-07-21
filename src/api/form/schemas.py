@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 
@@ -20,3 +20,5 @@ class GroupFormResponse(BaseModel):
     topic_1: str
     topic_2: str
     topic_3: str
+
+    model_config = ConfigDict(from_attributes=True)
