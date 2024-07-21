@@ -10,6 +10,7 @@ PREFIX = "/tutors"
 @pytest.fixture(scope="function")
 def tables():
     from src.config.database import create_tables, drop_tables
+
     # Create all tables
     create_tables()
     yield
