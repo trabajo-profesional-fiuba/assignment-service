@@ -14,24 +14,22 @@ class FormRepository:
     def add_group_form(self, group_form: GroupFormRequest, uids: list[int]):
         try:
             with self.Session() as session:
-                db_items = []
-                responses = []
-                for uid in uids:
-                    db_item = GroupFormPreferences(
-                        uid=uid,
-                        group_id=group_form.group_id,
-                        topic_1=group_form.topic_1,
-                        topic_2=group_form.topic_2,
-                        topic_3=group_form.topic_3,
-                    )
-                    db_items.append(db_item)
-                    responses.append(GroupFormResponse.from_orm(db_item))
-                session.add_all(db_items)
-                session.commit()
-                return responses
+                with session.begin():
+                    db_items = []
+                    responses = []
+                    for uid in uids:
+                        db_item = GroupFormPreferences(
+                            uid=uid,
+                            group_id=group_form.group_id,
+                            topic_1=group_form.topic_1,
+                            topic_2=group_form.topic_2,
+                            topic_3=group_form.topic_3,
+                        )
+                        db_items.append(db_item)
+                        responses.append(GroupFormResponse.from_orm(db_item))
+                    session.add_all(db_items)
+                    return responses
         except exc.IntegrityError:
-            session.rollback()
             raise StudentNotFound()
         except Exception as err:
-            session.rollback()
             raise err
