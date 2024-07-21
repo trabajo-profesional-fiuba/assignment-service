@@ -60,19 +60,6 @@ def test_add_topics_with_same_category_success(fastapi, tables):
     ]
 
 
-# @pytest.mark.integration
-# def test_add_topic_with_category_not_found(fastapi):
-#     topic = {
-#         "name": "topic 2",
-#         "category": "category 1",
-#     }
-
-#     response = fastapi.post(f"{PREFIX}/", json=topic)
-
-#     assert response.status_code == 404
-#     assert response.json() == {"detail": "Category 'category 1' not found."}
-
-
 # @pytest.mark.skip
 # def test_add_already_exist_topic(fastapi):
 #     topic = {

@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
 from src.api.topic.schemas import (
     CategoryRequest,
@@ -8,7 +7,6 @@ from src.api.topic.schemas import (
     TopicResponse,
 )
 from src.api.topic.models import Category, Topic
-from src.api.topic.exceptions import CategoryNotFound
 
 
 class TopicRepository:
@@ -43,5 +41,5 @@ class TopicRepository:
                         response.append(TopicResponse.from_orm(db_item))
                     session.add_all(db_items)
                     return response
-        except Exception:
-            raise CategoryNotFound(f"Category '{topic.category}' not found.")
+        except Exception as err:
+            raise err
