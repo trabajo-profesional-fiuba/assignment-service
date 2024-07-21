@@ -13,7 +13,6 @@ class TutorRepository:
 
     def add_tutors(self, tutors: list[Tutor]):
         # create session and add objects
-        # Si se hace como transaccion y luego el commit, es mas optimo.
         try:
             with self.Session() as session:
                 with session.begin():
