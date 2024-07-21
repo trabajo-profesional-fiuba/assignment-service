@@ -2,9 +2,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from src.api.student.router import router
-from src.api.student.repository import StudentRepository
 from fastapi import status
-from src.api.student.model import Student
 from src.config.database import create_tables, drop_tables
 
 PREFIX = "/students"

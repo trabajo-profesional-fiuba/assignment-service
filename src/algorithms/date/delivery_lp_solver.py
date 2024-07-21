@@ -173,7 +173,8 @@ class DeliveryLPSolver:
         hour : int
             The hour of the day of the assignment.
         """
-        var_name = f"{GROUP_ID}-{group.id()}-{TUTOR_ID}-{tutor_id}-{EVALUATOR_ID}-{evaluator.id()}-{DATE_ID}-{week}-{day}-{hour}"
+        var_name = f"{GROUP_ID}-{group.id()}-{TUTOR_ID}-{tutor_id}-{EVALUATOR_ID}-\
+            {evaluator.id()}-{DATE_ID}-{week}-{day}-{hour}"
         self._decision_variables[
             (group.id(), tutor_id, evaluator.id(), week, day, hour)
         ] = self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
@@ -427,13 +428,15 @@ class DeliveryLPSolver:
                         self._evaluator_assignment_vars[evaluator_i.id()]
                         - self._evaluator_assignment_vars[evaluator_j.id()]
                         <= MAX_DIF_EVALUATORS,  # Balance threshold
-                        name=f"balance-{EVALUATOR_ID}-{evaluator_i.id()}-{evaluator_j.id()}",
+                        name=f"balance-{EVALUATOR_ID}-{evaluator_i.id()}\
+                            -{evaluator_j.id()}",
                     )
                     self._model.addCons(
                         self._evaluator_assignment_vars[evaluator_j.id()]
                         - self._evaluator_assignment_vars[evaluator_i.id()]
                         <= MAX_DIF_EVALUATORS,  # Balance threshold
-                        name=f"balance-{EVALUATOR_ID}-{evaluator_j.id()}-{evaluator_i.id()}",
+                        name=f"balance-{EVALUATOR_ID}-{evaluator_j.id()}-\
+                            {evaluator_i.id()}",
                     )
 
     def _find_substitutes_on_date(self, date, evaluator_id, tutor_id):
@@ -501,16 +504,18 @@ class DeliveryLPSolver:
         for var in rounded_decision_vars:
             if rounded_decision_vars[var] > 0:
                 print(
-                    f"Variable {var} (Group, Tutor, Evaluator, Week, Day, Hour): {var}",
+                    f"Variable {var} \
+                    (Group, Tutor, Evaluator, Week, Day, Hour): {var}",
                     "val:",
                     self._model.getVal(self._decision_variables[var]),
                 )
-                # FIXME: no olvidarnos de los subtitutos, (pondria un bool para calcularlos o no)
-                substitue = self._find_substitutes_on_date(
-                    DeliveryDate(var[WEEK], var[DAY], var[HOUR]),
-                    var[EVALUATOR],
-                    var[TUTOR],
-                )
+                # FIXME: no olvidarnos de los subtitutos, (pondria un bool para
+                # calcularlos o no)
+                # substitue = self._find_substitutes_on_date(
+                #     DeliveryDate(var[WEEK], var[DAY], var[HOUR]),
+                #     var[EVALUATOR],
+                #     var[TUTOR],
+                # )
                 result.append(
                     (
                         f"{GROUP_ID}-{var[GROUP]}",

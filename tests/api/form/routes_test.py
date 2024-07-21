@@ -6,7 +6,6 @@ import datetime as dt
 from src.api.form.router import router as form_router
 from src.api.student.router import router as student_router
 from src.config.database import create_tables, drop_tables
-from src.api.form.schemas import GroupFormResponse
 
 PREFIX = "/forms"
 

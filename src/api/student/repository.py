@@ -31,5 +31,5 @@ class StudentRepository:
 
                 # inner context calls session.commit(), if there were no exceptions
             # outer context calls session.close()
-        except:
+        except Exception:
             raise StudentDuplicated("Could not insert a student in the database")

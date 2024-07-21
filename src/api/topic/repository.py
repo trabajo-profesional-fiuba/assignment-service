@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-import psycopg2
 
 from src.api.topic.schemas import (
     CategoryRequest,
@@ -9,11 +8,7 @@ from src.api.topic.schemas import (
     TopicResponse,
 )
 from src.api.topic.models import Category, Topic
-from src.api.topic.exceptions import (
-    CategoryAlreadyExist,
-    CategoryNotFound,
-    TopicAlreadyExist,
-)
+from src.api.topic.exceptions import CategoryAlreadyExist, CategoryNotFound
 
 
 class TopicRepository:
@@ -40,5 +35,5 @@ class TopicRepository:
                     db_item = Topic(name=topic.name, category=topic.category)
                     session.add(db_item)
                     return TopicResponse.from_orm(db_item)
-        except Exception as err:
+        except Exception:
             raise CategoryNotFound(f"Category '{topic.category}' not found.")

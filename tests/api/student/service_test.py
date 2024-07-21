@@ -2,7 +2,7 @@ import pytest
 
 from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
-from src.api.student.exceptions import StudentDuplicated, InvalidStudentCsv
+from src.api.student.exceptions import InvalidStudentCsv
 from src.api.auth.hasher import ShaHasher
 
 

@@ -2,7 +2,6 @@ from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.models import GroupFormPreferences
-from src.api.topic.models import Topic, Category
 from src.api.form.exceptions import StudentNotFound
 
 
@@ -30,6 +29,6 @@ class FormRepository:
                     session.add_all(db_items)
                     return responses
         except exc.IntegrityError:
-            raise StudentNotFound()
+            raise StudentNotFound("Student uid not found.")
         except Exception as err:
             raise err
