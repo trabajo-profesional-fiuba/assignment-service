@@ -6,7 +6,7 @@ Param(
 function IsDockerInstalledAndRunning() {
     if (Get-Command docker) {
         Write-Host "Docker installed: "-NoNewline; Write-Host -ForegroundColor Green "Yes"
-        Get-Process 'com.docker.proxy' 2>$null
+        $info = docker info 2>$null
         
         if ($LASTEXITCODE -eq 0) {
             Write-Host "Docker is running."
