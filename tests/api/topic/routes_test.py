@@ -62,7 +62,7 @@ def test_add_topics_with_same_category_success(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_already_exist_topic(fastapi):
+def test_add_already_exist_topic(fastapi, tables):
     with open("tests/api/topic/data/duplicated_topic.csv", "rb") as file:
         content = file.read()
 
@@ -77,7 +77,7 @@ def test_add_already_exist_topic(fastapi):
 
 
 @pytest.mark.integration
-def test_upload_wrong_type_file(fastapi):
+def test_upload_wrong_type_file(fastapi, tables):
     filename = "data_success"
     content_type = "application/json"
     files = {"file": (filename, "test".encode(), content_type)}
@@ -88,7 +88,7 @@ def test_upload_wrong_type_file(fastapi):
 
 
 @pytest.mark.integration
-def test_upload_wrong_format_file(fastapi):
+def test_upload_wrong_format_file(fastapi, tables):
     with open("tests/api/topic/data/wrong_format.csv", "rb") as file:
         content = file.read()
 
@@ -99,3 +99,28 @@ def test_upload_wrong_format_file(fastapi):
     response = fastapi.post(f"{PREFIX}/upload", files=files)
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.integration
+def test_get_topics_with_success(fastapi, tables):
+    response = fastapi.get(f"{PREFIX}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == []
+
+    with open("tests/api/topic/data/data_success.csv", "rb") as file:
+        content = file.read()
+
+    filename = "data_success"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
+
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.get(f"{PREFIX}/")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == [
+        {"name": "topic 1", "category": "category 1"},
+        {"name": "topic 2", "category": "category 2"},
+        {"name": "topic 3", "category": "category 3"},
+    ]

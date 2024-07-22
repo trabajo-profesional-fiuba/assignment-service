@@ -43,3 +43,13 @@ class TopicRepository:
                     return response
         except Exception as err:
             raise err
+
+    def get_topics(self):
+        try:
+            with self.Session() as session:
+                db_items = session.query(Topic).all()
+                response = [TopicResponse.from_orm(db_item) for db_item in db_items]
+                return response
+        except Exception as err:
+            print(err)
+            raise err
