@@ -20,7 +20,7 @@ class TestTutorPeriod:
         assert len(period.groups) == 0
         assert len(period.topics) == 0
         assert period.is_evaluator() is False
-        assert period.tutor == None
+        assert period.tutor is None
         assert period.capacity == 0
 
     @pytest.mark.unit
@@ -37,7 +37,7 @@ class TestTutorPeriod:
         # Arrange
         period = TutorPeriod(period="1C2024")
         # Act & Assert
-        with pytest.raises(e.PeriodWithoutParentError) as ex:
+        with pytest.raises(e.PeriodWithoutParentError):
             period.id()
 
     @pytest.mark.unit

@@ -18,7 +18,7 @@ class ResultAdapter:
         ADAPTERS = {"flow": FlowAdapter(), "linear": LPAdapter()}
         try:
             return ADAPTERS.get(result_type)
-        except:
+        except Exception:
             raise ResultFormatNotFound("Adapter type not found")
 
     def adapt_results(
@@ -32,7 +32,8 @@ class ResultAdapter:
         class to process it.
 
         Args:
-            - result_context: The context of the result where each Formatter knows how to manage
+            - result_context: The context of the result where each Formatter knows how
+            to manage
 
         Returns:
             AssignmentResult: The formatted result, as processed by the appropriate
@@ -46,5 +47,5 @@ class ResultAdapter:
             result_type = result_context.get("type")
             adapter = self._build_adapter(result_type)
             return adapter.adapt_results(result_context)
-        except:
+        except Exception:
             raise ResultFormatNotFound("Type of adapter not found")

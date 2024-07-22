@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from src.api.student.router import router
 from fastapi import status
+from src.config.database import create_tables, drop_tables
 
 PREFIX = "/students"
 

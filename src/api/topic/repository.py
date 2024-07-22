@@ -6,13 +6,7 @@ from src.api.topic.schemas import (
     TopicRequest,
     TopicResponse,
 )
-from src.api.topic.models import TopicCategory, Topic
-from src.api.topic.exceptions import (
-    TopicCategoryNotFound,
-    TopicNotFound,
-    InsertTopicException,
-    CategoryDuplicated,
-)
+from src.api.topic.models import Category, Topic
 
 
 class TopicRepository:
@@ -20,47 +14,32 @@ class TopicRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def add_category(self, category: CategoryRequest):
+    def add_categories(self, categories: list[CategoryRequest]):
         try:
             with self.Session() as session:
-                db_item = TopicCategory(name=category.name)
-                session.add(db_item)
-                session.commit()
-                response = CategoryResponse.from_orm(db_item)
-                return response
-        except Exception as err:
-            raise CategoryDuplicated()
-
-    def get_category_by_name(self, name: str):
-        try:
-            with self.Session() as session:
-                db_item = (
-                    session.query(TopicCategory)
-                    .filter(TopicCategory.name == name)
-                    .scalar()
-                )
-                return db_item
+                with session.begin():
+                    db_items = []
+                    response = []
+                    for category in categories:
+                        db_item = Category(name=category.name)
+                        db_items.append(db_item)
+                        response.append(CategoryResponse.from_orm(db_item))
+                    session.add_all(db_items)
+                    return response
         except Exception as err:
             raise err
 
-    def add_topic(self, topic: TopicRequest):
+    def add_topics(self, topics: list[TopicRequest]):
         try:
             with self.Session() as session:
-                category = (
-                    session.query(TopicCategory)
-                    .filter(TopicCategory.name == topic.category)
-                    .scalar()
-                )
-                if not category:
-                    raise TopicCategoryNotFound(
-                        f"{topic.category} does not exist in the database"
-                    )
-                db_item = Topic(name=topic.name, category_id=category.id)
-                session.add(db_item)
-                session.commit()
-                response = TopicResponse.from_orm(db_item)
-                return response
-        except TopicCategoryNotFound as err:
+                with session.begin():
+                    db_items = []
+                    response = []
+                    for topic in topics:
+                        db_item = Topic(name=topic.name, category=topic.category)
+                        db_items.append(db_item)
+                        response.append(TopicResponse.from_orm(db_item))
+                    session.add_all(db_items)
+                    return response
+        except Exception as err:
             raise err
-        except Exception as _:
-            raise InsertTopicException(f"{topic.__str__} coud not be inserted into db")

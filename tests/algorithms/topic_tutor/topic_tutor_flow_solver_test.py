@@ -431,7 +431,8 @@
 #         num_topics = 4
 #         num_tutors = 2
 
-#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+#         groups_topics_costs = self.helper.create_matrix(num_groups,
+# num_topics, True, 4)
 #         groups_topics_capacities = self.helper.create_list(num_topics, 0)
 #         tutors_capacities = self.helper.create_list(num_groups, 2)
 #         topics_tutors_capacities = self.helper.create_matrix(
@@ -473,7 +474,8 @@
 #         num_topics = 10
 #         num_tutors = 5
 
-#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True,
+# 4)
 #         groups_topics_capacities = self.helper.create_list(num_topics, 0)
 #         tutors_capacities = self.helper.create_list(num_groups, 2)
 #         topics_tutors_capacities = self.helper.create_matrix(
@@ -515,7 +517,8 @@
 #         num_topics = 20
 #         num_tutors = 10
 
-#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+#         groups_topics_costs = self.helper.create_matrix(num_groups,
+# num_topics, True, 4)
 #         groups_topics_capacities = self.helper.create_list(num_topics, 0)
 #         tutors_capacities = self.helper.create_list(num_groups, 2)
 #         topics_tutors_capacities = self.helper.create_matrix(
@@ -557,7 +560,8 @@
 #         num_topics = 40
 #         num_tutors = 20
 
-#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True,
+# 4)
 #         groups_topics_capacities = self.helper.create_list(num_topics, 0)
 #         tutors_capacities = self.helper.create_list(num_groups, 2)
 #         topics_tutors_capacities = self.helper.create_matrix(
@@ -599,7 +603,8 @@
 #         num_topics = 80
 #         num_tutors = 40
 
-#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True,
+# 4)
 #         groups_topics_capacities = self.helper.create_list(num_topics, 0)
 #         tutors_capacities = self.helper.create_list(num_groups, 2)
 #         topics_tutors_capacities = self.helper.create_matrix(
@@ -642,7 +647,8 @@
 #         num_topics = 160
 #         num_tutors = 80
 
-#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True,
+# 4)
 #         groups_topics_capacities = self.helper.create_list(num_topics, 0)
 #         tutors_capacities = self.helper.create_list(num_groups, 2)
 #         topics_tutors_capacities = self.helper.create_matrix(
@@ -686,7 +692,8 @@
 #         num_topics = 320
 #         num_tutors = 160
 
-#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True, 4)
+#         groups_topics_costs = self.helper.create_matrix(num_groups, num_topics, True,
+# 4)
 #         groups_topics_capacities = self.helper.create_list(num_topics, 0)
 #         tutors_capacities = self.helper.create_list(num_groups, 2)
 #         topics_tutors_capacities = self.helper.create_matrix(

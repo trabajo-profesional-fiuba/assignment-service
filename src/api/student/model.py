@@ -1,9 +1,9 @@
 from src.config.database import Base
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 
 
-class StudentModel(Base):
+class Student(Base):
     __tablename__ = "students"
 
     uid = Column(Integer, primary_key=True)

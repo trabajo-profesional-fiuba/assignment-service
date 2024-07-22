@@ -35,10 +35,10 @@ async def add_topic_preferences(
     try:
         service = FormService(FormRepository(session))
         return service.add_group_form(group_form)
-    except StudentNotFound as uid:
+    except StudentNotFound as err:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Student uid not found.",
+            status_code=err.status_code,
+            detail=err.message,
         )
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Internal Server Error {err}")

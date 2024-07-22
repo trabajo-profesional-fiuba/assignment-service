@@ -6,7 +6,7 @@ class CategoryRequest(BaseModel):
 
 
 class CategoryResponse(CategoryRequest):
-    id: int
+    name: str
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -17,8 +17,7 @@ class TopicRequest(BaseModel):
 
 
 class TopicResponse(BaseModel):
-    id: int
     name: str
-    category_id: int
+    category: str
 
     model_config = ConfigDict(from_attributes=True)

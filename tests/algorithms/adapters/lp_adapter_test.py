@@ -16,12 +16,12 @@ class TestLPAdapter:
             ("group-2", "evaluator-11", "date-2-2-11"),
         ]
 
-        num_groups = 2
-        num_weeks = 4
-        days_per_week = [1, 2, 3, 4, 5]
-        hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-        dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
-        groups = self.helper.create_groups(num_groups, dates)
+        # num_groups = 2
+        # num_weeks = 4
+        # days_per_week = [1, 2, 3, 4, 5]
+        # hours_per_day = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        # dates = self.helper.create_dates(num_weeks, days_per_week, hours_per_day)
+        # groups = self.helper.create_groups(num_groups, dates)
         result_context = ResultContext(type="linear", result=lp_solver_result)
 
         formatter = LPAdapter()

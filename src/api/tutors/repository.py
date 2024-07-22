@@ -35,4 +35,3 @@ class TutorRepository:
             raise TutorDuplicated("Duplicated tutor")
         except:
             raise TutorNotInserted("Could not insert a student in the database")
-        

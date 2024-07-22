@@ -19,7 +19,7 @@ class TutorCsvFile:
     def _validate_csv_headers(self, df):
         if list(df.columns.values) != ["NOMBRE", "APELLIDO", "DNI", "MAIL"]:
             raise InvalidTutorCsv("Columns don't match with expected ones")
-    
+
     def _check_duplicates(self, df):
         duplicate = df[df.duplicated()]
         if len(duplicate) > 0:

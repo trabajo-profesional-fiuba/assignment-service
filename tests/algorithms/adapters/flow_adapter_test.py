@@ -4,7 +4,6 @@ from src.algorithms.adapters.flow_adapter import FlowAdapter
 from src.algorithms.adapters.result_context import ResultContext
 from src.model.period import TutorPeriod
 from src.model.group import Group
-from src.model.utils.result import AssignmentResult
 from src.exceptions import WrongDateFormat
 from src.model.utils.delivery_date import DeliveryDate
 
@@ -44,8 +43,8 @@ class TestFlowAdapter:
     @pytest.mark.unit
     def test_adapt_results(self, mocker):
         """
-        Tests adapt_results method for assigning delivery dates to evaluators based on the
-        flow solver result.
+        Tests adapt_results method for assigning delivery dates to evaluators based
+        on the flow solver result.
         """
         ev1 = TutorPeriod("1C2024")
         mocker.patch.object(ev1, "id", return_value=2)
@@ -80,8 +79,8 @@ class TestFlowAdapter:
     @pytest.mark.unit
     def test_adapt_results_assign_dates(self, mocker):
         """
-        Tests adapt_results method for assigning delivery dates to evaluators based on the
-        flow solver result.
+        Tests adapt_results method for assigning delivery dates to evaluators based
+        on the flow solver result.
         """
         ev1 = TutorPeriod("1C2024")
         mocker.patch.object(ev1, "id", return_value=2)

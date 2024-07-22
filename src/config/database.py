@@ -6,10 +6,8 @@ from src.config.config import get_configuration
 Base = declarative_base()
 config = get_configuration()
 
-""" 
-En Fast API lo mejor es tener solo una instancia del engine, y que ese es el encargado de crear
-las sessiones que luego se van a usar
-"""
+# En Fast API lo mejor es tener solo una instancia del engine, y que ese es
+# el encargado de crear las sessiones que luego se van a usar
 
 # Database Configurations
 database_url = config.get("database_url")
