@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.api.student.schemas import Student
+from src.api.student.schemas import StudentBase
 from src.api.student.model import Student
 from src.api.student.exceptions import StudentDuplicated
 

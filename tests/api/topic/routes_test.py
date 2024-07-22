@@ -30,7 +30,7 @@ def test_add_topics_with_different_categories_success(fastapi, tables):
     with open("tests/api/topic/data/data_success.csv", "rb") as file:
         content = file.read()
 
-    filename = "test_data"
+    filename = "data_success"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 

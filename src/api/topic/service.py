@@ -4,7 +4,6 @@ from src.api.topic.schemas import (
 )
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
-from src.api.auth.hasher import ShaHasher
 from src.api.topic.exceptions import TopicAlreadyExist
 
 
@@ -29,23 +28,22 @@ class TopicService:
         raise TopicAlreadyExist("Topic already exists.")
 
     def get_categories_topics(self, rows):
-        try:
-            categories = []
-            topics = []
-            for i in rows:
-                name, category = i
-                categories = self.add_category(category, categories)
-                topics = self.add_topic(name, category, topics)
-            return categories, topics
-        except Exception as err:
-            raise err
+        """
+        Processes a list of rows containing topic names and categories, and returns
+        two lists: one of unique categories and another of unique topics with their
+        respective categories.
+        """
+        categories = []
+        topics = []
+        for i in rows:
+            name, category = i
+            categories = self.add_category(category, categories)
+            topics = self.add_topic(name, category, topics)
+        return categories, topics
 
-    def create_topics_from_string(self, csv: str, hasher: ShaHasher):
-        try:
-            csv_file = TopicCsvFile(csv=csv)
-            rows = csv_file.get_info_as_rows()
-            categories, topics = self.get_categories_topics(rows)
-            self._repository.add_categories(categories)
-            return self._repository.add_topics(topics)
-        except Exception as err:
-            raise err
+    def create_topics_from_string(self, csv: str):
+        csv_file = TopicCsvFile(csv=csv)
+        rows = csv_file.get_info_as_rows()
+        categories, topics = self.get_categories_topics(rows)
+        self._repository.add_categories(categories)
+        return self._repository.add_topics(topics)

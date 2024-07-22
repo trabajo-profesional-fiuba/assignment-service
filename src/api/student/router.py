@@ -5,7 +5,7 @@ from fastapi import APIRouter, UploadFile, Depends, status
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
-from src.api.student.schemas import Student
+from src.api.student.schemas import StudentBase
 from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
 from src.api.auth.hasher import get_hasher, ShaHasher
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/students", tags=["students"])
 
 @router.post(
     "/upload",
-    response_model=list[Student],
+    response_model=list[StudentBase],
     description="Creates list of students based on a csv file",
     status_code=status.HTTP_201_CREATED,
 )

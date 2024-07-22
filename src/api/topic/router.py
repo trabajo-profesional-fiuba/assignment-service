@@ -9,7 +9,6 @@ from src.api.topic.schemas import (
 )
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
-from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database import get_db
 from src.api.topic.exceptions import (
     TopicAlreadyExist,
@@ -40,7 +39,6 @@ router = APIRouter(prefix="/topics", tags=["topics"])
 )
 async def upload_csv_file(
     file: UploadFile,
-    hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
 ):
     try:
@@ -48,7 +46,7 @@ async def upload_csv_file(
             raise InvalidMediaType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
-        return service.create_topics_from_string(content, hasher)
+        return service.create_topics_from_string(content)
     except (TopicAlreadyExist, InvalidMediaType, InvalidTopicCsv) as err:
         raise HTTPException(
             status_code=err.status_code,
