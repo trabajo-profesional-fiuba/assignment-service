@@ -23,11 +23,13 @@ router = APIRouter(prefix="/tutors", tags=["tutors"])
     summary="Add csv file",
     status_code=status.HTTP_201_CREATED,
     responses={
-        status.HTTP_400_BAD_REQUEST: {'description': 'The columns are not correct'},
-        status.HTTP_409_CONFLICT: {'description': 'Duplicated tutor'},
-        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {'description': 'Content-Type is not correct.'},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {'description': 'Internal server error'}
-    }
+        status.HTTP_400_BAD_REQUEST: {"description": "The columns are not correct"},
+        status.HTTP_409_CONFLICT: {"description": "Duplicated tutor"},
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {
+            "description": "Content-Type is not correct."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
 )
 async def upload_csv_file(
     file: UploadFile,

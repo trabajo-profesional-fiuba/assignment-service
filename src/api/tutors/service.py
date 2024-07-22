@@ -24,5 +24,5 @@ class TutorService:
             )
             tutors.append(tutor)
         self._repository.add_tutors(tutors)
-        
+
         return tutors

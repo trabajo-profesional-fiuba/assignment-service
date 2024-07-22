@@ -47,6 +47,7 @@ def test_upload_file_and_create_tutors(fastapi, tables):
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == 15
 
+
 @pytest.mark.integration
 def test_upload_file_with_invalid_columns_raise_exception(fastapi, tables):
 
@@ -66,6 +67,7 @@ def test_upload_file_with_invalid_columns_raise_exception(fastapi, tables):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert http_exception.get("detail") == "Columns don't match with expected ones"
 
+
 @pytest.mark.integration
 def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables):
 
@@ -84,6 +86,7 @@ def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT
     assert http_exception.get("detail") == "Duplicate values inside the csv file"
+
 
 @pytest.mark.integration
 def test_upload_file_with_duplicates_rows_in_db_raise_exception(fastapi, tables):
@@ -105,7 +108,6 @@ def test_upload_file_with_duplicates_rows_in_db_raise_exception(fastapi, tables)
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT
     assert http_exception.get("detail") == "Duplicated tutor"
-
 
 
 @pytest.mark.integration
