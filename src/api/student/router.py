@@ -10,6 +10,8 @@ from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database import get_db
+from src.config.logging import logger
+
 
 router = APIRouter(prefix="/students", tags=["students"])
 
@@ -32,6 +34,7 @@ async def upload_csv_file(
                 status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
                 detail="CSV file must be provided",
             )
+        logger.info("csv contains the correct content-type")
         content = (await file.read()).decode("utf-8")
         service = StudentService(StudentRepository(session))
         res = service.create_students_from_string(content, hasher)

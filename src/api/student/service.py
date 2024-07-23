@@ -25,8 +25,6 @@ class StudentService:
                     password=hasher.hash(str(uid)),
                 )
                 students.append(student)
-
-            print(students)
             self._repository.add_students(students)
 
             return students

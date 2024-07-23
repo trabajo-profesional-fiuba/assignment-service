@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from src.config.database import create_tables
+from src.config.config import api_config
+
 from src.api.student.router import router as student_router
 from src.api.topic.router import router as topic_router
 from src.api.form.router import router as form_router
@@ -27,4 +29,4 @@ async def root():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000, log_level=api_config.logging_level)
