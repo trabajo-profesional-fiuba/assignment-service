@@ -13,20 +13,24 @@ config = get_configuration()
 database_url = config.get("database_url")
 pool_size = config.get("pool_size")
 pool_timeout = config.get("pool_timeout")
+engine = None
 
-engine = create_engine(
-    database_url,
-    pool_size=config.get("pool_size"),
-    pool_timeout=config.get("pool_timeout"),
-)
+if database_url != None:
+    engine = create_engine(
+        database_url,
+        pool_size=config.get("pool_size"),
+        pool_timeout=config.get("pool_timeout"),
+    )
 
+    
 
 def create_tables():
     """
     Creates all tables in the database.
     """
     try:
-        Base.metadata.create_all(bind=engine)
+        if engine != None:
+            Base.metadata.create_all(bind=engine)
     except Exception as err:
         raise err
 
@@ -36,11 +40,15 @@ def drop_tables():
     Drop all tables in the database.
     """
     try:
-        Base.metadata.drop_all(bind=engine)
+        if engine != None:
+            Base.metadata.drop_all(bind=engine)
     except Exception as err:
         raise err
 
 
 def get_db():
-    Session = sessionmaker(bind=engine)
-    yield Session
+    if engine != None:
+        Session = sessionmaker(bind=engine)
+        yield Session
+    else:
+        yield None
