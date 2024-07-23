@@ -48,3 +48,5 @@ class TestStudentService:
 
         with pytest.raises(InvalidStudentCsv):
             _ = service.create_students_from_string("bla,bla,bla", hash)
+
+    @pytest.mark.unit

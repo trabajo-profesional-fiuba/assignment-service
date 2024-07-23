@@ -1,6 +1,8 @@
-from src.config.database import Base
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
+
+from src.api.form.models import GroupFormPreferences
+from src.config.database import Base
 
 
 class Student(Base):
@@ -13,4 +15,5 @@ class Student(Base):
     password = Column(String)
 
     # Set relationship with GroupFormPreferences
-    group_preferences = relationship("GroupFormPreferences", back_populates="student")
+    group_preferences = relationship(
+        "GroupFormPreferences", back_populates="student", uselist=True, lazy="select")
