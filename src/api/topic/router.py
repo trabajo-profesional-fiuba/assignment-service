@@ -81,5 +81,5 @@ async def get_topics(
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal Server Error {err}",
+            detail=f"Internal Server Error {str(err)}",
         )
