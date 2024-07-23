@@ -34,6 +34,13 @@ class TestStudentRepository:
         assert len(response) == 2
 
     @pytest.mark.unit
+    def test_no_student_returns_empty_list(self, tables):
+        repository = StudentRepository(self.Session)
+        response = repository.get_students_by_ids([1, 2])
+
+        assert response == []
+
+    @pytest.mark.unit
     def test_get_student_by_id(self, tables):
         student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")

@@ -25,8 +25,6 @@ class StudentService:
                     password=hasher.hash(str(uid)),
                 )
                 students.append(student)
-
-            print(students)
             self._repository.add_students(students)
 
             return students
@@ -34,6 +32,10 @@ class StudentService:
             raise e
     
     def get_students_by_ids(self, uids: list[int]):
+
+        if len(list(set(uids))) != len(list(uids)):
+            raise StudentDuplicated("Query params udis contain duplicates")
+
         students = self._repository.get_students_by_ids(uids)
         udis_from_db = [student.uid for student in students]
         for uid in uids:

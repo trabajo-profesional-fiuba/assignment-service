@@ -94,3 +94,23 @@ def test_get_student_by_ids(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
+
+
+@pytest.mark.integration
+def test_get_wrongs_student_by_ids_response_404(fastapi, tables):
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/", params={"uids": ["1", "2"]})
+
+    # Assert
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.integration
+def test_get_duplicate_student_by_ids_response_409(fastapi, tables):
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/", params={"uids": ["1", "1"]})
+
+    # Assert
+    assert response.status_code == status.HTTP_409_CONFLICT
