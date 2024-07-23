@@ -57,3 +57,29 @@ async def upload_csv_file(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal Server Error {err}",
         )
+
+
+@router.get(
+    "/",
+    response_model=list[TopicResponse],
+    description="Get a list of topics.",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_201_CREATED: {"description": "Successfully."},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error."
+        },
+    },
+)
+async def get_topics(
+    session: Annotated[Session, Depends(get_db)],
+):
+    try:
+        service = TopicService(TopicRepository(session))
+        topics = service.get_topics()
+        return topics if topics is not None else []
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal Server Error {str(err)}",
+        )

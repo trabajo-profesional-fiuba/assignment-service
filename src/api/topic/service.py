@@ -47,3 +47,6 @@ class TopicService:
         categories, topics = self.get_categories_topics(rows)
         self._repository.add_categories(categories)
         return self._repository.add_topics(topics)
+
+    def get_topics(self):
+        return self._repository.get_topics()
