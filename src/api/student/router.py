@@ -1,6 +1,6 @@
 from typing_extensions import Annotated
 
-from fastapi import APIRouter, UploadFile, Depends, status
+from fastapi import APIRouter, UploadFile, Depends, status, Query
 
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
@@ -36,6 +36,23 @@ async def upload_csv_file(
         service = StudentService(StudentRepository(session))
         res = service.create_students_from_string(content, hasher)
 
+        return res
+    except HTTPException as e:
+        raise e
+
+
+@router.get(
+    "/",
+    response_model=list[StudentBase],
+    description="Returns list of students based on uids",
+    status_code=status.HTTP_200_OK)
+async def get_students_by_ids(
+    session: Annotated[Session, Depends(get_db)],
+    uids: list[int] = Query(...),
+):
+    try:
+        service = StudentService(StudentRepository(session))
+        res = service.get_students_by_ids(uids)
         return res
     except HTTPException as e:
         raise e

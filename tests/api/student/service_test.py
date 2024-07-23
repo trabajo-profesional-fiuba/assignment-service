@@ -69,7 +69,7 @@ class TestStudentService:
         assert all(e in response for e in students)
 
     @pytest.mark.unit
-    def tests_student_not_found_trying_to_get_students(self, mocker):
+    def tests_student_not_found_trying_to_get_students_by_ids(self, mocker):
         student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
         student2 = StudentBase(uid=54321, name="Pedro", last_name="Pipo",
