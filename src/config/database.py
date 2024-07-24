@@ -21,13 +21,15 @@ engine = create_engine(
     echo=True
 )
 
+    
 
 def create_tables():
     """
     Creates all tables in the database.
     """
     try:
-        Base.metadata.create_all(bind=engine)
+        if engine != None:
+            Base.metadata.create_all(bind=engine)
     except Exception as err:
         raise err
 
@@ -37,11 +39,15 @@ def drop_tables():
     Drop all tables in the database.
     """
     try:
-        Base.metadata.drop_all(bind=engine)
+        if engine != None:
+            Base.metadata.drop_all(bind=engine)
     except Exception as err:
         raise err
 
 
 def get_db():
-    Session = sessionmaker(bind=engine)
-    yield Session
+    if engine != None:
+        Session = sessionmaker(bind=engine)
+        yield Session
+    else:
+        yield None
