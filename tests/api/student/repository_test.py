@@ -20,7 +20,7 @@ class TestStudentRepository:
         # Drop all tables
         drop_tables()
 
-    @pytest.mark.integrations
+    @pytest.mark.integration
     def test_add_students(self, tables):
         student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
@@ -33,14 +33,14 @@ class TestStudentRepository:
         response = repository.add_students(students)
         assert len(response) == 2
 
-    @pytest.mark.integrations
+    @pytest.mark.integration
     def test_no_student_returns_empty_list(self, tables):
         repository = StudentRepository(self.Session)
         response = repository.get_students_by_ids([1, 2])
 
         assert response == []
 
-    @pytest.mark.integrations
+    @pytest.mark.integration
     def test_get_student_by_id(self, tables):
         student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
@@ -53,7 +53,7 @@ class TestStudentRepository:
 
         assert all(e in response for e in students)
 
-    @pytest.mark.integrations
+    @pytest.mark.integration
     def test_get_student_by_id_with_extra_one(self, tables):
         student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
