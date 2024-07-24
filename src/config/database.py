@@ -15,13 +15,9 @@ pool_size = api_config.database_pool_size
 pool_timeout = api_config.database_pool_timeout
 
 engine = create_engine(
-    database_url,
-    pool_size=pool_size,
-    pool_timeout=pool_timeout,
-    echo=True
+    database_url, pool_size=pool_size, pool_timeout=pool_timeout, echo=True
 )
 
-    
 
 def create_tables():
     """

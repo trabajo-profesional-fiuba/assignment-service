@@ -16,4 +16,5 @@ class Student(Base):
 
     # Set relationship with GroupFormPreferences
     group_preferences = relationship(
-        "GroupFormPreferences", back_populates="student", uselist=True, lazy="select")
+        "GroupFormPreferences", back_populates="student", uselist=True, lazy="select"
+    )

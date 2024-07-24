@@ -2,7 +2,11 @@ from src.api.student.utils import StudentCsvFile
 from src.api.student.schemas import StudentBase
 from src.api.student.repository import StudentRepository
 from src.api.auth.hasher import ShaHasher
-from src.api.student.exceptions import InvalidStudentCsv, StudentDuplicated, StudentNotFound
+from src.api.student.exceptions import (
+    InvalidStudentCsv,
+    StudentDuplicated,
+    StudentNotFound,
+)
 
 
 class StudentService:
@@ -30,7 +34,7 @@ class StudentService:
             return students
         except (InvalidStudentCsv, StudentDuplicated) as e:
             raise e
-    
+
     def get_students_by_ids(self, uids: list[int]):
 
         if len(list(set(uids))) != len(list(uids)):
