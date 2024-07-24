@@ -10,7 +10,7 @@ class StudentRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def add_students(self, students: list[Student]):
+    def add_students(self, students: list[StudentBase]):
         # create session and add objects
         # Si se hace como transaccion y luego el commit, es mas optimo.
         try:

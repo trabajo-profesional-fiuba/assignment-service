@@ -21,3 +21,6 @@ db/
 
 # Env
 .env
+
+# Test env
+test.db

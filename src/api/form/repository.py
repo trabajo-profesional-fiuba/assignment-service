@@ -25,10 +25,8 @@ class FormRepository:
                             topic_3=group_form.topic_3,
                         )
                         db_items.append(db_item)
-                        responses.append(GroupFormResponse.from_orm(db_item))
+                        responses.append(GroupFormResponse.model_validate(db_item))
                     session.add_all(db_items)
                     return responses
         except exc.IntegrityError:
             raise StudentNotFound("Student uid not found.")
-        except Exception as err:
-            raise err
