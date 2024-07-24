@@ -2,7 +2,6 @@ name: Build and Install Python
 run-name: Build excecution by @${{ github.actor }}
 on: workflow_call
   
-
 jobs:
     build:
       runs-on: ubuntu-latest
