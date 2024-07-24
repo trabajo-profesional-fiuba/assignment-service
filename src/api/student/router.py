@@ -44,7 +44,7 @@ async def upload_csv_file(
         return res
     except (InvalidStudentCsv, StudentDuplicated) as e:
         raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=e.status_code(),
                 detail=str(e),
     )
     except HTTPException as e:
