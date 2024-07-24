@@ -82,3 +82,14 @@ class TestStudentService:
         with pytest.raises(StudentNotFound) as e:
             _ = service.get_students_by_ids([12345, 54321, 11111])
             assert str(e) == "11111, is not registered in the database" 
+
+
+    @pytest.mark.unit
+    def tests_empty_students_raise_student_not_found(self, mocker):
+        repo = StudentRepository(None)
+        mocker.patch.object(repo, "get_students_by_ids", return_value=[])
+        service = StudentService(repo)
+
+        with pytest.raises(StudentNotFound) as e:
+            _ = service.get_students_by_ids([1, 2, 3])
+            assert str(e) == "1,2,3 are not registered in the database"
