@@ -33,7 +33,11 @@ class ApiConfiguration:
 
     @property
     def secret_key(self) -> Secret:
-        return self.config("SECRET", cast=Secret, default="INFO")
+        return self.config("SECRET", cast=Secret, default="fake_secret")
+    
+    @property
+    def hash_type(self) -> str:
+        return self.config("HASH", cast=str, default="HS256")
 
     @property
     def enviroment(self) -> str:
