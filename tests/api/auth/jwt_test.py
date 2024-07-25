@@ -17,7 +17,7 @@ class TestJwtResolver:
         jwt_as_dict = jwt.model_dump()
 
         assert "access_token" in jwt_as_dict
-        assert "type" in jwt_as_dict
+        assert "token_type" in jwt_as_dict
 
     @pytest.mark.unit
     def test_jwt_resolver_can_decode_jwt(self):

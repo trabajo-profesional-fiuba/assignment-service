@@ -7,7 +7,7 @@ from src.config.config import api_config
 
 class JwtEncoded(BaseModel):
     access_token: str
-    type: str = Field(default="JWT")
+    token_type: str = Field(default="JWT")
 
 
 class JwtDecoded(BaseModel):
@@ -53,7 +53,7 @@ class JwtResolver:
         token = jwt_provider.encode(
             payload=payload, key=str(self.secret), algorithm=self.hash
         )
-        jwt = JwtEncoded(access_token=token, type="JWT")
+        jwt = JwtEncoded(access_token=token, token_type="JWT")
 
         return jwt
 
@@ -71,3 +71,7 @@ class JwtResolver:
             return JwtDecoded(**jwt_decoded)
         except Exception as e:
             raise InvalidJwt(message=str(e))
+
+
+def get_jwt_resolver():
+    yield JwtResolver()
