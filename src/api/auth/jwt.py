@@ -21,7 +21,7 @@ class InvalidJwt(Exception):
     def __init__(self, message) -> None:
         super().__init__()
         self._message = message
-    
+
     @property
     def message(self):
         return self._message
@@ -57,8 +57,9 @@ class JwtResolver:
 
         return jwt
 
-    def decode_token(self, jwt: JwtEncoded):
+    """ Attempts to decode the encoded jwt"""
 
+    def decode_token(self, jwt: JwtEncoded):
         try:
             jwt_decoded = jwt_provider.decode(
                 jwt.access_token,

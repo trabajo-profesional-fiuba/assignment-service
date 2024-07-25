@@ -37,6 +37,7 @@ class ApiConfiguration:
     
     @property
     def hash_type(self) -> str:
+        # HS256 (HMAC with SHA-256)
         return self.config("HASH", cast=str, default="HS256")
 
     @property
