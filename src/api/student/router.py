@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 from src.api.student.schemas import StudentBase
 from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
-from src.api.student.exceptions import StudentNotFound, StudentDuplicated,InvalidStudentCsv
+from src.api.student.exceptions import (
+    StudentNotFound,
+    StudentDuplicated,
+    InvalidStudentCsv,
+)
 
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database import get_db
@@ -44,16 +48,16 @@ async def upload_csv_file(
         return res
     except (InvalidStudentCsv, StudentDuplicated) as e:
         raise HTTPException(
-                status_code=e.status_code(),
-                detail=str(e),
-    )
+            status_code=e.status_code(),
+            detail=str(e),
+        )
     except HTTPException as e:
         raise e
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error uploading csv file.",
-    )
+        )
 
 
 @router.get(
@@ -62,9 +66,12 @@ async def upload_csv_file(
     description="Returns list of students based on uids",
     status_code=status.HTTP_200_OK,
     responses={
-        status.HTTP_404_NOT_FOUND: {'description': "Uid is not present inside the database"},
-        status.HTTP_409_CONFLICT: {'description': "There are uids duplicated"}
-    })
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Uid is not present inside the database"
+        },
+        status.HTTP_409_CONFLICT: {"description": "There are uids duplicated"},
+    },
+)
 async def get_students_by_ids(
     session: Annotated[Session, Depends(get_db)],
     uids: list[int] = Query(...),
@@ -74,12 +81,6 @@ async def get_students_by_ids(
         res = service.get_students_by_ids(uids)
         return res
     except StudentNotFound as st:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(st)
-    )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(st))
     except StudentDuplicated as std:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=str(std)
-    )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(std))

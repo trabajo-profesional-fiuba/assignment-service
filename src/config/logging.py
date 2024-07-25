@@ -1,7 +1,7 @@
 import logging
 from src.config.config import api_config
 
-# Formatter 
+# Formatter
 formatter = logging.Formatter("%(asctime)s - %(levelname)s: %(message)s")
 
 # Handler

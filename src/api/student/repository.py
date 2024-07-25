@@ -28,19 +28,18 @@ class StudentRepository:
                         students_objs.append(student_obj)
 
                     session.add_all(students_objs)
-                
+
                     return students_objs
                 # inner context calls session.commit(), if there were no exceptions
             # outer context calls session.close()
         except Exception:
             raise StudentDuplicated("Could not insert a student in the database")
-        
+
     def get_students_by_ids(self, uids: list[int]):
         with self.Session() as session:
             students_found = []
             students = session.query(Student).filter(Student.uid.in_(uids)).all()
             for student in students:
                 students_found.append(StudentBase.model_validate(student))
-            
-            return students_found
 
+            return students_found

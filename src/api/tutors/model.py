@@ -9,5 +9,5 @@ class TutorModel(Base):
     dni = Column(Integer, primary_key=True)
     name = Column(String)
     last_name = Column(String)
-    email = Column(String,index=True, unique=True)
+    email = Column(String, index=True, unique=True)
     password = Column(String)

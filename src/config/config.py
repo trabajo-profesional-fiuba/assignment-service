@@ -17,7 +17,7 @@ class ApiConfiguration:
 
     @property
     def database_url(self) -> str:
-        return self.config("DATABASE_URL", default='sqlite:///test.db')
+        return self.config("DATABASE_URL", default="sqlite:///test.db")
 
     @property
     def database_pool_size(self) -> int:

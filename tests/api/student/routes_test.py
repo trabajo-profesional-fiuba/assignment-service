@@ -86,7 +86,7 @@ def test_get_student_by_ids(fastapi, tables):
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
     _ = fastapi.post(f"{PREFIX}/upload", files=files)
-    
+
     # Act
     response = fastapi.get(f"{PREFIX}/", params={"uids": ["123456789", "12344321"]})
 
