@@ -16,6 +16,17 @@ class JwtDecoded(BaseModel):
     exp: float
 
 
+class InvalidJwt(Exception):
+
+    def __init__(self, message) -> None:
+        super().__init__()
+        self._message = message
+    
+    @property
+    def message(self):
+        return self._message
+
+
 class JwtResolver:
 
     def __init__(self, verify_exp: bool = True) -> None:
@@ -48,11 +59,14 @@ class JwtResolver:
 
     def decode_token(self, jwt: JwtEncoded):
 
-        jwt_decoded = jwt_provider.decode(
-            jwt.access_token,
-            str(self.secret),
-            algorithms=[self.hash],
-            options={"verify_exp": self.verify_exp},
-        )
+        try:
+            jwt_decoded = jwt_provider.decode(
+                jwt.access_token,
+                str(self.secret),
+                algorithms=[self.hash],
+                options={"verify_exp": self.verify_exp},
+            )
 
-        return JwtDecoded(**jwt_decoded)
+            return JwtDecoded(**jwt_decoded)
+        except Exception as e:
+            raise InvalidJwt(message=str(e))

@@ -1,11 +1,12 @@
 import pytest
 import datetime
 
-from src.api.auth.jwt import JwtResolver
+from src.api.auth.jwt import JwtResolver, InvalidJwt
 
 
 class TestJwtResolver:
 
+    @pytest.mark.unit
     def test_jwt_resolver_can_creat_jwt(self):
 
         jwt_resolver = JwtResolver()
@@ -18,7 +19,7 @@ class TestJwtResolver:
         assert "access_token" in jwt_as_dict
         assert "type" in jwt_as_dict
 
-
+    @pytest.mark.unit
     def test_jwt_resolver_can_decode_jwt(self):
 
         jwt_resolver = JwtResolver()
@@ -32,3 +33,18 @@ class TestJwtResolver:
         assert "sub" in jwt_info
         assert "name" in jwt_info
         assert "exp" in jwt_info
+
+
+    @pytest.mark.unit
+    def test_jwt_resolver_raise_invalid_jwt_if_it_is_expired(self):
+
+        jwt_resolver = JwtResolver()
+        sub = "1234567890"
+        name = "Juan Perez"
+
+        exp_time = datetime.datetime(2024,7,25,10).timestamp()
+        jwt_expired = jwt_resolver.create_token(sub, name, exp_time)
+        
+        with pytest.raises(InvalidJwt) as e:
+            _ = jwt_resolver.decode_token(jwt_expired)
+
