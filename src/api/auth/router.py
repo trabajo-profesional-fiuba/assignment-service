@@ -1,9 +1,12 @@
+from typing_extensions import Annotated
+from sqlalchemy.orm import Session
 from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from typing_extensions import Annotated
 
 from src.api.auth.jwt import JwtResolver, JwtEncoded, get_jwt_resolver
+from src.api.auth.hasher import ShaHasher, get_hasher
+from src.config.database import get_db
 
 router = APIRouter(tags=["Authentication"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="connect")
@@ -20,7 +23,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="connect")
 )
 async def get_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)]
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    hasher: Annotated[ShaHasher, Depends(get_hasher)],
+    session: Annotated[Session, Depends(get_db)]
+
 ) -> JwtEncoded:
     
     user =  form_data.username
