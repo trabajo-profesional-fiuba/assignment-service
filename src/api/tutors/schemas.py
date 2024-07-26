@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class Tutor(BaseModel):
-    dni: int
+    id: int
     name: str
     last_name: str
     email: str

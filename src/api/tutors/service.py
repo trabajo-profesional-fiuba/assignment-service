@@ -14,13 +14,13 @@ class TutorService:
         csv_file = TutorCsvFile(csv=csv)
         rows = csv_file.get_info_as_rows()
         for i in rows:
-            name, last_name, uid, email = i
+            name, last_name, id, email = i
             tutor = Tutor(
                 name=name,
                 last_name=last_name,
-                dni=int(uid),
+                id=int(id),
                 email=email,
-                password=hasher.hash(str(uid)),
+                password=hasher.hash(str(id)),
             )
             tutors.append(tutor)
         self._repository.add_tutors(tutors)

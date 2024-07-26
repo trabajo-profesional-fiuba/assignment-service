@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import exc
 
 from src.api.tutors.schemas import Tutor
-from src.api.tutors.model import TutorModel
+from src.api.users.model import User, Role
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
 
 
@@ -18,12 +18,13 @@ class TutorRepository:
                 with session.begin():
                     tutors_objs = []
                     for tutor in tutors:
-                        tutor_obj = TutorModel(
-                            dni=tutor.dni,
+                        tutor_obj = User(
+                            id=tutor.id,
                             name=tutor.name,
                             last_name=tutor.last_name,
                             email=tutor.email,
                             password=tutor.password,
+                            role = Role.TUTOR
                         )
                         tutors_objs.append(tutor_obj)
 
