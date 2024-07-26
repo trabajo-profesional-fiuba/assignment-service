@@ -1,6 +1,8 @@
 from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
 from sqlalchemy.orm import relationship
+from src.api.student.model import Student
 from src.config.database import Base
+
 
 
 class GroupFormPreferences(Base):

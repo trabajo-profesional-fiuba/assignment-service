@@ -4,7 +4,7 @@ from starlette.datastructures import Secret
 
 class ApiConfiguration:
     # Config will be read from environment variables and/or ".env" files.
-    config = Config()
+    config = Config('.env')
 
     """
     The order in which configuration values are read is:

@@ -3,8 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-from src.config.database import create_tables
 from src.config.config import api_config
+from src.config.database import create_tables
 
 from src.api.student.router import router as student_router
 from src.api.topic.router import router as topic_router
