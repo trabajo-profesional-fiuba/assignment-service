@@ -1,9 +1,1 @@
-from pydantic import BaseModel
-
-
-class Tutor(BaseModel):
-    id: int
-    name: str
-    last_name: str
-    email: str
-    password: str
+# Aca va a haber los cautrimestres como schemas y extensiones de tutores

@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 from src.config.database import Base
 
-
+# FIXME: Hay que moverla
 class Student(Base):
     __tablename__ = "students"
 
