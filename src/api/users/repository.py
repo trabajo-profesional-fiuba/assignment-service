@@ -16,7 +16,7 @@ class UserRepository:
         with self.Session() as session:
             user = session.query(User).filter(User.email == email).one_or_none()
             if not user:
-                raise UserNotFound()
+                raise UserNotFound("User not found")
             
             #FIXME - Separar en schema
             return user

@@ -9,7 +9,7 @@ from src.api.auth.hasher import ShaHasher, get_hasher
 from src.config.database import get_db
 from src.api.users.repository import UserRepository
 from src.api.users.service import UserService
-from src.api.users.exceptions import UserNotFound
+from src.api.users.exceptions import UserNotFound, InvalidCredentials
 
 
 router = APIRouter(tags=["Authentication"])
@@ -40,12 +40,12 @@ async def get_access_token(
         service = UserService(repository)
         user = service.authenticate(email, hashed_password)
         sub = {
-            "id":user.id,
+            "id": user.id,
             "name": user.name,
             "last_name": user.last_name,
-            "rol": user.rol.value
+            "rol": user.rol.value,
         }
         access_token = jwt_resolver.create_token(sub, user.name)
         return access_token
-    except UserNotFound as err:
-        raise HTTPException(status_code=err.status_code, detail=err.message)
+    except (UserNotFound, InvalidCredentials) as err:
+        raise HTTPException(status_code=err.status_code, detail=str(err))

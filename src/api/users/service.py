@@ -10,6 +10,6 @@ class UserService:
     def authenticate(self, email, hashed_password):
         user = self._repository.get_user_by_email(email)
         if user.password != hashed_password:
-            raise InvalidCredentials("Email or password is incorrect")
+            raise InvalidCredentials(message="Email or password is incorrect")
 
         return user
