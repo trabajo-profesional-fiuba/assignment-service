@@ -5,7 +5,7 @@ from enum import Enum as PyEnum
 
 class Role(PyEnum):
     STUDENT = 'student'
-    TEACHER = 'tutor'
+    TUTOR = 'tutor'
     ADMIN = 'admin'
 
 

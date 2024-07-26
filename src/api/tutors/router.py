@@ -5,7 +5,9 @@ from fastapi import APIRouter, UploadFile, Depends, status
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
-from src.api.tutors.schemas import Tutor
+from src.api.users.schemas import UserResponse
+from src.api.users.repository import UserRepository
+
 from src.api.tutors.service import TutorService
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated
@@ -18,7 +20,7 @@ router = APIRouter(prefix="/tutors", tags=["Tutors"])
 
 @router.post(
     "/upload",
-    response_model=list[Tutor],
+    response_model=list[UserResponse],
     description="Creates list of tutors based on a csv file",
     summary="Add csv file",
     status_code=status.HTTP_201_CREATED,
@@ -44,7 +46,7 @@ async def upload_csv_file(
                 detail="CSV file must be provided",
             )
         content = (await file.read()).decode("utf-8")
-        service = TutorService(TutorRepository(session))
+        service = TutorService(UserRepository(session))
         res = service.create_tutors_from_string(content, hasher)
 
         return res

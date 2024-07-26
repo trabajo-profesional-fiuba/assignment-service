@@ -1,5 +1,4 @@
-from pydantic import BaseModel, ConfigDict
-
+from pydantic import BaseModel
 
 class StudentBase(BaseModel):
     id: int
@@ -8,22 +7,15 @@ class StudentBase(BaseModel):
     email: str
     password: str
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = BaseModel.ConfigDict(from_attributes=True)
 
     def __eq__(self, other):
         if not isinstance(other, StudentBase):
-            # don't attempt to compare against unrelated types
             return NotImplemented
-
-        is_equals = True
-        if self.id != other.id:
-            is_equals = False
-        if self.name != other.name:
-            is_equals = False
-        if self.last_name != other.last_name:
-            is_equals = False
-        if self.email != other.email:
-            is_equals = False
-        if self.password != other.password:
-            is_equals = False
-        return is_equals
+        return (
+            self.id == other.id and
+            self.name == other.name and
+            self.last_name == other.last_name and
+            self.email == other.email and
+            self.password == other.password
+        )

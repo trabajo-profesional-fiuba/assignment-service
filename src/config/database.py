@@ -20,7 +20,7 @@ engine = create_engine(
     database_url,
     pool_size=pool_size,
     pool_timeout=pool_timeout,
-    echo=False
+    echo=True
 )
 
     

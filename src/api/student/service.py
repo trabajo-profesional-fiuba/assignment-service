@@ -1,13 +1,12 @@
 from src.api.student.utils import StudentCsvFile
-from src.api.student.schemas import StudentBase
-from src.api.student.repository import StudentRepository
+from src.api.users.schemas import UserResponse
 from src.api.auth.hasher import ShaHasher
 from src.api.student.exceptions import InvalidStudentCsv, StudentDuplicated, StudentNotFound
 
 
 class StudentService:
 
-    def __init__(self, repository: StudentRepository) -> None:
+    def __init__(self, repository) -> None:
         self._repository = repository
 
     def create_students_from_string(self, csv: str, hasher: ShaHasher):
@@ -17,7 +16,7 @@ class StudentService:
             rows = csv_file.get_info_as_rows()
             for i in rows:
                 name, last_name, id, email = i
-                student = StudentBase(
+                student = UserResponse(
                     name=name,
                     last_name=last_name,
                     id=int(id),
