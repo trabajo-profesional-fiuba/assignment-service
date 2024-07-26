@@ -25,8 +25,6 @@ async def get_access_token(
     
     user =  form_data.username
     password = form_data.password
-    print(user)
-    print(password)
 
     if not user:
         raise HTTPException(

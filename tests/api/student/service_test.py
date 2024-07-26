@@ -53,11 +53,11 @@ class TestStudentService:
 
     @pytest.mark.unit
     def test_get_student_by_ids(self, mocker):
-        student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
+        student1 = StudentBase(id=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
-        student2 = StudentBase(uid=54321, name="Pedro", last_name="Pipo",
+        student2 = StudentBase(id=54321, name="Pedro", last_name="Pipo",
                                email="email2@fi,uba.ar", password="password1")
-        student3 = StudentBase(uid=11111, name="Pepe", last_name="Bla",
+        student3 = StudentBase(id=11111, name="Pepe", last_name="Bla",
                                email="email3@fi,uba.ar", password="password1")
         students = [student1, student2, student3]
 
@@ -70,9 +70,9 @@ class TestStudentService:
 
     @pytest.mark.unit
     def tests_student_not_found_trying_to_get_students_by_ids(self, mocker):
-        student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
+        student1 = StudentBase(id=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
-        student2 = StudentBase(uid=54321, name="Pedro", last_name="Pipo",
+        student2 = StudentBase(id=54321, name="Pedro", last_name="Pipo",
                                email="email2@fi,uba.ar", password="password1")
         students = [student1, student2]
         repo = StudentRepository(None)

@@ -16,13 +16,13 @@ class StudentService:
             csv_file = StudentCsvFile(csv=csv)
             rows = csv_file.get_info_as_rows()
             for i in rows:
-                name, last_name, uid, email = i
+                name, last_name, id, email = i
                 student = StudentBase(
                     name=name,
                     last_name=last_name,
-                    uid=int(uid),
+                    id=int(id),
                     email=email,
-                    password=hasher.hash(str(uid)),
+                    password=hasher.hash(str(id)),
                 )
                 students.append(student)
             self._repository.add_students(students)
@@ -31,15 +31,15 @@ class StudentService:
         except (InvalidStudentCsv, StudentDuplicated) as e:
             raise e
     
-    def get_students_by_ids(self, uids: list[int]):
+    def get_students_by_ids(self, ids: list[int]):
 
-        if len(list(set(uids))) != len(list(uids)):
+        if len(list(set(ids))) != len(list(ids)):
             raise StudentDuplicated("Query params udis contain duplicates")
 
-        students = self._repository.get_students_by_ids(uids)
-        udis_from_db = [student.uid for student in students]
-        for uid in uids:
-            if uid not in udis_from_db:
-                raise StudentNotFound(f"{uid}, is not registered in the database")
+        students = self._repository.get_students_by_ids(ids)
+        udis_from_db = [student.id for student in students]
+        for id in ids:
+            if id not in udis_from_db:
+                raise StudentNotFound(f"{id}, is not registered in the database")
 
         return students

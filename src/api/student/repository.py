@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from src.api.student.schemas import StudentBase
-from src.api.student.model import Student
+from src.api.users.model import User, Role
 from src.api.student.exceptions import StudentDuplicated
 
 
@@ -18,12 +18,13 @@ class StudentRepository:
                 with session.begin():
                     students_objs = []
                     for student in students:
-                        student_obj = Student(
-                            uid=student.uid,
+                        student_obj = User(
+                            id=student.id,
                             name=student.name,
                             last_name=student.last_name,
                             email=student.email,
                             password=student.password,
+                            rol=Role.STUDENT
                         )
                         students_objs.append(student_obj)
 
@@ -34,11 +35,21 @@ class StudentRepository:
             # outer context calls session.close()
         except Exception:
             raise StudentDuplicated("Could not insert a student in the database")
-        
-    def get_students_by_ids(self, uids: list[int]):
+    
+    def get_students(self):
         with self.Session() as session:
             students_found = []
-            students = session.query(Student).filter(Student.uid.in_(uids)).all()
+            students = session.query(User).filter(User.rol == Role.STUDENT).all()
+            for student in students:
+                students_found.append(StudentBase.model_validate(student))
+            
+            return students_found
+
+        
+    def get_students_by_ids(self, ids: list[int]):
+        with self.Session() as session:
+            students_found = []
+            students = session.query(User).filter(User.id.in_(ids)).all()
             for student in students:
                 students_found.append(StudentBase.model_validate(student))
             

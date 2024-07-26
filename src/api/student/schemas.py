@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class StudentBase(BaseModel):
-    uid: int
+    id: int
     name: str
     last_name: str
     email: str
@@ -16,7 +16,7 @@ class StudentBase(BaseModel):
             return NotImplemented
 
         is_equals = True
-        if self.uid != other.uid:
+        if self.id != other.id:
             is_equals = False
         if self.name != other.name:
             is_equals = False

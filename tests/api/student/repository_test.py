@@ -22,15 +22,16 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_add_students(self, tables):
-        student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
+        student1 = StudentBase(id=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
-        student2 = StudentBase(uid=54321, name="Pedro", last_name="Pipo",
+        student2 = StudentBase(id=54321, name="Pedro", last_name="Pipo",
                                email="email2@fi,uba.ar", password="password1")
         students = [student1, student2]
 
 
         repository = StudentRepository(self.Session)
-        response = repository.add_students(students)
+        repository.add_students(students)
+        response = repository.get_students()
         assert len(response) == 2
 
     @pytest.mark.integration
@@ -42,9 +43,9 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_get_student_by_id(self, tables):
-        student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
+        student1 = StudentBase(id=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
-        student2 = StudentBase(uid=54321, name="Pedro", last_name="Pipo",
+        student2 = StudentBase(id=54321, name="Pedro", last_name="Pipo",
                                email="email2@fi,uba.ar", password="password1")
         students = [student1, student2]
 
@@ -55,11 +56,11 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_get_student_by_id_with_extra_one(self, tables):
-        student1 = StudentBase(uid=12345, name="Juan", last_name="Perez",
+        student1 = StudentBase(id=12345, name="Juan", last_name="Perez",
                                email="email@fi,uba.ar", password="password")
-        student2 = StudentBase(uid=54321, name="Pedro", last_name="Pipo",
+        student2 = StudentBase(id=54321, name="Pedro", last_name="Pipo",
                                email="email2@fi,uba.ar", password="password1")
-        student3 = StudentBase(uid=11111, name="Pepe", last_name="Bla",
+        student3 = StudentBase(id=11111, name="Pepe", last_name="Bla",
                                email="email3@fi,uba.ar", password="password1")
         students = [student3]
         students_expected = [student1, student3]

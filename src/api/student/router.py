@@ -15,7 +15,7 @@ from src.config.database import get_db
 from src.config.logging import logger
 
 
-router = APIRouter(prefix="/students", tags=["students"])
+router = APIRouter(prefix="/students", tags=["Students"])
 
 
 @router.post(
