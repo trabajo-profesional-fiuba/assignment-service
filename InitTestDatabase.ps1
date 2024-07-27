@@ -6,7 +6,7 @@ Param(
 function IsDockerInstalledAndRunning() {
     if (Get-Command docker) {
         Write-Host "Docker installed: "-NoNewline; Write-Host -ForegroundColor Green "Yes"
-        Get-Process 'com.docker.proxy' 2>$null
+        $info = docker info 2>$null
         
         if ($LASTEXITCODE -eq 0) {
             Write-Host "Docker is running."
@@ -42,17 +42,14 @@ if (IsDockerInstalledAndRunning) {
     
         Write-Host "PostgreSQL container started."
         Write-Host -ForegroundColor Yellow "Container information"
-        Write-Host  "Detached mode on"
-        Write-Host  "Username: postgres"
-        Write-Host  "Password: postgres"
-        Write-Host  "Database: postgres"
-        Write-Host  "Ports: 5433:5432"
+        docker ps
     
         Write-Host -ForegroundColor Cyan "URL Connection: $postgresUrl"
     }
     else {
         Write-Host "Stopping and removing PostgreSQL 15 container..."
-        $_ = docker stop postgres
+        $_ = docker stop postgres 2>$null
+        docker ps
     }
     
 }

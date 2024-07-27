@@ -1,6 +1,5 @@
 from src.model.tutor import Tutor
 from src.model.utils.topic import Topic
-from src.model.utils.delivery_date import DeliveryDate
 
 
 class Group:

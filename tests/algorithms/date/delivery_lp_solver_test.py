@@ -307,7 +307,8 @@ class TestDeliveryLPSolver:
         for group_id, evaluators_assigned in group_assignments.items():
             assert (
                 1 <= evaluators_assigned <= 4
-            ), f"Group {group_id} has {evaluators_assigned} evaluators assigned, which is out of allowed range."
+            ), f"Group {group_id} has {evaluators_assigned} evaluators assigned, which\
+            is out of allowed range."
 
         # Inicializar un diccionario para contar asignaciones por evaluador y día
         evaluators_assignment = {
@@ -325,7 +326,8 @@ class TestDeliveryLPSolver:
         for (evaluator_id, day_id), value in evaluators_assignment.items():
             assert (
                 value <= 5
-            ), f"Evaluator {evaluator_id} has {value} groups assigned on day {day_id}, which exceeds the allowed limit."
+            ), f"Evaluator {evaluator_id} has {value} groups assigned on day {day_id},\
+                which exceeds the allowed limit."
 
     @pytest.mark.unit
     def test_no_available_dates(self):
@@ -450,7 +452,7 @@ class TestDeliveryLPSolver:
         solver = DeliveryLPSolver(tutors, self.adapter, dates)
         result = solver.solve()
 
-        assert result == None
+        assert result is None
 
     @pytest.mark.unit
     def test_evaluator_availability_constraints(self):
@@ -490,7 +492,8 @@ class TestDeliveryLPSolver:
         for group_id, evaluators_assigned in group_assignments.items():
             assert (
                 evaluators_assigned == 1
-            ), f"Group {group_id} has {evaluators_assigned} evaluators assigned, which is out of allowed range."
+            ), f"Group {group_id} has {evaluators_assigned} evaluators assigned, which\
+                is out of allowed range."
 
         # Inicializar un diccionario para contar asignaciones por evaluador y día
         evaluators_assignment = {
@@ -508,7 +511,8 @@ class TestDeliveryLPSolver:
         for (evaluator_id, day_id), value in evaluators_assignment.items():
             assert (
                 value <= 5
-            ), f"Evaluator {evaluator_id} has {value} groups assigned on day {day_id}, which exceeds the allowed limit."
+            ), f"Evaluator {evaluator_id} has {value} groups assigned on day {day_id},\
+                which exceeds the allowed limit."
 
         # Verificar que cada grupo tenga una fecha asignada
         assigned_dates = {
@@ -519,7 +523,8 @@ class TestDeliveryLPSolver:
                 f"group-{group.id()}" in assigned_dates
             ), f"Group {group.id()} does not have an assigned date."
 
-        # Verificar que las fechas asignadas estén dentro de las disponibles para los evaluadores
+        # Verificar que las fechas asignadas estén dentro de las disponibles para los
+        # evaluadores
         available_dates_labels = [
             f"date-{date.label()}" for date in evaluators[0].available_dates
         ]

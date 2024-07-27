@@ -242,7 +242,7 @@ class DeliveryFlowSolver:
                 graph, "s", "t", capacity="capacity", weight="cost"
             )
             return max_flow_min_cost_dic
-        except:
+        except Exception:
             return None
 
     def _valid_evaluator_results(self, clean_results):
