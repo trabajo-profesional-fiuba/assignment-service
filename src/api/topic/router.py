@@ -16,7 +16,7 @@ from src.api.topic.exceptions import (
     InvalidTopicCsv,
 )
 
-router = APIRouter(prefix="/topics", tags=["topics"])
+router = APIRouter(prefix="/topics", tags=["Topics"])
 
 
 @router.post(

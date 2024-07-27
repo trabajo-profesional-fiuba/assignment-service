@@ -8,7 +8,7 @@ from src.config.database import create_tables, drop_tables
 PREFIX = "/students"
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def tables():
 
     # Create all tables
@@ -27,24 +27,6 @@ def fastapi():
 
 
 @pytest.mark.integration
-def test_upload_file_and_create_students_respond_201(fastapi, tables):
-
-    # Arrange
-    with open("tests/api/student/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    # Act
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
-
-    # Assert
-    assert response.status_code == 201
-
-
-@pytest.mark.integration
 def test_upload_file_and_create_students(fastapi, tables):
 
     # Arrange
@@ -59,7 +41,8 @@ def test_upload_file_and_create_students(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/upload", files=files)
 
     # Assert
-    assert len(response.json()) == 3
+    assert response.status_code == 201
+    assert len(response.json()) == 30
 
 
 @pytest.mark.integration
@@ -88,7 +71,7 @@ def test_get_student_by_ids(fastapi, tables):
     _ = fastapi.post(f"{PREFIX}/upload", files=files)
 
     # Act
-    response = fastapi.get(f"{PREFIX}/", params={"uids": ["123456789", "12344321"]})
+    response = fastapi.get(f"{PREFIX}/", params={"uids": ["105001", "105002"]})
 
     # Assert
     assert response.status_code == status.HTTP_200_OK
