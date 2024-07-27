@@ -34,7 +34,6 @@ class TestJwtResolver:
         assert "name" in jwt_info
         assert "exp" in jwt_info
 
-
     @pytest.mark.unit
     def test_jwt_resolver_raise_invalid_jwt_if_it_is_expired(self):
 
@@ -42,9 +41,8 @@ class TestJwtResolver:
         sub = "1234567890"
         name = "Juan Perez"
 
-        exp_time = datetime.datetime(2024,7,25,10).timestamp()
+        exp_time = datetime.datetime(2024, 7, 25, 10).timestamp()
         jwt_expired = jwt_resolver.create_token(sub, name, exp_time)
-        
+
         with pytest.raises(InvalidJwt) as e:
             _ = jwt_resolver.decode_token(jwt_expired)
-

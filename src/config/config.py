@@ -4,7 +4,7 @@ from starlette.datastructures import Secret
 
 class ApiConfiguration:
     # Config will be read from environment variables and/or ".env" files.
-    config = Config('.env')
+    config = Config(".env")
 
     """
     The order in which configuration values are read is:
@@ -17,7 +17,7 @@ class ApiConfiguration:
 
     @property
     def database_url(self) -> str:
-        return self.config("DATABASE_URL", default='sqlite:///test.db')
+        return self.config("DATABASE_URL", default="sqlite:///test.db")
 
     @property
     def database_pool_size(self) -> int:
@@ -34,7 +34,7 @@ class ApiConfiguration:
     @property
     def secret_key(self) -> Secret:
         return self.config("SECRET", cast=Secret, default="fake_secret")
-    
+
     @property
     def hash_type(self) -> str:
         # HS256 (HMAC with SHA-256)

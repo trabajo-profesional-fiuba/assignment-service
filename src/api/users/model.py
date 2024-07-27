@@ -4,9 +4,9 @@ from enum import Enum as PyEnum
 
 
 class Role(PyEnum):
-    STUDENT = 'student'
-    TUTOR = 'tutor'
-    ADMIN = 'admin'
+    STUDENT = "student"
+    TUTOR = "tutor"
+    ADMIN = "admin"
 
 
 class User(Base):

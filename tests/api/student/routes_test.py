@@ -25,6 +25,7 @@ def fastapi():
     client = TestClient(app)
     yield client
 
+
 @pytest.mark.integration
 def test_upload_file_and_create_students(fastapi, tables):
 
@@ -68,7 +69,7 @@ def test_get_student_by_ids(fastapi, tables):
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
     _ = fastapi.post(f"{PREFIX}/upload", files=files)
-    
+
     # Act
     response = fastapi.get(f"{PREFIX}/", params={"uids": ["105001", "105002"]})
 

@@ -23,12 +23,21 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_add_students(self, tables):
-        student1 = UserResponse(id=12345, name="Juan", last_name="Perez",
-                               email="email@fi,uba.ar", password="password")
-        student2 = UserResponse(id=54321, name="Pedro", last_name="Pipo",
-                               email="email2@fi,uba.ar", password="password1")
+        student1 = UserResponse(
+            id=12345,
+            name="Juan",
+            last_name="Perez",
+            email="email@fi,uba.ar",
+            password="password",
+        )
+        student2 = UserResponse(
+            id=54321,
+            name="Pedro",
+            last_name="Pipo",
+            email="email2@fi,uba.ar",
+            password="password1",
+        )
         students = [student1, student2]
-
 
         u_repository = UserRepository(self.Session)
         u_repository.add_students(students)
@@ -45,10 +54,20 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_get_student_by_id(self, tables):
-        student1 = UserResponse(id=12345, name="Juan", last_name="Perez",
-                               email="email@fi,uba.ar", password="password")
-        student2 = UserResponse(id=54321, name="Pedro", last_name="Pipo",
-                               email="email2@fi,uba.ar", password="password1")
+        student1 = UserResponse(
+            id=12345,
+            name="Juan",
+            last_name="Perez",
+            email="email@fi,uba.ar",
+            password="password",
+        )
+        student2 = UserResponse(
+            id=54321,
+            name="Pedro",
+            last_name="Pipo",
+            email="email2@fi,uba.ar",
+            password="password1",
+        )
         students = [student1, student2]
 
         repository = StudentRepository(self.Session)
@@ -58,15 +77,29 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_get_student_by_id_with_extra_one(self, tables):
-        student1 = UserResponse(id=12345, name="Juan", last_name="Perez",
-                               email="email@fi,uba.ar", password="password")
-        student2 = UserResponse(id=54321, name="Pedro", last_name="Pipo",
-                               email="email2@fi,uba.ar", password="password1")
-        student3 = UserResponse(id=11111, name="Pepe", last_name="Bla",
-                               email="email3@fi,uba.ar", password="password1")
+        student1 = UserResponse(
+            id=12345,
+            name="Juan",
+            last_name="Perez",
+            email="email@fi,uba.ar",
+            password="password",
+        )
+        student2 = UserResponse(
+            id=54321,
+            name="Pedro",
+            last_name="Pipo",
+            email="email2@fi,uba.ar",
+            password="password1",
+        )
+        student3 = UserResponse(
+            id=11111,
+            name="Pepe",
+            last_name="Bla",
+            email="email3@fi,uba.ar",
+            password="password1",
+        )
         students = [student3]
         students_expected = [student1, student3]
-
 
         u_repository = UserRepository(self.Session)
         _ = u_repository.add_students(students)

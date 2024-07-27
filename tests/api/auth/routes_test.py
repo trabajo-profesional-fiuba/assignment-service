@@ -45,7 +45,7 @@ def fastapi():
 
 
 @pytest.mark.integration
-def test_valid_user_gets_201_and_jwt(fastapi,tables):
+def test_valid_user_gets_201_and_jwt(fastapi, tables):
 
     creates_user("test@fi.uba.ar", "password")
     data = {"username": "test@fi.uba.ar", "password": "password"}
@@ -56,7 +56,7 @@ def test_valid_user_gets_201_and_jwt(fastapi,tables):
 
 
 @pytest.mark.integration
-def test_if_user_not_found_gets_401(fastapi,tables):
+def test_if_user_not_found_gets_401(fastapi, tables):
     data = {"username": "test@fi.uba.ar", "password": "wrong"}
     response = fastapi.post(f"/connect", data=data)
 
