@@ -3,6 +3,43 @@ from pulp import LpStatus
 from src.algorithms.topic_tutor.incomplete_groups_lp_solver import IncompleteGroupsLPSolver
 from src.model.group_topic_preferences import GroupTopicPreferences
 from src.model.utils.topic import Topic
+import csv
+
+# Función para leer el CSV y crear los objetos
+def read_csv_and_create_objects(file_path):
+    topics = {}
+    groups = []
+
+    with open(file_path, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=',')
+        group_id = 2
+        
+        for row in reader:
+            # Crear o obtener los tópicos de las preferencias
+            preferences = [row['Preferencia 1'], row['Preferencia 2'], row['Preferencia 3']]
+            group_topics = []
+            
+            if (preferences[0] != 'Ya tenemos tema y tutor, pero vamos a hacer el Trabajo Profesional en el marco de la asignatura') or preferences[1] != 'Ya tenemos tema y tutor, pero vamos a hacer el Trabajo Profesional en el marco de la asignatura':
+                for pref in preferences:
+                    if pref not in topics:
+                        topics[pref] = Topic(len(topics) + 1, pref, 0)
+                    group_topics.append(topics[pref])
+                
+                # Crear los estudiantes, verificando que el correo no esté en blanco
+                students = []
+                for i in range(1, 5):  # Asumiendo que puede haber hasta 4 correos
+                    student_email_key = f'Mail (preferentemente @fi.uba.ar){i}'
+                    if row.get(student_email_key):
+                        email = row[student_email_key].strip()
+                        if email:  # Asegúrate de que el correo no esté vacío
+                            students.append(email)
+                
+                # Crear el grupo y añadirlo a la lista
+                group = GroupTopicPreferences(group_id, topics=group_topics, students=students)
+                groups.append(group)
+                
+            group_id += 1
+    return topics, groups
 
 class TestIncompleteGroupsLPSolver:
 
@@ -175,3 +212,29 @@ class TestIncompleteGroupsLPSolver:
             print(f"{var.name}: {var.varValue}")
             if "Unión" in var.name:
                 assert var.varValue in [0, 1]
+
+    @pytest.mark.skip
+    def test_real_case_1C2024(self):
+
+        # Usar la función para leer el archivo CSV y crear los objetos
+        topics, groups = read_csv_and_create_objects('db/test_1c2024.csv')
+
+        solver = IncompleteGroupsLPSolver(groups)
+        prob = solver.solve()
+        # print(topics)
+
+        assert LpStatus[prob.status] == "Optimal"
+
+    @pytest.mark.skip
+    def test_real_case_2C2023(self):
+
+        # Usar la función para leer el archivo CSV y crear los objetos
+        topics, groups = read_csv_and_create_objects('db/test_2c2023.csv')
+
+        solver = IncompleteGroupsLPSolver(groups)
+        prob = solver.solve()
+        # print(topics)
+
+        assert LpStatus[prob.status] == "Optimal"
+
+
