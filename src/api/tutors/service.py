@@ -1,12 +1,11 @@
 from src.api.tutors.utils import TutorCsvFile
-from src.api.tutors.schemas import Tutor
-from src.api.tutors.repository import TutorRepository
+from src.api.users.schemas import UserResponse
 from src.api.auth.hasher import ShaHasher
 
 
 class TutorService:
 
-    def __init__(self, repository: TutorRepository) -> None:
+    def __init__(self, repository) -> None:
         self._repository = repository
 
     def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
@@ -14,13 +13,13 @@ class TutorService:
         csv_file = TutorCsvFile(csv=csv)
         rows = csv_file.get_info_as_rows()
         for i in rows:
-            name, last_name, uid, email = i
-            tutor = Tutor(
+            name, last_name, id, email = i
+            tutor = UserResponse(
                 name=name,
                 last_name=last_name,
-                dni=int(uid),
+                id=int(id),
                 email=email,
-                password=hasher.hash(str(uid)),
+                password=hasher.hash(str(id)),
             )
             tutors.append(tutor)
         self._repository.add_tutors(tutors)

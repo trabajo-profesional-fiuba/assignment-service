@@ -3,8 +3,6 @@ from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
 from src.api.tutors.router import router
-from src.api.tutors.schemas import Tutor
-from src.api.auth.hasher import ShaHasher
 
 
 PREFIX = "/tutors"

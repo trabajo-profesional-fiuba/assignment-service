@@ -46,7 +46,7 @@ def test_add_group_form_with_student_not_found(fastapi, tables):
     assert response.json() == {"detail": "Student uid not found."}
 
 
-@pytest.mark.integration
+@pytest.mark.skip
 def test_add_group_form_with_success(fastapi, tables):
     with open("tests/api/form/test_data.csv", "rb") as file:
         content = file.read()

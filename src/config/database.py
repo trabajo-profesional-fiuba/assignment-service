@@ -14,6 +14,8 @@ database_url = api_config.database_url
 pool_size = api_config.database_pool_size
 pool_timeout = api_config.database_pool_timeout
 
+print(database_url)
+
 engine = create_engine(
     database_url, pool_size=pool_size, pool_timeout=pool_timeout, echo=True
 )
@@ -24,8 +26,7 @@ def create_tables():
     Creates all tables in the database.
     """
     try:
-        if engine != None:
-            Base.metadata.create_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
     except Exception as err:
         raise err
 
@@ -35,8 +36,7 @@ def drop_tables():
     Drop all tables in the database.
     """
     try:
-        if engine != None:
-            Base.metadata.drop_all(bind=engine)
+        Base.metadata.drop_all(bind=engine)
     except Exception as err:
         raise err
 
