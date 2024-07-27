@@ -7,9 +7,14 @@ on:
         required: true
 
 jobs:
-    performance_tests:
+  performance_tests:
       runs-on: ubuntu-latest
+      env:
+        DATABASE_URL: "postgresql://postgres:postgres@localhost/postgres"
+        ENVIRONMENT: "CI"
       steps:
+        - name: Setting up postgres database.
+          uses: ikalnytskyi/action-setup-postgres@v6 
         - uses: actions/checkout@v4
         - name: Install Python
           uses: actions/setup-python@v5
