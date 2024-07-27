@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.models import GroupFormPreferences
 from src.api.form.exceptions import StudentNotFound
+from src.api.users.model import User, Role
 
 
 class FormRepository:
@@ -17,6 +18,11 @@ class FormRepository:
                     db_items = []
                     responses = []
                     for uid in uids:
+                        role = session.query(User.rol).filter_by(id=uid).scalar()
+                        if role != Role.STUDENT:
+                            raise StudentNotFound(
+                                "The student must have the role 'student'."
+                            )
                         db_item = GroupFormPreferences(
                             uid=uid,
                             group_id=group_form.group_id,

@@ -26,9 +26,8 @@ def creates_user(email, password):
         sess.commit()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def tables():
-
     # Create all tables
     create_tables()
     yield
