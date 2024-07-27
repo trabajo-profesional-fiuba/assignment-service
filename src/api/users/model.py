@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, Enum
 from src.config.database import Base
 from enum import Enum as PyEnum
+from sqlalchemy.orm import relationship
 
 
 class Role(PyEnum):
@@ -18,3 +19,7 @@ class User(Base):
     email = Column(String, index=True, unique=True)
     password = Column(String)
     rol = Column(Enum(Role))
+
+    group_preferences = relationship(
+        "GroupFormPreferences", back_populates="student", uselist=False
+    )
