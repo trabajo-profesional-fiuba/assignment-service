@@ -40,9 +40,11 @@ class TestStudentRepository:
         students = [student1, student2]
 
         u_repository = UserRepository(self.Session)
+        s_repository = StudentRepository(self.Session)
         u_repository.add_students(students)
-        response = repository.get_students()
+        response = s_repository.get_students()
         assert len(response) == 2
+
     def test_no_student_returns_empty_list(self, tables):
         repository = StudentRepository(self.Session)
         response = repository.get_students_by_ids([1, 2])

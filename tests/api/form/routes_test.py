@@ -28,7 +28,7 @@ def fastapi():
     yield client
 
 
-@pytest.mark.skip
+@pytest.mark.integration
 def test_add_group_form_with_student_not_found(fastapi, tables):
     today = str(dt.datetime.today())
     body = {

@@ -8,7 +8,7 @@ from sqlalchemy.orm import validates
 class GroupFormPreferences(Base):
     __tablename__ = "group_preferences"
 
-    uid = Column(Integer, ForeignKey("users.uid"), primary_key=True)
+    uid = Column(Integer, ForeignKey("users.id"), primary_key=True)
     group_id = Column(DateTime)
     topic_1 = Column(String, nullable=False)
     topic_2 = Column(String, nullable=False)
