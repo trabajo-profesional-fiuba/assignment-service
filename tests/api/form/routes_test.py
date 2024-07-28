@@ -10,6 +10,9 @@ from src.api.topic.router import router as topic_router
 from src.config.database import create_tables, drop_tables
 
 PREFIX = "/forms"
+TOPIC_PREFIX = "/topics"
+STUDENT_PREFIX = "/students"
+TUTOR_PREFIX = "/tutors"
 
 
 @pytest.fixture(scope="function")
@@ -33,7 +36,7 @@ def fastapi():
 
 
 @pytest.mark.integration
-def test_add_group_form_with_student_not_found(fastapi, tables):
+def test_add_group_form_with_topic_not_found(fastapi, tables):
     today = str(dt.datetime.today())
     body = {
         "uid_sender": 105285,
@@ -47,20 +50,22 @@ def test_add_group_form_with_student_not_found(fastapi, tables):
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Student uid not found."}
+    assert response.json() == {"detail": "Topic 'topic1' not found."}
 
 
 @pytest.mark.integration
-def test_add_group_form_with_topic_not_found(fastapi, tables):
-    with open("tests/api/form/test_data.csv", "rb") as file:
+def test_add_group_form_with_student_not_found(fastapi, tables):
+    # Add topics
+    with open("tests/api/topic/data/test_data.csv", "rb") as file:
         content = file.read()
 
     filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 
-    response = fastapi.post("/students/upload", files=files)
-    assert response.status_code == 201
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+    assert response.status_code == status.HTTP_201_CREATED
+
     today = str(dt.datetime.today())
     body = {
         "uid_sender": 105285,
@@ -68,12 +73,13 @@ def test_add_group_form_with_topic_not_found(fastapi, tables):
         "uid_student_3": 105287,
         "uid_student_4": 105288,
         "group_id": today,
-        "topic_1": "topic1",
-        "topic_2": "topic2",
-        "topic_3": "topic3",
+        "topic_1": "topic 1",
+        "topic_2": "topic 2",
+        "topic_3": "topic 3",
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "Student with uid '105285' not found."}
 
 
 @pytest.mark.integration
@@ -86,7 +92,7 @@ def test_add_group_form_with_success(fastapi, tables):
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 
-    response = fastapi.post(f"/topics/upload", files=files)
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
 
     # Add students
@@ -97,7 +103,7 @@ def test_add_group_form_with_success(fastapi, tables):
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 
-    response = fastapi.post("/students/upload", files=files)
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
@@ -155,7 +161,7 @@ def test_add_group_form_with_invalid_role(fastapi, tables):
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 
-    response = fastapi.post(f"/topics/upload", files=files)
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
 
     # Add tutors
@@ -166,7 +172,7 @@ def test_add_group_form_with_invalid_role(fastapi, tables):
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 
-    response = fastapi.post("/tutors/upload", files=files)
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
@@ -176,9 +182,9 @@ def test_add_group_form_with_invalid_role(fastapi, tables):
         "uid_student_3": 34567890,
         "uid_student_4": 45678901,
         "group_id": today,
-        "topic_1": "topic1",
-        "topic_2": "topic2",
-        "topic_3": "topic3",
+        "topic_1": "topic 1",
+        "topic_2": "topic 2",
+        "topic_3": "topic 3",
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
