@@ -4,6 +4,7 @@ from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.models import GroupFormPreferences
 from src.api.form.exceptions import StudentNotFound
 from src.api.users.model import User, Role
+from src.api.topic.models import Topic
 
 
 class FormRepository:

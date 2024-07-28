@@ -11,9 +11,9 @@ class GroupFormPreferences(Base):
 
     uid = Column(Integer, ForeignKey("users.id"), primary_key=True)
     group_id = Column(DateTime)
-    topic_1 = Column(String, nullable=False)
-    topic_2 = Column(String, nullable=False)
-    topic_3 = Column(String, nullable=False)
+    topic_1 = Column(String, ForeignKey("topics.name"), nullable=False)
+    topic_2 = Column(String, ForeignKey("topics.name"), nullable=False)
+    topic_3 = Column(String, ForeignKey("topics.name"), nullable=False)
 
     # Set relationship with Student
     student = relationship("User", back_populates="group_preferences")
