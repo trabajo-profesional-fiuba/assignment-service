@@ -13,28 +13,29 @@ class FormRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
+    def _verify_topics(self, session, topics: list[str]):
+        for topic in topics:
+            if not session.query(Topic).filter_by(name=topic).first():
+                raise TopicNotFound(f"Topic '{topic}' not found.")
+
+    def _verify_user(self, session, uid: int):
+        user = session.query(User).filter_by(id=uid).first()
+        if not user:
+            raise StudentNotFound(f"Student with uid '{uid}' not found.")
+        if user.rol != Role.STUDENT:
+            raise StudentNotFound("The student must have the role 'student'.")
+
     def add_group_form(self, group_form: GroupFormRequest, uids: list[int]):
         with self.Session() as session:
             with session.begin():
                 db_items = []
                 responses = []
-
-                # Validate topics
-                topics = [group_form.topic_1, group_form.topic_2, group_form.topic_3]
-                for topic in topics:
-                    if not session.query(Topic).filter_by(name=topic).first():
-                        raise TopicNotFound(f"Topic '{topic}' not found.")
-
-                # Validate students
+                self._verify_topics(
+                    session,
+                    [group_form.topic_1, group_form.topic_2, group_form.topic_3],
+                )
                 for uid in uids:
-                    user = session.query(User).filter_by(id=uid).first()
-                    if not user:
-                        raise StudentNotFound(f"Student with uid '{uid}' not found.")
-                    if user.rol != Role.STUDENT:
-                        raise StudentNotFound(
-                            "The student must have the role 'student'."
-                        )
-
+                    self._verify_user(session, uid)
                     db_item = GroupFormPreferences(
                         uid=uid,
                         group_id=group_form.group_id,
