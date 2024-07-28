@@ -46,7 +46,8 @@ def test_add_group_form_with_student_not_found(fastapi, tables):
         "topic_3": "topic3",
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "Student uid not found."}
 
 
 @pytest.mark.integration
@@ -72,7 +73,7 @@ def test_add_group_form_with_topic_not_found(fastapi, tables):
         "topic_3": "topic3",
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.integration
@@ -97,7 +98,7 @@ def test_add_group_form_with_success(fastapi, tables):
     files = {"file": (filename, content, content_type)}
 
     response = fastapi.post("/students/upload", files=files)
-    assert response.status_code == 201
+    assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
     body = {
@@ -111,7 +112,7 @@ def test_add_group_form_with_success(fastapi, tables):
         "topic_3": "topic 3",
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
-    assert response.status_code == 201
+    assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
             "uid": 105285,
@@ -166,7 +167,7 @@ def test_add_group_form_with_invalid_role(fastapi, tables):
     files = {"file": (filename, content, content_type)}
 
     response = fastapi.post("/tutors/upload", files=files)
-    assert response.status_code == 201
+    assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
     body = {
@@ -180,5 +181,5 @@ def test_add_group_form_with_invalid_role(fastapi, tables):
         "topic_3": "topic3",
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "The student must have the role 'student'."}

@@ -20,7 +20,7 @@ class FormRepository:
                     responses = []
                     for uid in uids:
                         role = session.query(User.rol).filter_by(id=uid).scalar()
-                        if role != Role.STUDENT:
+                        if (role is not None) & (role != Role.STUDENT):
                             raise StudentNotFound(
                                 "The student must have the role 'student'."
                             )
