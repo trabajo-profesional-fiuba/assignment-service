@@ -1,45 +1,22 @@
-class TopicPreferencesNotFound(Exception):
-    def __init__(self):
-        pass
+from fastapi import status
 
 
-class CategoryDuplicated(Exception):
-    def __init__(self):
-        pass
-
-
-class TopicCategoryNotFound(Exception):
-    def __init__(self, message: str):
+class InvalidTopicCsv(Exception):
+    def __init__(self, message):
+        super().__init__(message)
         self.message = message
-        self.status_code = 404
-        super().__init__(self.message)
+        self.status_code = status.HTTP_400_BAD_REQUEST
 
 
-class TopicDuplicated(Exception):
-    def __init__(self):
-        pass
-
-
-class UidDuplicated(Exception):
-    def __init__(self, email: str):
-        self.email = email
-        super().__init__(self.email)
-
-
-class TopicPreferencesDuplicated(Exception):
-    def __init__(self):
-        pass
-
-
-class TopicNotFound(Exception):
-    def __init__(self, name: str, category: str):
-        self.name = name
-        self.category = category
-        super().__init__(self.name, self.category)
-
-
-class InsertTopicException(Exception):
+class TopicAlreadyExist(Exception):
     def __init__(self, message: str):
+        super().__init__(message)
         self.message = message
-        self.status_code = 409
-        super().__init__(self.message)
+        self.status_code = status.HTTP_409_CONFLICT
+
+
+class InvalidMediaType(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+        self.status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE

@@ -1,25 +1,23 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-from src.config.config import get_configuration
+from src.config.config import api_config
 
 Base = declarative_base()
-config = get_configuration()
 
-""" 
-En Fast API lo mejor es tener solo una instancia del engine, y que ese es el encargado de crear
-las sessiones que luego se van a usar
-"""
+
+# En Fast API lo mejor es tener solo una instancia del engine, y que ese es
+# el encargado de crear las sessiones que luego se van a usar
 
 # Database Configurations
-database_url = config.get("database_url")
-pool_size = config.get("pool_size")
-pool_timeout = config.get("pool_timeout")
+database_url = api_config.database_url
+pool_size = api_config.database_pool_size
+pool_timeout = api_config.database_pool_timeout
+
+print(database_url)
 
 engine = create_engine(
-    database_url,
-    pool_size=config.get("pool_size"),
-    pool_timeout=config.get("pool_timeout"),
+    database_url, pool_size=pool_size, pool_timeout=pool_timeout, echo=True
 )
 
 
@@ -44,5 +42,8 @@ def drop_tables():
 
 
 def get_db():
-    Session = sessionmaker(bind=engine)
-    yield Session
+    if engine != None:
+        Session = sessionmaker(bind=engine)
+        yield Session
+    else:
+        yield None

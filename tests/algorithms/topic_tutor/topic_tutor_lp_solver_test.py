@@ -131,8 +131,8 @@
 
 #     @pytest.mark.unit
 #     def test_more_groups_than_topics_but_tutors_with_enough_capacity(self):
-#         """Testing all groups are assigned to one topic when there are more groups than
-#         topics but tutors with enough capacities."""
+#         """Testing all groups are assigned to one topic when there are more groups
+#           than topics but tutors with enough capacities."""
 #         group_costs = [
 #             [1],
 #             [4],
@@ -206,7 +206,8 @@
 #         groups = self.helper.create_groups(num_groups, group_costs)
 #         topics = self.helper.create_topics(num_topics)
 #         tutors = self.helper.create_tutors(
-#             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+#             num_tutors, tutors_capacities, topics_tutors_capacities,
+#               topics_tutors_costs
 #         )
 
 #         solver = GroupTutorLPSolver(groups, topics, tutors)
@@ -242,7 +243,8 @@
 #         groups = self.helper.create_groups(num_groups, group_costs)
 #         topics = self.helper.create_topics(num_topics)
 #         tutors = self.helper.create_tutors(
-#             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+#             num_tutors, tutors_capacities, topics_tutors_capacities,
+# topics_tutors_costs
 #         )
 
 #         solver = GroupTutorLPSolver(groups, topics, tutors)
@@ -278,7 +280,8 @@
 #         groups = self.helper.create_groups(num_groups, group_costs)
 #         topics = self.helper.create_topics(num_topics)
 #         tutors = self.helper.create_tutors(
-#             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+#             num_tutors, tutors_capacities, topics_tutors_capacities,
+#               topics_tutors_costs
 #         )
 
 #         solver = GroupTutorLPSolver(groups, topics, tutors)
@@ -314,7 +317,8 @@
 #         groups = self.helper.create_groups(num_groups, group_costs)
 #         topics = self.helper.create_topics(num_topics)
 #         tutors = self.helper.create_tutors(
-#             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+#             num_tutors, tutors_capacities, topics_tutors_capacities,
+#              topics_tutors_costs
 #         )
 
 #         solver = GroupTutorLPSolver(groups, topics, tutors)
@@ -350,7 +354,8 @@
 #         groups = self.helper.create_groups(num_groups, group_costs)
 #         topics = self.helper.create_topics(num_topics)
 #         tutors = self.helper.create_tutors(
-#             num_tutors, tutors_capacities, topics_tutors_capacities, topics_tutors_costs
+#             num_tutors, tutors_capacities, topics_tutors_capacities,
+#               topics_tutors_costs
 #         )
 
 #         solver = GroupTutorLPSolver(groups, topics, tutors)

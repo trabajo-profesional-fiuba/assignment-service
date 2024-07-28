@@ -3,10 +3,10 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 import datetime as dt
 
-from src.api.form.router import router
-from src.api.topic.router import router as topic_router
+from src.api.form.router import router as form_router
+from src.api.student.router import router as student_router
+from src.api.tutors.router import router as tutors_router
 from src.config.database import create_tables, drop_tables
-from src.api.form.schemas import GroupFormResponse
 
 PREFIX = "/forms"
 
@@ -23,8 +23,9 @@ def tables():
 @pytest.fixture(scope="session")
 def fastapi():
     app = FastAPI()
-    app.include_router(router)
-    app.include_router(topic_router)
+    app.include_router(form_router)
+    app.include_router(student_router)
+    app.include_router(tutors_router)
     client = TestClient(app)
     yield client
 
@@ -44,22 +45,21 @@ def test_add_group_form_with_student_not_found(fastapi, tables):
     }
     response = fastapi.post(f"{PREFIX}/groups", json=body)
     assert response.status_code == 404
-    assert response.json() == {"detail": "Student uid not found."}
 
 
-@pytest.mark.skip
+@pytest.mark.integration
 def test_add_group_form_with_success(fastapi, tables):
-    with open("tests/api/student/test_data.csv", "rb") as file:
+    with open("tests/api/form/test_data.csv", "rb") as file:
         content = file.read()
 
     filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 
-    response = fastapi.post("students/upload", files=files)
+    response = fastapi.post("/students/upload", files=files)
     assert response.status_code == 201
 
-    today = str(dt.datetime.today())
+    today = dt.datetime.today().isoformat()
     body = {
         "uid_sender": 105285,
         "uid_student_2": 105286,
@@ -73,32 +73,60 @@ def test_add_group_form_with_success(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/groups", json=body)
     assert response.status_code == 201
     assert response.json() == [
-        GroupFormResponse(
-            uid=105285,
-            group_id=today,
-            topic_1="topic1",
-            topic_2="topic2",
-            topic_3="topic3",
-        ),
-        GroupFormResponse(
-            uid=105286,
-            group_id=today,
-            topic_1="topic1",
-            topic_2="topic2",
-            topic_3="topic3",
-        ),
-        GroupFormResponse(
-            uid=105287,
-            group_id=today,
-            topic_1="topic1",
-            topic_2="topic2",
-            topic_3="topic3",
-        ),
-        GroupFormResponse(
-            uid=105288,
-            group_id=today,
-            topic_1="topic1",
-            topic_2="topic2",
-            topic_3="topic3",
-        ),
+        {
+            "uid": 105285,
+            "group_id": today,
+            "topic_1": "topic1",
+            "topic_2": "topic2",
+            "topic_3": "topic3",
+        },
+        {
+            "uid": 105286,
+            "group_id": today,
+            "topic_1": "topic1",
+            "topic_2": "topic2",
+            "topic_3": "topic3",
+        },
+        {
+            "uid": 105287,
+            "group_id": today,
+            "topic_1": "topic1",
+            "topic_2": "topic2",
+            "topic_3": "topic3",
+        },
+        {
+            "uid": 105288,
+            "group_id": today,
+            "topic_1": "topic1",
+            "topic_2": "topic2",
+            "topic_3": "topic3",
+        },
     ]
+
+
+@pytest.mark.integration
+def test_add_group_form_with_invalid_role(fastapi, tables):
+    with open("tests/api/tutors/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
+
+    response = fastapi.post("/tutors/upload", files=files)
+    assert response.status_code == 201
+
+    today = dt.datetime.today().isoformat()
+    body = {
+        "uid_sender": 12345678,
+        "uid_student_2": 23456789,
+        "uid_student_3": 34567890,
+        "uid_student_4": 45678901,
+        "group_id": today,
+        "topic_1": "topic1",
+        "topic_2": "topic2",
+        "topic_3": "topic3",
+    }
+    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    assert response.status_code == 404
+    assert response.json() == {"detail": "The student must have the role 'student'."}

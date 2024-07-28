@@ -2,8 +2,8 @@ from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.models import GroupFormPreferences
-from src.api.topic.models import Topic, TopicCategory
 from src.api.form.exceptions import StudentNotFound
+from src.api.users.model import User, Role
 
 
 class FormRepository:
@@ -18,6 +18,11 @@ class FormRepository:
                     db_items = []
                     responses = []
                     for uid in uids:
+                        role = session.query(User.rol).filter_by(id=uid).scalar()
+                        if role != Role.STUDENT:
+                            raise StudentNotFound(
+                                "The student must have the role 'student'."
+                            )
                         db_item = GroupFormPreferences(
                             uid=uid,
                             group_id=group_form.group_id,
@@ -26,10 +31,8 @@ class FormRepository:
                             topic_3=group_form.topic_3,
                         )
                         db_items.append(db_item)
-                        responses.append(GroupFormResponse.from_orm(db_item))
+                        responses.append(GroupFormResponse.model_validate(db_item))
                     session.add_all(db_items)
                     return responses
         except exc.IntegrityError:
-            raise StudentNotFound()
-        except Exception as err:
-            raise err
+            raise StudentNotFound("Student uid not found.")

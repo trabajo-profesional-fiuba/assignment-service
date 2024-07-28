@@ -2,8 +2,6 @@ import pytest
 from src.model.period import TutorPeriod
 from src.model.tutor import Tutor
 from src.model.group import Group
-from src.model.utils.delivery_date import DeliveryDate
-from src.model.utils.topic import Topic
 import src.exceptions as e
 
 
@@ -33,7 +31,7 @@ class TestTutor:
         period = TutorPeriod("1C2024", tutor=tutor)
         tutor.add_period(period)
 
-        with pytest.raises(e.PeriodAlreadyExists) as ex:
+        with pytest.raises(e.PeriodAlreadyExists):
             tutor.add_period(period)
 
     @pytest.mark.unit
@@ -55,7 +53,7 @@ class TestTutor:
     def test_tutor_raise_error_if_tutor_has_not_period(self):
         tutor = Tutor(1, "test@fi.uba.ar", "Juan Perez")
 
-        with pytest.raises(e.PeriodNotFound) as ex:
+        with pytest.raises(e.PeriodNotFound):
             tutor.get_period("1C2024")
 
     @pytest.mark.unit

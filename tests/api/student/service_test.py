@@ -2,7 +2,10 @@ import pytest
 
 from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
-from src.api.student.exceptions import StudentDuplicated, InvalidStudentCsv
+from src.api.users.repository import UserRepository
+from src.api.student.exceptions import InvalidStudentCsv, StudentNotFound
+from src.api.users.schemas import UserResponse
+
 from src.api.auth.hasher import ShaHasher
 
 
@@ -16,35 +19,102 @@ class TestStudentService:
 
     @pytest.mark.unit
     def tests_create_3_students_from_string(self, mocker, csv):
-        repo = StudentRepository(None)
+        repo = UserRepository(None)
         mocker.patch.object(repo, "add_students", return_value=None)
         service = StudentService(repo)
 
         students = service.create_students_from_string(csv, ShaHasher())
 
-        assert len(students) == 3
+        assert len(students) == 30
 
     @pytest.mark.unit
     def tests_create_students_from_string(self, mocker, csv):
-        repo = StudentRepository(None)
+        repo = UserRepository(None)
         mocker.patch.object(repo, "add_students", return_value=None)
         hash = ShaHasher()
         service = StudentService(repo)
-        password = hash.hash("123456789")
+        password = hash.hash("105001")
 
         students = service.create_students_from_string(csv, hash)
 
-        assert students[0].name == "nombre"
-        assert students[0].last_name == "apellido"
-        assert students[0].email == "mail@fi.uba.ar"
+        assert students[0].name == "Juan"
+        assert students[0].last_name == "Perez"
+        assert students[0].email == "jperez1@fi.uba.ar"
         assert students[0].password == password
 
     @pytest.mark.unit
     def tests_bad_csv_raise_exception(self, mocker):
-        repo = StudentRepository(None)
+        repo = UserRepository(None)
         mocker.patch.object(repo, "add_students", return_value=None)
         hash = ShaHasher()
         service = StudentService(repo)
 
         with pytest.raises(InvalidStudentCsv):
             _ = service.create_students_from_string("bla,bla,bla", hash)
+
+    @pytest.mark.unit
+    def test_get_student_by_ids(self, mocker):
+        student1 = UserResponse(
+            id=12345,
+            name="Juan",
+            last_name="Perez",
+            email="email@fi,uba.ar",
+            password="password",
+        )
+        student2 = UserResponse(
+            id=54321,
+            name="Pedro",
+            last_name="Pipo",
+            email="email2@fi,uba.ar",
+            password="password1",
+        )
+        student3 = UserResponse(
+            id=11111,
+            name="Pepe",
+            last_name="Bla",
+            email="email3@fi,uba.ar",
+            password="password1",
+        )
+        students = [student1, student2, student3]
+
+        repo = StudentRepository(None)
+        mocker.patch.object(repo, "get_students_by_ids", return_value=students)
+        service = StudentService(repo)
+        response = service.get_students_by_ids([12345, 54321, 11111])
+
+        assert all(e in response for e in students)
+
+    @pytest.mark.unit
+    def tests_student_not_found_trying_to_get_students_by_ids(self, mocker):
+        student1 = UserResponse(
+            id=12345,
+            name="Juan",
+            last_name="Perez",
+            email="email@fi,uba.ar",
+            password="password",
+        )
+        student2 = UserResponse(
+            id=54321,
+            name="Pedro",
+            last_name="Pipo",
+            email="email2@fi,uba.ar",
+            password="password1",
+        )
+        students = [student1, student2]
+        repo = StudentRepository(None)
+        mocker.patch.object(repo, "get_students_by_ids", return_value=students)
+        service = StudentService(repo)
+
+        with pytest.raises(StudentNotFound) as e:
+            _ = service.get_students_by_ids([12345, 54321, 11111])
+            assert str(e) == "11111, is not registered in the database"
+
+    @pytest.mark.unit
+    def tests_empty_students_raise_student_not_found(self, mocker):
+        repo = StudentRepository(None)
+        mocker.patch.object(repo, "get_students_by_ids", return_value=[])
+        service = StudentService(repo)
+
+        with pytest.raises(StudentNotFound) as e:
+            _ = service.get_students_by_ids([1, 2, 3])
+            assert str(e) == "1,2,3 are not registered in the database"
