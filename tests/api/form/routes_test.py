@@ -35,6 +35,36 @@ def fastapi():
     yield client
 
 
+@pytest.fixture
+def topics():
+    with open("tests/api/topic/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    return {"file": (filename, content, content_type)}
+
+
+@pytest.fixture
+def students():
+    with open("tests/api/form/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    return {"file": (filename, content, content_type)}
+
+
+@pytest.fixture
+def tutors():
+    with open("tests/api/tutors/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    return {"file": (filename, content, content_type)}
+
+
 @pytest.mark.integration
 def test_add_group_form_with_topic_not_found(fastapi, tables):
     today = str(dt.datetime.today())
@@ -54,16 +84,8 @@ def test_add_group_form_with_topic_not_found(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_student_not_found(fastapi, tables):
-    # Add topics
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+def test_add_group_form_with_student_not_found(fastapi, tables, topics):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = str(dt.datetime.today())
@@ -83,27 +105,11 @@ def test_add_group_form_with_student_not_found(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_success(fastapi, tables):
-    # Add topics
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+def test_add_group_form_with_success(fastapi, tables, topics, students):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
-    # Add students
-    with open("tests/api/form/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=files)
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
@@ -152,27 +158,11 @@ def test_add_group_form_with_success(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_invalid_role(fastapi, tables):
-    # Add topics
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+def test_add_group_form_with_invalid_role(fastapi, tables, topics, tutors):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
-    # Add tutors
-    with open("tests/api/tutors/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=files)
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
@@ -192,27 +182,11 @@ def test_add_group_form_with_invalid_role(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_group_form_duplicated(fastapi, tables):
-    # Add topics
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+def test_add_group_form_duplicated(fastapi, tables, topics, students):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
-    # Add students
-    with open("tests/api/form/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=files)
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
@@ -265,27 +239,11 @@ def test_add_group_form_duplicated(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_not_duplicated_group_form(fastapi, tables):
-    # Add topics
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
-    # Add students
-    with open("tests/api/form/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=files)
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
