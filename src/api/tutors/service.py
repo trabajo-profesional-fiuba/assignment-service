@@ -1,6 +1,8 @@
 from src.api.tutors.utils import TutorCsvFile
 from src.api.users.schemas import UserResponse
 from src.api.auth.hasher import ShaHasher
+from src.api.tutors.schemas import PeriodRequest
+
 
 
 class TutorService:
@@ -25,3 +27,6 @@ class TutorService:
         self._repository.add_tutors(tutors)
 
         return tutors
+
+    def add_period(self, period: PeriodRequest):
+        return self._repository.add_period(period)

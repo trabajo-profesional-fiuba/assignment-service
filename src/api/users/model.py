@@ -23,3 +23,4 @@ class User(Base):
     group_preferences = relationship(
         "GroupFormPreferences", back_populates="student", uselist=False
     )
+    periods = relationship("TutorPeriod", back_populates="tutor",uselist=True)

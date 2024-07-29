@@ -1,18 +1,15 @@
 from typing_extensions import Annotated
 
-from fastapi import APIRouter, UploadFile, Depends, status
-
+from fastapi import APIRouter, UploadFile, Depends, status, Query
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
 from src.api.users.schemas import UserResponse
 from src.api.users.repository import UserRepository
-
-
 from src.api.tutors.service import TutorService
+from src.api.tutors.schemas import PeriodResponse, PeriodRequest
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated
-
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database import get_db
 
@@ -63,3 +60,23 @@ async def upload_csv_file(
         )
     except HTTPException as e:
         raise e
+
+
+@router.post(
+    "/periods",
+    response_model=list[PeriodResponse],
+    description="Creates a new period",
+    summary="Add a new period",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Period schema is not correct"},
+        status.HTTP_409_CONFLICT: {"description": "Duplicated period"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def add_period(
+    session: Annotated[Session, Depends(get_db)],
+    period: PeriodRequest
+):
+    service = TutorService(TutorRepository(session))
+    return service.add_period(period)
