@@ -121,3 +121,31 @@ class TestFormRepository:
         repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
         with pytest.raises(DuplicatedAnswer):
             repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
+
+    @pytest.mark.integration
+    def test_verify_not_duplicated_answer(self, tables):
+        student_5 = UserResponse(
+            id=105005,
+            name="Juan",
+            last_name="Perez",
+            email="email5@fi,uba.ar",
+            password="password",
+        )
+        user_repository = UserRepository(self.Session)
+        user_repository.add_students([student_5])
+
+        today = dt.datetime.today().isoformat()
+        group_form = GroupFormRequest(
+            uid_sender=105001,
+            uid_student_2=105002,
+            uid_student_3=105005,
+            uid_student_4=None,
+            group_id=today,
+            topic_1="topic 1",
+            topic_2="topic 2",
+            topic_3="topic 3",
+        )
+
+        repository = FormRepository(self.Session)
+        response = repository.add_group_form(group_form, [105001, 105002, 105005])
+        assert len(response) == 3
