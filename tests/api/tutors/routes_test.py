@@ -134,3 +134,67 @@ def test_add_new_global_period(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest.mark.integration
+def test_get_all_periods_order_by_asc(fastapi, tables):
+
+    # Arrange
+    body = {"id": "1C2024"}
+    body2 = {"id": "2C2024"}
+    body3 = {"id": "1C2025"}
+
+    _ = fastapi.post(f"{PREFIX}/periods", json=body)
+    _ = fastapi.post(f"{PREFIX}/periods", json=body2)
+    _ = fastapi.post(f"{PREFIX}/periods", json=body3)
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/periods",params={"order": "ASC"})
+    data = response.json()
+    
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+    assert len(data) == 3
+    assert data[0]['id'] == body['id']
+
+@pytest.mark.integration
+def test_get_all_periods_order_by_desc(fastapi, tables):
+
+    # Arrange
+    body = {"id": "1C2024"}
+    body2 = {"id": "2C2024"}
+    body3 = {"id": "1C2025"}
+
+    _ = fastapi.post(f"{PREFIX}/periods", json=body)
+    _ = fastapi.post(f"{PREFIX}/periods", json=body2)
+    _ = fastapi.post(f"{PREFIX}/periods", json=body3)
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/periods",params={"order": "DESC"})
+    data = response.json()
+    
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+    assert len(data) == 3
+    assert data[0]['id'] == body3['id']
+
+@pytest.mark.integration
+def test_get_all_periods_order_by_default_desc(fastapi, tables):
+
+    # Arrange
+    body = {"id": "1C2024"}
+    body2 = {"id": "2C2024"}
+    body3 = {"id": "1C2025"}
+
+    _ = fastapi.post(f"{PREFIX}/periods", json=body)
+    _ = fastapi.post(f"{PREFIX}/periods", json=body2)
+    _ = fastapi.post(f"{PREFIX}/periods", json=body3)
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/periods")
+    data = response.json()
+    
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+    assert len(data) == 3
+    assert data[0]['id'] == body3['id']

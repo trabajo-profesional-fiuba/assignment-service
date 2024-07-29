@@ -75,8 +75,26 @@ async def upload_csv_file(
     },
 )
 async def add_period(
-    session: Annotated[Session, Depends(get_db)],
-    period: PeriodRequest
+    session: Annotated[Session, Depends(get_db)], period: PeriodRequest
 ):
     service = TutorService(TutorRepository(session))
     return service.add_period(period)
+
+
+@router.get(
+    "/periods",
+    response_model=list[PeriodResponse],
+    description="Returns all the periods for tutor_id",
+    summary="Get all periods",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def add_period(
+    session: Annotated[Session, Depends(get_db)],
+    order: str = Query(pattern="^(ASC|DESC)$", default="DESC"),
+):
+    service = TutorService(TutorRepository(session))
+    periods = service.get_all_periods(None, order)
+    return periods

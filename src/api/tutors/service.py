@@ -4,7 +4,6 @@ from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import PeriodRequest
 
 
-
 class TutorService:
 
     def __init__(self, repository) -> None:
@@ -30,3 +29,10 @@ class TutorService:
 
     def add_period(self, period: PeriodRequest):
         return self._repository.add_period(period)
+
+    def get_all_periods(self, tutor_id, order):
+
+        if tutor_id is None:
+            return self._repository.get_all_periods(order)
+        else:
+            return self._repository.get_all_periods_by_id(tutor_id, order)
