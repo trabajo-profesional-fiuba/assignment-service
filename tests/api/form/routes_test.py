@@ -35,6 +35,36 @@ def fastapi():
     yield client
 
 
+@pytest.fixture
+def topics():
+    with open("tests/api/topic/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    return {"file": (filename, content, content_type)}
+
+
+@pytest.fixture
+def students():
+    with open("tests/api/form/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    return {"file": (filename, content, content_type)}
+
+
+@pytest.fixture
+def tutors():
+    with open("tests/api/tutors/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    return {"file": (filename, content, content_type)}
+
+
 @pytest.mark.integration
 def test_add_group_form_with_topic_not_found(fastapi, tables):
     today = str(dt.datetime.today())
@@ -54,16 +84,8 @@ def test_add_group_form_with_topic_not_found(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_student_not_found(fastapi, tables):
-    # Add topics
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+def test_add_group_form_with_student_not_found(fastapi, tables, topics):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = str(dt.datetime.today())
@@ -83,27 +105,11 @@ def test_add_group_form_with_student_not_found(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_success(fastapi, tables):
-    # Add topics
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+def test_add_group_form_with_success(fastapi, tables, topics, students):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
-    # Add students
-    with open("tests/api/form/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=files)
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
@@ -152,27 +158,11 @@ def test_add_group_form_with_success(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_invalid_role(fastapi, tables):
-    # Add topics
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=files)
+def test_add_group_form_with_invalid_role(fastapi, tables, topics, tutors):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
-    # Add tutors
-    with open("tests/api/tutors/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=files)
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
 
     today = dt.datetime.today().isoformat()
@@ -189,3 +179,157 @@ def test_add_group_form_with_invalid_role(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/groups", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "The student must have the role 'student'."}
+
+
+@pytest.mark.integration
+def test_add_group_form_duplicated(fastapi, tables, topics, students):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    today = dt.datetime.today().isoformat()
+    body = {
+        "uid_sender": 105285,
+        "uid_student_2": 105286,
+        "uid_student_3": 105287,
+        "uid_student_4": 105288,
+        "group_id": today,
+        "topic_1": "topic 1",
+        "topic_2": "topic 2",
+        "topic_3": "topic 3",
+    }
+    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json() == [
+        {
+            "uid": 105285,
+            "group_id": today,
+            "topic_1": "topic 1",
+            "topic_2": "topic 2",
+            "topic_3": "topic 3",
+        },
+        {
+            "uid": 105286,
+            "group_id": today,
+            "topic_1": "topic 1",
+            "topic_2": "topic 2",
+            "topic_3": "topic 3",
+        },
+        {
+            "uid": 105287,
+            "group_id": today,
+            "topic_1": "topic 1",
+            "topic_2": "topic 2",
+            "topic_3": "topic 3",
+        },
+        {
+            "uid": 105288,
+            "group_id": today,
+            "topic_1": "topic 1",
+            "topic_2": "topic 2",
+            "topic_3": "topic 3",
+        },
+    ]
+
+    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.json() == {"detail": "The answer already exists."}
+
+
+@pytest.mark.integration
+def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    today = dt.datetime.today().isoformat()
+    body = {
+        "uid_sender": 105285,
+        "uid_student_2": 105286,
+        "uid_student_3": 105287,
+        "uid_student_4": 105288,
+        "group_id": today,
+        "topic_1": "topic 1",
+        "topic_2": "topic 2",
+        "topic_3": "topic 3",
+    }
+    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json() == [
+        {
+            "uid": 105285,
+            "group_id": today,
+            "topic_1": "topic 1",
+            "topic_2": "topic 2",
+            "topic_3": "topic 3",
+        },
+        {
+            "uid": 105286,
+            "group_id": today,
+            "topic_1": "topic 1",
+            "topic_2": "topic 2",
+            "topic_3": "topic 3",
+        },
+        {
+            "uid": 105287,
+            "group_id": today,
+            "topic_1": "topic 1",
+            "topic_2": "topic 2",
+            "topic_3": "topic 3",
+        },
+        {
+            "uid": 105288,
+            "group_id": today,
+            "topic_1": "topic 1",
+            "topic_2": "topic 2",
+            "topic_3": "topic 3",
+        },
+    ]
+
+    today = dt.datetime.today().isoformat()
+    body = {
+        "uid_sender": 105285,
+        "uid_student_2": 105286,
+        "uid_student_3": 105287,
+        "uid_student_4": 105288,
+        "group_id": today,
+        "topic_1": "topic 2",
+        "topic_2": "topic 3",
+        "topic_3": "topic 1",
+    }
+    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json() == [
+        {
+            "uid": 105285,
+            "group_id": today,
+            "topic_1": "topic 2",
+            "topic_2": "topic 3",
+            "topic_3": "topic 1",
+        },
+        {
+            "uid": 105286,
+            "group_id": today,
+            "topic_1": "topic 2",
+            "topic_2": "topic 3",
+            "topic_3": "topic 1",
+        },
+        {
+            "uid": 105287,
+            "group_id": today,
+            "topic_1": "topic 2",
+            "topic_2": "topic 3",
+            "topic_3": "topic 1",
+        },
+        {
+            "uid": 105288,
+            "group_id": today,
+            "topic_1": "topic 2",
+            "topic_2": "topic 3",
+            "topic_3": "topic 1",
+        },
+    ]

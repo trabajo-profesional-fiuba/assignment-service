@@ -5,7 +5,7 @@ from src.api.form.models import GroupFormPreferences
 from src.api.form.exceptions import StudentNotFound
 from src.api.users.model import User, Role
 from src.api.topic.models import Topic
-from src.api.form.exceptions import TopicNotFound
+from src.api.form.exceptions import TopicNotFound, DuplicatedAnswer
 
 
 class FormRepository:
@@ -25,6 +25,24 @@ class FormRepository:
         if user.rol != Role.STUDENT:
             raise StudentNotFound("The student must have the role 'student'.")
 
+    def _verify_answer(self, session, group_form: GroupFormRequest, uids: list[int]):
+        count = 0
+        for uid in uids:
+            answer = (
+                session.query(GroupFormPreferences)
+                .filter_by(
+                    uid=uid,
+                    topic_1=group_form.topic_1,
+                    topic_2=group_form.topic_2,
+                    topic_3=group_form.topic_3,
+                )
+                .first()
+            )
+            if answer is not None:
+                count += 1
+        if count == len(uids):
+            raise DuplicatedAnswer("The answer already exists.")
+
     def add_group_form(self, group_form: GroupFormRequest, uids: list[int]):
         with self.Session() as session:
             with session.begin():
@@ -34,6 +52,7 @@ class FormRepository:
                     session,
                     [group_form.topic_1, group_form.topic_2, group_form.topic_3],
                 )
+                self._verify_answer(session, group_form, uids)
                 for uid in uids:
                     self._verify_user(session, uid)
                     db_item = GroupFormPreferences(
