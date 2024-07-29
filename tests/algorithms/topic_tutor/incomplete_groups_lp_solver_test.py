@@ -67,28 +67,22 @@ class TestIncompleteGroupsLPSolver:
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
+        formed_groups, filtered_groups = solver.solve()
 
-        # Verificar que la solución es óptima
-        assert LpStatus[prob.status] == "Optimal"
-
-        # Verificar que las variables tienen valores esperados
-        for var in prob.variables():
-            if "Unión" in var.name:
-                assert var.varValue in [0, 1]
+        # Verificar que se formaron los grupos correctos
+        assert len(formed_groups) == 4
 
     @pytest.mark.unit
     def test_no_groups(self):
         groups = []
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
+        formed_groups, filtered_groups = solver.solve()
     
-        # Verificar que la solución es óptima
-        assert LpStatus[prob.status] == "Optimal"
+        # Verificar que no hay grupos formados
+        assert len(formed_groups) == 0
     
-        # Verificar que no hay uniones válidas en la solución
-        valid_union_vars = [var for var in prob.variables() if "Unión" in var.name and var.varValue == 1]
-        assert len(valid_union_vars) == 0
+        # Verificar que no hay grupos filtrados
+        assert len(filtered_groups) == 0
 
     @pytest.mark.unit
     def test_single_group(self):
@@ -97,18 +91,16 @@ class TestIncompleteGroupsLPSolver:
             Topic(2, "Tema A", 0),
             Topic(3, "Tema B", 0)
         ]
-        groups = [GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]])]
-        groups[0].add_student("Student 1")
-    
+        groups = [GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"])]
+
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
+        formed_groups, filtered_groups = solver.solve()
     
-        # Verificar que la solución es óptima
-        assert LpStatus[prob.status] == "Optimal"
+        # Verificar que no hay grupos formados
+        assert len(formed_groups) == 1
     
-        # Verificar que no hay uniones válidas en la solución
-        valid_union_vars = [var for var in prob.variables() if "Unión" in var.name and var.varValue == 1]
-        assert len(valid_union_vars) == 0
+        # Verificar que no hay grupos filtrados
+        assert len(filtered_groups) == 0
     
     @pytest.mark.unit
     def test_two_groups_with_different_topics_and_categories(self):
@@ -120,18 +112,19 @@ class TestIncompleteGroupsLPSolver:
             Topic(5, "Tema E", 0),
             Topic(6, "Tema F", 0)
         ]
-        groups = [GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"])]
-        groups.append(GroupTopicPreferences(2, topics=[topics[3], topics[4], topics[5]], students=["Student 2", "Student 3", "Student 4"]))
+        groups = [
+            GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]),
+            GroupTopicPreferences(2, topics=[topics[3], topics[4], topics[5]], students=["Student 2", "Student 3", "Student 4"])
+        ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
+        formed_groups, filtered_groups = solver.solve()
     
-        # Verificar que la solución es óptima
-        assert LpStatus[prob.status] == "Optimal"
+        # Verificar que se formó un grupo con los estudiantes de ambos grupos
+        assert len(formed_groups) == 1
     
-        # Verificar que no hay uniones válidas en la solución
-        valid_union_vars = [var for var in prob.variables() if "Union" in var.name and var.varValue == 1]
-        assert len(valid_union_vars) == 1
+        # Verificar que no hay grupos restantes
+        assert len(filtered_groups) == 0
     
     @pytest.mark.unit
     def test_two_groups_with_same_category(self):
@@ -143,18 +136,19 @@ class TestIncompleteGroupsLPSolver:
             Topic(5, "Tema E", 0, category="Category 2"),
             Topic(6, "Tema F", 0, category="Category 1")
         ]
-        groups = [GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"])]
-        groups.append(GroupTopicPreferences(2, topics=[topics[3], topics[4], topics[5]], students=["Student 2", "Student 3", "Student 4"]))
+        groups = [
+            GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]),
+            GroupTopicPreferences(2, topics=[topics[3], topics[4], topics[5]], students=["Student 2", "Student 3", "Student 4"])
+        ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
+        formed_groups, filtered_groups = solver.solve()
 
-        # Verificar que la solución es óptima
-        assert LpStatus[prob.status] == "Optimal"
+        # Verificar que se formó un grupo con los estudiantes de ambos grupos
+        assert len(formed_groups) == 1
 
-        # Verificar que los grupos se unen basándose en categorías comunes
-        valid_union_vars = [var for var in prob.variables() if "Union" in var.name and var.varValue == 1]
-        assert len(valid_union_vars) == 1
+        # Verificar que no hay grupos restantes
+        assert len(filtered_groups) == 0
 
 
     @pytest.mark.unit
@@ -167,22 +161,19 @@ class TestIncompleteGroupsLPSolver:
             Topic(5, "Tema E", 0),
             Topic(6, "Tema F", 0)
         ]
-        groups = [GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"])]
-        groups.append(GroupTopicPreferences(2, topics=[topics[3], topics[4], topics[5]], students=["Student 2", "Student 3"]))
+        groups = [
+            GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]),
+            GroupTopicPreferences(2, topics=[topics[3], topics[4], topics[5]], students=["Student 2", "Student 3"])
+        ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
+        formed_groups, filtered_groups = solver.solve()
     
-        # Verificar que la solución es óptima
-        assert LpStatus[prob.status] == "Optimal"
+        # Verificar que se formó un grupo con los estudiantes de ambos grupos
+        assert len(formed_groups) == 1
     
-        # Verificar que no hay uniones válidas en la solución
-        valid_union_vars = [var for var in prob.variables() if "Unión" in var.name and var.varValue == 1]
-        assert len(valid_union_vars) == 0
-
-        # Verificar que los grupos restantes se unieron correctamente
-        remaining_groups = solver.remaining_groups
-        assert len(remaining_groups) == 0
+        # Verificar que no hay grupos restantes
+        assert len(filtered_groups) == 0
 
     @pytest.mark.unit
     def test_multiple_groups(self):
@@ -197,21 +188,15 @@ class TestIncompleteGroupsLPSolver:
         groups = [
             GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]),
             GroupTopicPreferences(2, topics=[topics[0], topics[3], topics[4]], students=["Student 2", "Student 3"]),
-            GroupTopicPreferences(3, topics=[topics[1], topics[3], topics[5]], students=["Student 4", "Student 4"]),
+            GroupTopicPreferences(3, topics=[topics[1], topics[3], topics[5]], students=["Student 4", "Student 5"]),
             GroupTopicPreferences(4, topics=[topics[2], topics[4], topics[5]], students=["Student 6", "Student 7"])
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
+        formed_groups, filtered_groups = solver.solve()
 
-        # Verificar que la solución es óptima
-        assert LpStatus[prob.status] == "Optimal"
-
-        # Verificar que las variables tienen valores esperados
-        for var in prob.variables():
-            print(f"{var.name}: {var.varValue}")
-            if "Unión" in var.name:
-                assert var.varValue in [0, 1]
+        # Verificar que se formaron varios grupos
+        assert len(formed_groups) == 2
 
     @pytest.mark.skip
     def test_real_case_1C2024(self):
@@ -220,10 +205,9 @@ class TestIncompleteGroupsLPSolver:
         topics, groups = read_csv_and_create_objects('db/test_1c2024.csv')
 
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
-        # print(topics)
+        formed_groups, filtered_groups = solver.solve()
 
-        assert LpStatus[prob.status] == "Optimal"
+        assert len(formed_groups) > 0
 
     @pytest.mark.skip
     def test_real_case_2C2023(self):
@@ -232,9 +216,6 @@ class TestIncompleteGroupsLPSolver:
         topics, groups = read_csv_and_create_objects('db/test_2c2023.csv')
 
         solver = IncompleteGroupsLPSolver(groups)
-        prob = solver.solve()
-        # print(topics)
+        formed_groups, filtered_groups = solver.solve()
 
-        assert LpStatus[prob.status] == "Optimal"
-
-
+        assert len(formed_groups) > 0

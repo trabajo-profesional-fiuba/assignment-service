@@ -1,29 +1,31 @@
 from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CMD, GLPK_CMD, COIN_CMD
 import pulp
 
+from src.model.group_topic_preferences import GroupTopicPreferences
+
 class IncompleteGroupsLPSolver:
     def __init__(self, groups):
         self.groups = groups
+        self.formed_groups = []
+        self.filtered_groups = self._filter_groups_with_4_students()
+        self.remaining_groups = []
+
+    def _filter_groups_with_4_students(self):
+        """
+        Filters the groups to keep only those with exactly 4 students.
+        """
+        return [group for group in self.groups if len(group.students) == 4]
 
     def filter_groups(self):
         """
         Filters the groups to keep only those with fewer than 4 students.
         """
-        self.groups = [group for group in self.groups if len(group.students) < 4]
+        return [group for group in self.groups if len(group.students) < 4]
 
     def solve(self):
-        """
-        Solves the group assignment problem.
-
-        1. Filters the incomplete groups.
-        2. Defines decision variables for merging groups.
-        3. Applies constraints to ensure each group participates in only one combination.
-        4. Defines the objective function to maximize the number of complete groups formed.
-        5. Executes the solver to find the optimal solution.
-        """
         # Filter incomplete groups
-        self.filter_groups()
-        group_ids = [group.id for group in self.groups]
+        filtered_groups = self.filter_groups()
+        group_ids = [group.id for group in filtered_groups]
 
         # Define the optimization problem
         prob = LpProblem("Asignación de Grupos", LpMaximize)
@@ -106,8 +108,9 @@ class IncompleteGroupsLPSolver:
             if var.varValue == 1:
                 group_indices = [int(idx) for idx in var.name.replace("Union_", "").replace("(", "").replace(")", "").split(",_")]
                 assigned_groups.update(group_indices)
-        print(assigned_groups)
-        self.remaining_groups = [group for group in self.groups if group.id not in assigned_groups]
+                self.formed_groups.append(self._create_group_topic_preferences(group_indices))
+        
+        self.remaining_groups = [group for group in filtered_groups if group.id not in assigned_groups]
 
         # Merge the remaining groups into as many teams as possible
         self._merge_remaining_groups()
@@ -117,7 +120,48 @@ class IncompleteGroupsLPSolver:
             if "Union" in var.name and var.varValue == 1:
                 print(f"{var.name}: {var.varValue}")
 
-        return prob
+        return self.formed_groups, self.filtered_groups
+
+    def _create_group_topic_preferences(self, group_indices):
+        """
+        Creates a new GroupTopicPreferences object by combining students and topics
+        from the given group indices.
+
+        :param group_indices: List of group IDs to merge.
+        :return: A new GroupTopicPreferences object.
+        """
+        combined_students = []
+        combined_topics = []
+
+        # Retrieve all groups involved
+        groups = [self._get_group_by_id(group_id) for group_id in group_indices]
+
+        # Find the group with the most students
+        group_with_most_students = max(groups, key=lambda g: len(g.students))
+
+        # Get topics that are common across all groups
+        common_topics = set(group_with_most_students.topics)
+        for group in groups:
+            common_topics.intersection_update(set(group.topics))
+
+        # Order common topics based on the group with most students
+        common_topics_ordered = [topic for topic in group_with_most_students.topics if topic in common_topics]
+
+        # If common topics are less than 3, add more topics from the group with most students
+        while len(common_topics_ordered) < 3:
+            for topic in group_with_most_students.topics:
+                if topic not in common_topics_ordered:
+                    common_topics_ordered.append(topic)
+                if len(common_topics_ordered) == 3:
+                    break
+
+        # Combine students from all groups
+        for group in groups:
+            combined_students.extend(group.students)
+
+        new_group_id = len(self.formed_groups) + 1  # Generate a new ID
+        new_group = GroupTopicPreferences(id=new_group_id, topics=common_topics_ordered, students=combined_students)
+        return new_group
 
     def _merge_remaining_groups(self):
         """
@@ -129,9 +173,37 @@ class IncompleteGroupsLPSolver:
             for other_group in self.remaining_groups:
                 if len(group.students) + len(other_group.students) <= 4:
                     print(f"Unión adicional: Grupo {group.id} con Grupo {other_group.id}")
-                    group.students.extend(other_group.students)
+
+                    # Crear un nuevo GroupTopicPreferences para el grupo unido
+                    new_topics = self.combine_topics(group, other_group)
+                    new_students = group.students + other_group.students
+
+                    new_group_id = len(self.formed_groups)+1
+                    new_group = GroupTopicPreferences(new_group_id, topics=new_topics, students=new_students)
+
+                    # Añadir el nuevo grupo a formed_groups
+                    self.formed_groups.append(new_group)
+
+                    # Eliminar el grupo unido de remaining_groups
                     self.remaining_groups.remove(other_group)
                     break
+        
+        if len(self.remaining_groups) == 1:
+            group = self.remaining_groups.pop(0)
+            new_group = GroupTopicPreferences(len(self.formed_groups)+1, topics=group.topics, students=group.students)
+            self.formed_groups.append(new_group)
+
+    def combine_topics(self, group1, group2):
+        """
+        Combina los tópicos de dos grupos, manteniendo el orden y asegurando al menos 3 tópicos.
+        """
+        common_topics = set(group1.topics).intersection(set(group2.topics))
+        all_topics = sorted(common_topics, key=lambda topic: group1.topics.index(topic))
+        
+        if len(all_topics) < 3:
+            all_topics.extend([t for t in group1.topics if t not in all_topics][:3 - len(all_topics)])
+        
+        return all_topics
 
     def _get_group_by_id(self, id):
         """
