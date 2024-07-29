@@ -7,17 +7,14 @@ class GroupTopicPreferences:
     @property
     def id(self):
         return self._id
-    
+
     @property
     def topics(self):
         return self._topics
-    
+
     @property
     def students(self):
         return self._students
-    
+
     def add_student(self, student):
         self._students.append(student)
-
-
-

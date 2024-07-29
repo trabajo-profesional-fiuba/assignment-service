@@ -3,15 +3,32 @@ from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
 from src.api.tutors.router import router
+from src.api.users.model import Role, User
+from src.config.database.database import create_tables, drop_tables, engine
+from sqlalchemy.orm import sessionmaker
 
 
 PREFIX = "/tutors"
 
 
+def creates_user():
+    
+    Session = sessionmaker(engine)
+    with Session() as sess:
+        user = User(
+            id=10600,
+            name="Juan",
+            last_name="Perez",
+            email="email@fi.uba.ar",
+            password="fake",
+            rol=Role.STUDENT,
+        )
+        sess.add(user)
+        sess.commit()
+
+
 @pytest.fixture(scope="function")
 def tables():
-    from src.config.database.database import create_tables, drop_tables
-
     # Create all tables
     create_tables()
     yield
@@ -149,13 +166,14 @@ def test_get_all_periods_order_by_asc(fastapi, tables):
     _ = fastapi.post(f"{PREFIX}/periods", json=body3)
 
     # Act
-    response = fastapi.get(f"{PREFIX}/periods",params={"order": "ASC"})
+    response = fastapi.get(f"{PREFIX}/periods", params={"order": "ASC"})
     data = response.json()
-    
+
     # Assert
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 3
-    assert data[0]['id'] == body['id']
+    assert data[0]["id"] == body["id"]
+
 
 @pytest.mark.integration
 def test_get_all_periods_order_by_desc(fastapi, tables):
@@ -170,13 +188,14 @@ def test_get_all_periods_order_by_desc(fastapi, tables):
     _ = fastapi.post(f"{PREFIX}/periods", json=body3)
 
     # Act
-    response = fastapi.get(f"{PREFIX}/periods",params={"order": "DESC"})
+    response = fastapi.get(f"{PREFIX}/periods", params={"order": "DESC"})
     data = response.json()
-    
+
     # Assert
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 3
-    assert data[0]['id'] == body3['id']
+    assert data[0]["id"] == body3["id"]
+
 
 @pytest.mark.integration
 def test_get_all_periods_order_by_default_desc(fastapi, tables):
@@ -193,11 +212,11 @@ def test_get_all_periods_order_by_default_desc(fastapi, tables):
     # Act
     response = fastapi.get(f"{PREFIX}/periods")
     data = response.json()
-    
+
     # Assert
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 3
-    assert data[0]['id'] == body3['id']
+    assert data[0]["id"] == body3["id"]
 
 
 @pytest.mark.integration
@@ -206,7 +225,24 @@ def test_get_all_periods_is_empty(fastapi, tables):
     # Act
     response = fastapi.get(f"{PREFIX}/periods")
     data = response.json()
-    
+
     # Assert
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 0
+
+@pytest.mark.integration
+def test_add_new_tutor_period(fastapi, tables):
+
+    # Arrange
+    creates_user()
+    tutor_id = 10600
+    body = {"id": "1C2024"}
+    params = {"period_id": "1C2024"}
+
+
+    # Act
+    _ = fastapi.post(f"{PREFIX}/periods", json=body)
+    response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
+
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED
