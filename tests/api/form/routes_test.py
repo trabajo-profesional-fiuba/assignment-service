@@ -7,7 +7,7 @@ from src.api.form.router import router as form_router
 from src.api.student.router import router as student_router
 from src.api.tutors.router import router as tutors_router
 from src.api.topic.router import router as topic_router
-from src.config.database import create_tables, drop_tables
+from src.config.database.database import create_tables, drop_tables
 
 PREFIX = "/forms"
 TOPIC_PREFIX = "/topics"

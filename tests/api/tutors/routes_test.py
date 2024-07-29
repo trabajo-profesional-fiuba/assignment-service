@@ -10,7 +10,7 @@ PREFIX = "/tutors"
 
 @pytest.fixture(scope="function")
 def tables():
-    from src.config.database import create_tables, drop_tables
+    from src.config.database.database import create_tables, drop_tables
 
     # Create all tables
     create_tables()
@@ -121,3 +121,16 @@ def test_upload_file_raise_execption_if_type_is_not_csv(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+
+
+@pytest.mark.integration
+def test_add_new_global_period(fastapi, tables):
+
+    # Arrange
+    body = {"file": "1C2024"}
+
+    # Act
+    response = fastapi.post(f"{PREFIX}/periods", json=body)
+
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED

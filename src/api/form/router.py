@@ -8,7 +8,7 @@ from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
 from src.api.form.exceptions import StudentNotFound, TopicNotFound, DuplicatedAnswer
 
-from src.config.database import get_db
+from src.config.database.database import get_db
 
 router = APIRouter(prefix="/forms", tags=["forms"])
 

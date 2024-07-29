@@ -11,7 +11,7 @@ from src.api.tutors.schemas import PeriodResponse, PeriodRequest
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated
 from src.api.auth.hasher import get_hasher, ShaHasher
-from src.config.database import get_db
+from src.config.database.database import get_db
 
 router = APIRouter(prefix="/tutors", tags=["Tutors"])
 
