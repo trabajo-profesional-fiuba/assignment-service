@@ -198,3 +198,15 @@ def test_get_all_periods_order_by_default_desc(fastapi, tables):
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 3
     assert data[0]['id'] == body3['id']
+
+
+@pytest.mark.integration
+def test_get_all_periods_is_empty(fastapi, tables):
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/periods")
+    data = response.json()
+    
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+    assert len(data) == 0

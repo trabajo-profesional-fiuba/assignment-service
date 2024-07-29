@@ -15,7 +15,7 @@ from src.api.auth.router import router as auth_router
 
 create_tables()
 
-app = FastAPI(title="Assignment Service Api")
+app = FastAPI(title="Assignment Service Api", version="1.0.0")
 app.include_router(student_router)
 app.include_router(topic_router)
 app.include_router(form_router)
