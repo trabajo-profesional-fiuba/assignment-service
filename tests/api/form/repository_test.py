@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from src.config.database import create_tables, drop_tables, engine
 from src.api.form.repository import FormRepository
 from src.api.form.schemas import GroupFormRequest
-from src.api.form.exceptions import TopicNotFound, StudentNotFound
+from src.api.form.exceptions import TopicNotFound, StudentNotFound, DuplicatedAnswer
 from src.api.topic.repository import TopicRepository
 from src.api.topic.schemas import TopicRequest, CategoryRequest
 from src.api.users.repository import UserRepository
@@ -70,4 +70,54 @@ class TestFormRepository:
 
         repository = FormRepository(self.Session)
         with pytest.raises(StudentNotFound):
+            repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
+
+    @pytest.mark.integration
+    def test_verify_duplicated_answer(self, tables):
+        student_1 = UserResponse(
+            id=105001,
+            name="Juan",
+            last_name="Perez",
+            email="email1@fi,uba.ar",
+            password="password",
+        )
+        student_2 = UserResponse(
+            id=105002,
+            name="Juan",
+            last_name="Perez",
+            email="email2@fi,uba.ar",
+            password="password",
+        )
+        student_3 = UserResponse(
+            id=105003,
+            name="Juan",
+            last_name="Perez",
+            email="email3@fi,uba.ar",
+            password="password",
+        )
+        student_4 = UserResponse(
+            id=105004,
+            name="Juan",
+            last_name="Perez",
+            email="email4@fi,uba.ar",
+            password="password",
+        )
+        user_repository = UserRepository(self.Session)
+        user_repository.add_students([student_1, student_2, student_3, student_4])
+
+        today = dt.datetime.today().isoformat()
+        group_form = GroupFormRequest(
+            uid_sender=105001,
+            uid_student_2=105002,
+            uid_student_3=105003,
+            uid_student_4=105004,
+            group_id=today,
+            topic_1="topic 1",
+            topic_2="topic 2",
+            topic_3="topic 3",
+        )
+
+        repository = FormRepository(self.Session)
+        repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
+        with pytest.raises(DuplicatedAnswer):
             repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
