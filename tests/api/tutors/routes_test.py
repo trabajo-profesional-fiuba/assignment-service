@@ -127,7 +127,7 @@ def test_upload_file_raise_execption_if_type_is_not_csv(fastapi, tables):
 def test_add_new_global_period(fastapi, tables):
 
     # Arrange
-    body = {"file": "1C2024"}
+    body = {"id": "1C2024"}
 
     # Act
     response = fastapi.post(f"{PREFIX}/periods", json=body)

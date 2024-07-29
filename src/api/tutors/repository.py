@@ -19,4 +19,4 @@ class TutorRepository:
             session.add(period_obj)
             session.commit()
             session.refresh(period_obj)
-            return PeriodRequest.validate(period_obj)
+            return PeriodResponse.model_validate(period_obj)

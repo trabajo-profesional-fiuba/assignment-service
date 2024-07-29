@@ -64,7 +64,7 @@ async def upload_csv_file(
 
 @router.post(
     "/periods",
-    response_model=list[PeriodResponse],
+    response_model=PeriodResponse,
     description="Creates a new period",
     summary="Add a new period",
     status_code=status.HTTP_201_CREATED,
