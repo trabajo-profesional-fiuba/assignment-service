@@ -28,10 +28,10 @@ def fastapi():
 
 @pytest.mark.integration
 def test_add_topics_with_different_categories_success(fastapi, tables):
-    with open("tests/api/topic/data/data_success.csv", "rb") as file:
+    with open("tests/api/topic/data/test_data.csv", "rb") as file:
         content = file.read()
 
-    filename = "data_success"
+    filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 
@@ -78,7 +78,7 @@ def test_add_already_exist_topic(fastapi, tables):
 
 @pytest.mark.integration
 def test_upload_wrong_type_file(fastapi, tables):
-    filename = "data_success"
+    filename = "test_data"
     content_type = "application/json"
     files = {"file": (filename, "test".encode(), content_type)}
 
@@ -107,10 +107,10 @@ def test_get_topics_with_success(fastapi, tables):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
 
-    with open("tests/api/topic/data/data_success.csv", "rb") as file:
+    with open("tests/api/topic/data/test_data.csv", "rb") as file:
         content = file.read()
 
-    filename = "data_success"
+    filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 

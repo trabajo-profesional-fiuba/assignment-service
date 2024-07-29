@@ -9,11 +9,12 @@ from src.api.form.exceptions import StudentNotFound
 class GroupFormPreferences(Base):
     __tablename__ = "group_preferences"
 
-    uid = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    group_id = Column(DateTime)
-    topic_1 = Column(String, nullable=False)
-    topic_2 = Column(String, nullable=False)
-    topic_3 = Column(String, nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    uid = Column(Integer, ForeignKey("users.id"))
+    group_id = Column(DateTime, nullable=False)
+    topic_1 = Column(String, ForeignKey("topics.name"), nullable=False)
+    topic_2 = Column(String, ForeignKey("topics.name"), nullable=False)
+    topic_3 = Column(String, ForeignKey("topics.name"), nullable=False)
 
     # Set relationship with Student
     student = relationship("User", back_populates="group_preferences")
