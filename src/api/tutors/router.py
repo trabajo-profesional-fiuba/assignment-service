@@ -99,15 +99,15 @@ async def get_periods(
     order: str = Query(pattern="^(ASC|DESC)$", default="DESC"),
 ):
     service = TutorService(TutorRepository(session))
-    periods = service.get_all_periods(None, order)
+    periods = service.get_all_periods(order)
     return periods
 
 
 @router.post(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
-    description="Returns all the periods for tutor_id",
-    summary="Get all periods",
+    description="Add new period for a tutor",
+    summary="Add new period",
     tags=["Periods"],
     status_code=status.HTTP_201_CREATED,
     responses={
@@ -121,3 +121,21 @@ async def add_period_to_tutor(
 ):
     service = TutorService(TutorRepository(session))
     return service.add_period_to_tutor(tutor_id, period_id)
+
+@router.get(
+    "/{tutor_id}/periods",
+    response_model=TutorResponse,
+    description="Returns all the periods for tutor_id",
+    summary="Get all periods",
+    tags=["Periods"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_tutor_periods(
+    session: Annotated[Session, Depends(get_db)],
+    tutor_id: int,
+):
+    service = TutorService(TutorRepository(session))
+    return service.get_periods_by_id(tutor_id)

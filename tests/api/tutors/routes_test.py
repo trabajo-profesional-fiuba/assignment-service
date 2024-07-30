@@ -246,3 +246,21 @@ def test_add_new_tutor_period(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest.mark.integration
+def test_get_tutors_period(fastapi, tables):
+
+    # Arrange
+    creates_user()
+    tutor_id = 10600
+    body = {"id": "1C2024"}
+    params = {"period_id": "1C2024"}
+
+    # Act
+    _ = fastapi.post(f"{PREFIX}/periods", json=body)
+    _ = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
+    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
+
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
