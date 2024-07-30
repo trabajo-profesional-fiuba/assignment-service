@@ -1,10 +1,13 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc
+from pydantic import TypeAdapter
 
 from src.api.users.model import User
-from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorPeriodResponse
+from src.api.users.schemas import UserResponse
+from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorPeriodResponse, TutorResponse
 from src.api.tutors.model import Period, TutorPeriod
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
+
 
 
 class TutorRepository:
@@ -33,8 +36,9 @@ class TutorRepository:
             period_obj = TutorPeriod(id=period_id, tutor_id=tutor_id)
             session.add(period_obj)
             session.commit()
-            session.refresh(period_obj)
-            return TutorPeriodResponse.model_validate(period_obj)
+            tutor = period_obj.tutor
+            tutor_response = TutorResponse.model_validate(tutor)
+            return tutor_response
 
     def get_all_periods(self, order: str):
         with self.Session() as session:

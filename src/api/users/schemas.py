@@ -6,6 +6,7 @@ class UserResponse(BaseModel):
     name: str
     last_name: str
     email: str
+    # deberiamos sacar las password
     password: str
 
     model_config = ConfigDict(from_attributes=True)
