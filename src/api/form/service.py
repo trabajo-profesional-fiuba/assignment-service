@@ -27,3 +27,9 @@ class FormService:
             ]
         )
         return self._repository.add_group_form(group_form, cleaned_uids)
+
+    def delete_group_form_by_group_id(self, group_id):
+        return self._repository.delete_group_form_by_group_id(group_id)
+
+    def get_group_form_by_group_id(self, group_id):
+        return self._repository.get_group_form_by_group_id(group_id)

@@ -333,3 +333,28 @@ def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
             "topic_3": "topic 1",
         },
     ]
+
+
+@pytest.mark.integration
+def test_delete_group_form_with_success(fastapi, tables, topics, students):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    today = dt.datetime.today().isoformat()
+    body = {
+        "uid_sender": 105285,
+        "uid_student_2": 105286,
+        "uid_student_3": 105287,
+        "uid_student_4": 105288,
+        "group_id": today,
+        "topic_1": "topic 1",
+        "topic_2": "topic 2",
+        "topic_3": "topic 3",
+    }
+    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    assert response.status_code == status.HTTP_201_CREATED
+    response = fastapi.delete(f"{PREFIX}/groups/{today}")
+    assert response.status_code == status.HTTP_200_OK
