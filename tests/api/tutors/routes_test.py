@@ -12,7 +12,7 @@ PREFIX = "/tutors"
 
 
 def creates_user():
-    
+
     Session = sessionmaker(engine)
     with Session() as sess:
         user = User(
@@ -230,6 +230,7 @@ def test_get_all_periods_is_empty(fastapi, tables):
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 0
 
+
 @pytest.mark.integration
 def test_add_new_tutor_period(fastapi, tables):
 
@@ -238,7 +239,6 @@ def test_add_new_tutor_period(fastapi, tables):
     tutor_id = 10600
     body = {"id": "1C2024"}
     params = {"period_id": "1C2024"}
-
 
     # Act
     _ = fastapi.post(f"{PREFIX}/periods", json=body)

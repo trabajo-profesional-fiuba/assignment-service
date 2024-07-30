@@ -30,10 +30,11 @@ class TutorRepository:
 
     def add_tutor_period(self, tutor_id, period_id):
         with self.Session() as session:
-            with session.begin():
-                period_obj = TutorPeriod(id=period_id, tutor_id=tutor_id)
-                session.add(period_obj)
-                return TutorPeriodResponse.model_validate(period_obj)
+            period_obj = TutorPeriod(id=period_id, tutor_id=tutor_id)
+            session.add(period_obj)
+            session.commit()
+            session.refresh(period_obj)
+            return TutorPeriodResponse.model_validate(period_obj)
 
     def get_all_periods(self, order: str):
         with self.Session() as session:
