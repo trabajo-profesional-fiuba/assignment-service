@@ -149,3 +149,23 @@ class TestFormRepository:
         repository = FormRepository(self.Session)
         response = repository.add_group_form(group_form, [105001, 105002, 105005])
         assert len(response) == 3
+
+    @pytest.mark.integration
+    def test_add_form_with_same_groups_but_diff_topics(self, tables):
+        today = dt.datetime.today().isoformat()
+        group_form = GroupFormRequest(
+            uid_sender=105001,
+            uid_student_2=105002,
+            uid_student_3=105003,
+            uid_student_4=105003,
+            group_id=today,
+            topic_1="topic 2",
+            topic_2="topic 3",
+            topic_3="topic 1",
+        )
+
+        repository = FormRepository(self.Session)
+        response = repository.add_group_form(
+            group_form, [105001, 105002, 105003, 105004]
+        )
+        assert len(response) == 4
