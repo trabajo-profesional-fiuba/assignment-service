@@ -152,6 +152,21 @@ def test_add_new_global_period(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
 
+@pytest.mark.integration
+def test_duplicates_global_periods_raise_exception(fastapi, tables):
+
+    # Arrange
+    body = {"id": "1C2024"}
+
+    # Act
+    response = fastapi.post(f"{PREFIX}/periods", json=body)
+    response = fastapi.post(f"{PREFIX}/periods", json=body)
+
+
+    # Assert
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.json()['detail'] == "Period already exist"
+
 
 @pytest.mark.integration
 def test_get_all_periods_order_by_asc(fastapi, tables):

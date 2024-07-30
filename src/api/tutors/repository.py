@@ -1,12 +1,14 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc
+from sqlalchemy import exc
+
 from pydantic import TypeAdapter
 
 from src.api.users.model import User
 from src.api.users.schemas import UserResponse
 from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorPeriodResponse, TutorResponse
 from src.api.tutors.model import Period, TutorPeriod
-from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
+from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted,PeriodDuplicated
 
 
 class TutorRepository:
@@ -23,12 +25,15 @@ class TutorRepository:
             raise ValueError("Invalid order direction. Use 'ASC' or 'DESC'.")
 
     def add_period(self, period: PeriodRequest):
-        with self.Session() as session:
-            period_obj = Period(id=period.id)
-            session.add(period_obj)
-            session.commit()
-            session.refresh(period_obj)
-            return PeriodResponse.model_validate(period_obj)
+        try:
+            with self.Session() as session:
+                period_obj = Period(id=period.id)
+                session.add(period_obj)
+                session.commit()
+                session.refresh(period_obj)
+                return PeriodResponse.model_validate(period_obj)
+        except exc.IntegrityError as e:
+            raise PeriodDuplicated(message="Period already exist")
 
     def add_tutor_period(self, tutor_id, period_id):
         with self.Session() as session:

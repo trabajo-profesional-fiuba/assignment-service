@@ -9,7 +9,7 @@ from src.api.users.repository import UserRepository
 from src.api.tutors.service import TutorService
 from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorPeriodResponse, TutorResponse
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated
+from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated, PeriodDuplicated
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database.database import get_db
 
@@ -79,8 +79,18 @@ async def upload_csv_file(
 async def add_period(
     session: Annotated[Session, Depends(get_db)], period: PeriodRequest
 ):
-    service = TutorService(TutorRepository(session))
-    return service.add_period(period)
+    try:
+        service = TutorService(TutorRepository(session))
+        return service.add_period(period)
+    except PeriodDuplicated as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=e.message(),
+        )
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 @router.get(
