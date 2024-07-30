@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 
 
@@ -16,7 +16,7 @@ class PeriodResponse(BaseModel):
 class TutorPeriodResponse(BaseModel):
     id: str
     tutor_id: int
-    capacity : int
-    is_evaluator : bool
+    capacity: int
+    is_evaluator: bool
 
     model_config = ConfigDict(from_attributes=True)
