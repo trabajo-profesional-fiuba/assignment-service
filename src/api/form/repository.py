@@ -66,3 +66,18 @@ class FormRepository:
                     responses.append(GroupFormResponse.model_validate(db_item))
                 session.add_all(db_items)
                 return responses
+
+    def delete_group_form_by_group_id(self, group_id):
+        with self.Session() as session:
+            with session.begin():
+                session.query(GroupFormPreferences).filter_by(
+                    group_id=group_id
+                ).delete()
+
+    def get_group_form_by_group_id(self, group_id):
+        with self.Session() as session:
+            return (
+                session.query(GroupFormPreferences)
+                .filter(GroupFormPreferences.group_id == group_id)
+                .all()
+            )
