@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from src.api.users.schemas import UserResponse
 from src.api.users.repository import UserRepository
 from src.api.tutors.service import TutorService
-from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorPeriodResponse
+from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorPeriodResponse, TutorResponse
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated
 from src.api.auth.hasher import get_hasher, ShaHasher
@@ -105,7 +105,7 @@ async def get_periods(
 
 @router.post(
     "/{tutor_id}/periods",
-    response_model=TutorPeriodResponse,
+    response_model=TutorResponse,
     description="Returns all the periods for tutor_id",
     summary="Get all periods",
     tags=["Periods"],

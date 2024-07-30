@@ -1,5 +1,7 @@
+from typing import List
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
+from src.api.users.schemas import UserResponse
 
 
 class PeriodRequest(BaseModel):
@@ -20,3 +22,7 @@ class TutorPeriodResponse(BaseModel):
     is_evaluator: bool
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TutorResponse(UserResponse):
+    periods: List[TutorPeriodResponse] = Field(default=[])
