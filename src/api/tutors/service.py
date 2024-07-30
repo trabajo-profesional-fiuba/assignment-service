@@ -33,9 +33,8 @@ class TutorService:
     def add_period_to_tutor(self, tutor_id, period_id):
         return self._repository.add_tutor_period(tutor_id, period_id)
 
-    def get_all_periods(self, tutor_id, order):
+    def get_all_periods(self, order):
+        return self._repository.get_all_periods(order)
 
-        if tutor_id is None:
-            return self._repository.get_all_periods(order)
-        else:
-            return self._repository.get_all_periods_by_id(tutor_id, order)
+    def get_periods_by_id(self, tutor_id):    
+        return self._repository.get_all_periods_by_id(tutor_id)

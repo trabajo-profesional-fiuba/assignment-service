@@ -9,7 +9,6 @@ from src.api.tutors.model import Period, TutorPeriod
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
 
 
-
 class TutorRepository:
 
     def __init__(self, sess: Session):
@@ -46,14 +45,9 @@ class TutorRepository:
             results = session.query(Period).order_by(order_clause).all()
             return results
 
-    def get_all_periods_by_id(self, tutor_id, order: str):
+    def get_all_periods_by_id(self, tutor_id):
         with self.Session() as session:
-            order_clause = self._order_clause(order)
-            results = (
-                session.query(TutorPeriod)
-                .join(User)
-                .filter(User.id == tutor_id)
-                .order_by(order_clause)
-                .all()
-            )
-            return results
+            tutor = session.query(User).filter(User.id == tutor_id).first()
+            if tutor:
+                tutor_response = TutorResponse.model_validate(tutor)
+                return tutor_response
