@@ -2,13 +2,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc
 from sqlalchemy import exc
 
-from pydantic import TypeAdapter
-
 from src.api.users.model import User
-from src.api.users.schemas import UserResponse
-from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorPeriodResponse, TutorResponse
+
+from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorResponse
 from src.api.tutors.model import Period, TutorPeriod
-from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted,PeriodDuplicated
+from src.api.tutors.exceptions import TutorNotFound, PeriodDuplicated
 
 
 class TutorRepository:
@@ -36,13 +34,16 @@ class TutorRepository:
             raise PeriodDuplicated(message="Period already exist")
 
     def add_tutor_period(self, tutor_id, period_id):
-        with self.Session() as session:
-            period_obj = TutorPeriod(id=period_id, tutor_id=tutor_id)
-            session.add(period_obj)
-            session.commit()
-            tutor = period_obj.tutor
-            tutor_response = TutorResponse.model_validate(tutor)
-            return tutor_response
+        try:
+            with self.Session() as session:
+                period_obj = TutorPeriod(id=period_id, tutor_id=tutor_id)
+                session.add(period_obj)
+                session.commit()
+                tutor = period_obj.tutor
+                tutor_response = TutorResponse.model_validate(tutor)
+                return tutor_response
+        except exc.IntegrityError as e:
+            raise PeriodDuplicated(message="Period can't be assigned to tutor")
 
     def get_all_periods(self, order: str):
         with self.Session() as session:
@@ -56,3 +57,5 @@ class TutorRepository:
             if tutor:
                 tutor_response = TutorResponse.model_validate(tutor)
                 return tutor_response
+            else:
+                raise TutorNotFound("Tutor doesn't exists")

@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 from src.api.users.schemas import UserResponse
 from src.api.users.repository import UserRepository
 from src.api.tutors.service import TutorService
-from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorPeriodResponse, TutorResponse
+from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorResponse
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated, PeriodDuplicated
+from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated, PeriodDuplicated, TutorNotFound
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database.database import get_db
 
@@ -121,6 +121,7 @@ async def get_periods(
     tags=["Periods"],
     status_code=status.HTTP_201_CREATED,
     responses={
+        status.HTTP_409_CONFLICT: {"description": "Duplicated period"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
     },
 )
@@ -129,8 +130,19 @@ async def add_period_to_tutor(
     tutor_id: int,
     period_id: str = Query(...),
 ):
-    service = TutorService(TutorRepository(session))
-    return service.add_period_to_tutor(tutor_id, period_id)
+    try:
+        service = TutorService(TutorRepository(session))
+        return service.add_period_to_tutor(tutor_id, period_id)
+    except PeriodDuplicated as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=e.message(),
+        )
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 
 @router.get(
     "/{tutor_id}/periods",
@@ -140,6 +152,7 @@ async def add_period_to_tutor(
     tags=["Periods"],
     status_code=status.HTTP_200_OK,
     responses={
+        status.HTTP_404_NOT_FOUND: {"description": "Tutor not found"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
     },
 )
@@ -147,5 +160,15 @@ async def get_tutor_periods(
     session: Annotated[Session, Depends(get_db)],
     tutor_id: int,
 ):
-    service = TutorService(TutorRepository(session))
-    return service.get_periods_by_id(tutor_id)
+    try:
+        service = TutorService(TutorRepository(session))
+        return service.get_periods_by_id(tutor_id)
+    except TutorNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=e.message(),
+        )
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )       

@@ -279,3 +279,16 @@ def test_get_tutors_period(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+def test_raise_404_if_tutor_not_exists(fastapi, tables):
+
+    # Arrange
+    tutor_id = 10600
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
+
+    # Assert
+    assert response.status_code == status.HTTP_404_NOT_FOUND
