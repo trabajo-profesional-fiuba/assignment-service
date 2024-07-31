@@ -36,7 +36,7 @@ class TestFormRepository:
             uid_student_2=105002,
             uid_student_3=105003,
             uid_student_4=105004,
-            group_id=today,
+            answer_id=today,
             topic_1="topic 1",
             topic_2="topic 2",
             topic_3="topic 3",
@@ -64,7 +64,7 @@ class TestFormRepository:
             uid_student_2=105002,
             uid_student_3=105003,
             uid_student_4=105004,
-            group_id=today,
+            answer_id=today,
             topic_1="topic 1",
             topic_2="topic 2",
             topic_3="topic 3",
@@ -112,7 +112,7 @@ class TestFormRepository:
             uid_student_2=105002,
             uid_student_3=105003,
             uid_student_4=105004,
-            group_id=today,
+            answer_id=today,
             topic_1="topic 1",
             topic_2="topic 2",
             topic_3="topic 3",
@@ -140,7 +140,7 @@ class TestFormRepository:
             uid_student_2=105002,
             uid_student_3=105005,
             uid_student_4=None,
-            group_id=today,
+            answer_id=today,
             topic_1="topic 1",
             topic_2="topic 2",
             topic_3="topic 3",
@@ -157,7 +157,7 @@ class TestFormRepository:
             uid_student_2=105002,
             uid_student_3=105003,
             uid_student_4=105003,
-            group_id=today,
+            answer_id=today,
             topic_1="topic 2",
             topic_2="topic 3",
             topic_3="topic 1",
@@ -168,8 +168,8 @@ class TestFormRepository:
             group_form, [105001, 105002, 105003, 105004]
         )
         assert len(response) == 4
-        response = repository.get_group_form_by_group_id(today)
+        response = repository.get_group_form_by_answer_id(today)
         assert len(response) == 4
-        repository.delete_group_form_by_group_id(today)
-        result = repository.get_group_form_by_group_id(today)
+        repository.delete_group_form_by_answer_id(today)
+        result = repository.get_group_form_by_answer_id(today)
         assert len(result) == 0

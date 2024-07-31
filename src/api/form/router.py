@@ -11,7 +11,7 @@ from src.api.form.exceptions import (
     StudentNotFound,
     TopicNotFound,
     DuplicatedAnswer,
-    GroupIdNotFound,
+    AnswerIdNotFound,
 )
 
 from src.config.database import get_db
@@ -49,26 +49,28 @@ async def add_group_form(
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal Server Error {err}",
+            detail=err,
         )
 
 
 @router.delete(
-    "/groups/{group_id}",
-    description="This endpoint deletes answers by group id.",
+    "/groups/{answer_id}",
+    description="This endpoint deletes answers by answer id.",
     responses={
-        status.HTTP_200_OK: {"description": "Successfully deleted answers by group id"},
+        status.HTTP_200_OK: {
+            "description": "Successfully deleted answers by answer id"
+        },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
     },
     status_code=status.HTTP_200_OK,
 )
 async def delete_group_form(
-    group_id: datetime, session: Annotated[Session, Depends(get_db)]
+    answer_id: datetime, session: Annotated[Session, Depends(get_db)]
 ):
     try:
         service = FormService(FormRepository(session))
-        return service.delete_group_form_by_group_id(group_id)
-    except GroupIdNotFound as err:
+        return service.delete_group_form_by_answer_id(answer_id)
+    except AnswerIdNotFound as err:
         raise HTTPException(
             status_code=err.status_code,
             detail=err.message,

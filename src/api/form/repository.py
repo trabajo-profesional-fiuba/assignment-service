@@ -59,7 +59,7 @@ class FormRepository:
                     self._verify_user(session, uid)
                     db_item = GroupFormPreferences(
                         uid=uid,
-                        group_id=group_form.group_id,
+                        answer_id=group_form.answer_id,
                         topic_1=group_form.topic_1,
                         topic_2=group_form.topic_2,
                         topic_3=group_form.topic_3,
@@ -69,17 +69,17 @@ class FormRepository:
                 session.add_all(db_items)
                 return responses
 
-    def delete_group_form_by_group_id(self, group_id: datetime):
+    def delete_group_form_by_answer_id(self, answer_id: datetime):
         with self.Session() as session:
             with session.begin():
                 session.query(GroupFormPreferences).filter_by(
-                    group_id=group_id
+                    answer_id=answer_id
                 ).delete()
 
-    def get_group_form_by_group_id(self, group_id: datetime):
+    def get_group_form_by_answer_id(self, answer_id: datetime):
         with self.Session() as session:
             return (
                 session.query(GroupFormPreferences)
-                .filter(GroupFormPreferences.group_id == group_id)
+                .filter(GroupFormPreferences.answer_id == answer_id)
                 .all()
             )

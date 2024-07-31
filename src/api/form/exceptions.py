@@ -22,7 +22,7 @@ class DuplicatedAnswer(Exception):
         self.status_code = status.HTTP_409_CONFLICT
 
 
-class GroupIdNotFound(Exception):
+class AnswerIdNotFound(Exception):
     def __init__(self, message: str):
         super().__init__(message)
         self.message = message
