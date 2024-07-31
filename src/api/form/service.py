@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from src.api.form.repository import FormRepository
 from src.api.form.schemas import GroupFormRequest
+from src.api.form.exceptions import GroupIdNotFound
 
 
 class FormService:
@@ -28,8 +31,8 @@ class FormService:
         )
         return self._repository.add_group_form(group_form, cleaned_uids)
 
-    def delete_group_form_by_group_id(self, group_id):
+    def delete_group_form_by_group_id(self, group_id: datetime):
+        group_forms = self._repository.get_group_form_by_group_id(group_id)
+        if len(group_forms) == 0:
+            raise GroupIdNotFound(f"Group id '{group_id}' does not exists.")
         return self._repository.delete_group_form_by_group_id(group_id)
-
-    def get_group_form_by_group_id(self, group_id):
-        return self._repository.get_group_form_by_group_id(group_id)

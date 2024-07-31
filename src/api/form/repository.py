@@ -1,5 +1,7 @@
 from sqlalchemy import exc
 from sqlalchemy.orm import Session
+from datetime import datetime
+
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.models import GroupFormPreferences
 from src.api.form.exceptions import StudentNotFound
@@ -67,14 +69,14 @@ class FormRepository:
                 session.add_all(db_items)
                 return responses
 
-    def delete_group_form_by_group_id(self, group_id):
+    def delete_group_form_by_group_id(self, group_id: datetime):
         with self.Session() as session:
             with session.begin():
                 session.query(GroupFormPreferences).filter_by(
                     group_id=group_id
                 ).delete()
 
-    def get_group_form_by_group_id(self, group_id):
+    def get_group_form_by_group_id(self, group_id: datetime):
         with self.Session() as session:
             return (
                 session.query(GroupFormPreferences)

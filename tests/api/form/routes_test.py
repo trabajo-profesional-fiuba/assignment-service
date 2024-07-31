@@ -358,3 +358,10 @@ def test_delete_group_form_with_success(fastapi, tables, topics, students):
     assert response.status_code == status.HTTP_201_CREATED
     response = fastapi.delete(f"{PREFIX}/groups/{today}")
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+def test_delete_group_form_not_found(fastapi, tables, topics, students):
+    today = dt.datetime.today().isoformat()
+    response = fastapi.delete(f"{PREFIX}/groups/{today}")
+    assert response.status_code == status.HTTP_404_NOT_FOUND

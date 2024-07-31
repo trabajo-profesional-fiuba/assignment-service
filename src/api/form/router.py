@@ -7,7 +7,12 @@ from datetime import datetime
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
-from src.api.form.exceptions import StudentNotFound, TopicNotFound, DuplicatedAnswer
+from src.api.form.exceptions import (
+    StudentNotFound,
+    TopicNotFound,
+    DuplicatedAnswer,
+    GroupIdNotFound,
+)
 
 from src.config.database import get_db
 
@@ -63,6 +68,11 @@ async def delete_group_form(
     try:
         service = FormService(FormRepository(session))
         return service.delete_group_form_by_group_id(group_id)
+    except GroupIdNotFound as err:
+        raise HTTPException(
+            status_code=err.status_code,
+            detail=err.message,
+        )
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
