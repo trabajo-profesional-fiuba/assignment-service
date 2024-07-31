@@ -1,8 +1,10 @@
+import re
+
 from src.api.users.schemas import UserResponse
 from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import PeriodRequest
 from src.api.tutors.utils import TutorCsvFile
-
+from src.api.tutors.exceptions import InvalidPeriodId
 
 class TutorService:
 
@@ -26,9 +28,23 @@ class TutorService:
         self._repository.add_tutors(tutors)
 
         return tutors
-
+    
+    def _validate(self, id):
+        # Regex pattern
+        # ^[1|2]C20[0-9]{2}$
+        # Matches cases where 1|2C20xx where xx are numbers from 0-9
+        regex = re.compile('^[1|2]C20[0-9]{2}$') 
+        if regex.search(id) != None:
+            return True
+        else:
+            return False
+        
     def add_period(self, period: PeriodRequest):
-        return self._repository.add_period(period)
+        valid = self._validate(period.id)
+        if valid:
+            return self._repository.add_period(period)
+        else:
+            raise InvalidPeriodId(message="Period id should follow patter nC20year, ie. 1C2024")
 
     def add_period_to_tutor(self, tutor_id, period_id):
         return self._repository.add_tutor_period(tutor_id, period_id)

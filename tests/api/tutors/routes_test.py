@@ -167,6 +167,20 @@ def test_duplicates_global_periods_raise_exception(fastapi, tables):
     assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json()['detail'] == "Period already exist"
 
+@pytest.mark.integration
+def test_period_with_invalid_pattern_raise_exception(fastapi, tables):
+
+    # Arrange
+    body = {"id": "1c25"}
+
+    # Act
+    response = fastapi.post(f"{PREFIX}/periods", json=body)
+
+
+    # Assert
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json()['detail'] == "Period id should follow patter nC20year, ie. 1C2024"
+
 
 @pytest.mark.integration
 def test_get_all_periods_order_by_asc(fastapi, tables):

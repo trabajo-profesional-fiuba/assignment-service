@@ -19,7 +19,8 @@ class TutorPeriod(Base):
 
     __tablename__ = "tutor_periods"
 
-    id = Column(String, ForeignKey("periods.id"), primary_key=True)
+    id = Column(Integer, primary_key=True)
+    period_id = Column(String, ForeignKey("periods.id"), primary_key=True)
     tutor_id = Column(Integer, ForeignKey("users.id"), index=True)
     capacity = Column(Integer, default=0)
     is_evaluator = Column(Boolean, default=False)

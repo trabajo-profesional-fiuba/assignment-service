@@ -9,7 +9,7 @@ from src.api.users.repository import UserRepository
 from src.api.tutors.service import TutorService
 from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorResponse
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated, PeriodDuplicated, TutorNotFound
+from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated, PeriodDuplicated, TutorNotFound, InvalidPeriodId
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database.database import get_db
 
@@ -86,6 +86,11 @@ async def add_period(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=e.message(),
+        )
+    except InvalidPeriodId as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=err.message(),
         )
     except:
         raise HTTPException(
