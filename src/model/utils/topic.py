@@ -27,7 +27,7 @@ class Topic:
     @property
     def capacity(self):
         return self._capacity
-    
+
     @property
     def category(self):
         return self._category

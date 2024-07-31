@@ -2,15 +2,21 @@ from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
 from typing_extensions import Annotated
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
-from src.api.form.exceptions import StudentNotFound, TopicNotFound, DuplicatedAnswer
+from src.api.form.exceptions import (
+    StudentNotFound,
+    TopicNotFound,
+    DuplicatedAnswer,
+    AnswerIdNotFound,
+)
 
 from src.config.database import get_db
 
-router = APIRouter(prefix="/forms", tags=["forms"])
+router = APIRouter(prefix="/forms", tags=["Forms"])
 
 
 @router.post(
@@ -29,7 +35,7 @@ router = APIRouter(prefix="/forms", tags=["forms"])
     },
     status_code=status.HTTP_201_CREATED,
 )
-async def add_topic_preferences(
+async def add_group_form(
     group_form: GroupFormRequest, session: Annotated[Session, Depends(get_db)]
 ):
     try:
@@ -43,5 +49,34 @@ async def add_topic_preferences(
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal Server Error {err}",
+            detail=err,
+        )
+
+
+@router.delete(
+    "/groups/{answer_id}",
+    description="This endpoint deletes answers by answer id.",
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Successfully deleted answers by answer id"
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def delete_group_form(
+    answer_id: datetime, session: Annotated[Session, Depends(get_db)]
+):
+    try:
+        service = FormService(FormRepository(session))
+        return service.delete_group_form_by_answer_id(answer_id)
+    except AnswerIdNotFound as err:
+        raise HTTPException(
+            status_code=err.status_code,
+            detail=err.message,
+        )
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=err,
         )
