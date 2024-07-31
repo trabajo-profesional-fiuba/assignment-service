@@ -16,7 +16,8 @@ class PeriodResponse(BaseModel):
 
 
 class TutorPeriodResponse(BaseModel):
-    id: str
+    id: int
+    period_id: str
     tutor_id: int
     capacity: int
     is_evaluator: bool

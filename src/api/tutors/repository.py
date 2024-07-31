@@ -36,7 +36,7 @@ class TutorRepository:
     def add_tutor_period(self, tutor_id, period_id):
         try:
             with self.Session() as session:
-                period_obj = TutorPeriod(id=period_id, tutor_id=tutor_id)
+                period_obj = TutorPeriod(period_id=period_id, tutor_id=tutor_id)
                 session.add(period_obj)
                 session.commit()
                 tutor = period_obj.tutor

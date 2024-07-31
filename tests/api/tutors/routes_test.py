@@ -11,17 +11,17 @@ from sqlalchemy.orm import sessionmaker
 PREFIX = "/tutors"
 
 
-def creates_user():
+def creates_user(n,email):
 
     Session = sessionmaker(engine)
     with Session() as sess:
         user = User(
-            id=10600,
+            id=n,
             name="Juan",
             last_name="Perez",
-            email="email@fi.uba.ar",
+            email=email,
             password="fake",
-            rol=Role.STUDENT,
+            rol=Role.TUTOR,
         )
         sess.add(user)
         sess.commit()
@@ -264,8 +264,8 @@ def test_get_all_periods_is_empty(fastapi, tables):
 def test_add_new_tutor_period(fastapi, tables):
 
     # Arrange
-    creates_user()
     tutor_id = 10600
+    creates_user(tutor_id, "email@fi.uba.ar")
     body = {"id": "1C2024"}
     params = {"period_id": "1C2024"}
 
