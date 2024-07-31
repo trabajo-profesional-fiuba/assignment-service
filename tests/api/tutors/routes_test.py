@@ -278,11 +278,39 @@ def test_add_new_tutor_period(fastapi, tables):
 
 
 @pytest.mark.integration
+def test_add_same_period_to_two_tutors(fastapi, tables):
+
+    # Arrange
+    tutor_id_1 = 10600
+    tutor_id_2 = 10601
+
+    email1= "tutor1@fi.uba.ar"
+    email2= "tutor2@fi.uba.ar"
+
+    creates_user(tutor_id_1, email1)
+    creates_user(tutor_id_2, email2)
+
+    body = {"id": "1C2024"}
+    params = {"period_id": "1C2024"}
+
+    # Act
+    _ = fastapi.post(f"{PREFIX}/periods", json=body)
+    response = fastapi.post(f"{PREFIX}/{tutor_id_1}/periods", params=params)
+    response2 = fastapi.post(f"{PREFIX}/{tutor_id_2}/periods", params=params)
+
+
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response2.status_code == status.HTTP_201_CREATED
+
+
+
+@pytest.mark.integration
 def test_get_tutors_period(fastapi, tables):
 
     # Arrange
-    creates_user()
     tutor_id = 10600
+    creates_user(tutor_id,"fake@fi.ubar.ar")
     body = {"id": "1C2024"}
     params = {"period_id": "1C2024"}
 
