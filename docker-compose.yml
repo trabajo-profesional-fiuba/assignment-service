@@ -11,6 +11,8 @@ services:
       - db
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - HOST=0.0.0.0
+      - PORT=8000
     networks:
       - assignment_network
 

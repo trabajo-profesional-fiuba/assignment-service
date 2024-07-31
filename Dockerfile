@@ -17,10 +17,10 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --no-root
 
 # Copia todo el código del proyecto
-COPY . .
+COPY src .
 
 # Expone el puerto que usará la aplicación
 EXPOSE 8000
 
 # Define el comando por defecto para ejecutar la aplicación
-CMD ["poetry", "run", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "./main.py"]
