@@ -4,7 +4,7 @@ from src.api.users.schemas import UserResponse
 from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import PeriodRequest
 from src.api.tutors.utils import TutorCsvFile
-from src.api.tutors.exceptions import InvalidPeriodId
+from src.api.tutors.exceptions import InvalidPeriodId, TutorNotFound
 
 class TutorService:
 
@@ -47,7 +47,10 @@ class TutorService:
             raise InvalidPeriodId(message="Period id should follow patter nC20year, ie. 1C2024")
 
     def add_period_to_tutor(self, tutor_id, period_id):
-        return self._repository.add_tutor_period(tutor_id, period_id)
+        if self._repository.is_tutor(tutor_id):
+            return self._repository.add_tutor_period(tutor_id, period_id)
+        else:
+            raise TutorNotFound(f"{tutor_id} was not found as TUTOR")
 
     def get_all_periods(self, order):
         return self._repository.get_all_periods(order)

@@ -127,6 +127,7 @@ async def get_periods(
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_409_CONFLICT: {"description": "Duplicated period"},
+        status.HTTP_404_NOT_FOUND: {"description": "Tutor not found"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
     },
 )
@@ -141,6 +142,11 @@ async def add_period_to_tutor(
     except PeriodDuplicated as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
+            detail=e.message(),
+        )
+    except TutorNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=e.message(),
         )
     except:

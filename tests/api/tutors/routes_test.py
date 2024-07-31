@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 PREFIX = "/tutors"
 
 
-def creates_user(n,email):
+def creates_user(n, email, rol=Role.TUTOR):
 
     Session = sessionmaker(engine)
     with Session() as sess:
@@ -21,7 +21,7 @@ def creates_user(n,email):
             last_name="Perez",
             email=email,
             password="fake",
-            rol=Role.TUTOR,
+            rol=rol,
         )
         sess.add(user)
         sess.commit()
@@ -152,6 +152,7 @@ def test_add_new_global_period(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
 
+
 @pytest.mark.integration
 def test_duplicates_global_periods_raise_exception(fastapi, tables):
 
@@ -162,10 +163,10 @@ def test_duplicates_global_periods_raise_exception(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/periods", json=body)
     response = fastapi.post(f"{PREFIX}/periods", json=body)
 
-
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT
-    assert response.json()['detail'] == "Period already exist"
+    assert response.json()["detail"] == "Period already exist"
+
 
 @pytest.mark.integration
 def test_period_with_invalid_pattern_raise_exception(fastapi, tables):
@@ -176,10 +177,12 @@ def test_period_with_invalid_pattern_raise_exception(fastapi, tables):
     # Act
     response = fastapi.post(f"{PREFIX}/periods", json=body)
 
-
     # Assert
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json()['detail'] == "Period id should follow patter nC20year, ie. 1C2024"
+    assert (
+        response.json()["detail"]
+        == "Period id should follow patter nC20year, ie. 1C2024"
+    )
 
 
 @pytest.mark.integration
@@ -278,14 +281,31 @@ def test_add_new_tutor_period(fastapi, tables):
 
 
 @pytest.mark.integration
+def test_if_id_is_not_tutor_raises_a_404(fastapi, tables):
+
+    # Arrange
+    tutor_id = 10600
+    creates_user(tutor_id, "email@fi.uba.ar", Role.STUDENT)
+    body = {"id": "1C2024"}
+    params = {"period_id": "1C2024"}
+
+    # Act
+    _ = fastapi.post(f"{PREFIX}/periods", json=body)
+    response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
+
+    # Assert
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.integration
 def test_add_same_period_to_two_tutors(fastapi, tables):
 
     # Arrange
     tutor_id_1 = 10600
     tutor_id_2 = 10601
 
-    email1= "tutor1@fi.uba.ar"
-    email2= "tutor2@fi.uba.ar"
+    email1 = "tutor1@fi.uba.ar"
+    email2 = "tutor2@fi.uba.ar"
 
     creates_user(tutor_id_1, email1)
     creates_user(tutor_id_2, email2)
@@ -298,11 +318,9 @@ def test_add_same_period_to_two_tutors(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/{tutor_id_1}/periods", params=params)
     response2 = fastapi.post(f"{PREFIX}/{tutor_id_2}/periods", params=params)
 
-
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
     assert response2.status_code == status.HTTP_201_CREATED
-
 
 
 @pytest.mark.integration
@@ -310,7 +328,7 @@ def test_get_tutors_period(fastapi, tables):
 
     # Arrange
     tutor_id = 10600
-    creates_user(tutor_id,"fake@fi.ubar.ar")
+    creates_user(tutor_id, "fake@fi.ubar.ar")
     body = {"id": "1C2024"}
     params = {"period_id": "1C2024"}
 
