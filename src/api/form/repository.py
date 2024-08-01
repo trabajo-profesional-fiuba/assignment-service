@@ -83,3 +83,7 @@ class FormRepository:
                 .filter(GroupFormPreferences.answer_id == answer_id)
                 .all()
             )
+
+    def get_group_forms(self):
+        with self.Session() as session:
+            return session.query(GroupFormPreferences).all()

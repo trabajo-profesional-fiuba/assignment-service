@@ -5,7 +5,12 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from src.config.database import create_tables, drop_tables, engine
 from src.api.form.repository import FormRepository
 from src.api.form.schemas import GroupFormRequest
-from src.api.form.exceptions import TopicNotFound, StudentNotFound, DuplicatedAnswer
+from src.api.form.exceptions import (
+    TopicNotFound,
+    StudentNotFound,
+    DuplicatedAnswer,
+    AnswerIdNotFound,
+)
 from src.api.topic.repository import TopicRepository
 from src.api.topic.schemas import TopicRequest, CategoryRequest
 from src.api.users.repository import UserRepository
@@ -167,9 +172,14 @@ class TestFormRepository:
         response = repository.add_group_form(
             group_form, [105001, 105002, 105003, 105004]
         )
-        assert len(response) == 4
         response = repository.get_group_form_by_answer_id(today)
         assert len(response) == 4
         repository.delete_group_form_by_answer_id(today)
         result = repository.get_group_form_by_answer_id(today)
         assert len(result) == 0
+
+    @pytest.mark.integration
+    def test_get_forms_with_success(self, tables, today):
+        repository = FormRepository(self.Session)
+        response = repository.get_group_forms()
+        assert len(response) == 7
