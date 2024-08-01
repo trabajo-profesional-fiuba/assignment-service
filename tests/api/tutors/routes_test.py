@@ -352,3 +352,23 @@ def test_raise_404_if_tutor_not_exists(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+@pytest.mark.integration
+def test_add_same_period_to_same_tutor_raise_error(fastapi, tables):
+
+    # Arrange
+    tutor_id_1 = 10600
+    email1 = "tutor1@fi.uba.ar"
+
+    creates_user(tutor_id_1, email1)
+
+    body = {"id": "1C2024"}
+    params = {"period_id": "1C2024"}
+
+    # Act
+    _ = fastapi.post(f"{PREFIX}/periods", json=body)
+    response = fastapi.post(f"{PREFIX}/{tutor_id_1}/periods", params=params)
+    response2 = fastapi.post(f"{PREFIX}/{tutor_id_1}/periods", params=params)
+
+    # Assert
+    assert response2.status_code == status.HTTP_409_CONFLICT
