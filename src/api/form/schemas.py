@@ -8,7 +8,7 @@ class GroupFormRequest(BaseModel):
     uid_student_2: int | None
     uid_student_3: int | None
     uid_student_4: int | None
-    group_id: datetime
+    answer_id: datetime
     topic_1: str
     topic_2: str
     topic_3: str
@@ -16,7 +16,7 @@ class GroupFormRequest(BaseModel):
 
 class GroupFormResponse(BaseModel):
     uid: int
-    group_id: datetime
+    answer_id: datetime
     topic_1: str
     topic_2: str
     topic_3: str

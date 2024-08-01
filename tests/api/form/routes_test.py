@@ -73,7 +73,7 @@ def test_add_group_form_with_topic_not_found(fastapi, tables):
         "uid_student_2": 105286,
         "uid_student_3": 105287,
         "uid_student_4": 105288,
-        "group_id": today,
+        "answer_id": today,
         "topic_1": "topic1",
         "topic_2": "topic2",
         "topic_3": "topic3",
@@ -94,7 +94,7 @@ def test_add_group_form_with_student_not_found(fastapi, tables, topics):
         "uid_student_2": 105286,
         "uid_student_3": 105287,
         "uid_student_4": 105288,
-        "group_id": today,
+        "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
         "topic_3": "topic 3",
@@ -118,7 +118,7 @@ def test_add_group_form_with_success(fastapi, tables, topics, students):
         "uid_student_2": 105286,
         "uid_student_3": 105287,
         "uid_student_4": 105288,
-        "group_id": today,
+        "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
         "topic_3": "topic 3",
@@ -128,28 +128,28 @@ def test_add_group_form_with_success(fastapi, tables, topics, students):
     assert response.json() == [
         {
             "uid": 105285,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105286,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105287,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105288,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
@@ -171,7 +171,7 @@ def test_add_group_form_with_invalid_role(fastapi, tables, topics, tutors):
         "uid_student_2": 23456789,
         "uid_student_3": 34567890,
         "uid_student_4": 45678901,
-        "group_id": today,
+        "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
         "topic_3": "topic 3",
@@ -195,7 +195,7 @@ def test_add_group_form_duplicated(fastapi, tables, topics, students):
         "uid_student_2": 105286,
         "uid_student_3": 105287,
         "uid_student_4": 105288,
-        "group_id": today,
+        "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
         "topic_3": "topic 3",
@@ -205,28 +205,28 @@ def test_add_group_form_duplicated(fastapi, tables, topics, students):
     assert response.json() == [
         {
             "uid": 105285,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105286,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105287,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105288,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
@@ -252,7 +252,7 @@ def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
         "uid_student_2": 105286,
         "uid_student_3": 105287,
         "uid_student_4": 105288,
-        "group_id": today,
+        "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
         "topic_3": "topic 3",
@@ -262,28 +262,28 @@ def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
     assert response.json() == [
         {
             "uid": 105285,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105286,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105287,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
             "uid": 105288,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
@@ -296,7 +296,7 @@ def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
         "uid_student_2": 105286,
         "uid_student_3": 105287,
         "uid_student_4": 105288,
-        "group_id": today,
+        "answer_id": today,
         "topic_1": "topic 2",
         "topic_2": "topic 3",
         "topic_3": "topic 1",
@@ -306,30 +306,62 @@ def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
     assert response.json() == [
         {
             "uid": 105285,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 2",
             "topic_2": "topic 3",
             "topic_3": "topic 1",
         },
         {
             "uid": 105286,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 2",
             "topic_2": "topic 3",
             "topic_3": "topic 1",
         },
         {
             "uid": 105287,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 2",
             "topic_2": "topic 3",
             "topic_3": "topic 1",
         },
         {
             "uid": 105288,
-            "group_id": today,
+            "answer_id": today,
             "topic_1": "topic 2",
             "topic_2": "topic 3",
             "topic_3": "topic 1",
         },
     ]
+
+
+@pytest.mark.integration
+def test_delete_group_form_with_success(fastapi, tables, topics, students):
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    today = dt.datetime.today().isoformat()
+    body = {
+        "uid_sender": 105285,
+        "uid_student_2": 105286,
+        "uid_student_3": 105287,
+        "uid_student_4": 105288,
+        "answer_id": today,
+        "topic_1": "topic 1",
+        "topic_2": "topic 2",
+        "topic_3": "topic 3",
+    }
+    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    assert response.status_code == status.HTTP_201_CREATED
+    response = fastapi.delete(f"{PREFIX}/groups/{today}")
+    assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+def test_delete_group_form_not_found(fastapi, tables, topics, students):
+    today = dt.datetime.today().isoformat()
+    response = fastapi.delete(f"{PREFIX}/groups/{today}")
+    assert response.status_code == status.HTTP_404_NOT_FOUND

@@ -11,7 +11,7 @@ class GroupFormPreferences(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     uid = Column(Integer, ForeignKey("users.id"))
-    group_id = Column(DateTime, nullable=False)
+    answer_id = Column(DateTime, nullable=False)
     topic_1 = Column(String, ForeignKey("topics.name"), nullable=False)
     topic_2 = Column(String, ForeignKey("topics.name"), nullable=False)
     topic_3 = Column(String, ForeignKey("topics.name"), nullable=False)
