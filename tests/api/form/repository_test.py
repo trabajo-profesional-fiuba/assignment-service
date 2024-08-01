@@ -2,7 +2,7 @@ import pytest
 import datetime as dt
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from src.config.database import create_tables, drop_tables, engine
+from src.config.database.database import create_tables, drop_tables, engine
 from src.api.form.repository import FormRepository
 from src.api.form.schemas import GroupFormRequest
 from src.api.form.exceptions import TopicNotFound, StudentNotFound, DuplicatedAnswer
