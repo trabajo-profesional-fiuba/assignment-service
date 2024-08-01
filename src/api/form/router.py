@@ -53,6 +53,26 @@ async def add_group_form(
         )
 
 
+@router.get(
+    "/groups",
+    description="This endpoint return all answers.",
+    responses={
+        status.HTTP_200_OK: {"description": "Successfully get all answers."},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_group_forms(session: Annotated[Session, Depends(get_db)]):
+    try:
+        service = FormService(FormRepository(session))
+        return service.get_group_forms()
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=err,
+        )
+
+
 @router.delete(
     "/groups/{answer_id}",
     description="This endpoint deletes answers by answer id.",
