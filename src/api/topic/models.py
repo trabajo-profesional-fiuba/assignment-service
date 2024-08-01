@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from src.config.database import Base
+from src.config.database.base import Base
 
 
 class Category(Base):

@@ -1,22 +1,19 @@
 from typing_extensions import Annotated
 
-from fastapi import APIRouter, UploadFile, Depends, status
-
+from fastapi import APIRouter, UploadFile, Depends, status, Query
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
 from src.api.users.schemas import UserResponse
 from src.api.users.repository import UserRepository
-
-
 from src.api.tutors.service import TutorService
+from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorResponse
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated
-
+from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated, PeriodDuplicated, TutorNotFound, InvalidPeriodId
 from src.api.auth.hasher import get_hasher, ShaHasher
-from src.config.database import get_db
+from src.config.database.database import get_db
 
-router = APIRouter(prefix="/tutors", tags=["Tutors"])
+router = APIRouter(prefix="/tutors")
 
 
 @router.post(
@@ -24,6 +21,7 @@ router = APIRouter(prefix="/tutors", tags=["Tutors"])
     response_model=list[UserResponse],
     description="Creates list of tutors based on a csv file",
     summary="Add csv file",
+    tags=["Tutors"],
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "The columns are not correct"},
@@ -63,3 +61,125 @@ async def upload_csv_file(
         )
     except HTTPException as e:
         raise e
+
+
+@router.post(
+    "/periods",
+    response_model=PeriodResponse,
+    description="Creates a new period",
+    summary="Add a new period",
+    tags=["Periods"],
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Period schema is not correct"},
+        status.HTTP_409_CONFLICT: {"description": "Duplicated period"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def add_period(
+    session: Annotated[Session, Depends(get_db)], period: PeriodRequest
+):
+    try:
+        service = TutorService(TutorRepository(session))
+        return service.add_period(period)
+    except PeriodDuplicated as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=e.message(),
+        )
+    except InvalidPeriodId as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=err.message(),
+        )
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@router.get(
+    "/periods",
+    response_model=list[PeriodResponse],
+    description="Returns all the periods",
+    summary="Get all periods",
+    tags=["Periods"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_periods(
+    session: Annotated[Session, Depends(get_db)],
+    order: str = Query(pattern="^(ASC|DESC)$", default="DESC"),
+):
+    service = TutorService(TutorRepository(session))
+    periods = service.get_all_periods(order)
+    return periods
+
+
+@router.post(
+    "/{tutor_id}/periods",
+    response_model=TutorResponse,
+    description="Add new period for a tutor",
+    summary="Add new period",
+    tags=["Periods"],
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_409_CONFLICT: {"description": "Duplicated period"},
+        status.HTTP_404_NOT_FOUND: {"description": "Tutor not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def add_period_to_tutor(
+    session: Annotated[Session, Depends(get_db)],
+    tutor_id: int,
+    period_id: str = Query(...),
+):
+    try:
+        service = TutorService(TutorRepository(session))
+        return service.add_period_to_tutor(tutor_id, period_id)
+    except PeriodDuplicated as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=e.message(),
+        )
+    except TutorNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=e.message(),
+        )
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@router.get(
+    "/{tutor_id}/periods",
+    response_model=TutorResponse,
+    description="Returns all the periods for tutor_id",
+    summary="Get all periods",
+    tags=["Periods"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_404_NOT_FOUND: {"description": "Tutor not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_tutor_periods(
+    session: Annotated[Session, Depends(get_db)],
+    tutor_id: int,
+):
+    try:
+        service = TutorService(TutorRepository(session))
+        return service.get_periods_by_id(tutor_id)
+    except TutorNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=e.message(),
+        )
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )       

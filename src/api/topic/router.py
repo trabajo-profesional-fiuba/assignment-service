@@ -9,7 +9,7 @@ from src.api.topic.schemas import (
 )
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
-from src.config.database import get_db
+from src.config.database.database import get_db
 from src.api.topic.exceptions import (
     TopicAlreadyExist,
     InvalidMediaType,

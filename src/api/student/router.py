@@ -17,7 +17,7 @@ from src.api.student.exceptions import (
 )
 
 from src.api.auth.hasher import get_hasher, ShaHasher
-from src.config.database import get_db
+from src.config.database.database import get_db
 from src.config.logging import logger
 
 

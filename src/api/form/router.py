@@ -14,7 +14,7 @@ from src.api.form.exceptions import (
     AnswerIdNotFound,
 )
 
-from src.config.database import get_db
+from src.config.database.database import get_db
 
 router = APIRouter(prefix="/forms", tags=["Forms"])
 
