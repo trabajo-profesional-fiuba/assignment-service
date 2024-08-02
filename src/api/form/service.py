@@ -38,4 +38,15 @@ class FormService:
         return self._repository.delete_answers_by_answer_id(answer_id)
 
     def get_answers(self):
-        return self._repository.get_answers()
+        results = self._repository.get_answers()
+        response_data = [
+            {
+                "answer_id": result.answer_id,
+                "student": result.email,
+                "topic_1": result.topic_1,
+                "topic_2": result.topic_2,
+                "topic_3": result.topic_3,
+            }
+            for result in results
+        ]
+        return response_data

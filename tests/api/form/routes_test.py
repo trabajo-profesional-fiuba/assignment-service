@@ -368,6 +368,6 @@ def test_delete_answers_not_found(fastapi, tables, topics, students):
 
 
 @pytest.mark.integration
-def test_get_answerss_with_success(fastapi, tables, topics):
+def test_get_answers_with_success(fastapi, tables, topics):
     response = fastapi.get(f"{PREFIX}/answers")
     assert response.status_code == status.HTTP_200_OK

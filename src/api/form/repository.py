@@ -87,7 +87,7 @@ class FormRepository:
             return (
                 session.query(
                     FormPreferences.uid.label("answer_id"),
-                    User.email.label("student"),
+                    User.email.label("email"),
                     FormPreferences.topic_1,
                     FormPreferences.topic_2,
                     FormPreferences.topic_3,

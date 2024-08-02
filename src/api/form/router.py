@@ -21,14 +21,14 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
 
 @router.post(
     "/answers",
-    description="This endpoint creates a new topic preferences answer of email sender\
+    description="This endpoint creates topic preferences answers for sender\
         and students from its group if it belongs to one.",
-    response_description="List of created topic preferences answers of email sender\
+    response_description="List of created topic preferences answers of sender\
         and students from its group if it belongs to one.",
     response_model=list[FormPreferencesResponse],
     responses={
         status.HTTP_201_CREATED: {
-            "description": "Successfully added topic preferences"
+            "description": "Successfully added topic preferences answers."
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
@@ -55,9 +55,11 @@ async def add_answers(
 
 @router.get(
     "/answers",
-    description="This endpoint return all answers.",
+    description="This endpoint return all topic preferences answers grouped by answer id.",
     responses={
-        status.HTTP_200_OK: {"description": "Successfully get all answers."},
+        status.HTTP_200_OK: {
+            "description": "Successfully get all answers grouped by answer id."
+        },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
     },
     status_code=status.HTTP_200_OK,
@@ -78,7 +80,7 @@ async def get_answers(session: Annotated[Session, Depends(get_db)]):
     description="This endpoint deletes answers by answer id.",
     responses={
         status.HTTP_200_OK: {
-            "description": "Successfully deleted answers by answer id"
+            "description": "Successfully deleted answers by answer id."
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
     },
