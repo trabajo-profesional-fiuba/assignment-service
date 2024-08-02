@@ -4,7 +4,11 @@ from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.api.form.schemas import FormPreferencesRequest, FormPreferencesResponse
+from src.api.form.schemas import (
+    FormPreferencesRequest,
+    FormPreferencesResponse,
+    GroupAnswerResponse,
+)
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
 from src.api.form.exceptions import (
@@ -56,6 +60,7 @@ async def add_answers(
 @router.get(
     "/answers",
     description="This endpoint return all topic preferences answers grouped by answer id.",
+    response_model=list[GroupAnswerResponse],
     responses={
         status.HTTP_200_OK: {
             "description": "Successfully get all answers grouped by answer id."
