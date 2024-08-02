@@ -1,4 +1,5 @@
 from datetime import datetime
+from collections import defaultdict
 
 from src.api.form.repository import FormRepository
 from src.api.form.schemas import FormPreferencesRequest
@@ -38,15 +39,22 @@ class FormService:
         return self._repository.delete_answers_by_answer_id(answer_id)
 
     def get_answers(self):
-        results = self._repository.get_answers()
+        answers = self._repository.get_answers()
+
+        result = defaultdict(lambda: {"students": [], "topics": []})
+        for answer in answers:
+            answer_id = answer.answer_id
+            result[answer_id]["students"].append(answer.email)
+            result[answer_id]["topics"].extend(
+                [answer.topic_1, answer.topic_2, answer.topic_3]
+            )
+
         response_data = [
             {
-                "answer_id": result.answer_id,
-                "student": result.email,
-                "topic_1": result.topic_1,
-                "topic_2": result.topic_2,
-                "topic_3": result.topic_3,
+                "answer_id": answer_id,
+                "students": data["students"],
+                "topics": list(set(data["topics"])),
             }
-            for result in results
+            for answer_id, data in result.items()
         ]
         return response_data

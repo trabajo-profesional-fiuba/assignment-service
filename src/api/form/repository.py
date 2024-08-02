@@ -2,7 +2,11 @@ from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.api.form.schemas import FormPreferencesRequest, FormPreferencesResponse
+from src.api.form.schemas import (
+    FormPreferencesRequest,
+    FormPreferencesResponse,
+    GroupAnswerResponse,
+)
 from src.api.form.models import FormPreferences
 from src.api.form.exceptions import StudentNotFound
 from src.api.users.model import User, Role
@@ -49,7 +53,7 @@ class FormRepository:
         with self.Session() as session:
             with session.begin():
                 db_items = []
-                responses = []
+                response = []
                 self._verify_topics(
                     session,
                     [answers.topic_1, answers.topic_2, answers.topic_3],
@@ -65,9 +69,9 @@ class FormRepository:
                         topic_3=answers.topic_3,
                     )
                     db_items.append(db_item)
-                    responses.append(FormPreferencesResponse.model_validate(db_item))
+                    response.append(FormPreferencesResponse.model_validate(db_item))
                 session.add_all(db_items)
-                return responses
+                return response
 
     def delete_answers_by_answer_id(self, answer_id: datetime):
         with self.Session() as session:
@@ -84,9 +88,10 @@ class FormRepository:
 
     def get_answers(self):
         with self.Session() as session:
-            return (
+            response = []
+            db_items = (
                 session.query(
-                    FormPreferences.uid.label("answer_id"),
+                    FormPreferences.answer_id,
                     User.email.label("email"),
                     FormPreferences.topic_1,
                     FormPreferences.topic_2,
@@ -95,3 +100,6 @@ class FormRepository:
                 .join(User, User.id == FormPreferences.uid)
                 .all()
             )
+            for db_item in db_items:
+                response.append(GroupAnswerResponse.model_validate(db_item))
+            return response

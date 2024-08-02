@@ -22,3 +22,13 @@ class FormPreferencesResponse(BaseModel):
     topic_3: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class GroupAnswerResponse(BaseModel):
+    answer_id: datetime
+    email: str
+    topic_1: str
+    topic_2: str
+    topic_3: str
+
+    model_config = ConfigDict(from_attributes=True)
