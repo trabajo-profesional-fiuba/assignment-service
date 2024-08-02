@@ -4,7 +4,7 @@ from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.api.form.schemas import GroupFormRequest, GroupFormResponse
+from src.api.form.schemas import FormPreferencesRequest, FormPreferencesResponse
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
 from src.api.form.exceptions import (
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
         and students from its group if it belongs to one.",
     response_description="List of created topic preferences answers of email sender\
         and students from its group if it belongs to one.",
-    response_model=list[GroupFormResponse],
+    response_model=list[FormPreferencesResponse],
     responses={
         status.HTTP_201_CREATED: {
             "description": "Successfully added topic preferences"
@@ -36,7 +36,7 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
     status_code=status.HTTP_201_CREATED,
 )
 async def add_answers(
-    group_form: GroupFormRequest, session: Annotated[Session, Depends(get_db)]
+    group_form: FormPreferencesRequest, session: Annotated[Session, Depends(get_db)]
 ):
     try:
         service = FormService(FormRepository(session))

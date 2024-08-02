@@ -2,7 +2,7 @@ from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.api.form.schemas import GroupFormRequest, GroupFormResponse
+from src.api.form.schemas import FormPreferencesRequest, FormPreferencesResponse
 from src.api.form.models import FormPreferences
 from src.api.form.exceptions import StudentNotFound
 from src.api.users.model import User, Role
@@ -27,7 +27,9 @@ class FormRepository:
         if user.rol != Role.STUDENT:
             raise StudentNotFound("The student must have the role 'student'.")
 
-    def _verify_answer(self, session, group_form: GroupFormRequest, uids: list[int]):
+    def _verify_answer(
+        self, session, group_form: FormPreferencesRequest, uids: list[int]
+    ):
         count = 0
         for uid in uids:
             answer = (
@@ -45,7 +47,7 @@ class FormRepository:
         if count == len(uids):
             raise DuplicatedAnswer("The answer already exists.")
 
-    def add_answers(self, group_form: GroupFormRequest, uids: list[int]):
+    def add_answers(self, group_form: FormPreferencesRequest, uids: list[int]):
         with self.Session() as session:
             with session.begin():
                 db_items = []
@@ -65,7 +67,7 @@ class FormRepository:
                         topic_3=group_form.topic_3,
                     )
                     db_items.append(db_item)
-                    responses.append(GroupFormResponse.model_validate(db_item))
+                    responses.append(FormPreferencesResponse.model_validate(db_item))
                 session.add_all(db_items)
                 return responses
 

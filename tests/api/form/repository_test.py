@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 from src.config.database.database import create_tables, drop_tables, engine
 from src.api.form.repository import FormRepository
-from src.api.form.schemas import GroupFormRequest
+from src.api.form.schemas import FormPreferencesRequest
 from src.api.form.exceptions import (
     TopicNotFound,
     StudentNotFound,
@@ -36,7 +36,7 @@ class TestFormRepository:
 
     @pytest.mark.integration
     def test_add_group_form_with_topic_not_found(self, tables, today):
-        group_form = GroupFormRequest(
+        group_form = FormPreferencesRequest(
             uid_sender=105001,
             uid_student_2=105002,
             uid_student_3=105003,
@@ -64,7 +64,7 @@ class TestFormRepository:
         topic_3 = TopicRequest(name="topic 3", category="category 3")
         topic_repository.add_topics([topic_1, topic_2, topic_3])
 
-        group_form = GroupFormRequest(
+        group_form = FormPreferencesRequest(
             uid_sender=105001,
             uid_student_2=105002,
             uid_student_3=105003,
@@ -112,7 +112,7 @@ class TestFormRepository:
         user_repository = UserRepository(self.Session)
         user_repository.add_students([student_1, student_2, student_3, student_4])
 
-        group_form = GroupFormRequest(
+        group_form = FormPreferencesRequest(
             uid_sender=105001,
             uid_student_2=105002,
             uid_student_3=105003,
@@ -140,7 +140,7 @@ class TestFormRepository:
         user_repository = UserRepository(self.Session)
         user_repository.add_students([student_5])
 
-        group_form = GroupFormRequest(
+        group_form = FormPreferencesRequest(
             uid_sender=105001,
             uid_student_2=105002,
             uid_student_3=105005,
@@ -157,7 +157,7 @@ class TestFormRepository:
 
     @pytest.mark.integration
     def test_add_form_with_same_groups_but_diff_topics(self, tables, today):
-        group_form = GroupFormRequest(
+        group_form = FormPreferencesRequest(
             uid_sender=105001,
             uid_student_2=105002,
             uid_student_3=105003,

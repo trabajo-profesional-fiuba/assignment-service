@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from src.api.form.repository import FormRepository
-from src.api.form.schemas import GroupFormRequest
+from src.api.form.schemas import FormPreferencesRequest
 from src.api.form.exceptions import AnswerIdNotFound
 
 
@@ -20,7 +20,7 @@ class FormService:
                 filtered_uids.append(uid)
         return filtered_uids
 
-    def add_answers(self, group_form: GroupFormRequest):
+    def add_answers(self, group_form: FormPreferencesRequest):
         cleaned_uids = self._filter_uids(
             [
                 group_form.uid_sender,

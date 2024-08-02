@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 
-class GroupFormRequest(BaseModel):
+class FormPreferencesRequest(BaseModel):
     # uid : university id (e.i: 105285)
     uid_sender: int
     uid_student_2: int | None
@@ -14,7 +14,7 @@ class GroupFormRequest(BaseModel):
     topic_3: str
 
 
-class GroupFormResponse(BaseModel):
+class FormPreferencesResponse(BaseModel):
     uid: int
     answer_id: datetime
     topic_1: str
