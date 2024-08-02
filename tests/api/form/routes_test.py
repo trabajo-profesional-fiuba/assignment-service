@@ -66,7 +66,7 @@ def tutors():
 
 
 @pytest.mark.integration
-def test_add_group_form_with_topic_not_found(fastapi, tables):
+def test_add_answers_with_topic_not_found(fastapi, tables):
     today = str(dt.datetime.today())
     body = {
         "uid_sender": 105285,
@@ -84,7 +84,7 @@ def test_add_group_form_with_topic_not_found(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_student_not_found(fastapi, tables, topics):
+def test_add_answers_with_student_not_found(fastapi, tables, topics):
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -105,7 +105,7 @@ def test_add_group_form_with_student_not_found(fastapi, tables, topics):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_success(fastapi, tables, topics, students):
+def test_add_answers_with_success(fastapi, tables, topics, students):
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -158,7 +158,7 @@ def test_add_group_form_with_success(fastapi, tables, topics, students):
 
 
 @pytest.mark.integration
-def test_add_group_form_with_invalid_role(fastapi, tables, topics, tutors):
+def test_add_answers_with_invalid_role(fastapi, tables, topics, tutors):
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -182,7 +182,7 @@ def test_add_group_form_with_invalid_role(fastapi, tables, topics, tutors):
 
 
 @pytest.mark.integration
-def test_add_group_form_duplicated(fastapi, tables, topics, students):
+def test_add_answers_duplicated(fastapi, tables, topics, students):
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -239,7 +239,7 @@ def test_add_group_form_duplicated(fastapi, tables, topics, students):
 
 
 @pytest.mark.integration
-def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
+def test_add_not_duplicated_answers(fastapi, tables, topics, students):
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -336,7 +336,7 @@ def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
 
 
 @pytest.mark.integration
-def test_delete_group_form_with_success(fastapi, tables, topics, students):
+def test_delete_answers_with_success(fastapi, tables, topics, students):
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -361,13 +361,13 @@ def test_delete_group_form_with_success(fastapi, tables, topics, students):
 
 
 @pytest.mark.integration
-def test_delete_group_form_not_found(fastapi, tables, topics, students):
+def test_delete_answers_not_found(fastapi, tables, topics, students):
     today = dt.datetime.today().isoformat()
     response = fastapi.delete(f"{PREFIX}/answers/{today}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.integration
-def test_get_group_forms_with_success(fastapi, tables, topics):
+def test_get_answerss_with_success(fastapi, tables, topics):
     response = fastapi.get(f"{PREFIX}/answers")
     assert response.status_code == status.HTTP_200_OK

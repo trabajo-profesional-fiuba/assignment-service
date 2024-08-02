@@ -36,11 +36,11 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
     status_code=status.HTTP_201_CREATED,
 )
 async def add_answers(
-    group_form: FormPreferencesRequest, session: Annotated[Session, Depends(get_db)]
+    answers: FormPreferencesRequest, session: Annotated[Session, Depends(get_db)]
 ):
     try:
         service = FormService(FormRepository(session))
-        return service.add_answers(group_form)
+        return service.add_answers(answers)
     except (StudentNotFound, TopicNotFound, DuplicatedAnswer) as err:
         raise HTTPException(
             status_code=err.status_code,

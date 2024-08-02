@@ -27,18 +27,16 @@ class FormRepository:
         if user.rol != Role.STUDENT:
             raise StudentNotFound("The student must have the role 'student'.")
 
-    def _verify_answer(
-        self, session, group_form: FormPreferencesRequest, uids: list[int]
-    ):
+    def _verify_answer(self, session, answers: FormPreferencesRequest, uids: list[int]):
         count = 0
         for uid in uids:
             answer = (
                 session.query(FormPreferences)
                 .filter_by(
                     uid=uid,
-                    topic_1=group_form.topic_1,
-                    topic_2=group_form.topic_2,
-                    topic_3=group_form.topic_3,
+                    topic_1=answers.topic_1,
+                    topic_2=answers.topic_2,
+                    topic_3=answers.topic_3,
                 )
                 .first()
             )
@@ -47,24 +45,24 @@ class FormRepository:
         if count == len(uids):
             raise DuplicatedAnswer("The answer already exists.")
 
-    def add_answers(self, group_form: FormPreferencesRequest, uids: list[int]):
+    def add_answers(self, answers: FormPreferencesRequest, uids: list[int]):
         with self.Session() as session:
             with session.begin():
                 db_items = []
                 responses = []
                 self._verify_topics(
                     session,
-                    [group_form.topic_1, group_form.topic_2, group_form.topic_3],
+                    [answers.topic_1, answers.topic_2, answers.topic_3],
                 )
-                self._verify_answer(session, group_form, uids)
+                self._verify_answer(session, answers, uids)
                 for uid in uids:
                     self._verify_user(session, uid)
                     db_item = FormPreferences(
                         uid=uid,
-                        answer_id=group_form.answer_id,
-                        topic_1=group_form.topic_1,
-                        topic_2=group_form.topic_2,
-                        topic_3=group_form.topic_3,
+                        answer_id=answers.answer_id,
+                        topic_1=answers.topic_1,
+                        topic_2=answers.topic_2,
+                        topic_3=answers.topic_3,
                     )
                     db_items.append(db_item)
                     responses.append(FormPreferencesResponse.model_validate(db_item))
@@ -86,4 +84,14 @@ class FormRepository:
 
     def get_answers(self):
         with self.Session() as session:
-            return session.query(FormPreferences).all()
+            return (
+                session.query(
+                    FormPreferences.uid.label("answer_id"),
+                    User.email.label("student"),
+                    FormPreferences.topic_1,
+                    FormPreferences.topic_2,
+                    FormPreferences.topic_3,
+                )
+                .join(User, User.id == FormPreferences.uid)
+                .all()
+            )
