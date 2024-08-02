@@ -20,7 +20,7 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
 
 
 @router.post(
-    "/groups",
+    "/answers",
     description="This endpoint creates a new topic preferences answer of email sender\
         and students from its group if it belongs to one.",
     response_description="List of created topic preferences answers of email sender\
@@ -54,7 +54,7 @@ async def add_group_form(
 
 
 @router.get(
-    "/groups",
+    "/answers",
     description="This endpoint return all answers.",
     responses={
         status.HTTP_200_OK: {"description": "Successfully get all answers."},
@@ -62,10 +62,10 @@ async def add_group_form(
     },
     status_code=status.HTTP_200_OK,
 )
-async def get_group_forms(session: Annotated[Session, Depends(get_db)]):
+async def get_answers(session: Annotated[Session, Depends(get_db)]):
     try:
         service = FormService(FormRepository(session))
-        return service.get_group_forms()
+        return service.get_answers()
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -74,7 +74,7 @@ async def get_group_forms(session: Annotated[Session, Depends(get_db)]):
 
 
 @router.delete(
-    "/groups/{answer_id}",
+    "/answers/{answer_id}",
     description="This endpoint deletes answers by answer id.",
     responses={
         status.HTTP_200_OK: {
@@ -84,7 +84,7 @@ async def get_group_forms(session: Annotated[Session, Depends(get_db)]):
     },
     status_code=status.HTTP_200_OK,
 )
-async def delete_group_form(
+async def delete_answer(
     answer_id: datetime, session: Annotated[Session, Depends(get_db)]
 ):
     try:

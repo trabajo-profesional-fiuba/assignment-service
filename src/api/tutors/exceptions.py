@@ -33,6 +33,7 @@ class TutorNotInserted(Exception):
     def message(self):
         return self._message
 
+
 class TutorNotFound(Exception):
     def __init__(self, message):
         super().__init__()
@@ -40,6 +41,7 @@ class TutorNotFound(Exception):
 
     def message(self):
         return self._message
+
 
 class PeriodDuplicated(Exception):
     def __init__(self, message):
@@ -49,6 +51,7 @@ class PeriodDuplicated(Exception):
     def message(self):
         return self._message
 
+
 class InvalidPeriodId(Exception):
     def __init__(self, message):
         super().__init__()
@@ -56,4 +59,3 @@ class InvalidPeriodId(Exception):
 
     def message(self):
         return self._message
-    

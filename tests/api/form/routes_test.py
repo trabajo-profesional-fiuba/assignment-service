@@ -78,7 +78,7 @@ def test_add_group_form_with_topic_not_found(fastapi, tables):
         "topic_2": "topic2",
         "topic_3": "topic3",
     }
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Topic 'topic1' not found."}
 
@@ -99,7 +99,7 @@ def test_add_group_form_with_student_not_found(fastapi, tables, topics):
         "topic_2": "topic 2",
         "topic_3": "topic 3",
     }
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Student with uid '105285' not found."}
 
@@ -123,7 +123,7 @@ def test_add_group_form_with_success(fastapi, tables, topics, students):
         "topic_2": "topic 2",
         "topic_3": "topic 3",
     }
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
@@ -176,7 +176,7 @@ def test_add_group_form_with_invalid_role(fastapi, tables, topics, tutors):
         "topic_2": "topic 2",
         "topic_3": "topic 3",
     }
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "The student must have the role 'student'."}
 
@@ -200,7 +200,7 @@ def test_add_group_form_duplicated(fastapi, tables, topics, students):
         "topic_2": "topic 2",
         "topic_3": "topic 3",
     }
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
@@ -233,7 +233,7 @@ def test_add_group_form_duplicated(fastapi, tables, topics, students):
         },
     ]
 
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json() == {"detail": "The answer already exists."}
 
@@ -257,7 +257,7 @@ def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
         "topic_2": "topic 2",
         "topic_3": "topic 3",
     }
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
@@ -301,7 +301,7 @@ def test_add_not_duplicated_group_form(fastapi, tables, topics, students):
         "topic_2": "topic 3",
         "topic_3": "topic 1",
     }
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
@@ -354,20 +354,20 @@ def test_delete_group_form_with_success(fastapi, tables, topics, students):
         "topic_2": "topic 2",
         "topic_3": "topic 3",
     }
-    response = fastapi.post(f"{PREFIX}/groups", json=body)
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.delete(f"{PREFIX}/groups/{today}")
+    response = fastapi.delete(f"{PREFIX}/answers/{today}")
     assert response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.integration
 def test_delete_group_form_not_found(fastapi, tables, topics, students):
     today = dt.datetime.today().isoformat()
-    response = fastapi.delete(f"{PREFIX}/groups/{today}")
+    response = fastapi.delete(f"{PREFIX}/answers/{today}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.integration
 def test_get_group_forms_with_success(fastapi, tables, topics):
-    response = fastapi.get(f"{PREFIX}/groups")
+    response = fastapi.get(f"{PREFIX}/answers")
     assert response.status_code == status.HTTP_200_OK

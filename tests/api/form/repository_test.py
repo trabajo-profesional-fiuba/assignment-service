@@ -181,5 +181,5 @@ class TestFormRepository:
     @pytest.mark.integration
     def test_get_forms_with_success(self, tables, today):
         repository = FormRepository(self.Session)
-        response = repository.get_group_forms()
+        response = repository.get_answers()
         assert len(response) == 7

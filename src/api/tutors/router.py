@@ -9,7 +9,13 @@ from src.api.users.repository import UserRepository
 from src.api.tutors.service import TutorService
 from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorResponse
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated, PeriodDuplicated, TutorNotFound, InvalidPeriodId
+from src.api.tutors.exceptions import (
+    InvalidTutorCsv,
+    TutorDuplicated,
+    PeriodDuplicated,
+    TutorNotFound,
+    InvalidPeriodId,
+)
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database.database import get_db
 
@@ -93,9 +99,7 @@ async def add_period(
             detail=err.message(),
         )
     except:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @router.get(
@@ -150,9 +154,7 @@ async def add_period_to_tutor(
             detail=e.message(),
         )
     except:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @router.get(
@@ -180,6 +182,4 @@ async def get_tutor_periods(
             detail=e.message(),
         )
     except:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )       
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

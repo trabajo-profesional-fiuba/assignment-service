@@ -37,5 +37,5 @@ class FormService:
             raise AnswerIdNotFound(f"Group id '{answer_id}' does not exists.")
         return self._repository.delete_group_form_by_answer_id(answer_id)
 
-    def get_group_forms(self):
-        return self._repository.get_group_forms()
+    def get_answers(self):
+        return self._repository.get_answers()

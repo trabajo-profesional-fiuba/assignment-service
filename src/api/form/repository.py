@@ -84,6 +84,6 @@ class FormRepository:
                 .all()
             )
 
-    def get_group_forms(self):
+    def get_answers(self):
         with self.Session() as session:
             return session.query(GroupFormPreferences).all()
