@@ -20,7 +20,7 @@ class FormService:
                 filtered_uids.append(uid)
         return filtered_uids
 
-    def add_group_form(self, group_form: GroupFormRequest):
+    def add_answers(self, group_form: GroupFormRequest):
         cleaned_uids = self._filter_uids(
             [
                 group_form.uid_sender,
@@ -29,13 +29,13 @@ class FormService:
                 group_form.uid_student_4,
             ]
         )
-        return self._repository.add_group_form(group_form, cleaned_uids)
+        return self._repository.add_answers(group_form, cleaned_uids)
 
-    def delete_group_form_by_answer_id(self, answer_id: datetime):
-        group_forms = self._repository.get_group_form_by_answer_id(answer_id)
+    def delete_answers_by_answer_id(self, answer_id: datetime):
+        group_forms = self._repository.get_answers_by_answer_id(answer_id)
         if len(group_forms) == 0:
             raise AnswerIdNotFound(f"Group id '{answer_id}' does not exists.")
-        return self._repository.delete_group_form_by_answer_id(answer_id)
+        return self._repository.delete_answers_by_answer_id(answer_id)
 
     def get_answers(self):
         return self._repository.get_answers()

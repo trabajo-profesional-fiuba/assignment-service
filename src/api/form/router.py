@@ -35,12 +35,12 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
     },
     status_code=status.HTTP_201_CREATED,
 )
-async def add_group_form(
+async def add_answers(
     group_form: GroupFormRequest, session: Annotated[Session, Depends(get_db)]
 ):
     try:
         service = FormService(FormRepository(session))
-        return service.add_group_form(group_form)
+        return service.add_answers(group_form)
     except (StudentNotFound, TopicNotFound, DuplicatedAnswer) as err:
         raise HTTPException(
             status_code=err.status_code,
@@ -89,7 +89,7 @@ async def delete_answer(
 ):
     try:
         service = FormService(FormRepository(session))
-        return service.delete_group_form_by_answer_id(answer_id)
+        return service.delete_answers_by_answer_id(answer_id)
     except AnswerIdNotFound as err:
         raise HTTPException(
             status_code=err.status_code,

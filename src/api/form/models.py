@@ -6,8 +6,8 @@ from sqlalchemy.orm import validates
 from src.api.form.exceptions import StudentNotFound
 
 
-class GroupFormPreferences(Base):
-    __tablename__ = "group_preferences"
+class FormPreferences(Base):
+    __tablename__ = "form_preferences"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     uid = Column(Integer, ForeignKey("users.id"))
@@ -17,4 +17,4 @@ class GroupFormPreferences(Base):
     topic_3 = Column(String, ForeignKey("topics.name"), nullable=False)
 
     # Set relationship with Student
-    student = relationship("User", back_populates="group_preferences")
+    student = relationship("User", back_populates="form_preferences")

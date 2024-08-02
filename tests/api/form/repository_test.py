@@ -49,7 +49,7 @@ class TestFormRepository:
 
         form_repository = FormRepository(self.Session)
         with pytest.raises(TopicNotFound):
-            form_repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
+            form_repository.add_answers(group_form, [105001, 105002, 105003, 105004])
 
     @pytest.mark.integration
     def test_add_group_form_with_student_not_found(self, tables, today):
@@ -77,7 +77,7 @@ class TestFormRepository:
 
         repository = FormRepository(self.Session)
         with pytest.raises(StudentNotFound):
-            repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
+            repository.add_answers(group_form, [105001, 105002, 105003, 105004])
 
     @pytest.mark.integration
     def test_verify_duplicated_answer(self, tables, today):
@@ -124,9 +124,9 @@ class TestFormRepository:
         )
 
         repository = FormRepository(self.Session)
-        repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
+        repository.add_answers(group_form, [105001, 105002, 105003, 105004])
         with pytest.raises(DuplicatedAnswer):
-            repository.add_group_form(group_form, [105001, 105002, 105003, 105004])
+            repository.add_answers(group_form, [105001, 105002, 105003, 105004])
 
     @pytest.mark.integration
     def test_verify_not_duplicated_answer(self, tables, today):
@@ -152,7 +152,7 @@ class TestFormRepository:
         )
 
         repository = FormRepository(self.Session)
-        response = repository.add_group_form(group_form, [105001, 105002, 105005])
+        response = repository.add_answers(group_form, [105001, 105002, 105005])
         assert len(response) == 3
 
     @pytest.mark.integration
@@ -169,13 +169,11 @@ class TestFormRepository:
         )
 
         repository = FormRepository(self.Session)
-        response = repository.add_group_form(
-            group_form, [105001, 105002, 105003, 105004]
-        )
-        response = repository.get_group_form_by_answer_id(today)
+        response = repository.add_answers(group_form, [105001, 105002, 105003, 105004])
+        response = repository.get_answers_by_answer_id(today)
         assert len(response) == 4
-        repository.delete_group_form_by_answer_id(today)
-        result = repository.get_group_form_by_answer_id(today)
+        repository.delete_answers_by_answer_id(today)
+        result = repository.get_answers_by_answer_id(today)
         assert len(result) == 0
 
     @pytest.mark.integration

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from src.api.form.schemas import GroupFormRequest, GroupFormResponse
-from src.api.form.models import GroupFormPreferences
+from src.api.form.models import FormPreferences
 from src.api.form.exceptions import StudentNotFound
 from src.api.users.model import User, Role
 from src.api.topic.models import Topic
@@ -31,7 +31,7 @@ class FormRepository:
         count = 0
         for uid in uids:
             answer = (
-                session.query(GroupFormPreferences)
+                session.query(FormPreferences)
                 .filter_by(
                     uid=uid,
                     topic_1=group_form.topic_1,
@@ -45,7 +45,7 @@ class FormRepository:
         if count == len(uids):
             raise DuplicatedAnswer("The answer already exists.")
 
-    def add_group_form(self, group_form: GroupFormRequest, uids: list[int]):
+    def add_answers(self, group_form: GroupFormRequest, uids: list[int]):
         with self.Session() as session:
             with session.begin():
                 db_items = []
@@ -57,7 +57,7 @@ class FormRepository:
                 self._verify_answer(session, group_form, uids)
                 for uid in uids:
                     self._verify_user(session, uid)
-                    db_item = GroupFormPreferences(
+                    db_item = FormPreferences(
                         uid=uid,
                         answer_id=group_form.answer_id,
                         topic_1=group_form.topic_1,
@@ -69,21 +69,19 @@ class FormRepository:
                 session.add_all(db_items)
                 return responses
 
-    def delete_group_form_by_answer_id(self, answer_id: datetime):
+    def delete_answers_by_answer_id(self, answer_id: datetime):
         with self.Session() as session:
             with session.begin():
-                session.query(GroupFormPreferences).filter_by(
-                    answer_id=answer_id
-                ).delete()
+                session.query(FormPreferences).filter_by(answer_id=answer_id).delete()
 
-    def get_group_form_by_answer_id(self, answer_id: datetime):
+    def get_answers_by_answer_id(self, answer_id: datetime):
         with self.Session() as session:
             return (
-                session.query(GroupFormPreferences)
-                .filter(GroupFormPreferences.answer_id == answer_id)
+                session.query(FormPreferences)
+                .filter(FormPreferences.answer_id == answer_id)
                 .all()
             )
 
     def get_answers(self):
         with self.Session() as session:
-            return session.query(GroupFormPreferences).all()
+            return session.query(FormPreferences).all()
