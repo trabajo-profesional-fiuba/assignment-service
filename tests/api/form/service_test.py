@@ -4,7 +4,7 @@ from datetime import datetime
 
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
-from src.api.form.schemas import GroupAnswerResponse
+from src.api.form.schemas import UserAnswerResponse
 
 
 @pytest.fixture
@@ -57,14 +57,14 @@ def test_get_answers_empty(service, mock_repository):
 def test_get_answers_single_group(service, mock_repository):
     answer_id_1 = datetime(2024, 8, 1)
     mock_repository.get_answers.return_value = [
-        GroupAnswerResponse(
+        UserAnswerResponse(
             answer_id=answer_id_1,
             email="student1@example.com",
             topic_1="topic 1",
             topic_2="topic 2",
             topic_3="topic 3",
         ),
-        GroupAnswerResponse(
+        UserAnswerResponse(
             answer_id=answer_id_1,
             email="student2@example.com",
             topic_1="topic 1",
@@ -93,21 +93,21 @@ def test_get_answers_multiple_groups(service, mock_repository):
     answer_id_1 = datetime(2024, 8, 1)
     answer_id_2 = datetime(2024, 8, 2)
     mock_repository.get_answers.return_value = [
-        GroupAnswerResponse(
+        UserAnswerResponse(
             answer_id=answer_id_1,
             email="student1@example.com",
             topic_1="topic 1",
             topic_2="topic 2",
             topic_3="topic 3",
         ),
-        GroupAnswerResponse(
+        UserAnswerResponse(
             answer_id=answer_id_1,
             email="student2@example.com",
             topic_1="topic 1",
             topic_2="topic 2",
             topic_3="topic 3",
         ),
-        GroupAnswerResponse(
+        UserAnswerResponse(
             answer_id=answer_id_2,
             email="student3@example.com",
             topic_1="topic 2",

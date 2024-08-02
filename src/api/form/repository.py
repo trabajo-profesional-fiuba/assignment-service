@@ -5,7 +5,7 @@ from datetime import datetime
 from src.api.form.schemas import (
     FormPreferencesRequest,
     FormPreferencesResponse,
-    GroupAnswerResponse,
+    UserAnswerResponse,
 )
 from src.api.form.models import FormPreferences
 from src.api.form.exceptions import StudentNotFound
@@ -101,5 +101,5 @@ class FormRepository:
                 .all()
             )
             for db_item in db_items:
-                response.append(GroupAnswerResponse.model_validate(db_item))
+                response.append(UserAnswerResponse.model_validate(db_item))
             return response

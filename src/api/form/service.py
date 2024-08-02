@@ -2,7 +2,7 @@ from datetime import datetime
 from collections import defaultdict
 
 from src.api.form.repository import FormRepository
-from src.api.form.schemas import FormPreferencesRequest, GroupAnswerResponse
+from src.api.form.schemas import FormPreferencesRequest, UserAnswerResponse
 from src.api.form.exceptions import AnswerIdNotFound
 
 
@@ -46,7 +46,7 @@ class FormService:
             raise AnswerIdNotFound(f"Group id '{answer_id}' does not exists.")
         return self._repository.delete_answers_by_answer_id(answer_id)
 
-    def _get_students_topics(self, db_items: list[GroupAnswerResponse]):
+    def _get_students_topics(self, db_items: list[UserAnswerResponse]):
         """
         Extracts students and their associated topics from database items.
         """
@@ -61,7 +61,7 @@ class FormService:
 
     def get_answers(self):
         """
-        Retrieves answers from the repository, processes the data to group students 
+        Retrieves answers from the repository, processes the data to group students
         by their answers, and returns a formatted response.
 
         Returns a list of dictionaries, each representing an answer with its associated
