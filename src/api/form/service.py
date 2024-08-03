@@ -2,7 +2,11 @@ from datetime import datetime
 from collections import defaultdict
 
 from src.api.form.repository import FormRepository
-from src.api.form.schemas import FormPreferencesRequest, UserAnswerResponse
+from src.api.form.schemas import (
+    FormPreferencesRequest,
+    UserAnswerResponse,
+    GroupAnswerResponse,
+)
 from src.api.form.exceptions import AnswerIdNotFound
 
 
@@ -11,31 +15,31 @@ class FormService:
     def __init__(self, form_repository: FormRepository):
         self._repository = form_repository
 
-    def _filter_uids(self, uids: list[int]):
+    def _filter_user_ids(self, user_ids: list[int]):
         """
         Filters out 'None' values from a list of university IDs.
 
         Returns a list of university IDs with 'None' values removed.
         """
-        filtered_uids = []
-        for uid in uids:
-            if uid is not None:
-                filtered_uids.append(uid)
-        return filtered_uids
+        filtered_user_ids = []
+        for user_id in user_ids:
+            if user_id is not None:
+                filtered_user_ids.append(user_id)
+        return filtered_user_ids
 
     def add_answers(self, answers: FormPreferencesRequest):
         """
         Adds a new set of answers to the repository.
         """
-        cleaned_uids = self._filter_uids(
+        cleaned_user_ids = self._filter_user_ids(
             [
-                answers.uid_sender,
-                answers.uid_student_2,
-                answers.uid_student_3,
-                answers.uid_student_4,
+                answers.user_id_sender,
+                answers.user_id_student_2,
+                answers.user_id_student_3,
+                answers.user_id_student_4,
             ]
         )
-        return self._repository.add_answers(answers, cleaned_uids)
+        return self._repository.add_answers(answers, cleaned_user_ids)
 
     def delete_answers_by_answer_id(self, answer_id: datetime):
         """
@@ -46,16 +50,16 @@ class FormService:
             raise AnswerIdNotFound(f"Group id '{answer_id}' does not exists.")
         return self._repository.delete_answers_by_answer_id(answer_id)
 
-    def _get_students_topics(self, db_items: list[UserAnswerResponse]):
+    def _get_students_topics(self, answers: list[UserAnswerResponse]):
         """
         Extracts students and their associated topics from database items.
         """
         result = defaultdict(lambda: {"students": [], "topics": []})
-        for db_item in db_items:
-            answer_id = db_item.answer_id
-            result[answer_id]["students"].append(db_item.email)
+        for answer in answers:
+            answer_id = answer.answer_id
+            result[answer_id]["students"].append(answer.email)
             result[answer_id]["topics"].extend(
-                [db_item.topic_1, db_item.topic_2, db_item.topic_3]
+                [answer.topic_1, answer.topic_2, answer.topic_3]
             )
         return result
 
@@ -69,12 +73,11 @@ class FormService:
         """
         db_items = self._repository.get_answers()
         students_topics = self._get_students_topics(db_items)
-        response = [
-            {
-                "answer_id": answer_id,
-                "students": data["students"],
-                "topics": list(set(data["topics"])),
-            }
+        return [
+            GroupAnswerResponse(
+                answer_id=answer_id,
+                students=data["students"],
+                topics=list(set(data["topics"])),
+            )
             for answer_id, data in students_topics.items()
         ]
-        return response

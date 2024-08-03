@@ -24,20 +24,22 @@ class FormRepository:
             if not session.query(Topic).filter_by(name=topic).first():
                 raise TopicNotFound(f"Topic '{topic}' not found.")
 
-    def _verify_user(self, session, uid: int):
-        user = session.query(User).filter_by(id=uid).first()
+    def _verify_user(self, session, user_id: int):
+        user = session.query(User).filter_by(id=user_id).first()
         if not user:
-            raise StudentNotFound(f"Student with uid '{uid}' not found.")
+            raise StudentNotFound(f"Student with user_id '{user_id}' not found.")
         if user.rol != Role.STUDENT:
             raise StudentNotFound("The student must have the role 'student'.")
 
-    def _verify_answer(self, session, answers: FormPreferencesRequest, uids: list[int]):
+    def _verify_answer(
+        self, session, answers: FormPreferencesRequest, user_ids: list[int]
+    ):
         count = 0
-        for uid in uids:
+        for user_id in user_ids:
             answer = (
                 session.query(FormPreferences)
                 .filter_by(
-                    uid=uid,
+                    user_id=user_id,
                     topic_1=answers.topic_1,
                     topic_2=answers.topic_2,
                     topic_3=answers.topic_3,
@@ -46,10 +48,10 @@ class FormRepository:
             )
             if answer is not None:
                 count += 1
-        if count == len(uids):
+        if count == len(user_ids):
             raise DuplicatedAnswer("The answer already exists.")
 
-    def add_answers(self, answers: FormPreferencesRequest, uids: list[int]):
+    def add_answers(self, answers: FormPreferencesRequest, user_ids: list[int]):
         with self.Session() as session:
             with session.begin():
                 db_items = []
@@ -58,11 +60,11 @@ class FormRepository:
                     session,
                     [answers.topic_1, answers.topic_2, answers.topic_3],
                 )
-                self._verify_answer(session, answers, uids)
-                for uid in uids:
-                    self._verify_user(session, uid)
+                self._verify_answer(session, answers, user_ids)
+                for user_id in user_ids:
+                    self._verify_user(session, user_id)
                     db_item = FormPreferences(
-                        uid=uid,
+                        user_id=user_id,
                         answer_id=answers.answer_id,
                         topic_1=answers.topic_1,
                         topic_2=answers.topic_2,
@@ -97,7 +99,7 @@ class FormRepository:
                     FormPreferences.topic_2,
                     FormPreferences.topic_3,
                 )
-                .join(User, User.id == FormPreferences.uid)
+                .join(User, User.id == FormPreferences.user_id)
                 .all()
             )
             for db_item in db_items:

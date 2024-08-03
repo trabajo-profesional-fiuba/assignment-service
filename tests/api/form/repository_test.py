@@ -37,10 +37,10 @@ class TestFormRepository:
     @pytest.mark.integration
     def test_add_answers_with_topic_not_found(self, tables, today):
         answers = FormPreferencesRequest(
-            uid_sender=105001,
-            uid_student_2=105002,
-            uid_student_3=105003,
-            uid_student_4=105004,
+            user_id_sender=105001,
+            user_id_student_2=105002,
+            user_id_student_3=105003,
+            user_id_student_4=105004,
             answer_id=today,
             topic_1="topic 1",
             topic_2="topic 2",
@@ -65,10 +65,10 @@ class TestFormRepository:
         topic_repository.add_topics([topic_1, topic_2, topic_3])
 
         answers = FormPreferencesRequest(
-            uid_sender=105001,
-            uid_student_2=105002,
-            uid_student_3=105003,
-            uid_student_4=105004,
+            user_id_sender=105001,
+            user_id_student_2=105002,
+            user_id_student_3=105003,
+            user_id_student_4=105004,
             answer_id=today,
             topic_1="topic 1",
             topic_2="topic 2",
@@ -113,10 +113,10 @@ class TestFormRepository:
         user_repository.add_students([student_1, student_2, student_3, student_4])
 
         answers = FormPreferencesRequest(
-            uid_sender=105001,
-            uid_student_2=105002,
-            uid_student_3=105003,
-            uid_student_4=105004,
+            user_id_sender=105001,
+            user_id_student_2=105002,
+            user_id_student_3=105003,
+            user_id_student_4=105004,
             answer_id=today,
             topic_1="topic 1",
             topic_2="topic 2",
@@ -141,10 +141,10 @@ class TestFormRepository:
         user_repository.add_students([student_5])
 
         answers = FormPreferencesRequest(
-            uid_sender=105001,
-            uid_student_2=105002,
-            uid_student_3=105005,
-            uid_student_4=None,
+            user_id_sender=105001,
+            user_id_student_2=105002,
+            user_id_student_3=105005,
+            user_id_student_4=None,
             answer_id=today,
             topic_1="topic 1",
             topic_2="topic 2",
@@ -158,10 +158,10 @@ class TestFormRepository:
     @pytest.mark.integration
     def test_add_answers_with_same_groups_but_diff_topics(self, tables, today):
         answers = FormPreferencesRequest(
-            uid_sender=105001,
-            uid_student_2=105002,
-            uid_student_3=105003,
-            uid_student_4=105003,
+            user_id_sender=105001,
+            user_id_student_2=105002,
+            user_id_student_3=105003,
+            user_id_student_4=105003,
             answer_id=today,
             topic_1="topic 2",
             topic_2="topic 3",

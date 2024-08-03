@@ -69,10 +69,10 @@ def tutors():
 def test_add_answers_with_topic_not_found(fastapi, tables):
     today = str(dt.datetime.today())
     body = {
-        "uid_sender": 105285,
-        "uid_student_2": 105286,
-        "uid_student_3": 105287,
-        "uid_student_4": 105288,
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
         "answer_id": today,
         "topic_1": "topic1",
         "topic_2": "topic2",
@@ -90,10 +90,10 @@ def test_add_answers_with_student_not_found(fastapi, tables, topics):
 
     today = str(dt.datetime.today())
     body = {
-        "uid_sender": 105285,
-        "uid_student_2": 105286,
-        "uid_student_3": 105287,
-        "uid_student_4": 105288,
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
         "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
@@ -101,7 +101,7 @@ def test_add_answers_with_student_not_found(fastapi, tables, topics):
     }
     response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Student with uid '105285' not found."}
+    assert response.json() == {"detail": "Student with user_id '105285' not found."}
 
 
 @pytest.mark.integration
@@ -114,10 +114,10 @@ def test_add_answers_with_success(fastapi, tables, topics, students):
 
     today = dt.datetime.today().isoformat()
     body = {
-        "uid_sender": 105285,
-        "uid_student_2": 105286,
-        "uid_student_3": 105287,
-        "uid_student_4": 105288,
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
         "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
@@ -127,28 +127,28 @@ def test_add_answers_with_success(fastapi, tables, topics, students):
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
-            "uid": 105285,
+            "user_id": 105285,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105286,
+            "user_id": 105286,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105287,
+            "user_id": 105287,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105288,
+            "user_id": 105288,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
@@ -167,10 +167,10 @@ def test_add_answers_with_invalid_role(fastapi, tables, topics, tutors):
 
     today = dt.datetime.today().isoformat()
     body = {
-        "uid_sender": 12345678,
-        "uid_student_2": 23456789,
-        "uid_student_3": 34567890,
-        "uid_student_4": 45678901,
+        "user_id_sender": 12345678,
+        "user_id_student_2": 23456789,
+        "user_id_student_3": 34567890,
+        "user_id_student_4": 45678901,
         "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
@@ -191,10 +191,10 @@ def test_add_answers_duplicated(fastapi, tables, topics, students):
 
     today = dt.datetime.today().isoformat()
     body = {
-        "uid_sender": 105285,
-        "uid_student_2": 105286,
-        "uid_student_3": 105287,
-        "uid_student_4": 105288,
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
         "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
@@ -204,28 +204,28 @@ def test_add_answers_duplicated(fastapi, tables, topics, students):
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
-            "uid": 105285,
+            "user_id": 105285,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105286,
+            "user_id": 105286,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105287,
+            "user_id": 105287,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105288,
+            "user_id": 105288,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
@@ -248,10 +248,10 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students):
 
     today = dt.datetime.today().isoformat()
     body = {
-        "uid_sender": 105285,
-        "uid_student_2": 105286,
-        "uid_student_3": 105287,
-        "uid_student_4": 105288,
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
         "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",
@@ -261,28 +261,28 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students):
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
-            "uid": 105285,
+            "user_id": 105285,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105286,
+            "user_id": 105286,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105287,
+            "user_id": 105287,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
             "topic_3": "topic 3",
         },
         {
-            "uid": 105288,
+            "user_id": 105288,
             "answer_id": today,
             "topic_1": "topic 1",
             "topic_2": "topic 2",
@@ -292,10 +292,10 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students):
 
     today = dt.datetime.today().isoformat()
     body = {
-        "uid_sender": 105285,
-        "uid_student_2": 105286,
-        "uid_student_3": 105287,
-        "uid_student_4": 105288,
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
         "answer_id": today,
         "topic_1": "topic 2",
         "topic_2": "topic 3",
@@ -305,28 +305,28 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students):
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {
-            "uid": 105285,
+            "user_id": 105285,
             "answer_id": today,
             "topic_1": "topic 2",
             "topic_2": "topic 3",
             "topic_3": "topic 1",
         },
         {
-            "uid": 105286,
+            "user_id": 105286,
             "answer_id": today,
             "topic_1": "topic 2",
             "topic_2": "topic 3",
             "topic_3": "topic 1",
         },
         {
-            "uid": 105287,
+            "user_id": 105287,
             "answer_id": today,
             "topic_1": "topic 2",
             "topic_2": "topic 3",
             "topic_3": "topic 1",
         },
         {
-            "uid": 105288,
+            "user_id": 105288,
             "answer_id": today,
             "topic_1": "topic 2",
             "topic_2": "topic 3",
@@ -345,10 +345,10 @@ def test_delete_answers_with_success(fastapi, tables, topics, students):
 
     today = dt.datetime.today().isoformat()
     body = {
-        "uid_sender": 105285,
-        "uid_student_2": 105286,
-        "uid_student_3": 105287,
-        "uid_student_4": 105288,
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
         "answer_id": today,
         "topic_1": "topic 1",
         "topic_2": "topic 2",

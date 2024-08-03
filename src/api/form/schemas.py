@@ -3,11 +3,11 @@ from datetime import datetime
 
 
 class FormPreferencesRequest(BaseModel):
-    # uid : university id (e.i: 105285)
-    uid_sender: int
-    uid_student_2: int | None
-    uid_student_3: int | None
-    uid_student_4: int | None
+    # user_id : university id (e.i: 105285)
+    user_id_sender: int
+    user_id_student_2: int | None
+    user_id_student_3: int | None
+    user_id_student_4: int | None
     answer_id: datetime
     topic_1: str
     topic_2: str
@@ -15,7 +15,7 @@ class FormPreferencesRequest(BaseModel):
 
 
 class FormPreferencesResponse(BaseModel):
-    uid: int
+    user_id: int
     answer_id: datetime
     topic_1: str
     topic_2: str
