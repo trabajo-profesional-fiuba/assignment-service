@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc
 from sqlalchemy import exc
 
-from src.api.users.model import User,Role
+from src.api.users.model import User, Role
 
 from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorResponse
 from src.api.tutors.model import Period, TutorPeriod
@@ -32,11 +32,16 @@ class TutorRepository:
                 return PeriodResponse.model_validate(period_obj)
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message="Period already exist")
-    
+
     def is_tutor(self, tutor_id):
         with self.Session() as session:
-            exists = session.query(User).filter(User.rol == Role.TUTOR).filter(User.id == tutor_id).first()
-            return (True if exists else False)
+            exists = (
+                session.query(User)
+                .filter(User.rol == Role.TUTOR)
+                .filter(User.id == tutor_id)
+                .first()
+            )
+            return True if exists else False
 
     def add_tutor_period(self, tutor_id, period_id):
         try:

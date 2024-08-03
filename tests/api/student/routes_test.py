@@ -71,7 +71,7 @@ def test_get_student_by_ids(fastapi, tables):
     _ = fastapi.post(f"{PREFIX}/upload", files=files)
 
     # Act
-    response = fastapi.get(f"{PREFIX}/", params={"uids": ["105001", "105002"]})
+    response = fastapi.get(f"{PREFIX}/", params={"user_ids": ["105001", "105002"]})
 
     # Assert
     assert response.status_code == status.HTTP_200_OK
@@ -82,7 +82,7 @@ def test_get_student_by_ids(fastapi, tables):
 def test_get_wrongs_student_by_ids_response_404(fastapi, tables):
 
     # Act
-    response = fastapi.get(f"{PREFIX}/", params={"uids": ["1", "2"]})
+    response = fastapi.get(f"{PREFIX}/", params={"user_ids": ["1", "2"]})
 
     # Assert
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -92,7 +92,7 @@ def test_get_wrongs_student_by_ids_response_404(fastapi, tables):
 def test_get_duplicate_student_by_ids_response_409(fastapi, tables):
 
     # Act
-    response = fastapi.get(f"{PREFIX}/", params={"uids": ["1", "1"]})
+    response = fastapi.get(f"{PREFIX}/", params={"user_ids": ["1", "1"]})
 
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT

@@ -353,6 +353,7 @@ def test_raise_404_if_tutor_not_exists(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
+
 @pytest.mark.integration
 def test_add_same_period_to_same_tutor_raise_error(fastapi, tables):
 

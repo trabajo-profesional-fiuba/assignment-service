@@ -65,22 +65,22 @@ async def upload_csv_file(
 @router.get(
     "/",
     response_model=list[UserResponse],
-    description="Returns list of students based on uids",
+    description="Returns list of students based on user_ids",
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_404_NOT_FOUND: {
             "description": "Uid is not present inside the database"
         },
-        status.HTTP_409_CONFLICT: {"description": "There are uids duplicated"},
+        status.HTTP_409_CONFLICT: {"description": "There are user_ids duplicated"},
     },
 )
 async def get_students_by_ids(
     session: Annotated[Session, Depends(get_db)],
-    uids: list[int] = Query(...),
+    user_ids: list[int] = Query(...),
 ):
     try:
         service = StudentService(StudentRepository(session))
-        res = service.get_students_by_ids(uids)
+        res = service.get_students_by_ids(user_ids)
         return res
     except StudentNotFound as st:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(st))

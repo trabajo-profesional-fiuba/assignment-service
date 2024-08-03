@@ -1,5 +1,13 @@
 from src.config.database.base import Base
-from sqlalchemy import Column, String, Integer, ForeignKey, Boolean, DateTime, UniqueConstraint
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    ForeignKey,
+    Boolean,
+    DateTime,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -27,9 +35,7 @@ class TutorPeriod(Base):
 
     tutor = relationship("User", back_populates="periods")
     period = relationship("Period", back_populates="periods")
-    
+
     __table_args__ = (
         UniqueConstraint("period_id", "tutor_id", name="tutor_period_const"),
     )
-
-    

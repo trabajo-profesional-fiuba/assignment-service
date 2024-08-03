@@ -6,7 +6,6 @@ if __name__ == "__main__":
     host = api_config.host
     port = api_config.port
 
-
     print(f"Host: {host}")
     print(f"Port: {port}")
 

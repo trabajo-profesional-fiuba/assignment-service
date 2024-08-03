@@ -43,11 +43,11 @@ class ApiConfiguration:
     @property
     def enviroment(self) -> str:
         return self.config("ENVIRONMENT", cast=str, default="DEV")
-    
+
     @property
     def port(self) -> int:
         return self.config("PORT", cast=int, default=8000)
-    
+
     @property
     def host(self) -> str:
         return self.config("HOST", cast=str, default="127.0.0.1")
