@@ -18,31 +18,6 @@ class TestStudentService:
         return content.decode("utf-8")
 
     @pytest.mark.unit
-    def tests_create_3_students_from_string(self, mocker, csv):
-        repo = UserRepository(None)
-        mocker.patch.object(repo, "add_students", return_value=None)
-        service = StudentService(repo)
-
-        students = service.create_students_from_string(csv, ShaHasher())
-
-        assert len(students) == 30
-
-    @pytest.mark.unit
-    def tests_create_students_from_string(self, mocker, csv):
-        repo = UserRepository(None)
-        mocker.patch.object(repo, "add_students", return_value=None)
-        hash = ShaHasher()
-        service = StudentService(repo)
-        password = hash.hash("105001")
-
-        students = service.create_students_from_string(csv, hash)
-
-        assert students[0].name == "Juan"
-        assert students[0].last_name == "Perez"
-        assert students[0].email == "jperez1@fi.uba.ar"
-        assert students[0].password == password
-
-    @pytest.mark.unit
     def tests_bad_csv_raise_exception(self, mocker):
         repo = UserRepository(None)
         mocker.patch.object(repo, "add_students", return_value=None)

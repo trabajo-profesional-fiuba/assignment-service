@@ -8,7 +8,6 @@ from src.api.student.exceptions import (
     StudentNotFound,
 )
 
-
 class StudentService:
 
     def __init__(self, repository) -> None:

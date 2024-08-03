@@ -13,7 +13,7 @@ class StudentRepository:
             for student in students:
                 session.expunge(student)
 
-        return students_found
+        return students
 
     def get_students_by_ids(self, ids: list[int]):
         with self.Session() as session:
