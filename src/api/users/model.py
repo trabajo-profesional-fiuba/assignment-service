@@ -24,5 +24,5 @@ class User(Base):
         "FormPreferences", back_populates="student", uselist=False, lazy="select"
     )
     periods = relationship(
-        "TutorPeriod", back_populates="tutor", uselist=True, lazy="subquery"
+        "TutorPeriod", back_populates="tutor", uselist=True, lazy="immediate"
     )

@@ -51,7 +51,7 @@ class TutorService:
         valid = self._validate(period.id)
         if valid:
             period_db = Period(id=period.id)
-            return PeriodResponse.model_validate(self._repository.add_period(period))
+            return PeriodResponse.model_validate(self._repository.add_period(period_db))
         else:
             raise InvalidPeriodId(
                 message="Period id should follow patter nC20year, ie. 1C2024"
@@ -59,7 +59,8 @@ class TutorService:
 
     def add_period_to_tutor(self, tutor_id, period_id):
         if self._repository.is_tutor(tutor_id):
-            return TutorResponse.model_validate(self._repository.add_tutor_period(tutor_id, period_id))
+            tutor = self._repository.add_tutor_period(tutor_id, period_id)
+            return TutorResponse.model_validate(tutor)
         else:
             raise TutorNotFound(f"{tutor_id} was not found as TUTOR")
 
