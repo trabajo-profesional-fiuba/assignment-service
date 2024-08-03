@@ -3,7 +3,6 @@ from sqlalchemy import exc
 
 
 from src.api.users.model import User, Role
-from src.api.users.schemas import UserResponse
 from src.api.users.exceptions import UserNotFound
 
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
@@ -20,9 +19,9 @@ class UserRepository:
             user = session.query(User).filter(User.email == email).one_or_none()
             if not user:
                 raise UserNotFound("User not found")
-
-            # FIXME - Separar en schema
-            return user
+            session.expunge(user)
+        
+        return user
 
     def _add_users(self, new_users: list[User]):
         with self.Session() as session:
