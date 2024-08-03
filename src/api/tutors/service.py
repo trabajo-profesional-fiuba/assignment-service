@@ -7,7 +7,8 @@ from src.api.tutors.schemas import (
     PeriodResponse,
     TutorList,
     TutorResponse,
-    PeriodList)
+    PeriodList,
+)
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import InvalidPeriodId, TutorNotFound
 from src.api.tutors.model import Period, TutorPeriod
@@ -30,7 +31,7 @@ class TutorService:
                 last_name=last_name,
                 email=email,
                 password=hasher.hash(str(id)),
-                role=Role.TUTOR
+                role=Role.TUTOR,
             )
             tutors.append(tutor)
         tutors = TutorList.model_validate(self._repository.add_tutors(tutors))
@@ -68,4 +69,6 @@ class TutorService:
         return PeriodList.model_validate(self._repository.get_all_periods(order))
 
     def get_periods_by_id(self, tutor_id):
-        return TutorResponse.model_validate(self._repository.get_all_periods_by_id(tutor_id))
+        return TutorResponse.model_validate(
+            self._repository.get_all_periods_by_id(tutor_id)
+        )

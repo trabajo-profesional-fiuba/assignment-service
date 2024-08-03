@@ -8,6 +8,8 @@ from src.api.form.schemas import (
     FormPreferencesRequest,
     FormPreferencesResponse,
     GroupAnswerResponse,
+    FormPreferencesList,
+    GroupAnswerList,
 )
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
@@ -29,7 +31,7 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
         and students from its group if it belongs to one.",
     response_description="List of created topic preferences answers of sender\
         and students from its group if it belongs to one.",
-    response_model=list[FormPreferencesResponse],
+    response_model=FormPreferencesList,
     responses={
         status.HTTP_201_CREATED: {
             "description": "Successfully added topic preferences answers."
@@ -60,7 +62,7 @@ async def add_answers(
 @router.get(
     "/answers",
     description="This endpoint return all topic preferences answers grouped by answer id.",
-    response_model=list[GroupAnswerResponse],
+    response_model=GroupAnswerList,
     responses={
         status.HTTP_200_OK: {
             "description": "Successfully get all answers grouped by answer id."

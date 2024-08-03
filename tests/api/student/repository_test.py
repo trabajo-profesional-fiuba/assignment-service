@@ -29,7 +29,7 @@ class TestStudentRepository:
             last_name="Perez",
             email="email@fi,uba.ar",
             password="password",
-            role = Role.STUDENT
+            role=Role.STUDENT,
         )
         student2 = User(
             id=54321,
@@ -37,7 +37,7 @@ class TestStudentRepository:
             last_name="Pipo",
             email="email2@fi,uba.ar",
             password="password1",
-            role = Role.STUDENT
+            role=Role.STUDENT,
         )
         students = [student1, student2]
 
@@ -69,7 +69,7 @@ class TestStudentRepository:
             last_name="Bla",
             email="email3@fi,uba.ar",
             password="password1",
-            role = Role.STUDENT
+            role=Role.STUDENT,
         )
         students = [student3]
 

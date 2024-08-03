@@ -27,7 +27,7 @@ class TutorRepository:
                 session.commit()
                 session.refresh(period)
                 session.expunge(period)
-            
+
             return period
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message="Period already exist")
@@ -71,5 +71,5 @@ class TutorRepository:
                 session.expunge(tutor)
             else:
                 raise TutorNotFound("Tutor doesn't exists")
-        
+
         return tutor

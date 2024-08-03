@@ -1,12 +1,9 @@
-from src.api.topic.schemas import (
-    CategoryRequest,
-    TopicRequest,
-    TopicList
-)
+from src.api.topic.schemas import CategoryRequest, TopicRequest, TopicList
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
 from src.api.topic.exceptions import TopicAlreadyExist
 from src.api.topic.models import Topic, Category
+
 
 class TopicService:
 
@@ -19,9 +16,7 @@ class TopicService:
             categories.append(new_category)
         return categories
 
-    def add_topic(
-        self, topic_name: str, category_name: str, topics: list[Topic]
-    ):
+    def add_topic(self, topic_name: str, category_name: str, topics: list[Topic]):
         new_topic = Topic(name=topic_name, category=category_name)
         if not any(topic.name == topic_name for topic in topics):
             topics.append(new_topic)

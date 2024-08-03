@@ -4,10 +4,7 @@ from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 
 
-from src.api.topic.schemas import (
-    TopicResponse,
-    TopicList
-)
+from src.api.topic.schemas import TopicResponse, TopicList
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
 from src.config.database.database import get_db

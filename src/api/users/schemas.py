@@ -24,6 +24,6 @@ class UserResponse(BaseModel):
 
 class UserList(RootModel):
     root: List[UserResponse]
-    
+
     def __iter__(self):
         return iter(self.root)

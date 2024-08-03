@@ -20,7 +20,7 @@ class UserRepository:
             if not user:
                 raise UserNotFound("User not found")
             session.expunge(user)
-        
+
         return user
 
     def _add_users(self, new_users: list[User]):
