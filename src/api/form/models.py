@@ -17,4 +17,4 @@ class FormPreferences(Base):
     topic_3 = Column(String, ForeignKey("topics.name"), nullable=False)
 
     # Set relationship with Student
-    student = relationship("User", back_populates="form_preferences")
+    student = relationship("User", back_populates="form_preferences", lazy="noload")

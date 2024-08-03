@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict
+from typing import List
+from pydantic import BaseModel, ConfigDict, RootModel
 
 
 class UserResponse(BaseModel):
@@ -6,8 +7,6 @@ class UserResponse(BaseModel):
     name: str
     last_name: str
     email: str
-    # deberiamos sacar las password
-    password: str
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -21,3 +20,10 @@ class UserResponse(BaseModel):
             and self.email == other.email
             and self.password == other.password
         )
+
+
+class UserList(RootModel):
+    root: List[UserResponse]
+
+    def __iter__(self):
+        return iter(self.root)

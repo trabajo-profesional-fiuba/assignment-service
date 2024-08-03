@@ -20,7 +20,7 @@ def creates_user(email, password):
             last_name="Perez",
             email=email,
             password=hash.hash(password),
-            rol=Role.STUDENT,
+            role=Role.STUDENT,
         )
         sess.add(user)
         sess.commit()

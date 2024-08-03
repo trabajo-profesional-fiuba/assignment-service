@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict
+from typing import List
+from pydantic import BaseModel, ConfigDict, RootModel
 from datetime import datetime
 
 
@@ -24,6 +25,13 @@ class FormPreferencesResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class FormPreferencesList(RootModel):
+    root: List[FormPreferencesResponse]
+
+    def __iter__(self):
+        return iter(self.root)
+
+
 class UserAnswerResponse(BaseModel):
     answer_id: datetime
     email: str
@@ -34,7 +42,21 @@ class UserAnswerResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class UserAnswerList(RootModel):
+    root: List[UserAnswerResponse]
+
+    def __iter__(self):
+        return iter(self.root)
+
+
 class GroupAnswerResponse(BaseModel):
     answer_id: datetime
     students: list[str]
     topics: list[str]
+
+
+class GroupAnswerList(RootModel):
+    root: List[GroupAnswerResponse]
+
+    def __iter__(self):
+        return iter(self.root)

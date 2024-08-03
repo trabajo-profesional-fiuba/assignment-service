@@ -4,9 +4,7 @@ from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 
 
-from src.api.topic.schemas import (
-    TopicResponse,
-)
+from src.api.topic.schemas import TopicResponse, TopicList
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
 from src.config.database.database import get_db
@@ -21,7 +19,7 @@ router = APIRouter(prefix="/topics", tags=["Topics"])
 
 @router.post(
     "/upload",
-    response_model=list[TopicResponse],
+    response_model=TopicList,
     description="Creates a list of topics based on a csv file",
     status_code=status.HTTP_201_CREATED,
     responses={
@@ -61,7 +59,7 @@ async def upload_csv_file(
 
 @router.get(
     "/",
-    response_model=list[TopicResponse],
+    response_model=TopicList,
     description="Get a list of topics.",
     status_code=status.HTTP_200_OK,
     responses={
@@ -77,7 +75,7 @@ async def get_topics(
     try:
         service = TopicService(TopicRepository(session))
         topics = service.get_topics()
-        return topics if topics is not None else []
+        return topics
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

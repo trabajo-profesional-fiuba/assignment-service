@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 from datetime import datetime
 from src.api.users.schemas import UserResponse
 
@@ -15,6 +15,10 @@ class PeriodResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PeriodList(RootModel):
+    root: List[PeriodResponse]
+
+
 class TutorPeriodResponse(BaseModel):
     id: int
     period_id: str
@@ -27,3 +31,10 @@ class TutorPeriodResponse(BaseModel):
 
 class TutorResponse(UserResponse):
     periods: List[TutorPeriodResponse] = Field(default=[])
+
+
+class TutorList(RootModel):
+    root: List[TutorResponse]
+
+    def __iter__(self):
+        return iter(self.root)

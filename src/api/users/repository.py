@@ -3,7 +3,6 @@ from sqlalchemy import exc
 
 
 from src.api.users.model import User, Role
-from src.api.users.schemas import UserResponse
 from src.api.users.exceptions import UserNotFound
 
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
@@ -20,40 +19,34 @@ class UserRepository:
             user = session.query(User).filter(User.email == email).one_or_none()
             if not user:
                 raise UserNotFound("User not found")
+            session.expunge(user)
 
-            # FIXME - Separar en schema
-            return user
+        return user
 
-    def _add_users(self, new_users: list[UserResponse], role: Role):
+    def _add_users(self, new_users: list[User]):
         with self.Session() as session:
-            with session.begin():
-                user_objs = []
-                for user in new_users:
-                    user_obj = User(
-                        id=user.id,
-                        name=user.name,
-                        last_name=user.last_name,
-                        email=user.email,
-                        password=user.password,
-                        rol=role,
-                    )
-                    user_objs.append(user_obj)
-                session.add_all(user_objs)
-                return user_objs
+            session.add_all(new_users)
+            session.commit()
+            for user in new_users:
+                session.refresh(user)
+                session.expunge(user)
 
-    def add_tutors(self, tutors: list[UserResponse]):
+        return new_users
+
+    def add_tutors(self, tutors: list[User]):
         # create session and add objects
         try:
-            return self._add_users(tutors, Role.TUTOR)
+            return self._add_users(tutors)
         except exc.IntegrityError as e:
+            print(str(e))
             raise TutorDuplicated("Duplicated tutor")
         except:
             raise TutorNotInserted("Could not insert a student in the database")
 
-    def add_students(self, students: list[UserResponse]):
+    def add_students(self, students: list[User]):
         # create session and add objects
         try:
-            return self._add_users(students, Role.STUDENT)
+            return self._add_users(students)
         except exc.IntegrityError as e:
             raise StudentDuplicated("Student duplicated")
         except:

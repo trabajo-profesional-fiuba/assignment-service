@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict
+from typing import List
+from pydantic import BaseModel, ConfigDict, RootModel
 
 
 class CategoryRequest(BaseModel):
@@ -21,3 +22,10 @@ class TopicResponse(BaseModel):
     category: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TopicList(RootModel):
+    root: List[TopicResponse]
+
+    def __iter__(self):
+        return iter(self.root)

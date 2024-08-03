@@ -28,21 +28,20 @@ class FormRepository:
         user = session.query(User).filter_by(id=user_id).first()
         if not user:
             raise StudentNotFound(f"Student with user_id '{user_id}' not found.")
-        if user.rol != Role.STUDENT:
+        if user.role != Role.STUDENT:
             raise StudentNotFound("The student must have the role 'student'.")
 
-    def _verify_answer(
-        self, session, answers: FormPreferencesRequest, user_ids: list[int]
-    ):
+    def _verify_answer(self, session, topics, user_ids: list[int]):
         count = 0
+        topic_1, topic_2, topic_3 = topics
         for user_id in user_ids:
             answer = (
                 session.query(FormPreferences)
                 .filter_by(
                     user_id=user_id,
-                    topic_1=answers.topic_1,
-                    topic_2=answers.topic_2,
-                    topic_3=answers.topic_3,
+                    topic_1=topic_1,
+                    topic_2=topic_2,
+                    topic_3=topic_3,
                 )
                 .first()
             )
@@ -51,29 +50,20 @@ class FormRepository:
         if count == len(user_ids):
             raise DuplicatedAnswer("The answer already exists.")
 
-    def add_answers(self, answers: FormPreferencesRequest, user_ids: list[int]):
+    def add_answers(
+        self, answers: list[FormPreferences], topics: list[str], user_ids: list[int]
+    ):
         with self.Session() as session:
-            with session.begin():
-                db_items = []
-                response = []
-                self._verify_topics(
-                    session,
-                    [answers.topic_1, answers.topic_2, answers.topic_3],
-                )
-                self._verify_answer(session, answers, user_ids)
-                for user_id in user_ids:
-                    self._verify_user(session, user_id)
-                    db_item = FormPreferences(
-                        user_id=user_id,
-                        answer_id=answers.answer_id,
-                        topic_1=answers.topic_1,
-                        topic_2=answers.topic_2,
-                        topic_3=answers.topic_3,
-                    )
-                    db_items.append(db_item)
-                    response.append(FormPreferencesResponse.model_validate(db_item))
-                session.add_all(db_items)
-                return response
+            self._verify_topics(session, topics)
+            self._verify_answer(session, topics, user_ids)
+            for answer in answers:
+                self._verify_user(session, answer.user_id)
+                session.add(answer)
+            session.commit()
+            for answer in answers:
+                session.refresh(answer)
+                session.expunge(answer)
+        return answers
 
     def delete_answers_by_answer_id(self, answer_id: datetime):
         with self.Session() as session:
@@ -90,8 +80,7 @@ class FormRepository:
 
     def get_answers(self):
         with self.Session() as session:
-            response = []
-            db_items = (
+            answers = (
                 session.query(
                     FormPreferences.answer_id,
                     User.email.label("email"),
@@ -102,6 +91,6 @@ class FormRepository:
                 .join(User, User.id == FormPreferences.user_id)
                 .all()
             )
-            for db_item in db_items:
-                response.append(UserAnswerResponse.model_validate(db_item))
-            return response
+            session.expunge_all()
+
+        return answers

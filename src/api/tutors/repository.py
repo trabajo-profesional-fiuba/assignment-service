@@ -3,8 +3,6 @@ from sqlalchemy import asc, desc
 from sqlalchemy import exc
 
 from src.api.users.model import User, Role
-
-from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorResponse
 from src.api.tutors.model import Period, TutorPeriod
 from src.api.tutors.exceptions import TutorNotFound, PeriodDuplicated
 
@@ -22,14 +20,15 @@ class TutorRepository:
         else:
             raise ValueError("Invalid order direction. Use 'ASC' or 'DESC'.")
 
-    def add_period(self, period: PeriodRequest):
+    def add_period(self, period: Period):
         try:
             with self.Session() as session:
-                period_obj = Period(id=period.id)
-                session.add(period_obj)
+                session.add(period)
                 session.commit()
-                session.refresh(period_obj)
-                return PeriodResponse.model_validate(period_obj)
+                session.refresh(period)
+                session.expunge(period)
+
+            return period
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message="Period already exist")
 
@@ -37,7 +36,7 @@ class TutorRepository:
         with self.Session() as session:
             exists = (
                 session.query(User)
-                .filter(User.rol == Role.TUTOR)
+                .filter(User.role == Role.TUTOR)
                 .filter(User.id == tutor_id)
                 .first()
             )
@@ -49,9 +48,12 @@ class TutorRepository:
                 period_obj = TutorPeriod(period_id=period_id, tutor_id=tutor_id)
                 session.add(period_obj)
                 session.commit()
+                session.refresh(period_obj)
                 tutor = period_obj.tutor
-                tutor_response = TutorResponse.model_validate(tutor)
-                return tutor_response
+                session.expunge(period_obj)
+                session.expunge(tutor)
+
+            return tutor
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
 
@@ -59,13 +61,15 @@ class TutorRepository:
         with self.Session() as session:
             order_clause = self._order_clause(order)
             results = session.query(Period).order_by(order_clause).all()
-            return results
+            session.expunge_all()
+        return results
 
     def get_all_periods_by_id(self, tutor_id):
         with self.Session() as session:
             tutor = session.query(User).filter(User.id == tutor_id).first()
             if tutor:
-                tutor_response = TutorResponse.model_validate(tutor)
-                return tutor_response
+                session.expunge(tutor)
             else:
                 raise TutorNotFound("Tutor doesn't exists")
+
+        return tutor

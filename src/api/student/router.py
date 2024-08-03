@@ -5,7 +5,7 @@ from fastapi import APIRouter, UploadFile, Depends, status, Query
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
-from src.api.users.schemas import UserResponse
+from src.api.users.schemas import UserResponse, UserList
 from src.api.users.repository import UserRepository
 
 from src.api.student.service import StudentService
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/students", tags=["Students"])
 
 @router.post(
     "/upload",
-    response_model=list[UserResponse],
+    response_model=UserList,
     description="Creates list of students based on a csv file",
     status_code=status.HTTP_201_CREATED,
 )
@@ -64,7 +64,7 @@ async def upload_csv_file(
 
 @router.get(
     "/",
-    response_model=list[UserResponse],
+    response_model=UserList,
     description="Returns list of students based on user_ids",
     status_code=status.HTTP_200_OK,
     responses={

@@ -4,10 +4,15 @@ from fastapi import APIRouter, UploadFile, Depends, status, Query
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
-from src.api.users.schemas import UserResponse
 from src.api.users.repository import UserRepository
 from src.api.tutors.service import TutorService
-from src.api.tutors.schemas import PeriodResponse, PeriodRequest, TutorResponse
+from src.api.tutors.schemas import (
+    PeriodResponse,
+    PeriodRequest,
+    TutorResponse,
+    TutorList,
+    PeriodList,
+)
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.exceptions import (
     InvalidTutorCsv,
@@ -24,7 +29,7 @@ router = APIRouter(prefix="/tutors")
 
 @router.post(
     "/upload",
-    response_model=list[UserResponse],
+    response_model=TutorList,
     description="Creates list of tutors based on a csv file",
     summary="Add csv file",
     tags=["Tutors"],
@@ -104,7 +109,7 @@ async def add_period(
 
 @router.get(
     "/periods",
-    response_model=list[PeriodResponse],
+    response_model=PeriodList,
     description="Returns all the periods",
     summary="Get all periods",
     tags=["Periods"],

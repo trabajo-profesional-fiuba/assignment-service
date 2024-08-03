@@ -1,5 +1,6 @@
 from src.api.student.utils import StudentCsvFile
-from src.api.users.schemas import UserResponse
+from src.api.users.schemas import UserResponse, UserList
+from src.api.users.model import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.student.exceptions import (
     InvalidStudentCsv,
@@ -15,21 +16,22 @@ class StudentService:
 
     def create_students_from_string(self, csv: str, hasher: ShaHasher):
         try:
-            students = []
+            students_db = []
             csv_file = StudentCsvFile(csv=csv)
             rows = csv_file.get_info_as_rows()
             for i in rows:
                 name, last_name, id, email = i
-                student = UserResponse(
+                student = User(
                     name=name,
                     last_name=last_name,
                     id=int(id),
                     email=email,
                     password=hasher.hash(str(id)),
+                    role=Role.STUDENT,
                 )
-                students.append(student)
-            self._repository.add_students(students)
-
+                students_db.append(student)
+            students_saved = self._repository.add_students(students_db)
+            students = UserList.model_validate(students_saved)
             return students
         except (InvalidStudentCsv, StudentDuplicated) as e:
             raise e
@@ -39,7 +41,7 @@ class StudentService:
         if len(list(set(ids))) != len(list(ids)):
             raise StudentDuplicated("Query params udis contain duplicates")
 
-        students = self._repository.get_students_by_ids(ids)
+        students = UserList.model_validate(self._repository.get_students_by_ids(ids))
         udis_from_db = [student.id for student in students]
         for id in ids:
             if id not in udis_from_db:
