@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict
+from typing import List
+from pydantic import BaseModel, ConfigDict, RootModel
 
 
 class UserResponse(BaseModel):
@@ -21,3 +22,7 @@ class UserResponse(BaseModel):
             and self.email == other.email
             and self.password == other.password
         )
+
+
+class UserList(RootModel):
+    root: List[UserResponse]

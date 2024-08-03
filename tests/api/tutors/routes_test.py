@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 PREFIX = "/tutors"
 
 
-def creates_user(n, email, rol=Role.TUTOR):
+def creates_user(n, email, role=Role.TUTOR):
 
     Session = sessionmaker(engine)
     with Session() as sess:
@@ -21,7 +21,7 @@ def creates_user(n, email, rol=Role.TUTOR):
             last_name="Perez",
             email=email,
             password="fake",
-            rol=rol,
+            role=role,
         )
         sess.add(user)
         sess.commit()

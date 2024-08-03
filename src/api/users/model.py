@@ -18,9 +18,11 @@ class User(Base):
     last_name = Column(String)
     email = Column(String, index=True, unique=True)
     password = Column(String)
-    rol = Column(Enum(Role))
+    role = Column(Enum(Role))
 
     form_preferences = relationship(
-        "FormPreferences", back_populates="student", uselist=False
+        "FormPreferences", back_populates="student", uselist=False, lazy="select"
     )
-    periods = relationship("TutorPeriod", back_populates="tutor", uselist=True)
+    periods = relationship(
+        "TutorPeriod", back_populates="tutor", uselist=True, lazy="select"
+    )

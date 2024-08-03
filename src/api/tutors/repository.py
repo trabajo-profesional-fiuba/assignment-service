@@ -37,7 +37,7 @@ class TutorRepository:
         with self.Session() as session:
             exists = (
                 session.query(User)
-                .filter(User.rol == Role.TUTOR)
+                .filter(User.role == Role.TUTOR)
                 .filter(User.id == tutor_id)
                 .first()
             )

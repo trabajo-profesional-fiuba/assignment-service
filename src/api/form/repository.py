@@ -28,7 +28,7 @@ class FormRepository:
         user = session.query(User).filter_by(id=user_id).first()
         if not user:
             raise StudentNotFound(f"Student with user_id '{user_id}' not found.")
-        if user.rol != Role.STUDENT:
+        if user.role != Role.STUDENT:
             raise StudentNotFound("The student must have the role 'student'.")
 
     def _verify_answer(

@@ -43,7 +43,7 @@ async def get_access_token(
             "id": user.id,
             "name": user.name,
             "last_name": user.last_name,
-            "rol": user.rol.value,
+            "role": user.role.value,
         }
         access_token = jwt_resolver.create_token(sub, user.name)
         return access_token

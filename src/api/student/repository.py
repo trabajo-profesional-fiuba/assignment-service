@@ -12,7 +12,7 @@ class StudentRepository:
     def get_students(self):
         with self.Session() as session:
             students_found = []
-            students = session.query(User).filter(User.rol == Role.STUDENT).all()
+            students = session.query(User).filter(User.role == Role.STUDENT).all()
             for student in students:
                 students_found.append(UserResponse.model_validate(student))
 
