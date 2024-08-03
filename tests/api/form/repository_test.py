@@ -42,32 +42,38 @@ class TestFormRepository:
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
-
                 user_id=105002,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105003,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105004,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3")
+                topic_3="topic 3",
+            ),
         ]
 
         form_repository = FormRepository(self.Session)
         with pytest.raises(TopicNotFound):
             form_repository.add_answers(
-                answers, ["topic 1", "topic 2", "topic 3"], [105001, 105002, 105003, 105004])
+                answers,
+                ["topic 1", "topic 2", "topic 3"],
+                [105001, 105002, 105003, 105004],
+            )
 
     @pytest.mark.integration
     def test_add_answers_with_student_not_found(self, tables, today):
@@ -89,26 +95,29 @@ class TestFormRepository:
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
-
                 user_id=105002,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105003,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105004,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3")
+                topic_3="topic 3",
+            ),
         ]
 
         repository = FormRepository(self.Session)
@@ -123,7 +132,7 @@ class TestFormRepository:
             last_name="Perez",
             email="email1@fi,uba.ar",
             password="password",
-            role=Role.STUDENT
+            role=Role.STUDENT,
         )
         student_2 = User(
             id=105002,
@@ -131,7 +140,7 @@ class TestFormRepository:
             last_name="Perez",
             email="email2@fi,uba.ar",
             password="password",
-            role=Role.STUDENT
+            role=Role.STUDENT,
         )
         student_3 = User(
             id=105003,
@@ -139,7 +148,7 @@ class TestFormRepository:
             last_name="Perez",
             email="email3@fi,uba.ar",
             password="password",
-            role=Role.STUDENT
+            role=Role.STUDENT,
         )
         student_4 = User(
             id=105004,
@@ -147,7 +156,7 @@ class TestFormRepository:
             last_name="Perez",
             email="email4@fi,uba.ar",
             password="password",
-            role=Role.STUDENT
+            role=Role.STUDENT,
         )
         user_repository = UserRepository(self.Session)
         user_repository.add_students([student_1, student_2, student_3, student_4])
@@ -158,31 +167,41 @@ class TestFormRepository:
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105002,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105003,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105004,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3")
+                topic_3="topic 3",
+            ),
         ]
 
         repository = FormRepository(self.Session)
-        repository.add_answers(answers, ["topic 1", "topic 2", "topic 3"], [105001, 105002, 105003, 105004])
+        repository.add_answers(
+            answers, ["topic 1", "topic 2", "topic 3"], [105001, 105002, 105003, 105004]
+        )
         with pytest.raises(DuplicatedAnswer):
-            repository.add_answers(answers, ["topic 1", "topic 2", "topic 3"], [105001, 105002, 105003, 105004])
+            repository.add_answers(
+                answers,
+                ["topic 1", "topic 2", "topic 3"],
+                [105001, 105002, 105003, 105004],
+            )
 
     @pytest.mark.integration
     def test_verify_not_duplicated_answer(self, tables, today):
@@ -192,7 +211,7 @@ class TestFormRepository:
             last_name="Perez",
             email="email5@fi,uba.ar",
             password="password",
-            role = Role.STUDENT
+            role=Role.STUDENT,
         )
         user_repository = UserRepository(self.Session)
         user_repository.add_students([student_5])
@@ -202,57 +221,68 @@ class TestFormRepository:
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105002,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
             FormPreferences(
                 user_id=105005,
                 answer_id=today,
                 topic_1="topic 1",
                 topic_2="topic 2",
-                topic_3="topic 3"),
+                topic_3="topic 3",
+            ),
         ]
 
         repository = FormRepository(self.Session)
-        response = repository.add_answers(answers,["topic 1", "topic 2", "topic 3"], [105001, 105002, 105005])
+        response = repository.add_answers(
+            answers, ["topic 1", "topic 2", "topic 3"], [105001, 105002, 105005]
+        )
         assert len(response) == 3
 
     @pytest.mark.integration
     def test_add_answers_with_same_groups_but_diff_topics(self, tables, today):
-    
+
         answers = [
             FormPreferences(
                 user_id=105001,
                 answer_id=today,
                 topic_1="topic 2",
                 topic_2="topic 3",
-                topic_3="topic 1"),
+                topic_3="topic 1",
+            ),
             FormPreferences(
                 user_id=105002,
                 answer_id=today,
                 topic_1="topic 2",
                 topic_2="topic 3",
-                topic_3="topic 1"),
+                topic_3="topic 1",
+            ),
             FormPreferences(
                 user_id=105003,
                 answer_id=today,
                 topic_1="topic 2",
                 topic_2="topic 3",
-                topic_3="topic 1"),
+                topic_3="topic 1",
+            ),
             FormPreferences(
                 user_id=105004,
                 answer_id=today,
                 topic_1="topic 2",
                 topic_2="topic 3",
-                topic_3="topic 1")
+                topic_3="topic 1",
+            ),
         ]
 
         repository = FormRepository(self.Session)
-        response = repository.add_answers(answers,["topic 2", "topic 3", "topic 1"],  [105001, 105002, 105003, 105004])
+        response = repository.add_answers(
+            answers, ["topic 2", "topic 3", "topic 1"], [105001, 105002, 105003, 105004]
+        )
         response = repository.get_answers_by_answer_id(today)
         assert len(response) == 4
         repository.delete_answers_by_answer_id(today)
