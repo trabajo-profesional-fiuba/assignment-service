@@ -23,6 +23,8 @@ class User(Base):
     form_preferences = relationship(
         "FormPreferences", back_populates="student", uselist=False, lazy="select"
     )
+    # immediate - items should be loaded as the parents are loaded,
+    #using a separate SELECT statement
     periods = relationship(
         "TutorPeriod", back_populates="tutor", uselist=True, lazy="immediate"
     )

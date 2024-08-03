@@ -48,6 +48,7 @@ class TutorRepository:
                 period_obj = TutorPeriod(period_id=period_id, tutor_id=tutor_id)
                 session.add(period_obj)
                 session.commit()
+                session.refresh(period_obj)
                 tutor = period_obj.tutor
                 session.expunge(period_obj)
                 session.expunge(tutor)

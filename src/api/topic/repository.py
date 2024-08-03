@@ -1,11 +1,4 @@
 from sqlalchemy.orm import Session
-
-from src.api.topic.schemas import (
-    CategoryRequest,
-    CategoryResponse,
-    TopicRequest,
-    TopicResponse,
-)
 from src.api.topic.models import Category, Topic
 
 
@@ -14,32 +7,26 @@ class TopicRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def add_categories(self, categories: list[CategoryRequest]):
+    def add_categories(self, categories: list[Category]):
         with self.Session() as session:
-            with session.begin():
-                db_items = []
-                response = []
-                for category in categories:
-                    db_item = Category(name=category.name)
-                    db_items.append(db_item)
-                    response.append(CategoryResponse.model_validate(db_item))
-                session.add_all(db_items)
-                return response
+            session.add_all(categories)
+            session.commit()
+            for category in categories:
+                session.refresh(category)
+                session.expunge(category)
+        return categories
 
-    def add_topics(self, topics: list[TopicRequest]):
+    def add_topics(self, topics: list[Topic]):
         with self.Session() as session:
-            with session.begin():
-                db_items = []
-                response = []
-                for topic in topics:
-                    db_item = Topic(name=topic.name, category=topic.category)
-                    db_items.append(db_item)
-                    response.append(TopicResponse.model_validate(db_item))
-                session.add_all(db_items)
-                return response
+            session.add_all(topics)
+            session.commit()
+            for topic in topics:
+                session.refresh(topic)
+                session.expunge(topic)
+        return topics
 
     def get_topics(self):
         with self.Session() as session:
-            db_items = session.query(Topic).all()
-            response = [TopicResponse.model_validate(db_item) for db_item in db_items]
-            return response
+            topics = session.query(Topic).all()
+            session.expunge_all()
+        return topics
