@@ -41,7 +41,7 @@ class StudentService:
         if len(list(set(ids))) != len(list(ids)):
             raise StudentDuplicated("Query params udis contain duplicates")
 
-        students = self._repository.get_students_by_ids(ids)
+        students = UserList.model_validate(self._repository.get_students_by_ids(ids))
         udis_from_db = [student.id for student in students]
         for id in ids:
             if id not in udis_from_db:
