@@ -35,7 +35,7 @@ class TutorPeriod(Base):
 
     tutor = relationship("User", back_populates="periods")
     period = relationship("Period", back_populates="periods")
-    groups = relationship("Group", back_populates="tutor_period",uselist=True, lazy="noload")
+    assignments = relationship("GroupAssignment", back_populates="tutor_period",uselist=True, lazy="noload")
 
     __table_args__ = (
         UniqueConstraint("period_id", "tutor_id", name="tutor_period_const"),
