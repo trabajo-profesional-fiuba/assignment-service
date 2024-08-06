@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Enum
+from sqlalchemy import Column, String, Integer, Enum, ForeignKey
 from src.config.database.base import Base
 from enum import Enum as PyEnum
 from sqlalchemy.orm import relationship
@@ -20,6 +20,8 @@ class User(Base):
     password = Column(String)
     role = Column(Enum(Role))
 
+    group_id = Column(Integer, ForeignKey("groups.id"), nullable=True)
+
     form_preferences = relationship(
         "FormPreferences", back_populates="student", uselist=False, lazy="select"
     )
@@ -28,3 +30,5 @@ class User(Base):
     periods = relationship(
         "TutorPeriod", back_populates="tutor", uselist=True, lazy="immediate"
     )
+    # noload - Because some users are tutors so we dont want to try loading the group
+    group = relationship("Group", back_populates="students",  lazy="noload")

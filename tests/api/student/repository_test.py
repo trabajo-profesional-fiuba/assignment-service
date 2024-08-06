@@ -8,18 +8,18 @@ from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
+@pytest.fixture(scope="module")
+def tables():
+    # Create all tables
+    create_tables()
+    yield
+    # Drop all tables
+    drop_tables()
+
 class TestStudentRepository:
 
     SessionFactory = sessionmaker(bind=engine)
     Session = scoped_session(SessionFactory)
-
-    @pytest.fixture(scope="session")
-    def tables(self):
-        # Create all tables
-        create_tables()
-        yield
-        # Drop all tables
-        drop_tables()
 
     @pytest.mark.integration
     def test_add_students(self, tables):
