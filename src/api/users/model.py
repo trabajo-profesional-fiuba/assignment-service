@@ -21,12 +21,12 @@ class User(Base):
     role = Column(Enum(Role))
 
     form_preferences = relationship(
-        "FormPreferences", back_populates="student", uselist=False, lazy="select"
+        "FormPreferences", back_populates="student", uselist=False, lazy="noload"
     )
     # immediate - items should be loaded as the parents are loaded,
     # using a separate SELECT statement
     periods = relationship(
-        "TutorPeriod", back_populates="tutor", uselist=True, lazy="immediate"
+        "TutorPeriod", back_populates="tutor", uselist=True, lazy="subquery"
     )
 
     assignment = relationship(

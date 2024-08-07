@@ -33,10 +33,10 @@ class TutorPeriod(Base):
     capacity = Column(Integer, default=0)
     is_evaluator = Column(Boolean, default=False)
 
-    tutor = relationship("User", back_populates="periods")
+    tutor = relationship("User", back_populates="periods",lazy="joined")
     period = relationship("Period", back_populates="periods")
-    assignments = relationship(
-        "GroupAssignment", back_populates="tutor_period", uselist=True, lazy="noload"
+    groups = relationship(
+        "Group", back_populates="tutor_period", uselist=True, lazy="noload"
     )
 
     __table_args__ = (
