@@ -16,6 +16,7 @@ def tables():
     # Drop all tables
     drop_tables()
 
+
 class TestStudentRepository:
 
     SessionFactory = sessionmaker(bind=engine)

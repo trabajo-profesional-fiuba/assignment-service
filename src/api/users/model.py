@@ -29,5 +29,6 @@ class User(Base):
         "TutorPeriod", back_populates="tutor", uselist=True, lazy="immediate"
     )
 
-    assignment = relationship("GroupAssignment", back_populates="student", lazy="noload")
-
+    assignment = relationship(
+        "GroupAssignment", back_populates="student", lazy="noload"
+    )

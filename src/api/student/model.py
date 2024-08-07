@@ -17,8 +17,11 @@ class Group(Base):
     exhibition_date = Column(DateTime(timezone=False))
 
     # TODO: ver el lazy bien
-    assignment = relationship("GroupAssignment", back_populates="group", lazy='joined')  # Fixed typo
+    assignment = relationship(
+        "GroupAssignment", back_populates="group", lazy="joined"
+    )  # Fixed typo
     topic = relationship("Topic", back_populates="groups")
+
 
 class GroupAssignment(Base):
     __tablename__ = "group_assignments"
@@ -28,9 +31,7 @@ class GroupAssignment(Base):
     student_id = Column(Integer, ForeignKey("users.id"))
     group_id = Column(Integer, ForeignKey("groups.id"))
 
-    __table_args__ = (
-        UniqueConstraint("student_id", "group_id", "tutor_period_id"),
-    )
+    __table_args__ = (UniqueConstraint("student_id", "group_id", "tutor_period_id"),)
 
     group = relationship("Group", back_populates="assignment")
     student = relationship("User", back_populates="assignment")
