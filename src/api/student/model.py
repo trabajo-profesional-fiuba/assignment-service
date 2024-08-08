@@ -27,8 +27,8 @@ class Group(Base):
     __tablename__ = "groups"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    topic_id = Column(Integer, ForeignKey("topics.id"))
-    tutor_period_id = Column(Integer, ForeignKey("tutor_periods.id"))
+    topic_id = Column(Integer, ForeignKey("topics.id"),nullable=False)
+    tutor_period_id = Column(Integer, ForeignKey("tutor_periods.id"),nullable=False)
     pre_report_date = Column(DateTime(timezone=False))
     pre_report_approved = Column(Boolean, default=False)
     intermediate_assigment_date = Column(DateTime(timezone=False))
@@ -37,6 +37,6 @@ class Group(Base):
     exhibition_date = Column(DateTime(timezone=False))
 
     # TODO: ver el lazy bien
-    assignments: Mapped[List[User]] = relationship(secondary=association_table, lazy="joined")
-    topic = relationship("Topic", back_populates="groups")
-    tutor_period = relationship("TutorPeriod", back_populates="groups")
+    students: Mapped[List[User]] = relationship(secondary=association_table, lazy="joined")
+    topic = relationship("Topic", back_populates="groups",lazy="joined")
+    tutor_period = relationship("TutorPeriod", back_populates="groups",lazy="joined")
