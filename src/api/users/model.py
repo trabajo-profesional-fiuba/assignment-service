@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Enum, ForeignKey
+from sqlalchemy import Column, String, Integer, Enum
 from src.config.database.base import Base
 from enum import Enum as PyEnum
 from sqlalchemy.orm import relationship
@@ -27,8 +27,4 @@ class User(Base):
     # using a separate SELECT statement
     periods = relationship(
         "TutorPeriod", back_populates="tutor", uselist=True, lazy="subquery"
-    )
-
-    assignment = relationship(
-        "GroupAssignment", back_populates="student", lazy="noload"
     )

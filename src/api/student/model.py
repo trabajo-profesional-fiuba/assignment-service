@@ -1,8 +1,20 @@
-from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, UniqueConstraint
+from typing import List
+from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, Table, UniqueConstraint
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
+from src.api.users.model import User
 from src.config.database.base import Base
 
+
+# Many to Many association table
+association_table = Table(
+    "group_assignments",
+    Base.metadata,
+    Column("group_id", ForeignKey("groups.id"), primary_key=True),
+    Column("student_id", ForeignKey("users.id"), primary_key=True),
+)
 
 class Group(Base):
     """
@@ -25,26 +37,6 @@ class Group(Base):
     exhibition_date = Column(DateTime(timezone=False))
 
     # TODO: ver el lazy bien
-    assignment = relationship("GroupAssignment", back_populates="group", lazy="joined")
+    assignments: Mapped[List[User]] = relationship(secondary=association_table, lazy="joined")
     topic = relationship("Topic", back_populates="groups")
     tutor_period = relationship("TutorPeriod", back_populates="groups")
-
-
-class GroupAssignment(Base):
-    """
-    Schema of a association between a Group and a User which needs to
-    have a role of STUDENT, (It should be managed by other logic class).
-
-    This table can only contain a unique user id, meaning  a user id cannot be
-    in two different groups at the same time.
-    """
-
-    __tablename__ = "group_assignments"
-
-    student_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    group_id = Column(Integer, ForeignKey("groups.id"), primary_key=True)
-
-    __table_args__ = (UniqueConstraint("student_id"),)
-
-    group = relationship("Group", back_populates="assignment")
-    student = relationship("User", back_populates="assignment")

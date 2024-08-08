@@ -80,3 +80,16 @@ class TestStudentRepository:
         response = repository.get_students_by_ids([12345, 11111])
 
         assert len(response) == 2
+    #@pytest.mark.integration
+    #def test_add_new_group(self, tables):
+#
+    #    repository = StudentRepository(self.Session)
+    #    uids = [1, 2, 3, 4]
+    #    period_id = 1
+    #    topic_id = 2
+#
+    #    group = repository.add_group(uids,period_id,topic_id)
+    #    
+    #    assert group.students == uids
+    #    assert group.period_id == period_id
+    #    assert group.topic_id == topic_id
