@@ -8,7 +8,7 @@ class GroupRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def add_group(self, ids, period_id, topic_id):
+    def add_group(self, ids, period_id = None, topic_id = None):
         with self.Session() as session:
             group = Group(tutor_period_id=period_id, assigned_topic_id=topic_id)
             students = session.query(User).filter(User.id.in_(ids)).all()
@@ -19,4 +19,3 @@ class GroupRepository:
             session.expunge(group)
         
         return group
-
