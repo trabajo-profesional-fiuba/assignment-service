@@ -1,6 +1,7 @@
 import pytest
 
 from src.api.student.repository import StudentRepository
+from src.api.groups.repository import GroupRepository
 from src.api.topic.models import Category, Topic
 from src.api.topic.repository import TopicRepository
 from src.api.tutors.model import Period
@@ -89,7 +90,7 @@ class TestStudentRepository:
     def test_add_new_group(self, tables):
         topic_repository = TopicRepository(self.Session)
         tutor_repository = TutorRepository(self.Session)
-        repository = StudentRepository(self.Session)
+        repository = GroupRepository(self.Session)
         u_repository = UserRepository(self.Session)
 
         topic_repository.add_categories([Category(name="cat1")])
