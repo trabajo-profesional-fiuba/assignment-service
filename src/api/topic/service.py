@@ -32,7 +32,7 @@ class TopicService:
         categories = []
         topics = []
         for row in rows:
-            name, category = row
+            name, category, tutor = row
             categories = self.add_category(category, categories)
             topics = self.add_topic(name, category, topics)
         return categories, topics
