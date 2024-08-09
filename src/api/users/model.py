@@ -1,7 +1,7 @@
-from sqlalchemy import Column, String, Integer, Enum
-from src.config.database.base import Base
 from enum import Enum as PyEnum
 from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, Integer, Enum
+from src.config.database.base import Base
 
 
 class Role(PyEnum):
@@ -20,9 +20,6 @@ class User(Base):
     password = Column(String)
     role = Column(Enum(Role))
 
-    form_preferences = relationship(
-        "FormPreferences", back_populates="student", uselist=False, lazy="select"
-    )
     # immediate - items should be loaded as the parents are loaded,
     # using a separate SELECT statement
     periods = relationship(

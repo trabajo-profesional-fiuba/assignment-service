@@ -12,6 +12,7 @@ from src.api.tutors.schemas import (
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import InvalidPeriodId, TutorNotFound
 from src.api.tutors.model import Period, TutorPeriod
+from src.api.topic.models import Topic
 
 
 class TutorService:
@@ -72,3 +73,6 @@ class TutorService:
         return TutorResponse.model_validate(
             self._repository.get_all_periods_by_id(tutor_id)
         )
+
+    def add_topics_to_period(self, tutor_email: str, topics: list[Topic]):
+        return self._repository.add_topics_to_period(tutor_email, topics)
