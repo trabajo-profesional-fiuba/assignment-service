@@ -38,6 +38,6 @@ class Group(Base):
     prefered_topics = Column(postgresql.ARRAY(Integer, dimensions=1),default=[])
 
     # TODO: ver el lazy bien
-    students: Mapped[List[User]] = relationship(secondary=association_table, lazy="joined")
+    students: Mapped[List[User]] = relationship(secondary=association_table, lazy="joined", cascade="all, delete")
     topic = relationship("Topic", back_populates="groups",lazy="joined")
     tutor_period = relationship("TutorPeriod", back_populates="groups",lazy="joined")
