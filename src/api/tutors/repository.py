@@ -5,6 +5,7 @@ from sqlalchemy import exc
 from src.api.users.model import User, Role
 from src.api.tutors.model import Period, TutorPeriod
 from src.api.tutors.exceptions import TutorNotFound, PeriodDuplicated
+from src.api.topic.models import Topic
 
 
 class TutorRepository:
@@ -73,3 +74,16 @@ class TutorRepository:
                 raise TutorNotFound("Tutor doesn't exists")
 
         return tutor
+
+    def add_topics_to_period(self, tutor_email: str, topics: list[Topic]):
+        with self.Session() as session:
+            tutor = session.query(User).filter(User.email == tutor_email).first()
+            tutor_period = (
+                session.query(TutorPeriod)
+                .filter(TutorPeriod.tutor_id == tutor.id)
+                .first()
+            )
+            tutor_period.topics.extend(topics)
+            session.commit()
+            topics = tutor_period.topics
+            return tutor_period
