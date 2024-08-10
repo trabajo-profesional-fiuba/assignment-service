@@ -9,6 +9,7 @@ from src.api.users.repository import UserRepository
 from src.api.users.model import User, Role
 from src.api.topic.repository import TopicRepository
 from src.api.topic.models import Topic, Category
+from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 
 
 class TestTutorRepository:
@@ -16,7 +17,7 @@ class TestTutorRepository:
     SessionFactory = sessionmaker(bind=engine)
     Session = scoped_session(SessionFactory)
 
-    @pytest.fixture(scope="function")
+    @pytest.fixture(scope="module")
     def tables(self):
         # Create all tables
         create_tables()
@@ -25,12 +26,20 @@ class TestTutorRepository:
         drop_tables()
 
     @pytest.mark.integration
-    def test_add_topics_to_period(self, tables):
+    def test_add_topics_to_tutor_with_tutor_not_found(self, tables):
+        topics = [Topic(name="topic 1", category="category 1")]
+
+        t_repository = TutorRepository(self.Session)
+        with pytest.raises(TutorNotFound):
+            t_repository.add_topics_to_period("tutor2@com", topics)
+
+    @pytest.mark.integration
+    def test_add_topics_to_tutor_with_tutor_period_not_found(self, tables):
         tutor = User(
             id=12345,
             name="Juan",
             last_name="Perez",
-            email="email@fi,uba.ar",
+            email="tutor1@com",
             password="password",
             role=Role.TUTOR,
         )
@@ -40,13 +49,20 @@ class TestTutorRepository:
         topic_repository = TopicRepository(self.Session)
         topic_repository.add_categories([Category(name="category 1")])
         # topic_repository.add_topics([Topic(name="topic 1", category="category 1")])
+        topics = [Topic(name="topic 1", category="category 1")]
 
+        t_repository = TutorRepository(self.Session)
+        with pytest.raises(TutorPeriodNotFound):
+            t_repository.add_topics_to_period("tutor1@com", topics)
+
+    @pytest.mark.integration
+    def test_add_topics_to_tutor_with_success(self, tables):
         t_repository = TutorRepository(self.Session)
         t_repository.add_period(Period(id="1C2024"))
         t_repository.add_tutor_period(12345, "1C2024")
 
         topics = [Topic(name="topic 1", category="category 1")]
-        response = t_repository.add_topics_to_period("email@fi,uba.ar", topics)
+        response = t_repository.add_topics_to_period("tutor1@com", topics)
         assert len(response.topics) == 1
         assert response.topics[0].name == "topic 1"
         assert response.topics[0].category == "category 1"

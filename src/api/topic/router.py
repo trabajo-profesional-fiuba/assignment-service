@@ -13,6 +13,7 @@ from src.api.topic.exceptions import (
     InvalidTopicCsv,
 )
 from src.api.tutors.repository import TutorRepository
+from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 
 router = APIRouter(prefix="/topics", tags=["Topics"])
 
@@ -45,7 +46,12 @@ async def upload_csv_file(
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
         return service.create_topics_from_string(content, TutorRepository(session))
-    except (InvalidMediaType, InvalidTopicCsv) as err:
+    except (
+        TutorNotFound,
+        TutorPeriodNotFound,
+        InvalidMediaType,
+        InvalidTopicCsv,
+    ) as err:
         raise HTTPException(
             status_code=err.status_code,
             detail=err.message,

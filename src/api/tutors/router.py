@@ -156,7 +156,7 @@ async def add_period_to_tutor(
     except TutorNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=e.message(),
+            detail=e.message,
         )
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -184,7 +184,7 @@ async def get_tutor_periods(
     except TutorNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=e.message(),
+            detail=e.message,
         )
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

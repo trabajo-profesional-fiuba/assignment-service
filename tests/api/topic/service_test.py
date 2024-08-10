@@ -57,6 +57,16 @@ def test_add_duplicated_topic_success(service):
 
 
 @pytest.mark.integration
+def test_add_diff_topics_with_same_category_topic_success(service):
+    new_topic = TopicRequest(name="topic 1", category="category 1")
+    topics = [new_topic]
+
+    result = service.add_topic("topic 2", "category 1", topics)
+    result_topics = result[0]
+    assert len(result_topics) == 2
+
+
+@pytest.mark.integration
 def test_get_topics_by_tutor_success(service):
     topic_by_tutor = {}
     new_topic = TopicRequest(name="topic 1", category="category 1")

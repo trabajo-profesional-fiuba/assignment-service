@@ -4,7 +4,11 @@ from sqlalchemy import exc
 
 from src.api.users.model import User, Role
 from src.api.tutors.model import Period, TutorPeriod
-from src.api.tutors.exceptions import TutorNotFound, PeriodDuplicated
+from src.api.tutors.exceptions import (
+    TutorNotFound,
+    PeriodDuplicated,
+    TutorPeriodNotFound,
+)
 from src.api.topic.models import Topic
 
 
@@ -84,7 +88,10 @@ class TutorRepository:
                     .filter(TutorPeriod.tutor_id == tutor.id)
                     .first()
                 )
-                tutor_period.topics.extend(topics)
-                session.commit()
-                topics = tutor_period.topics
-                return tutor_period
+                if tutor_period:
+                    tutor_period.topics.extend(topics)
+                    session.commit()
+                    topics = tutor_period.topics
+                    return tutor_period
+                raise TutorPeriodNotFound(f"Tutor '{tutor_email}' has no period.")
+            raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
