@@ -21,8 +21,10 @@ def tables():
     # Drop all tables
     drop_tables()
 
+
 SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)
+
 
 @pytest.mark.integration
 def test_add_new_group_with_tutor_and_topic(tables):
@@ -72,6 +74,7 @@ def test_add_new_group_with_tutor_and_topic(tables):
     assert ids == uids
     assert group.tutor_period.id == period_id
     assert group.topic.id == topic_id
+
 
 @pytest.mark.integration
 def test_add_new_group_without_tutor_and_topic(tables):
@@ -172,9 +175,9 @@ def test_add_new_group_with_three_topics(tables):
     u_repository.add_students([student1, student2])
     uids = [10, 12]
 
-    group = repository.add_group(ids=uids,preferred_topics=[1,2,3])
+    group = repository.add_group(ids=uids, preferred_topics=[1, 2, 3])
     ids = [user.id for user in group.students]
-    expected_topics = [1,2,3]
+    expected_topics = [1, 2, 3]
 
     assert ids == uids
     assert len(group.preferred_topics) == 3

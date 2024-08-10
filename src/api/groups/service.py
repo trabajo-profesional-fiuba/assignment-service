@@ -1,5 +1,3 @@
-
-
 class GroupService:
 
     def __init__(self, repository) -> None:

@@ -16,6 +16,7 @@ association_table = Table(
     Column("student_id", ForeignKey("users.id"), primary_key=True),
 )
 
+
 class Group(Base):
     """
     Schema of a group for a table in the database
@@ -35,9 +36,16 @@ class Group(Base):
     intermediate_assigment_approved = Column(Boolean, default=False)
     final_report_approved = Column(Boolean, default=False)
     exhibition_date = Column(DateTime(timezone=False))
-    preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1),default=[])
+    """ postgresql.ARRAY is a dialect specif datatype for postgres sql
+        if in the future the db changes, this should be refactored using a different approach.
+        
+        This field is supposed to contain 3 ids topics ids. No foreing key is needed as these keys
+        will no be used for join operations so is better to skip the relationship config.
+    """
+    preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1), default=[])
 
-    # TODO: ver el lazy bien
-    students: Mapped[List[User]] = relationship(secondary=association_table, lazy="joined", cascade="all")
-    topic = relationship("Topic", back_populates="groups",lazy="joined")
-    tutor_period = relationship("TutorPeriod", back_populates="groups",lazy="joined")
+    students: Mapped[List[User]] = relationship(
+        secondary=association_table, lazy="joined", cascade="all"
+    )
+    topic = relationship("Topic", back_populates="groups", lazy="joined")
+    tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="joined")
