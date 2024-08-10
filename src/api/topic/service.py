@@ -2,12 +2,13 @@ from src.api.topic.schemas import CategoryRequest, TopicRequest, TopicList
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
 from src.api.topic.models import Topic, Category
+from src.api.tutors.repository import TutorRepository
 
 
 class TopicService:
 
     def __init__(self, topic_repository: TopicRepository):
-        self._repository = topic_repository
+        self._topic_repository = topic_repository
 
     def add_category(self, category_name: str, categories: list[Category]):
         new_category = Category(name=category_name)
@@ -46,13 +47,16 @@ class TopicService:
             topics_by_tutor = self.add_topic_by_tutor(tutor, topics_by_tutor, new_topic)
         return categories, topics, topics_by_tutor
 
-    def create_topics_from_string(self, csv: str):
+    def create_topics_from_string(self, csv: str, tutor_repository: TutorRepository):
         csv_file = TopicCsvFile(csv=csv)
         rows = csv_file.get_info_as_rows()
         categories, topics, topics_by_tutor = self.get_categories_topics_tutors(rows)
-        self._repository.add_categories(categories)
-        return TopicList.model_validate(self._repository.add_topics(topics))
+        self._topic_repository.add_categories(categories)
+        result = self._topic_repository.add_topics(topics)
+        for tutor, topics in topics_by_tutor.items():
+            tutor_repository.add_topics_to_period(tutor, topics)
+        return TopicList.model_validate(result)
 
     def get_topics(self):
-        topics = self._repository.get_topics()
+        topics = self._topic_repository.get_topics()
         return TopicList.model_validate(topics)

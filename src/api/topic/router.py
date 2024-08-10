@@ -12,6 +12,7 @@ from src.api.topic.exceptions import (
     InvalidMediaType,
     InvalidTopicCsv,
 )
+from src.api.tutors.repository import TutorRepository
 
 router = APIRouter(prefix="/topics", tags=["Topics"])
 
@@ -19,7 +20,7 @@ router = APIRouter(prefix="/topics", tags=["Topics"])
 @router.post(
     "/upload",
     response_model=TopicList,
-    description="Creates a list of topics based on a csv file",
+    description="Creates a list of topics based on a csv file.",
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully added topics."},
@@ -43,7 +44,7 @@ async def upload_csv_file(
             raise InvalidMediaType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
-        return service.create_topics_from_string(content)
+        return service.create_topics_from_string(content, TutorRepository(session))
     except (InvalidMediaType, InvalidTopicCsv) as err:
         raise HTTPException(
             status_code=err.status_code,

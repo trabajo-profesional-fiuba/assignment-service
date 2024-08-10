@@ -78,12 +78,13 @@ class TutorRepository:
     def add_topics_to_period(self, tutor_email: str, topics: list[Topic]):
         with self.Session() as session:
             tutor = session.query(User).filter(User.email == tutor_email).first()
-            tutor_period = (
-                session.query(TutorPeriod)
-                .filter(TutorPeriod.tutor_id == tutor.id)
-                .first()
-            )
-            tutor_period.topics.extend(topics)
-            session.commit()
-            topics = tutor_period.topics
-            return tutor_period
+            if tutor:
+                tutor_period = (
+                    session.query(TutorPeriod)
+                    .filter(TutorPeriod.tutor_id == tutor.id)
+                    .first()
+                )
+                tutor_period.topics.extend(topics)
+                session.commit()
+                topics = tutor_period.topics
+                return tutor_period

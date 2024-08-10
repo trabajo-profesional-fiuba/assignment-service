@@ -27,7 +27,7 @@ def fastapi():
 
 
 @pytest.mark.integration
-def test_add_topics_with_different_categories_success(fastapi, tables):
+def test_add_topics_with_diff_categories_success(fastapi, tables):
     with open("tests/api/topic/data/test_data.csv", "rb") as file:
         content = file.read()
 
