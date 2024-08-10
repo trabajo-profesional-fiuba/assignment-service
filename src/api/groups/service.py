@@ -1,4 +1,6 @@
 from src.api.groups.schemas import GroupList, Group
+
+
 class GroupService:
 
     def __init__(self, repository) -> None:
