@@ -147,3 +147,35 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
     assert ids == uids
     assert group.tutor_period.id == period_id
     assert group.topic is None
+
+
+@pytest.mark.integration
+def test_add_new_group_with_three_topics(tables):
+    repository = GroupRepository(Session)
+    u_repository = UserRepository(Session)
+    student1 = User(
+        id=13,
+        name="Juan",
+        last_name="Perez",
+        email="13@fi,uba.ar",
+        password="password",
+        role=Role.STUDENT,
+    )
+    student2 = User(
+        id=14,
+        name="Pedro",
+        last_name="Pipo",
+        email="14@fi,uba.ar",
+        password="password1",
+        role=Role.STUDENT,
+    )
+    u_repository.add_students([student1, student2])
+    uids = [10, 12]
+
+    group = repository.add_group(ids=uids,preferred_topics=[1,2,3])
+    ids = [user.id for user in group.students]
+    expected_topics = [1,2,3]
+
+    assert ids == uids
+    assert len(group.preferred_topics) == 3
+    assert all(t in expected_topics for t in group.preferred_topics)

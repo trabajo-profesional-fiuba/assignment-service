@@ -35,9 +35,9 @@ class Group(Base):
     intermediate_assigment_approved = Column(Boolean, default=False)
     final_report_approved = Column(Boolean, default=False)
     exhibition_date = Column(DateTime(timezone=False))
-    prefered_topics = Column(postgresql.ARRAY(Integer, dimensions=1),default=[])
+    preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1),default=[])
 
     # TODO: ver el lazy bien
-    students: Mapped[List[User]] = relationship(secondary=association_table, lazy="joined", cascade="all, delete")
+    students: Mapped[List[User]] = relationship(secondary=association_table, lazy="joined", cascade="all")
     topic = relationship("Topic", back_populates="groups",lazy="joined")
     tutor_period = relationship("TutorPeriod", back_populates="groups",lazy="joined")
