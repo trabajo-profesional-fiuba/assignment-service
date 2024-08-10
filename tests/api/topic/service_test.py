@@ -38,7 +38,6 @@ def test_add_already_exist_category_success(service):
 @pytest.mark.integration
 def test_add_new_topic_success(service):
     topics = []
-    new_topic = TopicRequest(name="topic 1", category="category 1")
 
     result = service.add_topic("topic 1", "category 1", topics)
     result_topics = result[0]

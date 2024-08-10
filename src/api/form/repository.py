@@ -1,12 +1,6 @@
-from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.api.form.schemas import (
-    FormPreferencesRequest,
-    FormPreferencesResponse,
-    UserAnswerResponse,
-)
 from src.api.form.models import FormPreferences
 from src.api.form.exceptions import StudentNotFound
 from src.api.users.model import User, Role

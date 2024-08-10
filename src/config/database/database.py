@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 
 from src.config.config import api_config
 
@@ -41,7 +41,7 @@ def drop_tables():
 
 
 def get_db():
-    if engine != None:
+    if engine is not None:
         Session = sessionmaker(bind=engine)
         yield Session
     else:

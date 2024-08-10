@@ -1,9 +1,6 @@
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, inspect
+from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from src.api.users.model import User, Role
 from src.config.database.base import Base
-from sqlalchemy.orm import validates
-from src.api.form.exceptions import StudentNotFound
 
 
 class FormPreferences(Base):

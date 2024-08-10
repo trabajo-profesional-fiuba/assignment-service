@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import exc
 
 
-from src.api.users.model import User, Role
+from src.api.users.model import User
 from src.api.users.exceptions import UserNotFound
 
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
@@ -40,14 +40,14 @@ class UserRepository:
         except exc.IntegrityError as e:
             print(str(e))
             raise TutorDuplicated("Duplicated tutor")
-        except:
+        except Exception:
             raise TutorNotInserted("Could not insert a student in the database")
 
     def add_students(self, students: list[User]):
         # create session and add objects
         try:
             return self._add_users(students)
-        except exc.IntegrityError as e:
+        except exc.IntegrityError:
             raise StudentDuplicated("Student duplicated")
-        except:
+        except Exception:
             raise StudentNotInserted("Could not insert a student in the database")

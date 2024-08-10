@@ -1,4 +1,4 @@
-from src.api.topic.schemas import CategoryRequest, TopicRequest, TopicList
+from src.api.topic.schemas import TopicList
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
 from src.api.topic.models import Topic, Category

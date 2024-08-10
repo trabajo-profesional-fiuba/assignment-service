@@ -30,7 +30,7 @@ class TutorRepository:
                 session.expunge(period)
 
             return period
-        except exc.IntegrityError as e:
+        except exc.IntegrityError:
             raise PeriodDuplicated(message="Period already exist")
 
     def is_tutor(self, tutor_id):
@@ -55,7 +55,7 @@ class TutorRepository:
                 session.expunge(tutor)
 
             return tutor
-        except exc.IntegrityError as e:
+        except exc.IntegrityError:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
 
     def get_all_periods(self, order: str):

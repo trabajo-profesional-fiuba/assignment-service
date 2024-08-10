@@ -1,5 +1,5 @@
 from src.api.student.utils import StudentCsvFile
-from src.api.users.schemas import UserResponse, UserList
+from src.api.users.schemas import UserList
 from src.api.users.model import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.student.exceptions import (

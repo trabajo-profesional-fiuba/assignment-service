@@ -103,7 +103,7 @@ async def add_period(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=err.message(),
         )
-    except:
+    except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -158,7 +158,7 @@ async def add_period_to_tutor(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=e.message(),
         )
-    except:
+    except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -186,5 +186,5 @@ async def get_tutor_periods(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=e.message(),
         )
-    except:
+    except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

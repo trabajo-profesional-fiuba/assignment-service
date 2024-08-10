@@ -9,7 +9,6 @@ from src.api.form.exceptions import (
     TopicNotFound,
     StudentNotFound,
     DuplicatedAnswer,
-    AnswerIdNotFound,
 )
 from src.api.topic.repository import TopicRepository
 from src.api.topic.models import Topic, Category

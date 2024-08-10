@@ -11,7 +11,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from src.api.users.model import User
 from src.api.topic.models import association_table
 
 
