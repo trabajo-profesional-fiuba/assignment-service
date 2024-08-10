@@ -8,7 +8,7 @@ from src.api.users.model import User
 from src.config.database.base import Base
 
 
-# Many to Many association table
+# One to Many association table
 association_table = Table(
     "groups_students",
     Base.metadata,

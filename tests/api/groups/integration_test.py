@@ -1,5 +1,6 @@
 import pytest
 
+from src.api.groups.service import GroupService
 from src.api.student.repository import StudentRepository
 from src.api.groups.repository import GroupRepository
 from src.api.topic.models import Category, Topic
@@ -182,3 +183,49 @@ def test_add_new_group_with_three_topics(tables):
     assert ids == uids
     assert len(group.preferred_topics) == 3
     assert all(t in expected_topics for t in group.preferred_topics)
+
+
+@pytest.mark.integration
+def test_add_new_group_with_tutor_and_topic_using_service(tables):
+    tutor_repository = TutorRepository(Session)
+    repository = GroupRepository(Session)
+    u_repository = UserRepository(Session)
+    tutor = User(
+        id=15,
+        name="Pedro",
+        last_name="Pipo",
+        email="tutor2@fi,uba.ar",
+        password="password1",
+        role=Role.TUTOR,
+    )
+    student1 = User(
+        id=16,
+        name="Juan",
+        last_name="Perez",
+        email="16@fi,uba.ar",
+        password="password",
+        role=Role.STUDENT,
+    )
+    student2 = User(
+        id=17,
+        name="Pedro",
+        last_name="Pipo",
+        email="17@fi,uba.ar",
+        password="password1",
+        role=Role.STUDENT,
+    )
+    u_repository.add_tutors([tutor])
+    u_repository.add_students([student1, student2])
+    tutor_repository.add_tutor_period(15, "1C2025")
+
+    uids = [16,17]
+    period_id = 2
+    topic_id = 1
+    
+    service = GroupService(repository)
+    group = service.create_assigned_group(uids, period_id, topic_id)
+    ids = [user.id for user in group.students]
+
+    assert ids == uids
+    assert group.tutor_period_id == period_id
+    assert group.topic_id == topic_id
