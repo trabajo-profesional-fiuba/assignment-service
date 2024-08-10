@@ -6,7 +6,6 @@ from src.api.topic.schemas import (
     CategoryRequest,
     TopicRequest,
 )
-from src.api.topic.exceptions import TopicAlreadyExist
 
 
 @pytest.fixture
@@ -49,12 +48,13 @@ def test_add_new_topic_success(service):
 
 
 @pytest.mark.integration
-def test_add_already_exist_topic_success(service):
+def test_add_duplicated_topic_success(service):
     new_topic = TopicRequest(name="topic 1", category="category 1")
     topics = [new_topic]
 
-    with pytest.raises(TopicAlreadyExist):
-        service.add_topic("topic 1", "category 1", topics)
+    result = service.add_topic("topic 1", "category 1", topics)
+    result_topics = result[0]
+    assert len(result_topics) == 1
 
 
 @pytest.mark.integration

@@ -72,8 +72,8 @@ def test_add_already_exist_topic(fastapi, tables):
 
     response = fastapi.post(f"{PREFIX}/upload", files=files)
 
-    assert response.status_code == status.HTTP_409_CONFLICT
-    assert response.json() == {"detail": "Topic already exists."}
+    assert response.status_code == status.HTTP_201_CREATED
+    assert len(response.json()) == 2
 
 
 @pytest.mark.integration

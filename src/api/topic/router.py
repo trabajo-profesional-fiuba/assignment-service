@@ -9,7 +9,6 @@ from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
 from src.config.database.database import get_db
 from src.api.topic.exceptions import (
-    TopicAlreadyExist,
     InvalidMediaType,
     InvalidTopicCsv,
 )
@@ -45,7 +44,7 @@ async def upload_csv_file(
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
         return service.create_topics_from_string(content)
-    except (TopicAlreadyExist, InvalidMediaType, InvalidTopicCsv) as err:
+    except (InvalidMediaType, InvalidTopicCsv) as err:
         raise HTTPException(
             status_code=err.status_code,
             detail=err.message,

@@ -1,7 +1,6 @@
 from src.api.topic.schemas import CategoryRequest, TopicRequest, TopicList
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
-from src.api.topic.exceptions import TopicAlreadyExist
 from src.api.topic.models import Topic, Category
 
 
@@ -23,8 +22,7 @@ class TopicService:
             for topic in topics
         ):
             topics.append(new_topic)
-            return topics, new_topic
-        raise TopicAlreadyExist("Topic already exists.")
+        return topics, new_topic
 
     def add_topic_by_tutor(self, tutor: str, topics_by_tutor: dict, new_topic: Topic):
         if tutor not in topics_by_tutor:
