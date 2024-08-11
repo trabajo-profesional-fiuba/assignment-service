@@ -71,9 +71,13 @@ class TopicService:
     def _update_tutor_periods(
         self, topics_by_tutor: dict, tutor_repository: TutorRepository
     ):
-        for tutor, topics in topics_by_tutor.items():
+        for tutor, topics_list in topics_by_tutor.items():
             tutor_topics = self._get_topics_by_tutor(tutor, topics_by_tutor)
-            tutor_repository.add_topics_to_period(tutor, tutor_topics)
+            tutor_period = tutor_repository.add_topics_to_period(tutor, tutor_topics)
+            for topic_info in topics_list:
+                tutor_repository.add_topic_capacity(
+                    topic_info["topic"].id, tutor_period.id, topic_info["capacity"]
+                )
 
     def _add_topics(self, topics, categories):
         self._topic_repository.add_categories(categories)
