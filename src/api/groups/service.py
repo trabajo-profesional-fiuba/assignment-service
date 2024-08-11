@@ -13,7 +13,9 @@ class GroupService:
 
     def create_basic_group(self, ids, preferred_topics=[]):
         try:
-            group = self._repository.add_group(ids=ids, preferred_topics=preferred_topics)
+            group = self._repository.add_group(
+                ids=ids, preferred_topics=preferred_topics
+            )
             return GroupResponse.model_validate(group)
         except:
             raise GroupError(message="Group could't be created")

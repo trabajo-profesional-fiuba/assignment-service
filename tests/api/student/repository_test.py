@@ -1,11 +1,6 @@
 import pytest
 
 from src.api.student.repository import StudentRepository
-from src.api.groups.repository import GroupRepository
-from src.api.topic.models import Category, Topic
-from src.api.topic.repository import TopicRepository
-from src.api.tutors.model import Period
-from src.api.tutors.repository import TutorRepository
 from src.api.users.repository import UserRepository
 from src.api.users.model import User, Role
 
@@ -85,7 +80,6 @@ class TestStudentRepository:
         response = repository.get_students_by_ids([12345, 11111])
 
         assert len(response) == 2
-
 
     @pytest.mark.integration
     def test_get_all_students(self, tables):

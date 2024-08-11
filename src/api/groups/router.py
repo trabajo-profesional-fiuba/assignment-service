@@ -39,20 +39,18 @@ async def add_group(
         topic_service = TopicService(TopicRepository(session))
         group_service = GroupService(GroupRepository(session))
 
-        tutor_period = tutor_service.get_tutor_period_from_email(period, group.tutor_email)
+        tutor_period = tutor_service.get_tutor_period_from_email(
+            period, group.tutor_email
+        )
         topic = topic_service.add_topic(group.topic.name, group.topic.category)
 
         return group_service.create_assigned_group(
             group.students, tutor_period.id, topic.id
         )
     except GroupError as e:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error"
+            detail="Internal Server Error",
         )
-

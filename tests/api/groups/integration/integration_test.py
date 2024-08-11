@@ -264,6 +264,7 @@ def test_add_new_group_with_three_topics_using_service(tables):
     assert len(group.preferred_topics) == 3
     assert all(t in expected_topics for t in group.preferred_topics)
 
+
 @pytest.mark.integration
 def test_add_student_cannot_be_in_two_groups(tables):
     repository = GroupRepository(Session)
