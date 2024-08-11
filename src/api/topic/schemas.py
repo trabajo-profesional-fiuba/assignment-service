@@ -18,6 +18,7 @@ class TopicRequest(BaseModel):
 
 
 class TopicResponse(BaseModel):
+    id: int
     name: str
     category: str
 

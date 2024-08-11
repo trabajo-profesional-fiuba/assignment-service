@@ -1,4 +1,9 @@
-from src.api.topic.schemas import CategoryRequest, TopicRequest, TopicList
+from src.api.topic.schemas import (
+    CategoryRequest,
+    TopicRequest,
+    TopicList,
+    TopicResponse,
+)
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
 from src.api.topic.exceptions import TopicAlreadyExist
@@ -10,18 +15,24 @@ class TopicService:
     def __init__(self, topic_repository: TopicRepository):
         self._repository = topic_repository
 
-    def add_category(self, category_name: str, categories: list[Category]):
+    def add_categories(self, category_name: str, categories: list[Category]):
         new_category = Category(name=category_name)
         if not any(category.name == category_name for category in categories):
             categories.append(new_category)
         return categories
 
-    def add_topic(self, topic_name: str, category_name: str, topics: list[Topic]):
+    def add_topics(self, topic_name: str, category_name: str, topics: list[Topic]):
         new_topic = Topic(name=topic_name, category=category_name)
         if not any(topic.name == topic_name for topic in topics):
             topics.append(new_topic)
             return topics
         raise TopicAlreadyExist("Topic already exists.")
+
+    def add_topic(self, topic_name: str, category_name: str = "default"):
+        topic = Topic(name=topic_name, category=category_name)
+        return TopicResponse.model_validate(
+            self._repository.add_topic(topic)
+        )
 
     def get_categories_topics(self, rows):
         """
@@ -33,8 +44,8 @@ class TopicService:
         topics = []
         for row in rows:
             name, category = row
-            categories = self.add_category(category, categories)
-            topics = self.add_topic(name, category, topics)
+            categories = self.add_categories(category, categories)
+            topics = self.add_topics(name, category, topics)
         return categories, topics
 
     def create_topics_from_string(self, csv: str):

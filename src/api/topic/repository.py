@@ -30,3 +30,19 @@ class TopicRepository:
             topics = session.query(Topic).all()
             session.expunge_all()
         return topics
+    
+    def add_category(self, category: Category):
+        with self.Session() as session:
+            session.add(category)
+            session.commit()
+            session.refresh(category)
+            session.expunge(category)
+        return category
+    
+    def add_topic(self, topic: Topic):
+        with self.Session() as session:
+            session.add(topic)
+            session.commit()
+            session.refresh(topic)
+            session.expunge(topic)
+        return topic
