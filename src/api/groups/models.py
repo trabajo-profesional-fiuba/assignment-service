@@ -12,7 +12,7 @@ from src.config.database.base import Base
 association_table = Table(
     "groups_students",
     Base.metadata,
-    Column("group_id", ForeignKey("groups.id"), primary_key=True),
+    Column("group_id", ForeignKey("groups.id")),
     Column("student_id", ForeignKey("users.id"), primary_key=True),
 )
 

@@ -30,7 +30,7 @@ class TopicRepository:
             topics = session.query(Topic).all()
             session.expunge_all()
         return topics
-    
+
     def add_category(self, category: Category):
         with self.Session() as session:
             session.add(category)
@@ -38,7 +38,7 @@ class TopicRepository:
             session.refresh(category)
             session.expunge(category)
         return category
-    
+
     def add_topic(self, topic: Topic):
         with self.Session() as session:
             session.add(topic)

@@ -9,9 +9,9 @@ from src.api.groups.router import router
 
 from src.api.tutors.model import Period
 from src.api.tutors.repository import TutorRepository
-from src.api.users.model import User,Role
+from src.api.users.model import User, Role
 from src.api.users.repository import UserRepository
-from src.config.database.database import create_tables, drop_tables,engine
+from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 PREFIX = "/groups"
@@ -24,6 +24,7 @@ def tables():
     yield
     # Drop all tables
     drop_tables()
+
 
 SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)
@@ -70,20 +71,16 @@ def test_add_group(fastapi, tables):
         role=Role.STUDENT,
     )
     user_repository.add_tutors([tutor])
-    user_repository.add_students([student1,student2])
+    user_repository.add_students([student1, student2])
 
     tutor_repository.add_tutor_period(3, "1C2025")
 
-
     body = {
-        "students": [1,2],
+        "students": [1, 2],
         "tutor_email": "tutor@fi,uba.ar",
-        "topic": {
-            "name": "Custom topic",
-            "category": "default"
-        }
+        "topic": {"name": "Custom topic", "category": "default"},
     }
     params = {"period": "1C2025"}
-    
+
     response = fastapi.post(f"{PREFIX}/", json=body, params=params)
     assert response.status_code == status.HTTP_201_CREATED

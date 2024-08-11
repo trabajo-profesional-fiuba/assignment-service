@@ -1,3 +1,4 @@
+from src.api.groups.exceptions import GroupError
 from src.api.groups.schemas import GroupList, GroupResponse
 
 
@@ -11,5 +12,8 @@ class GroupService:
         return GroupResponse.model_validate(group)
 
     def create_basic_group(self, ids, preferred_topics=[]):
-        group = self._repository.add_group(ids=ids, preferred_topics=preferred_topics)
-        return GroupResponse.model_validate(group)
+        try:
+            group = self._repository.add_group(ids=ids, preferred_topics=preferred_topics)
+            return GroupResponse.model_validate(group)
+        except:
+            raise GroupError(message="Group could't be created")

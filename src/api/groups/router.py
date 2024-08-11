@@ -43,4 +43,3 @@ async def add_group(
     return group_service.create_assigned_group(
         group.students, tutor_period.id, topic.id
     )
-

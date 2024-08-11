@@ -1,5 +1,6 @@
 import pytest
 
+from src.api.groups.exceptions import GroupError
 from src.api.groups.service import GroupService
 from src.api.student.repository import StudentRepository
 from src.api.groups.repository import GroupRepository
@@ -174,7 +175,7 @@ def test_add_new_group_with_three_topics(tables):
         role=Role.STUDENT,
     )
     u_repository.add_students([student1, student2])
-    uids = [10, 12]
+    uids = [13, 14]
 
     group = repository.add_group(ids=uids, preferred_topics=[1, 2, 3])
     ids = [user.id for user in group.students]
@@ -262,3 +263,31 @@ def test_add_new_group_with_three_topics_using_service(tables):
     assert ids == uids
     assert len(group.preferred_topics) == 3
     assert all(t in expected_topics for t in group.preferred_topics)
+
+@pytest.mark.integration
+def test_add_student_cannot_be_in_two_groups(tables):
+    repository = GroupRepository(Session)
+    u_repository = UserRepository(Session)
+    student1 = User(
+        id=200,
+        name="Juan",
+        last_name="Perez",
+        email="200@fi,uba.ar",
+        password="password",
+        role=Role.STUDENT,
+    )
+    student2 = User(
+        id=201,
+        name="Pedro",
+        last_name="Pipo",
+        email="201@fi,uba.ar",
+        password="password1",
+        role=Role.STUDENT,
+    )
+    u_repository.add_students([student1, student2])
+    uids = [200, 201]
+
+    service = GroupService(repository)
+    _ = service.create_basic_group(uids, [1, 2, 3])
+    with pytest.raises(GroupError):
+        _ = service.create_basic_group([200, 202], [1, 2, 3])

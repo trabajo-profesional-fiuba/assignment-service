@@ -11,12 +11,12 @@ class GroupRequest(BaseModel):
     topic: TopicRequest
     tutor_email: str
 
-    @field_validator('students', mode='before')
+    @field_validator("students", mode="before")
     def validate_group_length(cls, students):
         if 0 < len(students) <= 4:
             return students
-        
-        raise ValueError('The amount of student for this Group is not valid')
+
+        raise ValueError("The amount of student for this Group is not valid")
 
 
 class GroupResponse(BaseModel):

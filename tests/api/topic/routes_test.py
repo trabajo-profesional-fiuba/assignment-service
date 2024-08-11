@@ -38,9 +38,9 @@ def test_add_topics_with_different_categories_success(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
-        {"id":1,"name": "topic 1", "category": "category 1"},
-        {"id":2,"name": "topic 2", "category": "category 2"},
-        {"id":3,"name": "topic 3", "category": "category 3"},
+        {"id": 1, "name": "topic 1", "category": "category 1"},
+        {"id": 2, "name": "topic 2", "category": "category 2"},
+        {"id": 3, "name": "topic 3", "category": "category 3"},
     ]
 
 
@@ -55,9 +55,9 @@ def test_add_topics_with_same_category_success(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
-        {"id":1,"name": "topic 1", "category": "category 1"},
-        {"id":2,"name": "topic 2", "category": "category 1"},
-        {"id":3,"name": "topic 3", "category": "category 3"},
+        {"id": 1, "name": "topic 1", "category": "category 1"},
+        {"id": 2, "name": "topic 2", "category": "category 1"},
+        {"id": 3, "name": "topic 3", "category": "category 3"},
     ]
 
 
@@ -120,7 +120,7 @@ def test_get_topics_with_success(fastapi, tables):
     response = fastapi.get(f"{PREFIX}/")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
-        {"id":1,"name": "topic 1", "category": "category 1"},
-        {"id":2,"name": "topic 2", "category": "category 2"},
-        {"id":3,"name": "topic 3", "category": "category 3"},
+        {"id": 1, "name": "topic 1", "category": "category 1"},
+        {"id": 2, "name": "topic 2", "category": "category 2"},
+        {"id": 3, "name": "topic 3", "category": "category 3"},
     ]

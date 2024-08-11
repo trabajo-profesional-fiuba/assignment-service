@@ -30,9 +30,7 @@ class TopicService:
 
     def add_topic(self, topic_name: str, category_name: str = "default"):
         topic = Topic(name=topic_name, category=category_name)
-        return TopicResponse.model_validate(
-            self._repository.add_topic(topic)
-        )
+        return TopicResponse.model_validate(self._repository.add_topic(topic))
 
     def get_categories_topics(self, rows):
         """
