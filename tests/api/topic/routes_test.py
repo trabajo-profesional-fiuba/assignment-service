@@ -133,7 +133,7 @@ def test_add_topics_with_same_category_success(fastapi, tables, tutors):
     ]
 
 
-@pytest.mark.skip
+@pytest.mark.integration
 def test_add_existing_topic_with_success(fastapi, tables, tutors):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
