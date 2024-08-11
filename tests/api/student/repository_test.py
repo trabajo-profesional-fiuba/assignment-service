@@ -13,7 +13,7 @@ class TestStudentRepository:
     SessionFactory = sessionmaker(bind=engine)
     Session = scoped_session(SessionFactory)
 
-    @pytest.fixture(scope="session")
+    @pytest.fixture(scope="module")
     def tables(self):
         # Create all tables
         create_tables()
@@ -79,3 +79,23 @@ class TestStudentRepository:
         response = repository.get_students_by_ids([12345, 11111])
 
         assert len(response) == 2
+
+
+    @pytest.mark.integration
+    def test_get_all_students(self, tables):
+        student4 = User(
+            id=44444,
+            name="Pepe",
+            last_name="Bla",
+            email="44444@fi,uba.ar",
+            password="password1",
+            role=Role.STUDENT,
+        )
+        students = [student4]
+
+        u_repository = UserRepository(self.Session)
+        _ = u_repository.add_students(students)
+        repository = StudentRepository(self.Session)
+        response = repository.get_students()
+
+        assert len(response) == 4
