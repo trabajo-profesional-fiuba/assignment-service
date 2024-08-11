@@ -33,7 +33,7 @@ class TestStudentRepository:
             id=12345,
             name="Juan",
             last_name="Perez",
-            email="email@fi,uba.ar",
+            email="email@fi.uba.ar",
             password="password",
             role=Role.STUDENT,
         )
@@ -41,7 +41,7 @@ class TestStudentRepository:
             id=54321,
             name="Pedro",
             last_name="Pipo",
-            email="email2@fi,uba.ar",
+            email="email2@fi.uba.ar",
             password="password1",
             role=Role.STUDENT,
         )
@@ -73,7 +73,7 @@ class TestStudentRepository:
             id=11111,
             name="Pepe",
             last_name="Bla",
-            email="email3@fi,uba.ar",
+            email="email3@fi.uba.ar",
             password="password1",
             role=Role.STUDENT,
         )

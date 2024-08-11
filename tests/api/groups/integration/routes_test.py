@@ -50,7 +50,7 @@ def test_add_group(fastapi, tables):
         id=3,
         name="Pedro",
         last_name="Pipo",
-        email="tutor@fi,uba.ar",
+        email="tutor@fi.uba.ar",
         password="password1",
         role=Role.TUTOR,
     )
@@ -58,7 +58,7 @@ def test_add_group(fastapi, tables):
         id=1,
         name="Juan",
         last_name="Perez",
-        email="1@fi,uba.ar",
+        email="1@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
@@ -66,7 +66,7 @@ def test_add_group(fastapi, tables):
         id=2,
         name="Pedro",
         last_name="Pipo",
-        email="2@fi,uba.ar",
+        email="2@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -77,7 +77,7 @@ def test_add_group(fastapi, tables):
 
     body = {
         "students": [1, 2],
-        "tutor_email": "tutor@fi,uba.ar",
+        "tutor_email": "tutor@fi.uba.ar",
         "topic": {"name": "Custom topic", "category": "default"},
     }
     params = {"period": "1C2025"}

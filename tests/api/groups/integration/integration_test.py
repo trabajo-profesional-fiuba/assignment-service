@@ -42,7 +42,7 @@ def test_add_new_group_with_tutor_and_topic(tables):
         id=5,
         name="Pedro",
         last_name="Pipo",
-        email="tutor@fi,uba.ar",
+        email="tutor@fi.uba.ar",
         password="password1",
         role=Role.TUTOR,
     )
@@ -50,7 +50,7 @@ def test_add_new_group_with_tutor_and_topic(tables):
         id=1,
         name="Juan",
         last_name="Perez",
-        email="1@fi,uba.ar",
+        email="1@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
@@ -58,7 +58,7 @@ def test_add_new_group_with_tutor_and_topic(tables):
         id=2,
         name="Pedro",
         last_name="Pipo",
-        email="2@fi,uba.ar",
+        email="2@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -86,7 +86,7 @@ def test_add_new_group_without_tutor_and_topic(tables):
         id=3,
         name="Juan",
         last_name="Perez",
-        email="3@fi,uba.ar",
+        email="3@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
@@ -94,7 +94,7 @@ def test_add_new_group_without_tutor_and_topic(tables):
         id=4,
         name="Pedro",
         last_name="Pipo",
-        email="4@fi,uba.ar",
+        email="4@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -119,7 +119,7 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
         id=6,
         name="Pedro",
         last_name="Pipo",
-        email="tutor1@fi,uba.ar",
+        email="tutor1@fi.uba.ar",
         password="password1",
         role=Role.TUTOR,
     )
@@ -127,7 +127,7 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
         id=10,
         name="Juan",
         last_name="Perez",
-        email="10@fi,uba.ar",
+        email="10@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
@@ -135,7 +135,7 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
         id=12,
         name="Pedro",
         last_name="Pipo",
-        email="12@fi,uba.ar",
+        email="12@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -162,7 +162,7 @@ def test_add_new_group_with_three_topics(tables):
         id=13,
         name="Juan",
         last_name="Perez",
-        email="13@fi,uba.ar",
+        email="13@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
@@ -170,7 +170,7 @@ def test_add_new_group_with_three_topics(tables):
         id=14,
         name="Pedro",
         last_name="Pipo",
-        email="14@fi,uba.ar",
+        email="14@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -195,7 +195,7 @@ def test_add_new_group_with_tutor_and_topic_using_service(tables):
         id=15,
         name="Pedro",
         last_name="Pipo",
-        email="tutor2@fi,uba.ar",
+        email="tutor2@fi.uba.ar",
         password="password1",
         role=Role.TUTOR,
     )
@@ -203,7 +203,7 @@ def test_add_new_group_with_tutor_and_topic_using_service(tables):
         id=16,
         name="Juan",
         last_name="Perez",
-        email="16@fi,uba.ar",
+        email="16@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
@@ -211,7 +211,7 @@ def test_add_new_group_with_tutor_and_topic_using_service(tables):
         id=17,
         name="Pedro",
         last_name="Pipo",
-        email="17@fi,uba.ar",
+        email="17@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -240,7 +240,7 @@ def test_add_new_group_with_three_topics_using_service(tables):
         id=18,
         name="Juan",
         last_name="Perez",
-        email="18@fi,uba.ar",
+        email="18@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
@@ -248,7 +248,7 @@ def test_add_new_group_with_three_topics_using_service(tables):
         id=19,
         name="Pedro",
         last_name="Pipo",
-        email="19@fi,uba.ar",
+        email="19@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -272,7 +272,7 @@ def test_add_student_cannot_be_in_two_groups(tables):
         id=200,
         name="Juan",
         last_name="Perez",
-        email="200@fi,uba.ar",
+        email="200@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
@@ -280,7 +280,7 @@ def test_add_student_cannot_be_in_two_groups(tables):
         id=201,
         name="Pedro",
         last_name="Pipo",
-        email="201@fi,uba.ar",
+        email="201@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
