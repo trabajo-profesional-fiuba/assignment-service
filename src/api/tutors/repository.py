@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc
-from sqlalchemy import exc
+from sqlalchemy import exc, update
 
 from src.api.users.model import User, Role
 from src.api.tutors.model import Period, TutorPeriod
@@ -9,7 +9,7 @@ from src.api.tutors.exceptions import (
     PeriodDuplicated,
     TutorPeriodNotFound,
 )
-from src.api.topic.models import Topic
+from src.api.topic.models import Topic, topics_tutor_periods_table as TopicTutorPeriod
 
 
 class TutorRepository:
@@ -95,3 +95,16 @@ class TutorRepository:
                     return tutor_period
                 raise TutorPeriodNotFound(f"Tutor '{tutor_email}' has no period.")
             raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
+
+    def add_topic_capacity(self, topic_id: int, tutor_period_id: int, capacity: int):
+        with self.Session() as session:
+            item = (
+                update(TopicTutorPeriod)
+                .where(
+                    (TopicTutorPeriod.c.topic_id == topic_id)
+                    & (TopicTutorPeriod.c.tutor_period_id == tutor_period_id)
+                )
+                .values(capacity=capacity)
+            )
+            session.execute(item)
+            session.commit()

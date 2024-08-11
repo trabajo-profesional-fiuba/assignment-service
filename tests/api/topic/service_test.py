@@ -22,7 +22,7 @@ def service(mock_repository):
 def test_add_new_category_success(service):
     categories = []
 
-    result = service.add_category("category 1", categories)
+    result = service._add_category("category 1", categories)
     assert len(result) == 1
     assert result[0].name == "category 1"
 
@@ -31,7 +31,7 @@ def test_add_new_category_success(service):
 def test_add_already_exist_category_success(service):
     categories = [CategoryRequest(name="category 1")]
 
-    result = service.add_category("category 1", categories)
+    result = service._add_category("category 1", categories)
     assert len(result) == 1
 
 
@@ -39,7 +39,7 @@ def test_add_already_exist_category_success(service):
 def test_add_new_topic_success(service):
     topics = []
 
-    result = service.add_topic("topic 1", "category 1", topics)
+    result = service._add_topic("topic 1", "category 1", topics)
     result_topics = result[0]
     assert len(result_topics) == 1
     assert result_topics[0].name == "topic 1"
@@ -51,7 +51,7 @@ def test_add_duplicated_topic_success(service):
     new_topic = TopicRequest(name="topic 1", category="category 1")
     topics = [new_topic]
 
-    result = service.add_topic("topic 1", "category 1", topics)
+    result = service._add_topic("topic 1", "category 1", topics)
     result_topics = result[0]
     assert len(result_topics) == 1
 
@@ -61,7 +61,7 @@ def test_add_diff_topics_with_same_category_topic_success(service):
     new_topic = TopicRequest(name="topic 1", category="category 1")
     topics = [new_topic]
 
-    result = service.add_topic("topic 2", "category 1", topics)
+    result = service._add_topic("topic 2", "category 1", topics)
     result_topics = result[0]
     assert len(result_topics) == 2
 
@@ -71,7 +71,7 @@ def test_get_topics_by_tutor_success(service):
     topic_by_tutor = {}
     new_topic = TopicRequest(name="topic 1", category="category 1")
 
-    result = service.add_topic_by_tutor("tutor1@com", topic_by_tutor, new_topic)
+    result = service._add_topic_by_tutor("tutor1@com", topic_by_tutor, new_topic)
     assert len(result) == 1
     assert len(result["tutor1@com"]) == 1
     assert result["tutor1@com"][0].name == "topic 1"
@@ -84,7 +84,7 @@ def test_get_topics_by_tutor_with_many_topics_success(service):
     topic_by_tutor = {"tutor1@com": [existent_topic]}
     new_topic = TopicRequest(name="topic 2", category="category 1")
 
-    result = service.add_topic_by_tutor("tutor1@com", topic_by_tutor, new_topic)
+    result = service._add_topic_by_tutor("tutor1@com", topic_by_tutor, new_topic)
     assert len(result) == 1
     assert len(result["tutor1@com"]) == 2
     assert result["tutor1@com"][1].name == "topic 2"
