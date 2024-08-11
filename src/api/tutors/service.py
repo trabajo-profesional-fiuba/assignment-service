@@ -6,6 +6,7 @@ from src.api.tutors.schemas import (
     PeriodRequest,
     PeriodResponse,
     TutorList,
+    TutorPeriodResponse,
     TutorResponse,
     PeriodList,
 )
@@ -68,7 +69,13 @@ class TutorService:
     def get_all_periods(self, order):
         return PeriodList.model_validate(self._repository.get_all_periods(order))
 
-    def get_periods_by_id(self, tutor_id):
+    def get_periods_by_tutor_id(self, tutor_id):
         return TutorResponse.model_validate(
             self._repository.get_all_periods_by_id(tutor_id)
         )
+
+    def get_tutor_period_from_email(self, period, tutor_email):
+        return TutorPeriodResponse.model_validate(
+            self._repository.get_tutor_period_from_email(period,tutor_email)
+        )
+    

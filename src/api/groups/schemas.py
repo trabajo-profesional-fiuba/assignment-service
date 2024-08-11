@@ -1,10 +1,25 @@
 from typing import List
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator
 from datetime import datetime
+from src.api.topic.schemas import TopicRequest
 from src.api.users.schemas import UserResponse
 
 
-class Group(BaseModel):
+class GroupRequest(BaseModel):
+
+    students: List[int] = Field(description="List of students ids")
+    topic: TopicRequest
+    tutor_email: str
+
+    @field_validator('students', mode='before')
+    def validate_group_length(cls, students):
+        if 0 < len(students) <= 4:
+            return students
+        
+        raise ValueError('The amount of student for this Group is not valid')
+
+
+class GroupResponse(BaseModel):
 
     id: int = Field(description="Id of the group")
     topic_id: int | None = Field(validation_alias="assigned_topic_id")
@@ -24,4 +39,4 @@ class Group(BaseModel):
 
 
 class GroupList(RootModel):
-    root: List[Group] = Field(default=[])
+    root: List[GroupResponse] = Field(default=[])
