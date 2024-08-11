@@ -71,11 +71,12 @@ def test_get_topics_by_tutor_success(service):
     topic_by_tutor = {}
     new_topic = TopicRequest(name="topic 1", category="category 1")
 
-    result = service._add_topic_by_tutor("tutor1@com", topic_by_tutor, new_topic)
+    result = service._add_topic_by_tutor("tutor1@com", topic_by_tutor, new_topic, 2)
     assert len(result) == 1
     assert len(result["tutor1@com"]) == 1
-    assert result["tutor1@com"][0].name == "topic 1"
-    assert result["tutor1@com"][0].category == "category 1"
+    assert result["tutor1@com"][0]["topic"].name == "topic 1"
+    assert result["tutor1@com"][0]["topic"].category == "category 1"
+    assert result["tutor1@com"][0]["capacity"] == 2
 
 
 @pytest.mark.integration
@@ -84,8 +85,9 @@ def test_get_topics_by_tutor_with_many_topics_success(service):
     topic_by_tutor = {"tutor1@com": [existent_topic]}
     new_topic = TopicRequest(name="topic 2", category="category 1")
 
-    result = service._add_topic_by_tutor("tutor1@com", topic_by_tutor, new_topic)
+    result = service._add_topic_by_tutor("tutor1@com", topic_by_tutor, new_topic, 3)
     assert len(result) == 1
     assert len(result["tutor1@com"]) == 2
-    assert result["tutor1@com"][1].name == "topic 2"
-    assert result["tutor1@com"][1].category == "category 1"
+    assert result["tutor1@com"][1]["topic"].name == "topic 2"
+    assert result["tutor1@com"][1]["topic"].category == "category 1"
+    assert result["tutor1@com"][1]["capacity"] == 3

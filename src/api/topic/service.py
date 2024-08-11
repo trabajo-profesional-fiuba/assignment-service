@@ -25,10 +25,15 @@ class TopicService:
             topics.append(new_topic)
         return topics, new_topic
 
-    def _add_topic_by_tutor(self, tutor: str, topics_by_tutor: dict, new_topic: Topic):
+    def _add_topic_by_tutor(
+        self, tutor: str, topics_by_tutor: dict, new_topic: Topic, capacity: int
+    ):
+        """
+        Adds a topic and its capacity under a specific tutor in the dictionary.
+        """
         if tutor not in topics_by_tutor:
             topics_by_tutor[tutor] = []
-        topics_by_tutor[tutor].append(new_topic)
+        topics_by_tutor[tutor].append({"topic": new_topic, "capacity": capacity})
         return topics_by_tutor
 
     def _get_info(self, rows):
@@ -45,7 +50,7 @@ class TopicService:
             categories = self._add_category(category, categories)
             topics, new_topic = self._add_topic(name, category, topics)
             topics_by_tutor = self._add_topic_by_tutor(
-                tutor, topics_by_tutor, new_topic
+                tutor, topics_by_tutor, new_topic, capacity
             )
         return categories, topics, topics_by_tutor
 
@@ -53,11 +58,22 @@ class TopicService:
         csv_file = TopicCsvFile(csv=csv)
         return csv_file.get_info_as_rows()
 
+    def _get_topics_by_tutor(self, tutor_email: str, topics_by_tutor: dict):
+        """
+        Given a tutor's email, return a list of topic names assigned to that tutor,
+        without capacities.
+        """
+        if tutor_email in topics_by_tutor:
+            return [topic_info["topic"] for topic_info in topics_by_tutor[tutor_email]]
+        else:
+            return []
+
     def _update_tutor_periods(
         self, topics_by_tutor: dict, tutor_repository: TutorRepository
     ):
         for tutor, topics in topics_by_tutor.items():
-            tutor_repository.add_topics_to_period(tutor, topics)
+            tutor_topics = self._get_topics_by_tutor(tutor, topics_by_tutor)
+            tutor_repository.add_topics_to_period(tutor, tutor_topics)
 
     def _add_topics(self, topics, categories):
         self._topic_repository.add_categories(categories)
