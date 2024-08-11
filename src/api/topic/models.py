@@ -2,13 +2,6 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from src.config.database.base import Base
 
-topics_tutor_periods_table = Table(
-    "topics_tutor_periods",
-    Base.metadata,
-    Column("topic_id", ForeignKey("topics.id"), primary_key=True),
-    Column("tutor_period_id", ForeignKey("tutor_periods.id"), primary_key=True),
-)
-
 
 class Category(Base):
     __tablename__ = "categories"
@@ -27,3 +20,12 @@ class Topic(Base):
     category = Column(String, ForeignKey("categories.name"), nullable=False)
 
     topic_category = relationship("Category", back_populates="topic")
+
+
+topics_tutor_periods_table = Table(
+    "topics_tutor_periods",
+    Base.metadata,
+    Column("topic_id", ForeignKey("topics.id"), primary_key=True),
+    Column("tutor_period_id", ForeignKey("tutor_periods.id"), primary_key=True),
+    Column("capacity", Integer, default=1),
+)

@@ -1,4 +1,4 @@
-TEMA,CATEGORIA,TUTOR
-topic 1,category 1,juan.perez@fi.uba.ar
-topic 2,category 2,juan.perez@fi.uba.ar
-topic 3,category 3,maria.gomez@fi.uba.ar
+TEMA,CATEGORIA,TUTOR,CAPACIDAD
+topic 1,category 1,juan.perez@fi.uba.ar,1
+topic 2,category 2,juan.perez@fi.uba.ar,2
+topic 3,category 3,maria.gomez@fi.uba.ar,1

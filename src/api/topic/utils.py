@@ -15,13 +15,15 @@ class TopicCsvFile:
         return df
 
     def _validate_csv_headers(self, df):
-        if list(df.columns.values) != ["TEMA", "CATEGORIA", "TUTOR"]:
+        if list(df.columns.values) != ["TEMA", "CATEGORIA", "TUTOR", "CAPACIDAD"]:
             raise InvalidTopicCsv("Columns don't match with expected ones.")
 
     def get_info_as_rows(self):
         rows = []
         self._df.apply(
-            lambda row: rows.append((row["TEMA"], row["CATEGORIA"], row["TUTOR"])),
+            lambda row: rows.append(
+                (row["TEMA"], row["CATEGORIA"], row["TUTOR"], row["CAPACIDAD"])
+            ),
             axis=1,
         )
         return rows

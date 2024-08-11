@@ -41,7 +41,7 @@ class TopicService:
         topics = []
         topics_by_tutor = {}
         for row in rows:
-            name, category, tutor = row
+            name, category, tutor, capacity = row
             categories = self.add_category(category, categories)
             topics, new_topic = self.add_topic(name, category, topics)
             topics_by_tutor = self.add_topic_by_tutor(tutor, topics_by_tutor, new_topic)
