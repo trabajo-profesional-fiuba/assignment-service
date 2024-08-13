@@ -16,7 +16,7 @@ class Topic(Base):
     __tablename__ = "topics"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
+    name = Column(String, unique=True)
     category = Column(String, ForeignKey("categories.name"), nullable=False)
 
     topic_category = relationship("Category", back_populates="topic")
