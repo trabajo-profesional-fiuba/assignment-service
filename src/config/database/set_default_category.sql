@@ -1,3 +1,1 @@
-INSERT INTO categories (name)
-VALUES ('default')
-ON CONFLICT (name) DO NOTHING;
+INSERT INTO categories (name) VALUES ('default') ON CONFLICT (name) DO NOTHING;
