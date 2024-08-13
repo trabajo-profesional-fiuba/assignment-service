@@ -5,10 +5,7 @@ from pulp import (
     LpMaximize,
     LpBinary,
     PULP_CBC_CMD,
-    GLPK_CMD,
-    COIN_CMD,
 )
-import pulp
 
 from src.model.group_topic_preferences import GroupTopicPreferences
 
@@ -117,7 +114,8 @@ class IncompleteGroupsLPSolver:
                 <= 1
             )
 
-        # Objective function: maximize the number of complete groups formed and consider topic preferences
+        # Objective function: maximize the number of complete groups formed
+        # and consider topic preferences
         obj = lpSum(x_vars_2) + lpSum(x_vars_3) + lpSum(x_vars_4)
 
         # Adjust the objective function according to topic matches
@@ -212,7 +210,6 @@ class IncompleteGroupsLPSolver:
         :return: A new GroupTopicPreferences object.
         """
         combined_students = []
-        combined_topics = []
 
         # Retrieve all groups involved
         groups = [self._get_group_by_id(group_id) for group_id in group_indices]
@@ -230,7 +227,8 @@ class IncompleteGroupsLPSolver:
             topic for topic in group_with_most_students.topics if topic in common_topics
         ]
 
-        # If common topics are less than 3, add more topics from the group with most students
+        # If common topics are less than 3, add more topics from the group with most\
+        # students
         while len(common_topics_ordered) < 3:
             for topic in group_with_most_students.topics:
                 if topic not in common_topics_ordered:
@@ -288,7 +286,8 @@ class IncompleteGroupsLPSolver:
 
     def combine_topics(self, group1, group2):
         """
-        Combina los tópicos de dos grupos, manteniendo el orden y asegurando al menos 3 tópicos.
+        Combina los tópicos de dos grupos, manteniendo el orden y asegurando al\
+            menos 3 tópicos.
         """
         common_topics = set(group1.topics).intersection(set(group2.topics))
         all_topics = sorted(common_topics, key=lambda topic: group1.topics.index(topic))

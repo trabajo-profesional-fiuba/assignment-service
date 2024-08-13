@@ -6,8 +6,6 @@ from datetime import datetime
 
 from src.api.form.schemas import (
     FormPreferencesRequest,
-    FormPreferencesResponse,
-    GroupAnswerResponse,
     FormPreferencesList,
     GroupAnswerList,
 )
@@ -61,7 +59,8 @@ async def add_answers(
 
 @router.get(
     "/answers",
-    description="This endpoint return all topic preferences answers grouped by answer id.",
+    description="This endpoint return all topic preferences answers grouped by answer \
+        id.",
     response_model=GroupAnswerList,
     responses={
         status.HTTP_200_OK: {

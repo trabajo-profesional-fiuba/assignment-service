@@ -115,7 +115,7 @@ def test_upload_file_with_duplicates_rows_in_db_raise_exception(fastapi, tables)
     files = {"file": (filename, content, content_type)}
 
     # Act
-    response_ok = fastapi.post(f"{PREFIX}/upload", files=files)
+    _ = fastapi.post(f"{PREFIX}/upload", files=files)
     response = fastapi.post(f"{PREFIX}/upload", files=files)
 
     http_exception = response.json()
@@ -368,7 +368,7 @@ def test_add_same_period_to_same_tutor_raise_error(fastapi, tables):
 
     # Act
     _ = fastapi.post(f"{PREFIX}/periods", json=body)
-    response = fastapi.post(f"{PREFIX}/{tutor_id_1}/periods", params=params)
+    _ = fastapi.post(f"{PREFIX}/{tutor_id_1}/periods", params=params)
     response2 = fastapi.post(f"{PREFIX}/{tutor_id_1}/periods", params=params)
 
     # Assert

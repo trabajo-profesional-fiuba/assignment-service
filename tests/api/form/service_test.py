@@ -50,7 +50,7 @@ def test_get_answers_empty(service, mock_repository):
     expected_result = []
 
     result = service.get_answers()
-    assert result == []
+    assert result == expected_result
 
 
 @pytest.mark.integration

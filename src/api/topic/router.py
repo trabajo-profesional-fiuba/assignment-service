@@ -4,15 +4,16 @@ from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 
 
-from src.api.topic.schemas import TopicResponse, TopicList
+from src.api.topic.schemas import TopicList
 from src.api.topic.service import TopicService
 from src.api.topic.repository import TopicRepository
 from src.config.database.database import get_db
 from src.api.topic.exceptions import (
-    TopicAlreadyExist,
     InvalidMediaType,
     InvalidTopicCsv,
 )
+from src.api.tutors.repository import TutorRepository
+from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 
 router = APIRouter(prefix="/topics", tags=["Topics"])
 
@@ -20,7 +21,7 @@ router = APIRouter(prefix="/topics", tags=["Topics"])
 @router.post(
     "/upload",
     response_model=TopicList,
-    description="Creates a list of topics based on a csv file",
+    description="Creates a list of topics based on a csv file.",
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully added topics."},
@@ -44,8 +45,13 @@ async def upload_csv_file(
             raise InvalidMediaType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
-        return service.create_topics_from_string(content)
-    except (TopicAlreadyExist, InvalidMediaType, InvalidTopicCsv) as err:
+        return service.create_topics_from_string(content, TutorRepository(session))
+    except (
+        TutorNotFound,
+        TutorPeriodNotFound,
+        InvalidMediaType,
+        InvalidTopicCsv,
+    ) as err:
         raise HTTPException(
             status_code=err.status_code,
             detail=err.message,

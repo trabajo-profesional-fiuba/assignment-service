@@ -1,6 +1,6 @@
 from typing_extensions import Annotated
 
-from fastapi import APIRouter, UploadFile, Depends, status, Query
+from fastapi import APIRouter, Depends, status, Query
 
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
@@ -14,8 +14,6 @@ from src.api.topic.service import TopicService
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.config.database.database import get_db
-from src.config.logging import logger
-
 
 router = APIRouter(prefix="/groups", tags=["Groups"])
 
@@ -25,9 +23,8 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
     response_model=GroupResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Creates a new group",
-    description="""This endpoint is intended to use for those cases which the group of studdents
-                already have a tutor and a topic
-                """,
+    description="""This endpoint is intended to use for those cases which the group of
+    students already have a tutor and a topic""",
 )
 async def add_group(
     group: GroupRequest,
@@ -49,7 +46,7 @@ async def add_group(
         )
     except GroupError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
-    except:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error",

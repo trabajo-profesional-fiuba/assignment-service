@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 
 from src.config.config import api_config
 from src.config.logging import logger
@@ -19,6 +19,7 @@ print(database_url)
 engine = create_engine(
     database_url, pool_size=pool_size, pool_timeout=pool_timeout, echo=True
 )
+
 
 def init_default_values():
     with open("src/config/database/set_default_category.sql", "r") as file:
@@ -60,7 +61,7 @@ def drop_tables():
 
 
 def get_db():
-    if engine != None:
+    if engine is not None:
         Session = sessionmaker(bind=engine)
         yield Session
     else:

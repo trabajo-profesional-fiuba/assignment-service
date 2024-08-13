@@ -37,10 +37,11 @@ class Group(Base):
     final_report_approved = Column(Boolean, default=False)
     exhibition_date = Column(DateTime(timezone=False))
     """ postgresql.ARRAY is a dialect specif datatype for postgres sql
-        if in the future the db changes, this should be refactored using a different approach.
-        
-        This field is supposed to contain 3 ids topics ids. No foreing key is needed as these keys
-        will no be used for join operations so is better to skip the relationship config.
+        if in the future the db changes, this should be refactored using a
+        different approach.
+        This field is supposed to contain 3 ids topics ids. No foreing key is
+        needed as these keys will no be used for join operations so is better
+        to skip the relationship config.
     """
     preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1), default=[])
 

@@ -21,3 +21,11 @@ class Topic(Base):
 
     topic_category = relationship("Category", back_populates="topic")
     groups = relationship("Group", back_populates="topic", lazy="noload")
+
+
+class TopicTutorPeriod(Base):
+    __tablename__ = "topics_tutor_periods"
+
+    topic_id = Column(ForeignKey("topics.id"), primary_key=True)
+    tutor_period_id = Column(ForeignKey("tutor_periods.id"), primary_key=True)
+    capacity = Column(Integer, default=1)

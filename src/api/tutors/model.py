@@ -11,8 +11,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from src.api.users.model import User
-
 
 class Period(Base):
     __tablename__ = "periods"
@@ -35,6 +33,7 @@ class TutorPeriod(Base):
 
     tutor = relationship("User", back_populates="periods", lazy="joined")
     period = relationship("Period", back_populates="periods")
+    topics = relationship("Topic", secondary="topics_tutor_periods")
     groups = relationship(
         "Group", back_populates="tutor_period", uselist=True, lazy="noload"
     )
