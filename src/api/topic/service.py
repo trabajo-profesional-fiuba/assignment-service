@@ -68,16 +68,26 @@ class TopicService:
         else:
             return []
 
+    def _get_capacities_by_tutor(self, tutor_email: str, topics_by_tutor: dict):
+        """
+        Given a tutor's email, return a list of capacities assigned to topics of that tutor.
+        """
+        if tutor_email in topics_by_tutor:
+            return [
+                topic_info["capacity"] for topic_info in topics_by_tutor[tutor_email]
+            ]
+        else:
+            return []
+
     def _update_tutor_periods(
         self, topics_by_tutor: dict, tutor_repository: TutorRepository
     ):
         for tutor, topics_list in topics_by_tutor.items():
             tutor_topics = self._get_topics_by_tutor(tutor, topics_by_tutor)
-            tutor_period = tutor_repository.add_topics_to_period(tutor, tutor_topics)
-            for topic_info in topics_list:
-                tutor_repository.add_topic_capacity(
-                    topic_info["topic"].id, tutor_period.id, topic_info["capacity"]
-                )
+            tutor_capacities = self._get_capacities_by_tutor(tutor, topics_by_tutor)
+            tutor_period = tutor_repository.add_topic_tutor_period(
+                tutor, tutor_topics, tutor_capacities
+            )
 
     def _add_topics(self, topics, categories):
         self._topic_repository.add_categories(categories)

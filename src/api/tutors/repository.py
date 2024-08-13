@@ -9,7 +9,7 @@ from src.api.tutors.exceptions import (
     PeriodDuplicated,
     TutorPeriodNotFound,
 )
-from src.api.topic.models import Topic, topics_tutor_periods_table as TopicTutorPeriod
+from src.api.topic.models import Topic, TopicTutorPeriod
 
 
 class TutorRepository:
@@ -79,8 +79,11 @@ class TutorRepository:
 
         return tutor
 
-    def add_topics_to_period(self, tutor_email: str, topics: list[Topic]):
+    def add_topic_tutor_period(
+        self, tutor_email: str, topics: list[Topic], capacities: list[int]
+    ):
         with self.Session() as session:
+            topic_tutor_periods = []
             tutor = session.query(User).filter(User.email == tutor_email).first()
             if tutor:
                 tutor_period = (
@@ -89,22 +92,24 @@ class TutorRepository:
                     .first()
                 )
                 if tutor_period:
-                    tutor_period.topics.extend(topics)
+                    for idx, topic in enumerate(topics):
+                        topic = (
+                            session.query(Topic)
+                            .filter(
+                                Topic.name == topic.name
+                                and Topic.category == topic.category
+                            )
+                            .first()
+                        )
+                        topic_tutor_period = TopicTutorPeriod(
+                            topic_id=topic.id,
+                            tutor_period_id=tutor_period.id,
+                            capacity=capacities[idx],
+                        )
+                        session.add(topic_tutor_period)
+                        session.expunge(topic_tutor_period)
+                        topic_tutor_periods.append(topic_tutor_period)
                     session.commit()
-                    topics = tutor_period.topics
-                    return tutor_period
+                    return topic_tutor_periods
                 raise TutorPeriodNotFound(f"Tutor '{tutor_email}' has no period.")
             raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
-
-    def add_topic_capacity(self, topic_id: int, tutor_period_id: int, capacity: int):
-        with self.Session() as session:
-            item = (
-                update(TopicTutorPeriod)
-                .where(
-                    (TopicTutorPeriod.c.topic_id == topic_id)
-                    & (TopicTutorPeriod.c.tutor_period_id == tutor_period_id)
-                )
-                .values(capacity=capacity)
-            )
-            session.execute(item)
-            session.commit()

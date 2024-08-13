@@ -22,10 +22,9 @@ class Topic(Base):
     topic_category = relationship("Category", back_populates="topic")
 
 
-topics_tutor_periods_table = Table(
-    "topics_tutor_periods",
-    Base.metadata,
-    Column("topic_id", ForeignKey("topics.id"), primary_key=True),
-    Column("tutor_period_id", ForeignKey("tutor_periods.id"), primary_key=True),
-    Column("capacity", Integer, default=1),
-)
+class TopicTutorPeriod(Base):
+    __tablename__ = "topics_tutor_periods"
+
+    topic_id = Column(ForeignKey("topics.id"), primary_key=True)
+    tutor_period_id = Column(ForeignKey("tutor_periods.id"), primary_key=True)
+    capacity = Column(Integer, default=1)

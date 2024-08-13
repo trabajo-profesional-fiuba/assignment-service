@@ -26,15 +26,16 @@ class TestTutorRepository:
         drop_tables()
 
     @pytest.mark.integration
-    def test_add_topics_to_tutor_with_tutor_not_found(self, tables):
+    def test_add_topic_tutor_period_with_tutor_not_found(self, tables):
         topics = [Topic(name="topic 1", category="category 1")]
+        capacities = [2]
 
         t_repository = TutorRepository(self.Session)
         with pytest.raises(TutorNotFound):
-            t_repository.add_topics_to_period("tutor2@com", topics)
+            t_repository.add_topic_tutor_period("tutor2@com", topics, capacities)
 
     @pytest.mark.integration
-    def test_add_topics_to_tutor_with_tutor_period_not_found(self, tables):
+    def test_add_topic_tutor_period_with_tutor_period_not_found(self, tables):
         tutor = User(
             id=12345,
             name="Juan",
@@ -44,16 +45,17 @@ class TestTutorRepository:
             role=Role.TUTOR,
         )
         u_repository = UserRepository(self.Session)
-        u_repository.add_students([tutor])
+        u_repository.add_tutors([tutor])
 
         topic_repository = TopicRepository(self.Session)
         topic_repository.add_categories([Category(name="category 1")])
-        # topic_repository.add_topics([Topic(name="topic 1", category="category 1")])
+        topic_repository.add_topics([Topic(name="topic 1", category="category 1")])
         topics = [Topic(name="topic 1", category="category 1")]
+        capacities = [2]
 
         t_repository = TutorRepository(self.Session)
         with pytest.raises(TutorPeriodNotFound):
-            t_repository.add_topics_to_period("tutor1@com", topics)
+            t_repository.add_topic_tutor_period("tutor1@com", topics, capacities)
 
     @pytest.mark.integration
     def test_add_topics_to_tutor_with_success(self, tables):
@@ -62,7 +64,9 @@ class TestTutorRepository:
         t_repository.add_tutor_period(12345, "1C2024")
 
         topics = [Topic(name="topic 1", category="category 1")]
-        response = t_repository.add_topics_to_period("tutor1@com", topics)
-        assert len(response.topics) == 1
-        assert response.topics[0].name == "topic 1"
-        assert response.topics[0].category == "category 1"
+        capacities = [2]
+        response = t_repository.add_topic_tutor_period("tutor1@com", topics, capacities)
+        assert len(response) == 1
+        assert response[0].topic_id == 1
+        assert response[0].tutor_period_id == 1
+        assert response[0].capacity == 2

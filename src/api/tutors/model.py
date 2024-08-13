@@ -11,8 +11,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from src.api.topic.models import topics_tutor_periods_table
-
 
 class Period(Base):
     __tablename__ = "periods"
@@ -35,7 +33,7 @@ class TutorPeriod(Base):
 
     tutor = relationship("User", back_populates="periods")
     period = relationship("Period", back_populates="periods")
-    topics = relationship("Topic", secondary=topics_tutor_periods_table)
+    topics = relationship("Topic", secondary="topics_tutor_periods")
 
     __table_args__ = (
         UniqueConstraint("period_id", "tutor_id", name="tutor_period_const"),
