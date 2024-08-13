@@ -1,5 +1,5 @@
 from src.api.groups.exceptions import GroupError
-from src.api.groups.schemas import GroupList, GroupResponse
+from src.api.groups.schemas import GroupResponse
 
 
 class GroupService:
@@ -17,5 +17,5 @@ class GroupService:
                 ids=ids, preferred_topics=preferred_topics
             )
             return GroupResponse.model_validate(group)
-        except:
+        except Exception:
             raise GroupError(message="Group could't be created")

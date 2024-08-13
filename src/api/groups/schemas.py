@@ -1,7 +1,6 @@
 from typing import List
 from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator
 from datetime import datetime
-from src.api.topic.schemas import TopicRequest
 from src.api.users.schemas import UserResponse
 
 

@@ -28,8 +28,8 @@ def read_csv_and_create_objects(file_path):
             if (
                 (
                     preferences[0]
-                    != "Ya tenemos tema y tutor, pero vamos a hacer el Trabajo Profesional\
-                en el marco de la asignatura"
+                    != "Ya tenemos tema y tutor, pero vamos a hacer el Trabajo \
+                        Profesional en el marco de la asignatura"
                 )
                 or preferences[1]
                 != "Ya tenemos tema y tutor, pero vamos a hacer el Trabajo Profesional\

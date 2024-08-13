@@ -2,7 +2,6 @@ import pytest
 
 from src.api.groups.exceptions import GroupError
 from src.api.groups.service import GroupService
-from src.api.student.repository import StudentRepository
 from src.api.groups.repository import GroupRepository
 from src.api.topic.models import Category, Topic
 from src.api.topic.repository import TopicRepository

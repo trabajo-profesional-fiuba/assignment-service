@@ -2,11 +2,7 @@ import pytest
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
-
-from src.api.topic.models import Category
-from src.api.topic.repository import TopicRepository
 from src.api.groups.router import router
-
 from src.api.tutors.model import Period
 from src.api.tutors.repository import TutorRepository
 from src.api.users.model import User, Role

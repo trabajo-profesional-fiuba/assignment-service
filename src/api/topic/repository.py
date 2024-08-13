@@ -53,10 +53,3 @@ class TopicRepository:
             if topic:
                 session.expunge(topic)
         return topic
-
-    def get_topic_by_name(self, name: str):
-        with self.Session() as session:
-            topic = session.query(Topic).filter(Topic.name == name).first()
-            if topic:
-                session.expunge(topic)
-        return topic
