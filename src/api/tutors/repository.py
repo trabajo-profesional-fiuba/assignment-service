@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import asc, desc
-from sqlalchemy import exc, update
+from sqlalchemy import asc, desc, exc
 
 from src.api.users.model import User, Role
 from src.api.tutors.model import Period, TutorPeriod

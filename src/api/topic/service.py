@@ -46,12 +46,13 @@ class TopicService:
 
     def _get_info(self, rows):
         """
-        Processes a list of rows containing topic names, categories, tutors y capacities.
+        Processes a list of rows containing topic names, categories, tutors and
+        capacities.
         Returns necessary information to create a topic:
             - Unique categories list: to add categories.
             - Unique topics list.
-            - Dictionary with tutor emails as keys and a a list of dictionaries with topic and
-            capacity.
+            - Dictionary with tutor emails as keys and a a list of dictionaries
+            with topic and capacity.
         """
         categories = []
         topics = []
