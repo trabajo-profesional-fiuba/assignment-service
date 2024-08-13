@@ -76,7 +76,7 @@ def test_add_group(fastapi, tables):
     body = {
         "students_ids": [1, 2],
         "tutor_email": "tutor@fi.uba.ar",
-        "topic": "Custom topic"
+        "topic": "Custom topic",
     }
     params = {"period": "1C2025"}
 

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine,text
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 from src.config.config import api_config
@@ -22,9 +22,9 @@ engine = create_engine(
 
 
 def init_default_values():
-    with open('src\config\database\set_default_category.sql','r') as file:
+    with open("src\config\database\set_default_category.sql", "r") as file:
         stm = file.read()
-    
+
     if engine:
         with engine.connect() as connection:
             try:
@@ -37,6 +37,7 @@ def init_default_values():
                 logger.error(f"An error occurred: {e}")
     else:
         logger.warn("Database engine is not initialized.")
+
 
 def create_tables():
     """

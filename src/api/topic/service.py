@@ -9,7 +9,7 @@ from src.api.topic.utils import TopicCsvFile
 from src.api.topic.exceptions import TopicAlreadyExist
 from src.api.topic.models import Topic, Category
 
-from src.config.logging import logger 
+from src.config.logging import logger
 
 
 class TopicService:
@@ -37,12 +37,14 @@ class TopicService:
     def get_or_add_topic(self, topic_name: str):
         """
         Atempts to retrieve the topic from the database.
-        if the topic is not in db, it creates it with a 
+        if the topic is not in db, it creates it with a
         default category
         """
         topic_db = self._repository.get_topic_by_name(topic_name)
         if not topic_db:
-            logger.info(f"Topic name {topic_name} is not in db, adding it with default category")
+            logger.info(
+                f"Topic name {topic_name} is not in db, adding it with default category"
+            )
             topic_db = self._repository.add_topic(
                 Topic(name=topic_name, category="default")
             )
