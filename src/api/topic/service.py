@@ -58,34 +58,25 @@ class TopicService:
         csv_file = TopicCsvFile(csv=csv)
         return csv_file.get_info_as_rows()
 
-    def _get_topics_by_tutor(self, tutor_email: str, topics_by_tutor: dict):
+    def _get_topics_and_capacities_by_tutor(self, tutor_email: str, topics_by_tutor: dict):
         """
-        Given a tutor's email, return a list of topic names assigned to that tutor,
-        without capacities.
+        Given a tutor's email, return a tuple containing two lists:
+            - A list of topic names assigned to that tutor.
+            - A list of capacities assigned to those topics.
         """
-        if tutor_email in topics_by_tutor:
-            return [topic_info["topic"] for topic_info in topics_by_tutor[tutor_email]]
-        else:
-            return []
-
-    def _get_capacities_by_tutor(self, tutor_email: str, topics_by_tutor: dict):
-        """
-        Given a tutor's email, return a list of capacities assigned to topics of that tutor.
-        """
-        if tutor_email in topics_by_tutor:
-            return [
-                topic_info["capacity"] for topic_info in topics_by_tutor[tutor_email]
-            ]
-        else:
-            return []
+        topics = []
+        capacities = []
+        for topic_info in topics_by_tutor[tutor_email]:
+            topics.append(topic_info["topic"])
+            capacities.append(topic_info["capacity"])
+        return topics, capacities
 
     def _update_tutor_periods(
         self, topics_by_tutor: dict, tutor_repository: TutorRepository
     ):
         for tutor, topics_list in topics_by_tutor.items():
-            tutor_topics = self._get_topics_by_tutor(tutor, topics_by_tutor)
-            tutor_capacities = self._get_capacities_by_tutor(tutor, topics_by_tutor)
-            tutor_period = tutor_repository.add_topic_tutor_period(
+            tutor_topics, tutor_capacities = self._get_topics_and_capacities_by_tutor(tutor, topics_by_tutor)
+            tutor_repository.add_topic_tutor_period(
                 tutor, tutor_topics, tutor_capacities
             )
 
