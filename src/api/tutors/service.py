@@ -74,7 +74,7 @@ class TutorService:
             self._repository.get_all_periods_by_id(tutor_id)
         )
 
-    def get_tutor_period_from_email(self, period, tutor_email):
+    def get_tutor_period_by_email(self, period, tutor_email):
         return TutorPeriodResponse.model_validate(
-            self._repository.get_tutor_period_from_email(period, tutor_email)
+            self._repository.get_tutor_period_by_email(period, tutor_email)
         )

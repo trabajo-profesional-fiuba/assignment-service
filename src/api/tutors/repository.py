@@ -73,7 +73,7 @@ class TutorRepository:
 
         return tutor
 
-    def get_tutor_period_from_email(self, period, tutor_email) -> TutorPeriod:
+    def get_tutor_period_by_email(self, period, tutor_email) -> TutorPeriod:
         with self.Session() as session:
             tutor_period = (
                 session.query(TutorPeriod)
