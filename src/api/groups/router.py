@@ -42,10 +42,10 @@ async def add_group(
         tutor_period = tutor_service.get_tutor_period_from_email(
             period, group.tutor_email
         )
-        topic = topic_service.add_topic(group.topic.name, group.topic.category)
+        topic = topic_service.get_or_add_topic(group.topic)
 
         return group_service.create_assigned_group(
-            group.students, tutor_period.id, topic.id
+            group.students_ids, tutor_period.id, topic.id
         )
     except GroupError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))

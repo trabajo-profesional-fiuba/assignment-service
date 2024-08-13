@@ -36,7 +36,7 @@ class TopicService:
 
     def get_or_add_topic(self, topic_name: str):
         """
-        Atempts to retrieve the topic from the database
+        Atempts to retrieve the topic from the database.
         if the topic is not in db, it creates it with a 
         default category
         """

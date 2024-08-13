@@ -40,8 +40,6 @@ def fastapi():
 
 @pytest.mark.integration
 def test_add_group(fastapi, tables):
-    topic_repository = TopicRepository(Session)
-    topic_repository.add_category(Category(name="default"))
     tutor_repository = TutorRepository(Session)
     tutor_repository.add_period(Period(id="1C2025"))
 
@@ -76,9 +74,9 @@ def test_add_group(fastapi, tables):
     tutor_repository.add_tutor_period(3, "1C2025")
 
     body = {
-        "students": [1, 2],
+        "students_ids": [1, 2],
         "tutor_email": "tutor@fi.uba.ar",
-        "topic": {"name": "Custom topic", "category": "default"},
+        "topic": "Custom topic"
     }
     params = {"period": "1C2025"}
 

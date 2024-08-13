@@ -7,14 +7,14 @@ from src.api.users.schemas import UserResponse
 
 class GroupRequest(BaseModel):
 
-    students: List[int] = Field(description="List of students ids")
-    topic: TopicRequest
+    students_ids: List[int] = Field(description="List of students ids")
     tutor_email: str
+    topic: str
 
-    @field_validator("students", mode="before")
-    def validate_group_length(cls, students):
-        if 0 < len(students) <= 4:
-            return students
+    @field_validator("students_ids", mode="before")
+    def validate_group_length(cls, students_ids):
+        if 0 < len(students_ids) <= 4:
+            return students_ids
 
         raise ValueError("The amount of student for this Group is not valid")
 
