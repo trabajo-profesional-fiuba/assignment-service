@@ -102,7 +102,7 @@ class TestFormRepository:
             id=105001,
             name="Juan",
             last_name="Perez",
-            email="email1@fi,uba.ar",
+            email="email1@fi.uba.ar",
             password="password",
             role=Role.STUDENT,
         )
@@ -110,7 +110,7 @@ class TestFormRepository:
             id=105002,
             name="Juan",
             last_name="Perez",
-            email="email2@fi,uba.ar",
+            email="email2@fi.uba.ar",
             password="password",
             role=Role.STUDENT,
         )
@@ -118,7 +118,7 @@ class TestFormRepository:
             id=105003,
             name="Juan",
             last_name="Perez",
-            email="email3@fi,uba.ar",
+            email="email3@fi.uba.ar",
             password="password",
             role=Role.STUDENT,
         )
@@ -126,7 +126,7 @@ class TestFormRepository:
             id=105004,
             name="Juan",
             last_name="Perez",
-            email="email4@fi,uba.ar",
+            email="email4@fi.uba.ar",
             password="password",
             role=Role.STUDENT,
         )
@@ -153,7 +153,7 @@ class TestFormRepository:
             id=105005,
             name="Juan",
             last_name="Perez",
-            email="email5@fi,uba.ar",
+            email="email5@fi.uba.ar",
             password="password",
             role=Role.STUDENT,
         )

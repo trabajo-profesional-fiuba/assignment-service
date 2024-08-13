@@ -1,14 +1,16 @@
-from src.api.topic.schemas import TopicList
+from src.api.topic.schemas import TopicList, TopicResponse
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
 from src.api.topic.models import Topic, Category
 from src.api.tutors.repository import TutorRepository
 
+from src.config.logging import logger
+
 
 class TopicService:
 
     def __init__(self, topic_repository: TopicRepository):
-        self._topic_repository = topic_repository
+        self._repository = topic_repository
 
     def _add_category(self, category_name: str, categories: list[Category]):
         """
@@ -106,8 +108,8 @@ class TopicService:
         """
         Add a list of capacities and a list of topics.
         """
-        self._topic_repository.add_categories(categories)
-        return self._topic_repository.add_topics(topics)
+        self._repository.add_categories(categories)
+        return self._repository.add_topics(topics)
 
     def create_topics_from_string(self, csv: str, tutor_repository: TutorRepository):
         """
@@ -121,5 +123,21 @@ class TopicService:
         return TopicList.model_validate(topics)
 
     def get_topics(self):
-        topics = self._topic_repository.get_topics()
+        topics = self._repository.get_topics()
         return TopicList.model_validate(topics)
+
+    def get_or_add_topic(self, topic_name: str):
+        """
+        Attempts to retrieve the topic from the database.
+        if the topic is not in db, it creates it with a
+        default category
+        """
+        topic_db = self._repository.get_topic_by_name(topic_name)
+        if not topic_db:
+            logger.info(
+                f"Topic name {topic_name} is not in db, adding it with default category"
+            )
+            topic_db = self._repository.add_topic(
+                Topic(name=topic_name, category="default")
+            )
+        return TopicResponse.model_validate(topic_db)

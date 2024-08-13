@@ -20,6 +20,7 @@ class Topic(Base):
     category = Column(String, ForeignKey("categories.name"), nullable=False)
 
     topic_category = relationship("Category", back_populates="topic")
+    groups = relationship("Group", back_populates="topic", lazy="noload")
 
 
 class TopicTutorPeriod(Base):

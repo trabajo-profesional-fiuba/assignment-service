@@ -8,18 +8,19 @@ from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
+@pytest.fixture(scope="module")
+def tables():
+    # Create all tables
+    create_tables()
+    yield
+    # Drop all tables
+    drop_tables()
+
+
 class TestStudentRepository:
 
     SessionFactory = sessionmaker(bind=engine)
     Session = scoped_session(SessionFactory)
-
-    @pytest.fixture(scope="session")
-    def tables(self):
-        # Create all tables
-        create_tables()
-        yield
-        # Drop all tables
-        drop_tables()
 
     @pytest.mark.integration
     def test_add_students(self, tables):
@@ -27,7 +28,7 @@ class TestStudentRepository:
             id=12345,
             name="Juan",
             last_name="Perez",
-            email="email@fi,uba.ar",
+            email="email@fi.uba.ar",
             password="password",
             role=Role.STUDENT,
         )
@@ -35,7 +36,7 @@ class TestStudentRepository:
             id=54321,
             name="Pedro",
             last_name="Pipo",
-            email="email2@fi,uba.ar",
+            email="email2@fi.uba.ar",
             password="password1",
             role=Role.STUDENT,
         )
@@ -67,7 +68,7 @@ class TestStudentRepository:
             id=11111,
             name="Pepe",
             last_name="Bla",
-            email="email3@fi,uba.ar",
+            email="email3@fi.uba.ar",
             password="password1",
             role=Role.STUDENT,
         )
@@ -79,3 +80,22 @@ class TestStudentRepository:
         response = repository.get_students_by_ids([12345, 11111])
 
         assert len(response) == 2
+
+    @pytest.mark.integration
+    def test_get_all_students(self, tables):
+        student4 = User(
+            id=44444,
+            name="Pepe",
+            last_name="Bla",
+            email="44444@fi,uba.ar",
+            password="password1",
+            role=Role.STUDENT,
+        )
+        students = [student4]
+
+        u_repository = UserRepository(self.Session)
+        _ = u_repository.add_students(students)
+        repository = StudentRepository(self.Session)
+        response = repository.get_students()
+
+        assert len(response) == 4

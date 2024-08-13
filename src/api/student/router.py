@@ -76,7 +76,7 @@ async def upload_csv_file(
 )
 async def get_students_by_ids(
     session: Annotated[Session, Depends(get_db)],
-    user_ids: list[int] = Query(...),
+    user_ids: list[int] = Query(default=[]),
 ):
     try:
         service = StudentService(StudentRepository(session))

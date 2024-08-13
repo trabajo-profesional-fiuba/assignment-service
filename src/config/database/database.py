@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 from src.config.config import api_config
+from src.config.logging import logger
 
 from src.config.database.models import Base
 
@@ -20,12 +21,31 @@ engine = create_engine(
 )
 
 
+def init_default_values():
+    with open("src/config/database/set_default_category.sql", "r") as file:
+        stm = file.read()
+
+    if engine:
+        with engine.connect() as connection:
+            try:
+                # Execute the SQL script
+                sql = text(stm)
+                connection.execute(sql)
+                connection.commit()
+                logger.info("SQL script executed successfully.")
+            except Exception as e:
+                logger.error(f"An error occurred: {e}")
+    else:
+        logger.warn("Database engine is not initialized.")
+
+
 def create_tables():
     """
     Creates all tables in the database.
     """
     try:
         Base.metadata.create_all(bind=engine)
+        init_default_values()
     except Exception as err:
         raise err
 
@@ -41,7 +61,7 @@ def drop_tables():
 
 
 def get_db():
-    if engine is not None:
+    if engine != None:
         Session = sessionmaker(bind=engine)
         yield Session
     else:

@@ -6,11 +6,16 @@ from src.config.config import api_config
 
 
 class JwtEncoded(BaseModel):
+    """Schema to represent a Jwt encoded"""
+
+    # TODO - Refresh token if necessary.
     access_token: str
     token_type: str = Field(default="JWT")
 
 
 class JwtDecoded(BaseModel):
+    """Schema to represent a Jwt with its claims decoded"""
+
     sub: str
     name: str
     exp: float
@@ -34,9 +39,8 @@ class JwtResolver:
         self.verify_exp = verify_exp
         self.hash = api_config.hash_type
 
-    """ Gets timedelta of current time + minutes in utc(timedelta(0))"""
-
-    def _get_exp_time(self, minutes):
+    def _get_exp_time(self, minutes) -> float:
+        """Gets timedelta of current time + minutes in utc(timedelta(0))"""
         delta = datetime.timedelta(minutes=minutes)
         now = datetime.datetime.now(tz=datetime.timezone.utc)
 
@@ -45,7 +49,10 @@ class JwtResolver:
 
     """ Createas a 1hr token"""
 
-    def create_token(self, sub, name, exp_time=None):
+    def create_token(self, sub, name, exp_time=None) -> JwtEncoded:
+        """Creates a new Jwt with the claims 'sub', 'name','exp'
+        where if the exp_time is none, it sets a 30min jwt.
+        """
         if not exp_time:
             exp_time = self._get_exp_time(30)
 
@@ -57,9 +64,11 @@ class JwtResolver:
 
         return jwt
 
-    """ Attempts to decode the encoded jwt"""
-
-    def decode_token(self, jwt: JwtEncoded):
+    def decode_token(self, jwt: JwtEncoded) -> JwtDecoded:
+        """Attempts to decode the encoded jwt
+        with the expire verification based on the
+        attr set.
+        """
         try:
             jwt_decoded = jwt_provider.decode(
                 jwt.access_token,

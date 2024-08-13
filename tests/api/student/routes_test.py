@@ -96,3 +96,21 @@ def test_get_duplicate_student_by_ids_response_409(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT
+
+
+@pytest.mark.integration
+def test_get_all_students(fastapi, tables):
+    with open("tests/api/student/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
+    _ = fastapi.post(f"{PREFIX}/upload", files=files)
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/")
+
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 30
