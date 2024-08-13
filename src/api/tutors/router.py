@@ -180,7 +180,7 @@ async def get_tutor_periods(
 ):
     try:
         service = TutorService(TutorRepository(session))
-        return service.get_periods_by_id(tutor_id)
+        return service.get_periods_by_tutor_id(tutor_id)
     except TutorNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
