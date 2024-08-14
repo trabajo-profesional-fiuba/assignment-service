@@ -17,8 +17,8 @@ from src.api.tutors.model import Period
 
 class TutorService:
 
-    def __init__(self, repository) -> None:
-        self._repository = repository
+    def __init__(self, user_repository) -> None:
+        self._repository = user_repository
 
     def _get_csv_content(self, csv: str):
         csv_file = TutorCsvFile(csv=csv)
@@ -42,6 +42,7 @@ class TutorService:
     def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
         rows = self._get_csv_content(csv)
         tutors = self._get_tutors(rows, hasher)
+        self._repository.delete_tutors()
         return TutorList.model_validate(self._repository.add_tutors(tutors))
 
     def _validate(self, id):

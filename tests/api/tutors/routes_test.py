@@ -104,29 +104,7 @@ def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables
 
 
 @pytest.mark.integration
-def test_upload_file_with_duplicates_rows_in_db_raise_exception(fastapi, tables):
-
-    # Arrange
-    with open("tests/api/tutors/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    # Act
-    _ = fastapi.post(f"{PREFIX}/upload", files=files)
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
-
-    http_exception = response.json()
-
-    # Assert
-    assert response.status_code == status.HTTP_409_CONFLICT
-    assert http_exception.get("detail") == "Duplicated tutor"
-
-
-@pytest.mark.integration
-def test_upload_file_raise_execption_if_type_is_not_csv(fastapi, tables):
+def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
 
     # Arrange
     filename = "test_data"
@@ -373,3 +351,19 @@ def test_add_same_period_to_same_tutor_raise_error(fastapi, tables):
 
     # Assert
     assert response2.status_code == status.HTTP_409_CONFLICT
+
+
+@pytest.mark.integration
+def test_update_tutors_file_with_success(fastapi, tables):
+    with open("tests/api/tutors/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
+
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    assert response.status_code == status.HTTP_201_CREATED
