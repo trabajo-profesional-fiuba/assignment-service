@@ -25,7 +25,7 @@ class User(Base):
         back_populates="student",
         uselist=False,
         lazy="noload",
-        cascade="all, delete-orphan",
+        cascade="all, delete",
     )
     # immediate - items should be loaded as the parents are loaded,
     # using a separate SELECT statement

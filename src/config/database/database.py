@@ -40,7 +40,7 @@ def init_default_values():
 
 
 def init_default_values():
-    with open("src\config\database\set_default_category.sql", "r") as file:
+    with open("src/config/database/set_default_category.sql", "r") as file:
         stm = file.read()
 
     if engine:

@@ -54,5 +54,7 @@ class UserRepository:
 
     def delete_students(self):
         with self.Session() as session:
-            session.query(User).filter(User.role == Role.STUDENT).delete()
+            students = session.query(User).filter(User.role == Role.STUDENT).all()
+            for student in students:
+                session.delete(student)
             session.commit()

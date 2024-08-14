@@ -52,10 +52,10 @@ async def upload_csv_file(
         )
     except HTTPException as e:
         raise e
-    except Exception:
+    except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error uploading csv file.",
+            detail=err,
         )
 
 
