@@ -2,11 +2,10 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from src.api.form.models import FormPreferences
-
-from src.api.form.exceptions import TopicNotFound
 from src.api.exceptions import Duplicated
 
 from src.api.student.exceptions import StudentNotFound
+from src.api.topic.exceptions import TopicNotFound
 from src.api.users.model import User, Role
 from src.api.topic.models import Topic
 
@@ -93,7 +92,7 @@ class FormRepository:
             )
             session.expunge_all()
             logger.info(f"Look for answers of {answer_id}")
-        
+
         return answers
 
     def get_answers(self):

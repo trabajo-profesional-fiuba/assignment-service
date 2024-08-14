@@ -114,7 +114,9 @@ def test_add_answers_with_student_not_found(fastapi, tables, topics, tutors):
     }
     response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Be sure that the id: 105285 is a valid student."}
+    assert response.json() == {
+        "detail": "Be sure that the id: 105285 is a valid student."
+    }
 
 
 @pytest.mark.integration
@@ -214,7 +216,9 @@ def test_add_answers_with_invalid_role(fastapi, tables, topics, tutors):
     }
     response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Be sure that the id: 12345678 is a valid student."}
+    assert response.json() == {
+        "detail": "Be sure that the id: 12345678 is a valid student."
+    }
 
 
 @pytest.mark.integration

@@ -34,13 +34,12 @@ class StudentService:
             students_saved = self._repository.add_students(students_db)
             students = UserList.model_validate(students_saved)
             return students
-        except (InvalidCsv) as e:
+        except InvalidCsv as e:
             raise e
-        except (StudentDuplicated) as e:
+        except StudentDuplicated as e:
             raise Duplicated(str(e))
         except StudentNotInserted as e:
             raise EntityNotInserted(str(e))
-
 
     def get_students_by_ids(self, ids: list[int]):
 
@@ -60,7 +59,7 @@ class StudentService:
                     raise StudentNotFound(f"{id}, is not registered in the database")
 
             return students
-        except (StudentNotFound) as e:
+        except StudentNotFound as e:
             raise EntityNotFound(str(e))
-        except (StudentDuplicated) as e:
+        except StudentDuplicated as e:
             raise Duplicated(str(e))

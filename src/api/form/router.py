@@ -45,7 +45,7 @@ async def add_answers(
     try:
         service = FormService(FormRepository(session))
         return service.add_answers(answers)
-    except (Duplicated,EntityNotFound) as e:
+    except (Duplicated, EntityNotFound) as e:
         raise e
     except Exception as e:
         raise ServerError(message=str(e))

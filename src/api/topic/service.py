@@ -1,7 +1,9 @@
+from src.api.exceptions import EntityNotFound
 from src.api.topic.schemas import TopicList, TopicResponse
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
 from src.api.topic.models import Topic, Category
+from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from src.api.tutors.repository import TutorRepository
 
 from src.config.logging import logger
@@ -96,7 +98,7 @@ class TopicService:
         """
         Add a topic tutor period entity for each topic of each tutor.
         """
-        for tutor, topics_list in topics_by_tutor.items():
+        for tutor, _ in topics_by_tutor.items():
             tutor_topics, tutor_capacities = self._get_topics_and_capacities_by_tutor(
                 tutor, topics_by_tutor
             )
@@ -116,11 +118,14 @@ class TopicService:
         Processes a CSV string to create topics, categories, and tutor-topic
         assignments. Returns the list of topics added.
         """
-        rows = self._get_csv_rows(csv)
-        categories, topics, topics_by_tutor = self._get_info(rows)
-        topics = self._add_topics(topics, categories)
-        self._add_topic_tutor_periods(topics_by_tutor, tutor_repository)
-        return TopicList.model_validate(topics)
+        try:
+            rows = self._get_csv_rows(csv)
+            categories, topics, topics_by_tutor = self._get_info(rows)
+            topics = self._add_topics(topics, categories)
+            self._add_topic_tutor_periods(topics_by_tutor, tutor_repository)
+            return TopicList.model_validate(topics)
+        except (TutorNotFound, TutorPeriodNotFound) as e:
+            raise EntityNotFound(str(e))
 
     def get_topics(self):
         topics = self._repository.get_topics()

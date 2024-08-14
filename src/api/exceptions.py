@@ -18,26 +18,37 @@ we ensure that internal system issues are handled discreetly while providing cle
 This approach enhances both the robustness of the system and the clarity of communication with users.
 
 """
+
+
 class EntityNotFound(HTTPException):
     def __init__(self, message: str):
         super().__init__(detail=message, status_code=status.HTTP_404_NOT_FOUND)
-    
+
+
 class EntityNotInserted(HTTPException):
     def __init__(self, message: str):
         super().__init__(detail=message, status_code=status.HTTP_400_BAD_REQUEST)
+
 
 class InvalidCsv(HTTPException):
     def __init__(self, message: str):
         super().__init__(detail=message, status_code=status.HTTP_400_BAD_REQUEST)
 
+
 class InvalidFileType(HTTPException):
     def __init__(self, message: str):
-        super().__init__(detail=message, status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        super().__init__(
+            detail=message, status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+        )
+
 
 class Duplicated(HTTPException):
     def __init__(self, message: str):
         super().__init__(detail=message, status_code=status.HTTP_409_CONFLICT)
 
+
 class ServerError(HTTPException):
     def __init__(self, message: str):
-        super().__init__(detail=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        super().__init__(
+            detail=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

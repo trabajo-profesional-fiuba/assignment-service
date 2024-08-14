@@ -1,6 +1,7 @@
 from io import StringIO
 import pandas as pd
-from src.api.topic.exceptions import InvalidTopicCsv
+
+from src.api.exceptions import InvalidCsv
 
 
 class TopicCsvFile:
@@ -16,7 +17,7 @@ class TopicCsvFile:
 
     def _validate_csv_headers(self, df):
         if list(df.columns.values) != ["TEMA", "CATEGORIA", "TUTOR", "CAPACIDAD"]:
-            raise InvalidTopicCsv("Columns don't match with expected ones.")
+            raise InvalidCsv("Columns don't match with expected ones.")
 
     def get_info_as_rows(self):
         rows = []

@@ -5,11 +5,13 @@ from src.api.groups.schemas import GroupResponse
 
 from src.config.logging import logger
 
+
 class GroupService:
     """
     The group service contains the necessary logi to performs operations
     with Groups as schemas, as entities and as ORM Objects
     """
+
     def __init__(self, repository) -> None:
         self._repository = repository
 
@@ -22,8 +24,12 @@ class GroupService:
             logger.error(f"Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
         except Exception:
-            logger.error(f"Could not insert a group with ids: {str(ids)}, topic id {topic_id} and period id: {period_id}")
-            raise EntityNotInserted(message="Group could't be created check if params exits")
+            logger.error(
+                f"Could not insert a group with ids: {str(ids)}, topic id {topic_id} and period id: {period_id}"
+            )
+            raise EntityNotInserted(
+                message="Group could't be created check if params exits"
+            )
 
     def create_basic_group(self, ids, preferred_topics=[]):
         try:
@@ -36,4 +42,6 @@ class GroupService:
             raise EntityNotFound(message=str(e))
         except Exception:
             logger.error(f"Could not insert a group with ids: {str(ids)}")
-            raise EntityNotInserted(message="Group could't be created check if params exits")
+            raise EntityNotInserted(
+                message="Group could't be created check if params exits"
+            )
