@@ -20,10 +20,12 @@ class TutorService:
     def __init__(self, repository) -> None:
         self._repository = repository
 
-    def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
-        tutors = []
+    def _get_csv_content(self, csv: str):
         csv_file = TutorCsvFile(csv=csv)
-        rows = csv_file.get_info_as_rows()
+        return csv_file.get_info_as_rows()
+
+    def _get_tutors(self, rows, hasher: ShaHasher):
+        tutors = []
         for i in rows:
             name, last_name, id, email = i
             tutor = User(
@@ -35,9 +37,12 @@ class TutorService:
                 role=Role.TUTOR,
             )
             tutors.append(tutor)
-        tutors = TutorList.model_validate(self._repository.add_tutors(tutors))
-
         return tutors
+
+    def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
+        rows = self._get_csv_content(csv)
+        tutors = self._get_tutors(rows, hasher)
+        return TutorList.model_validate(self._repository.add_tutors(tutors))
 
     def _validate(self, id):
         # Regex pattern

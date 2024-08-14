@@ -129,3 +129,7 @@ class TutorRepository:
             session.expunge(tutor_period)
 
         return tutor_period
+
+    def get_tutors(self):
+        with self.Session() as session:
+            return session.query(User).filter(User.role == Role.TUTOR).all()

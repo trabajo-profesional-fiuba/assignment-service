@@ -58,3 +58,10 @@ class UserRepository:
             for student in students:
                 session.delete(student)
             session.commit()
+
+    def delete_tutors(self):
+        with self.Session() as session:
+            tutors = session.query(User).filter(User.role == Role.TUTOR).all()
+            for student in tutors:
+                session.delete(student)
+            session.commit()

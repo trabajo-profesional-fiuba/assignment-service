@@ -20,6 +20,3 @@ class FormPreferences(Base):
     )
 
     student = relationship("User", lazy="noload", cascade="all, delete")
-    topic_1_rel = relationship("Topic", foreign_keys=[topic_1])
-    topic_2_rel = relationship("Topic", foreign_keys=[topic_2])
-    topic_3_rel = relationship("Topic", foreign_keys=[topic_3])
