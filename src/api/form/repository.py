@@ -3,7 +3,9 @@ from datetime import datetime
 
 from src.api.form.models import FormPreferences
 
-from src.api.form.exceptions import TopicNotFound, Duplicated, StudentNotFound
+from src.api.form.exceptions import TopicNotFound, StudentNotFound
+from src.api.exceptions import Duplicated
+
 from src.api.users.model import User, Role
 from src.api.topic.models import Topic
 

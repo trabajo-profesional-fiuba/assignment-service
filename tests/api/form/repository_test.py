@@ -8,8 +8,8 @@ from src.api.form.models import FormPreferences
 from src.api.form.exceptions import (
     TopicNotFound,
     StudentNotFound,
-    Duplicated,
 )
+from src.api.exceptions import Duplicated
 from src.api.topic.repository import TopicRepository
 from src.api.topic.models import Topic, Category
 from src.api.users.repository import UserRepository

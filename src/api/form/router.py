@@ -11,7 +11,7 @@ from src.api.form.schemas import (
 )
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
-from src.api.form.exceptions import (
+from src.api.exceptions import (
     EntityNotFound,
     Duplicated,
     ServerError,

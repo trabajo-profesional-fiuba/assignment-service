@@ -1,6 +1,7 @@
 import pytest
 
-from src.api.groups.exceptions import GroupError
+from src.api.student.exceptions import StudentNotFound
+from src.api.exceptions import EntityNotInserted, EntityNotFound
 from src.api.groups.service import GroupService
 from src.api.groups.repository import GroupRepository
 from src.api.topic.models import Category, Topic
@@ -265,7 +266,7 @@ def test_add_new_group_with_three_topics_using_service(tables):
 
 
 @pytest.mark.integration
-def test_add_student_cannot_be_in_two_groups(tables):
+def test_add_student_cannot_be_with_one_that_is_not_a_user(tables):
     repository = GroupRepository(Session)
     u_repository = UserRepository(Session)
     student1 = User(
@@ -289,5 +290,42 @@ def test_add_student_cannot_be_in_two_groups(tables):
 
     service = GroupService(repository)
     _ = service.create_basic_group(uids, [1, 2, 3])
-    with pytest.raises(GroupError):
+    with pytest.raises(EntityNotFound):
+        _ = service.create_basic_group([200, 202], [1, 2, 3])
+
+
+@pytest.mark.integration
+def test_add_student_cannot_be_in_two_groups(tables):
+    repository = GroupRepository(Session)
+    u_repository = UserRepository(Session)
+    student1 = User(
+        id=200,
+        name="Juan",
+        last_name="Perez",
+        email="200@fi.uba.ar",
+        password="password",
+        role=Role.STUDENT,
+    )
+    student2 = User(
+        id=201,
+        name="Pedro",
+        last_name="Pipo",
+        email="201@fi.uba.ar",
+        password="password1",
+        role=Role.STUDENT,
+    )
+    student3 = User(
+        id=202,
+        name="Pedro",
+        last_name="Pipo",
+        email="202@fi.uba.ar",
+        password="password1",
+        role=Role.STUDENT,
+    )
+    u_repository.add_students([student1, student2, student3])
+    uids = [200, 201]
+
+    service = GroupService(repository)
+    _ = service.create_basic_group(uids, [1, 2, 3])
+    with pytest.raises(EntityNotInserted):
         _ = service.create_basic_group([200, 202], [1, 2, 3])

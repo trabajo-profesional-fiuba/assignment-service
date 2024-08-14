@@ -2,10 +2,9 @@ from typing_extensions import Annotated
 
 from fastapi import APIRouter, Depends, status, Query
 
-from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
-from src.api.groups.exceptions import GroupError
+from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import GroupRequest, GroupResponse
 from src.api.groups.service import GroupService
@@ -44,10 +43,9 @@ async def add_group(
         return group_service.create_assigned_group(
             group.students_ids, tutor_period.id, topic.id
         )
-    except GroupError as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except EntityNotInserted as e:
+        raise e
+    except EntityNotFound as e:
+        raise e
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error",
-        )
+        raise ServerError(message=str(e))

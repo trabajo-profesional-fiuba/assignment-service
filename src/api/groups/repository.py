@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from src.api.student.exceptions import StudentNotFound
 from src.api.groups.models import Group
 from src.api.users.model import User
 
@@ -17,6 +18,8 @@ class GroupRepository:
             )
             students = session.query(User).filter(User.id.in_(ids)).all()
             group.students = students
+            if len(students) != len(ids):
+                raise StudentNotFound(message="Some ids are not in database")
             session.add(group)
             session.commit()
             session.refresh(group)

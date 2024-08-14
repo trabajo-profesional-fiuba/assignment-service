@@ -11,11 +11,9 @@ from src.api.form.schemas import (
 from src.api.form.exceptions import (
     StudentNotFound,
     TopicNotFound,
-    EntityNotFound,
     AnswerNotFound,
-    Duplicated,
-    ServerError,
 )
+from src.api.exceptions import EntityNotFound
 from src.api.form.models import FormPreferences
 
 from src.config.logging import logger
