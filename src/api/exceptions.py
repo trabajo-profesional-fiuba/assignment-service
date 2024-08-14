@@ -26,6 +26,14 @@ class EntityNotInserted(HTTPException):
     def __init__(self, message: str):
         super().__init__(detail=message, status_code=status.HTTP_400_BAD_REQUEST)
 
+class InvalidCsv(HTTPException):
+    def __init__(self, message: str):
+        super().__init__(detail=message, status_code=status.HTTP_400_BAD_REQUEST)
+
+class InvalidFileType(HTTPException):
+    def __init__(self, message: str):
+        super().__init__(detail=message, status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
 class Duplicated(HTTPException):
     def __init__(self, message: str):
         super().__init__(detail=message, status_code=status.HTTP_409_CONFLICT)

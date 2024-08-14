@@ -3,10 +3,11 @@ from src.api.users.schemas import UserList
 from src.api.users.model import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.student.exceptions import (
-    InvalidStudentCsv,
     StudentDuplicated,
     StudentNotFound,
+    StudentNotInserted,
 )
+from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 
 
 class StudentService:
@@ -33,23 +34,33 @@ class StudentService:
             students_saved = self._repository.add_students(students_db)
             students = UserList.model_validate(students_saved)
             return students
-        except (InvalidStudentCsv, StudentDuplicated) as e:
+        except (InvalidCsv) as e:
             raise e
+        except (StudentDuplicated) as e:
+            raise Duplicated(str(e))
+        except StudentNotInserted as e:
+            raise EntityNotInserted(str(e))
+
 
     def get_students_by_ids(self, ids: list[int]):
 
-        if len(list(set(ids))) != len(list(ids)):
-            raise StudentDuplicated("Query params udis contain duplicates")
+        try:
+            if len(list(set(ids))) != len(list(ids)):
+                raise StudentDuplicated("Query params udis contain duplicates")
 
-        if len(ids) > 0:
-            students_db = self._repository.get_students_by_ids(ids)
-        else:
-            students_db = self._repository.get_students()
+            if len(ids) > 0:
+                students_db = self._repository.get_students_by_ids(ids)
+            else:
+                students_db = self._repository.get_students()
 
-        students = UserList.model_validate(students_db)
-        udis_from_db = [student.id for student in students]
-        for id in ids:
-            if id not in udis_from_db:
-                raise StudentNotFound(f"{id}, is not registered in the database")
+            students = UserList.model_validate(students_db)
+            udis_from_db = [student.id for student in students]
+            for id in ids:
+                if id not in udis_from_db:
+                    raise StudentNotFound(f"{id}, is not registered in the database")
 
-        return students
+            return students
+        except (StudentNotFound) as e:
+            raise EntityNotFound(str(e))
+        except (StudentDuplicated) as e:
+            raise Duplicated(str(e))

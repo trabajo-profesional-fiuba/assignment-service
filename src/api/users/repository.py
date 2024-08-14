@@ -34,7 +34,6 @@ class UserRepository:
         return new_users
 
     def add_tutors(self, tutors: list[User]):
-        # create session and add objects
         try:
             return self._add_users(tutors)
         except exc.IntegrityError as e:
@@ -44,7 +43,6 @@ class UserRepository:
             raise TutorNotInserted("Could not insert a student in the database")
 
     def add_students(self, students: list[User]):
-        # create session and add objects
         try:
             return self._add_users(students)
         except exc.IntegrityError:

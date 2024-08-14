@@ -1,9 +1,10 @@
 import pytest
 
+from src.api.exceptions import EntityNotFound, InvalidCsv
 from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
 from src.api.users.repository import UserRepository
-from src.api.student.exceptions import InvalidStudentCsv, StudentNotFound
+from src.api.student.exceptions import StudentNotFound
 from src.api.users.schemas import UserResponse
 
 from src.api.auth.hasher import ShaHasher
@@ -24,7 +25,7 @@ class TestStudentService:
         hash = ShaHasher()
         service = StudentService(repo)
 
-        with pytest.raises(InvalidStudentCsv):
+        with pytest.raises(InvalidCsv):
             _ = service.create_students_from_string("bla,bla,bla", hash)
 
     @pytest.mark.unit
@@ -80,7 +81,7 @@ class TestStudentService:
         mocker.patch.object(repo, "get_students_by_ids", return_value=students)
         service = StudentService(repo)
 
-        with pytest.raises(StudentNotFound) as e:
+        with pytest.raises(EntityNotFound) as e:
             _ = service.get_students_by_ids([12345, 54321, 11111])
             assert str(e) == "11111, is not registered in the database"
 
@@ -90,6 +91,6 @@ class TestStudentService:
         mocker.patch.object(repo, "get_students_by_ids", return_value=[])
         service = StudentService(repo)
 
-        with pytest.raises(StudentNotFound) as e:
+        with pytest.raises(EntityNotFound) as e:
             _ = service.get_students_by_ids([1, 2, 3])
             assert str(e) == "1,2,3 are not registered in the database"

@@ -43,9 +43,7 @@ async def add_group(
         return group_service.create_assigned_group(
             group.students_ids, tutor_period.id, topic.id
         )
-    except EntityNotInserted as e:
-        raise e
-    except EntityNotFound as e:
+    except (EntityNotInserted,EntityNotFound) as e:
         raise e
     except Exception:
         raise ServerError(message=str(e))

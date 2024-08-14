@@ -1,7 +1,7 @@
 from io import StringIO
 import pandas as pd
 
-from src.api.student.exceptions import InvalidStudentCsv
+from src.api.exceptions import InvalidCsv
 
 
 class StudentCsvFile:
@@ -17,7 +17,7 @@ class StudentCsvFile:
 
     def _validate_csv_headers(self, df):
         if list(df.columns.values) != ["NOMBRE", "APELLIDO", "PADRON", "MAIL"]:
-            raise InvalidStudentCsv("Columns don't match with expected ones")
+            raise InvalidCsv("Columns don't match with expected ones")
 
     def get_info_as_rows(self):
         rows = []

@@ -5,6 +5,7 @@ from fastapi import APIRouter, UploadFile, Depends, status, Query
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
+from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
 from src.api.users.schemas import UserList
 from src.api.users.repository import UserRepository
 
@@ -12,8 +13,7 @@ from src.api.student.service import StudentService
 from src.api.student.repository import StudentRepository
 from src.api.student.exceptions import (
     StudentNotFound,
-    StudentDuplicated,
-    InvalidStudentCsv,
+    StudentDuplicated
 )
 
 from src.api.auth.hasher import get_hasher, ShaHasher
@@ -38,28 +38,20 @@ async def upload_csv_file(
     try:
         # Check if content-type is a text/csv
         if file.content_type != "text/csv":
-            raise HTTPException(
-                status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                detail="CSV file must be provided",
-            )
+            raise InvalidFileType("CSV file must be provided")
+
         logger.info("csv contains the correct content-type")
         content = (await file.read()).decode("utf-8")
         service = StudentService(UserRepository(session))
         res = service.create_students_from_string(content, hasher)
 
         return res
-    except (InvalidStudentCsv, StudentDuplicated) as e:
-        raise HTTPException(
-            status_code=e.status_code(),
-            detail=str(e),
-        )
-    except HTTPException as e:
+    except (Duplicated, InvalidFileType, EntityNotFound) as e:
+        logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error uploading csv file.",
-        )
+    except Exception as e:
+        raise ServerError(str(e))
+
 
 
 @router.get(
