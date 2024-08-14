@@ -354,7 +354,7 @@ def test_add_same_period_to_same_tutor_raise_error(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_update_tutors_file_with_success(fastapi, tables):
+def test_update_tutors_file_and_tutor_period_is_deleted(fastapi, tables):
     with open("tests/api/tutors/data/test_data.csv", "rb") as file:
         content = file.read()
 
@@ -365,5 +365,18 @@ def test_update_tutors_file_with_success(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
 
+    body = {"id": "1C2024"}
+    response = fastapi.post(f"{PREFIX}/periods", json=body)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    tutor_id = 12345678
+    params = {"period_id": "1C2024"}
+    response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
+    assert response.status_code == status.HTTP_201_CREATED
+
     response = fastapi.post(f"{PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["periods"]) == 0
