@@ -78,7 +78,7 @@ class JwtResolver:
             payload=payload, key=str(self.secret), algorithm=self.hash
         )
         jwt = JwtEncoded(access_token=token, token_type="JWT")
-
+        logger.info(f"New JWT created for {name} at {exp_time}")
         return jwt
 
     def decode_token(self, jwt: JwtEncoded) -> JwtDecoded:

@@ -8,7 +8,7 @@ from src.api.form.models import FormPreferences
 from src.api.form.exceptions import (
     TopicNotFound,
     StudentNotFound,
-    DuplicatedAnswer,
+    Duplicated,
 )
 from src.api.topic.repository import TopicRepository
 from src.api.topic.models import Topic, Category
@@ -144,7 +144,7 @@ class TestFormRepository:
         repository = FormRepository(self.Session)
         topics = ["topic 1", "topic 2", "topic 3"]
         user_ids = [105001, 105002, 105003, 105004]
-        with pytest.raises(DuplicatedAnswer):
+        with pytest.raises(Duplicated):
             repository.add_answers(answers, topics, user_ids)
 
     @pytest.mark.integration

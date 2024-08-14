@@ -1,9 +1,9 @@
+from datetime import datetime
+from typing_extensions import Annotated
+
 from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
-from typing_extensions import Annotated
 from sqlalchemy.orm import Session
-from datetime import datetime
-
 from src.api.form.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
@@ -12,13 +12,12 @@ from src.api.form.schemas import (
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
 from src.api.form.exceptions import (
-    StudentNotFound,
-    TopicNotFound,
-    DuplicatedAnswer,
-    AnswerIdNotFound,
+    EntityNotFound,
+    Duplicated,
+    ServerError,
 )
-
 from src.config.database.database import get_db
+from src.config.logging import logger
 
 router = APIRouter(prefix="/forms", tags=["Forms"])
 
@@ -27,15 +26,17 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
     "/answers",
     description="This endpoint creates topic preferences answers for sender\
         and students from its group if it belongs to one.",
-    response_description="List of created topic preferences answers of sender\
-        and students from its group if it belongs to one.",
     response_model=FormPreferencesList,
     responses={
         status.HTTP_201_CREATED: {
             "description": "Successfully added topic preferences answers."
         },
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error"},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal Server Error"},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happend inside the backend"
+        },
     },
     status_code=status.HTTP_201_CREATED,
 )
@@ -45,16 +46,12 @@ async def add_answers(
     try:
         service = FormService(FormRepository(session))
         return service.add_answers(answers)
-    except (StudentNotFound, TopicNotFound, DuplicatedAnswer) as err:
-        raise HTTPException(
-            status_code=err.status_code,
-            detail=err.message,
-        )
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=err,
-        )
+    except Duplicated as e:
+        raise e
+    except EntityNotFound as e:
+        raise e
+    except Exception as e:
+        raise ServerError(message=str(e))
 
 
 @router.get(
@@ -74,11 +71,9 @@ async def get_answers(session: Annotated[Session, Depends(get_db)]):
     try:
         service = FormService(FormRepository(session))
         return service.get_answers()
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=err,
-        )
+    except Exception as e:
+        logger.error("Could not get all the answers from the db")
+        raise ServerError(message=str(e))
 
 
 @router.delete(
@@ -98,13 +93,7 @@ async def delete_answer(
     try:
         service = FormService(FormRepository(session))
         return service.delete_answers_by_answer_id(answer_id)
-    except AnswerIdNotFound as err:
-        raise HTTPException(
-            status_code=err.status_code,
-            detail=err.message,
-        )
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=err,
-        )
+    except EntityNotFound as e:
+        raise e
+    except Exception as e:
+        raise ServerError(message=str(e))
