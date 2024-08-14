@@ -2,12 +2,12 @@ import pytest
 import datetime as dt
 from sqlalchemy.orm import sessionmaker, scoped_session
 
+from src.api.student.exceptions import StudentNotFound
 from src.config.database.database import create_tables, drop_tables, engine
 from src.api.form.repository import FormRepository
 from src.api.form.models import FormPreferences
 from src.api.form.exceptions import (
     TopicNotFound,
-    StudentNotFound,
 )
 from src.api.exceptions import Duplicated
 from src.api.topic.repository import TopicRepository

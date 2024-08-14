@@ -9,13 +9,13 @@ from src.api.form.schemas import (
     GroupAnswerResponse,
 )
 from src.api.form.exceptions import (
-    StudentNotFound,
     TopicNotFound,
     AnswerNotFound,
 )
 from src.api.exceptions import EntityNotFound
 from src.api.form.models import FormPreferences
 
+from src.api.student.exceptions import StudentNotFound
 from src.config.logging import logger
 
 

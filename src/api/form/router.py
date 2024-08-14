@@ -2,7 +2,6 @@ from datetime import datetime
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, status, Depends
-from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 from src.api.form.schemas import (
     FormPreferencesRequest,
@@ -46,9 +45,7 @@ async def add_answers(
     try:
         service = FormService(FormRepository(session))
         return service.add_answers(answers)
-    except Duplicated as e:
-        raise e
-    except EntityNotFound as e:
+    except (Duplicated,EntityNotFound) as e:
         raise e
     except Exception as e:
         raise ServerError(message=str(e))
