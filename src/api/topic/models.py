@@ -26,6 +26,8 @@ class Topic(Base):
 class TopicTutorPeriod(Base):
     __tablename__ = "topics_tutor_periods"
 
-    topic_id = Column(ForeignKey("topics.id"), primary_key=True)
-    tutor_period_id = Column(ForeignKey("tutor_periods.id"), primary_key=True)
+    topic_id = Column(ForeignKey("topics.id", ondelete="CASCADE"), primary_key=True)
+    tutor_period_id = Column(
+        ForeignKey("tutor_periods.id", ondelete="CASCADE"), primary_key=True
+    )
     capacity = Column(Integer, default=1)

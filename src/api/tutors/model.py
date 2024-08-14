@@ -35,7 +35,9 @@ class TutorPeriod(Base):
         "User", back_populates="periods", lazy="joined", cascade="all, delete"
     )
     period = relationship("Period", back_populates="periods")
-    topics = relationship("Topic", secondary="topics_tutor_periods")
+    topics = relationship(
+        "Topic", secondary="topics_tutor_periods", cascade="all, delete"
+    )
     groups = relationship(
         "Group", back_populates="tutor_period", uselist=True, lazy="noload"
     )

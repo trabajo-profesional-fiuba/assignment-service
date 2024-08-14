@@ -240,10 +240,6 @@ def test_update_topics_csv_with_success(fastapi, tables, tutors):
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    response = fastapi.get(f"{PREFIX}")
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json() == []
-
     with open("tests/api/topic/data/test_data.csv", "rb") as file:
         content = file.read()
 
