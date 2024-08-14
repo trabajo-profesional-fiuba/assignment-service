@@ -5,7 +5,7 @@ from fastapi import APIRouter, UploadFile, Depends, status, Query
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
-from src.api.users.schemas import UserResponse, UserList
+from src.api.users.schemas import UserList
 from src.api.users.repository import UserRepository
 
 from src.api.student.service import StudentService
@@ -55,7 +55,7 @@ async def upload_csv_file(
         )
     except HTTPException as e:
         raise e
-    except:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error uploading csv file.",

@@ -1,5 +1,4 @@
 import pytest
-from pulp import LpStatus
 from src.algorithms.topic_tutor.incomplete_groups_lp_solver import (
     IncompleteGroupsLPSolver,
 )
@@ -27,11 +26,15 @@ def read_csv_and_create_objects(file_path):
             group_topics = []
 
             if (
-                preferences[0]
-                != "Ya tenemos tema y tutor, pero vamos a hacer el Trabajo Profesional en el marco de la asignatura"
-            ) or preferences[
-                1
-            ] != "Ya tenemos tema y tutor, pero vamos a hacer el Trabajo Profesional en el marco de la asignatura":
+                (
+                    preferences[0]
+                    != "Ya tenemos tema y tutor, pero vamos a hacer el Trabajo \
+                        Profesional en el marco de la asignatura"
+                )
+                or preferences[1]
+                != "Ya tenemos tema y tutor, pero vamos a hacer el Trabajo Profesional\
+                en el marco de la asignatura"
+            ):
                 for pref in preferences:
                     if pref not in topics:
                         topics[pref] = Topic(len(topics) + 1, pref, 0)

@@ -44,5 +44,5 @@ class TestJwtResolver:
         exp_time = datetime.datetime(2024, 7, 25, 10).timestamp()
         jwt_expired = jwt_resolver.create_token(sub, name, exp_time)
 
-        with pytest.raises(InvalidJwt) as e:
+        with pytest.raises(InvalidJwt):
             _ = jwt_resolver.decode_token(jwt_expired)

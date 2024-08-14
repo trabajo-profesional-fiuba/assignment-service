@@ -48,7 +48,7 @@ def test_valid_user_gets_201_and_jwt(fastapi, tables):
 
     creates_user("test@fi.uba.ar", "password")
     data = {"username": "test@fi.uba.ar", "password": "password"}
-    response = fastapi.post(f"/connect", data=data)
+    response = fastapi.post("/connect", data=data)
 
     assert response.status_code == status.HTTP_201_CREATED
     assert "access_token" in response.json()
@@ -57,6 +57,6 @@ def test_valid_user_gets_201_and_jwt(fastapi, tables):
 @pytest.mark.integration
 def test_if_user_not_found_gets_401(fastapi, tables):
     data = {"username": "test@fi.uba.ar", "password": "wrong"}
-    response = fastapi.post(f"/connect", data=data)
+    response = fastapi.post("/connect", data=data)
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

@@ -20,18 +20,23 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="connect")
     "/connect",
     response_model=JwtEncoded,
     summary="Authenticate User and Generate JWT Token",
-    description="""This endpoint is used for user authentication. 
-    By submitting valid credentials (such as a username and password) in the request body, you can obtain a JWT (JSON Web Token) for accessing protected resources. 
-    If the credentials are correct, a JWT token will be issued and returned in the response. 
-    If the credentials are incorrect, an error response will be generated. 
+    description="""This endpoint is used for user authentication.
+    By submitting valid credentials (such as a username and password) in the
+    request body, you can obtain a JWT (JSON Web Token) for accessing protected
+    resources.
+    If the credentials are correct, a JWT token will be issued and returned in
+    the response.
+    If the credentials are incorrect, an error response will be generated.
     This token should be used in subsequent requests to access secure endpoints.""",
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {
-            "description": "JWT token successfully created. The response contains the token details."
+            "description": "JWT token successfully created. The response contains the\
+            token details."
         },
         status.HTTP_401_UNAUTHORIZED: {
-            "description": "Authentication failed. The username or password provided is incorrect. Ensure credentials are correct and try again."
+            "description": "Authentication failed. The username or password provided is\
+            incorrect. Ensure credentials are correct and try again."
         },
     },
 )

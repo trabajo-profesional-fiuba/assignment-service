@@ -9,7 +9,6 @@ from src.api.form.exceptions import (
     TopicNotFound,
     StudentNotFound,
     DuplicatedAnswer,
-    AnswerIdNotFound,
 )
 from src.api.topic.repository import TopicRepository
 from src.api.topic.models import Topic, Category
@@ -30,12 +29,12 @@ class TestFormRepository:
         # Drop all tables
         drop_tables()
 
-    @pytest.fixture()
+    @pytest.fixture
     def today(self):
         return dt.datetime.today().isoformat()
 
-    @pytest.mark.integration
-    def test_add_answers_with_topic_not_found(self, tables, today):
+    @pytest.fixture
+    def answers(self, today):
         answers = [
             FormPreferences(
                 user_id=105001,
@@ -66,7 +65,10 @@ class TestFormRepository:
                 topic_3="topic 3",
             ),
         ]
+        return answers
 
+    @pytest.mark.integration
+    def test_add_answers_with_topic_not_found(self, tables, today, answers):
         form_repository = FormRepository(self.Session)
         with pytest.raises(TopicNotFound):
             form_repository.add_answers(
@@ -76,7 +78,7 @@ class TestFormRepository:
             )
 
     @pytest.mark.integration
-    def test_add_answers_with_student_not_found(self, tables, today):
+    def test_add_answers_with_student_not_found(self, tables, today, answers):
         category_1 = Category(name="category 1")
         category_2 = Category(name="category 2")
         category_3 = Category(name="category 3")
@@ -86,46 +88,16 @@ class TestFormRepository:
         topic_1 = Topic(name="topic 1", category="category 1")
         topic_2 = Topic(name="topic 2", category="category 2")
         topic_3 = Topic(name="topic 3", category="category 3")
-        topics = ["topic 1", "topic 2", "topic 3"]
         topic_repository.add_topics([topic_1, topic_2, topic_3])
 
-        answers = [
-            FormPreferences(
-                user_id=105001,
-                answer_id=today,
-                topic_1="topic 1",
-                topic_2="topic 2",
-                topic_3="topic 3",
-            ),
-            FormPreferences(
-                user_id=105002,
-                answer_id=today,
-                topic_1="topic 1",
-                topic_2="topic 2",
-                topic_3="topic 3",
-            ),
-            FormPreferences(
-                user_id=105003,
-                answer_id=today,
-                topic_1="topic 1",
-                topic_2="topic 2",
-                topic_3="topic 3",
-            ),
-            FormPreferences(
-                user_id=105004,
-                answer_id=today,
-                topic_1="topic 1",
-                topic_2="topic 2",
-                topic_3="topic 3",
-            ),
-        ]
-
+        topics = ["topic 1", "topic 2", "topic 3"]
+        user_ids = [105001, 105002, 105003, 105004]
         repository = FormRepository(self.Session)
         with pytest.raises(StudentNotFound):
-            repository.add_answers(answers, topics, [105001, 105002, 105003, 105004])
+            repository.add_answers(answers, topics, user_ids)
 
     @pytest.mark.integration
-    def test_verify_duplicated_answer(self, tables, today):
+    def test_add_answers_with_success(self, tables, today, answers):
         student_1 = User(
             id=105001,
             name="Juan",
@@ -161,47 +133,19 @@ class TestFormRepository:
         user_repository = UserRepository(self.Session)
         user_repository.add_students([student_1, student_2, student_3, student_4])
 
-        answers = [
-            FormPreferences(
-                user_id=105001,
-                answer_id=today,
-                topic_1="topic 1",
-                topic_2="topic 2",
-                topic_3="topic 3",
-            ),
-            FormPreferences(
-                user_id=105002,
-                answer_id=today,
-                topic_1="topic 1",
-                topic_2="topic 2",
-                topic_3="topic 3",
-            ),
-            FormPreferences(
-                user_id=105003,
-                answer_id=today,
-                topic_1="topic 1",
-                topic_2="topic 2",
-                topic_3="topic 3",
-            ),
-            FormPreferences(
-                user_id=105004,
-                answer_id=today,
-                topic_1="topic 1",
-                topic_2="topic 2",
-                topic_3="topic 3",
-            ),
-        ]
-
         repository = FormRepository(self.Session)
-        repository.add_answers(
-            answers, ["topic 1", "topic 2", "topic 3"], [105001, 105002, 105003, 105004]
-        )
+        topics = ["topic 1", "topic 2", "topic 3"]
+        user_ids = [105001, 105002, 105003, 105004]
+        result = repository.add_answers(answers, topics, user_ids)
+        assert len(result) == 4
+
+    @pytest.mark.integration
+    def test_add_duplicated_answers(self, tables, today, answers):
+        repository = FormRepository(self.Session)
+        topics = ["topic 1", "topic 2", "topic 3"]
+        user_ids = [105001, 105002, 105003, 105004]
         with pytest.raises(DuplicatedAnswer):
-            repository.add_answers(
-                answers,
-                ["topic 1", "topic 2", "topic 3"],
-                [105001, 105002, 105003, 105004],
-            )
+            repository.add_answers(answers, topics, user_ids)
 
     @pytest.mark.integration
     def test_verify_not_duplicated_answer(self, tables, today):
@@ -247,7 +191,6 @@ class TestFormRepository:
 
     @pytest.mark.integration
     def test_add_answers_with_same_groups_but_diff_topics(self, tables, today):
-
         answers = [
             FormPreferences(
                 user_id=105001,

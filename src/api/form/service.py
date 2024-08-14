@@ -5,10 +5,8 @@ from src.api.form.repository import FormRepository
 from src.api.form.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
-    UserAnswerResponse,
     UserAnswerList,
     GroupAnswerResponse,
-    GroupAnswerList,
 )
 from src.api.form.exceptions import AnswerIdNotFound
 from src.api.form.models import FormPreferences

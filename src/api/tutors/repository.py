@@ -1,10 +1,14 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import asc, desc
-from sqlalchemy import exc
+from sqlalchemy import asc, desc, exc
 
 from src.api.users.model import User, Role
 from src.api.tutors.model import Period, TutorPeriod
-from src.api.tutors.exceptions import TutorNotFound, PeriodDuplicated
+from src.api.tutors.exceptions import (
+    TutorNotFound,
+    PeriodDuplicated,
+    TutorPeriodNotFound,
+)
+from src.api.topic.models import Topic, TopicTutorPeriod
 
 
 class TutorRepository:
@@ -29,7 +33,7 @@ class TutorRepository:
                 session.expunge(period)
 
             return period
-        except exc.IntegrityError as e:
+        except exc.IntegrityError:
             raise PeriodDuplicated(message="Period already exist")
 
     def is_tutor(self, tutor_id) -> bool:
@@ -53,7 +57,7 @@ class TutorRepository:
                 session.expunge(tutor)
 
             return tutor
-        except exc.IntegrityError as e:
+        except exc.IntegrityError:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
 
     def get_all_periods(self, order: str) -> list[Period]:
@@ -72,6 +76,41 @@ class TutorRepository:
             session.expunge(tutor)
 
         return tutor
+
+    def add_topic_tutor_period(
+        self, tutor_email: str, topics: list[Topic], capacities: list[int]
+    ):
+        with self.Session() as session:
+            topic_tutor_periods = []
+            tutor = session.query(User).filter(User.email == tutor_email).first()
+            if tutor:
+                tutor_period = (
+                    session.query(TutorPeriod)
+                    .filter(TutorPeriod.tutor_id == tutor.id)
+                    .first()
+                )
+                if tutor_period:
+                    for idx, topic in enumerate(topics):
+                        topic = (
+                            session.query(Topic)
+                            .filter(
+                                Topic.name == topic.name
+                                and Topic.category == topic.category
+                            )
+                            .first()
+                        )
+                        topic_tutor_period = TopicTutorPeriod(
+                            topic_id=topic.id,
+                            tutor_period_id=tutor_period.id,
+                            capacity=capacities[idx],
+                        )
+                        session.add(topic_tutor_period)
+                        session.expunge(topic_tutor_period)
+                        topic_tutor_periods.append(topic_tutor_period)
+                    session.commit()
+                    return topic_tutor_periods
+                raise TutorPeriodNotFound(f"Tutor '{tutor_email}' has no period.")
+            raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
 
     def get_tutor_period_by_email(self, period, tutor_email) -> TutorPeriod:
         with self.Session() as session:
