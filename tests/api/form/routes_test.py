@@ -487,3 +487,44 @@ def test_delete_answers_when_updating_students_with_success(
 
     response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
     assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest.mark.integration
+def test_delete_answers_when_updating_topics_with_success(
+    fastapi, tables, topics, students, tutors
+):
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
+    assert response.status_code == status.HTTP_201_CREATED
+    response = fastapi.post(
+        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    response = fastapi.post(
+        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
+    )
+
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(f"{STUDENT_PREFIX}/upload", files=students)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    today = dt.datetime.today().isoformat()
+    body = {
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
+        "answer_id": today,
+        "topic_1": "topic 1",
+        "topic_2": "topic 2",
+        "topic_3": "topic 3",
+    }
+    response = fastapi.post(f"{PREFIX}/answers", json=body)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
+    assert response.status_code == status.HTTP_201_CREATED
