@@ -12,11 +12,9 @@ class TutorNotInserted(Exception):
         super().__init__(message)
 
 
-
 class TutorNotFound(Exception):
     def __init__(self, message):
         super().__init__(message)
-        
 
 
 class PeriodDuplicated(Exception):

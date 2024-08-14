@@ -1,7 +1,6 @@
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, UploadFile, Depends, status, Query
-from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
 from src.api.exceptions import (
@@ -21,10 +20,8 @@ from src.api.tutors.schemas import (
     PeriodList,
 )
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.exceptions import (
-    TutorNotFound,
-    InvalidPeriod,
-)
+from src.api.tutors.exceptions import InvalidPeriod
+
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database.database import get_db
 
@@ -165,4 +162,3 @@ async def get_tutor_periods(
         raise e
     except Exception as e:
         raise ServerError(str(e))
-

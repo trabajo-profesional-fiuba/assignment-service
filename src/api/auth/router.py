@@ -62,5 +62,5 @@ async def get_access_token(
         }
         access_token = jwt_resolver.create_token(sub, user.name)
         return access_token
-    except (UserNotFound, InvalidCredentials) as err:
-        raise HTTPException(status_code=err.status_code, detail=str(err))
+    except (UserNotFound, InvalidCredentials) as e:
+        raise e

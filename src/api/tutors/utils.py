@@ -5,7 +5,6 @@ from src.api.exceptions import InvalidCsv
 from src.api.tutors.exceptions import TutorDuplicated
 
 
-
 class TutorCsvFile:
 
     def __init__(self, csv):
