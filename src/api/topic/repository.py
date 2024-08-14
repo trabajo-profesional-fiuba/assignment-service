@@ -53,3 +53,9 @@ class TopicRepository:
             if topic:
                 session.expunge(topic)
         return topic
+
+    def delete_topics(self):
+        with self.Session() as session:
+            session.query(Topic).delete()
+            session.query(Category).delete()
+            session.commit()
