@@ -76,11 +76,14 @@ class TutorService:
             raise Duplicated(str(e))
 
     def add_period_to_tutor(self, tutor_id, period_id):
-        if self._repository.is_tutor(tutor_id):
-            tutor = self._repository.add_tutor_period(tutor_id, period_id)
-            return TutorResponse.model_validate(tutor)
-        else:
-            raise EntityNotFound(f"{tutor_id} was not found as TUTOR")
+        try:
+            if self._repository.is_tutor(tutor_id):
+                tutor = self._repository.add_tutor_period(tutor_id, period_id)
+                return TutorResponse.model_validate(tutor)
+            else:
+                raise EntityNotFound(f"{tutor_id} was not found as TUTOR")
+        except PeriodDuplicated as e:
+            raise Duplicated(str(e))
 
     def get_all_periods(self, order):
         return PeriodList.model_validate(self._repository.get_all_periods(order))

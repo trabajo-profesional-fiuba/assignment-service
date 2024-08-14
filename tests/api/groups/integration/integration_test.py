@@ -1,7 +1,7 @@
 import pytest
 
 from src.api.student.exceptions import StudentNotFound
-from src.api.exceptions import EntityNotInserted, EntityNotFound
+from src.api.exceptions import Duplicated, EntityNotInserted, EntityNotFound
 from src.api.groups.service import GroupService
 from src.api.groups.repository import GroupRepository
 from src.api.topic.models import Category, Topic
@@ -299,33 +299,33 @@ def test_add_student_cannot_be_in_two_groups(tables):
     repository = GroupRepository(Session)
     u_repository = UserRepository(Session)
     student1 = User(
-        id=200,
+        id=203,
         name="Juan",
         last_name="Perez",
-        email="200@fi.uba.ar",
+        email="203@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
     student2 = User(
-        id=201,
+        id=204,
         name="Pedro",
         last_name="Pipo",
-        email="201@fi.uba.ar",
+        email="204@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
     student3 = User(
-        id=202,
+        id=205,
         name="Pedro",
         last_name="Pipo",
-        email="202@fi.uba.ar",
+        email="205@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
     u_repository.add_students([student1, student2, student3])
-    uids = [200, 201]
+    uids = [203, 204]
 
     service = GroupService(repository)
     _ = service.create_basic_group(uids, [1, 2, 3])
     with pytest.raises(EntityNotInserted):
-        _ = service.create_basic_group([200, 202], [1, 2, 3])
+        _ = service.create_basic_group([203, 205], [1, 2, 3])

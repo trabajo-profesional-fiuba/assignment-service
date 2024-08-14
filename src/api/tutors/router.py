@@ -22,9 +22,6 @@ from src.api.tutors.schemas import (
 )
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.exceptions import (
-    InvalidTutorCsv,
-    TutorDuplicated,
-    PeriodDuplicated,
     TutorNotFound,
     InvalidPeriod,
 )
@@ -64,7 +61,7 @@ async def upload_csv_file(
         res = service.create_tutors_from_string(content, hasher)
 
         return res
-    except (InvalidCsv, EntityNotFound, Duplicated) as e:
+    except (InvalidCsv, EntityNotFound, Duplicated, InvalidFileType) as e:
         raise e
     except Exception as e:
         raise ServerError(str(e))
@@ -164,10 +161,8 @@ async def get_tutor_periods(
     try:
         service = TutorService(TutorRepository(session))
         return service.get_periods_by_tutor_id(tutor_id)
-    except TutorNotFound as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=e.message,
-        )
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except EntityNotFound as e:
+        raise e
+    except Exception as e:
+        raise ServerError(str(e))
+
