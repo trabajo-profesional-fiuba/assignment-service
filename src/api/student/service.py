@@ -36,6 +36,7 @@ class StudentService:
     def create_students_from_string(self, csv: str, hasher: ShaHasher):
         rows = self._get_csv_rows(csv)
         students = self._get_students(rows, hasher)
+        self._repository.delete_students()
         students_saved = self._repository.add_students(students)
         return UserList.model_validate(students_saved)
 
