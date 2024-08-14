@@ -36,7 +36,6 @@ async def upload_csv_file(
     session: Annotated[Session, Depends(get_db)],
 ):
     try:
-        # Check if content-type is a text/csv
         if file.content_type != "text/csv":
             raise HTTPException(
                 status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
@@ -45,9 +44,7 @@ async def upload_csv_file(
         logger.info("csv contains the correct content-type")
         content = (await file.read()).decode("utf-8")
         service = StudentService(UserRepository(session))
-        res = service.create_students_from_string(content, hasher)
-
-        return res
+        return service.create_students_from_string(content, hasher)
     except (InvalidStudentCsv, StudentDuplicated) as e:
         raise HTTPException(
             status_code=e.status_code(),
