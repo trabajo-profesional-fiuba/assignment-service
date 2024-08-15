@@ -9,6 +9,7 @@ from src.api.tutors.exceptions import (
     TutorPeriodNotFound,
 )
 from src.api.topic.models import Topic, TopicTutorPeriod
+from src.api.topic.exceptions import TopicNotFound
 
 
 class TutorRepository:
@@ -105,9 +106,14 @@ class TutorRepository:
                             capacity=capacities[idx],
                         )
                         session.add(topic_tutor_period)
-                        session.expunge(topic_tutor_period)
                         topic_tutor_periods.append(topic_tutor_period)
+
                     session.commit()
+
+                    for topic_tutor_period in topic_tutor_periods:
+                        session.refresh(topic_tutor_period)
+                        session.expunge(topic_tutor_period)
+
                     return topic_tutor_periods
                 raise TutorPeriodNotFound(f"Tutor '{tutor_email}' has no period.")
             raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
@@ -133,3 +139,28 @@ class TutorRepository:
     def get_tutors(self):
         with self.Session() as session:
             return session.query(User).filter(User.role == Role.TUTOR).all()
+
+    def get_topic_tutor_period(
+        self, topic_id: int, tutor_period_id: int
+    ) -> TutorPeriod:
+        with self.Session() as session:
+            topic = session.query(Topic).filter(Topic.id == topic_id).first()
+            if topic:
+                tutor_period = (
+                    session.query(TutorPeriod)
+                    .filter(TutorPeriod.id == tutor_period_id)
+                    .first()
+                )
+                if tutor_period:
+                    return (
+                        session.query(TopicTutorPeriod)
+                        .filter(
+                            TopicTutorPeriod.topic_id == topic_id
+                            and TopicTutorPeriod.tutor_period_id == tutor_period_id
+                        )
+                        .first()
+                    )
+                else:
+                    raise TutorPeriodNotFound("Tutor period not found.")
+            else:
+                raise TopicNotFound("Topic not found.")

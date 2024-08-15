@@ -13,3 +13,10 @@ class InvalidMediaType(Exception):
         super().__init__(message)
         self.message = message
         self.status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+
+
+class TopicNotFound(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+        self.status_code = status.HTTP_404_NOT_FOUND
