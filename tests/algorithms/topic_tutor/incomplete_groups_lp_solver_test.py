@@ -2,8 +2,8 @@ import pytest
 from src.algorithms.topic_tutor.incomplete_groups_lp_solver import (
     IncompleteGroupsLPSolver,
 )
-from src.model.group_topic_preferences import GroupTopicPreferences
-from src.model.utils.topic import Topic
+from src.core.group_topic_preferences import GroupTopicPreferences
+from src.core.topic import Topic
 import csv
 
 

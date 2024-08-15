@@ -1,11 +1,11 @@
 import numpy as np
 
 from src.constants import TOPIC_ID, TUTOR_ID
-from src.model.group import Group
-from src.model.group.initial_state_group import InitialStateGroup
-from src.model.tutor import Tutor
-from src.model.tutor.initial_state_tutor import InitialStateTutor
-from src.model.utils.topic import Topic
+from src.core.group import Group
+from src.core.group.initial_state_group import InitialStateGroup
+from src.core.tutor import Tutor
+from src.core.tutor.initial_state_tutor import InitialStateTutor
+from src.core.topic import Topic
 
 
 class TestHelper:

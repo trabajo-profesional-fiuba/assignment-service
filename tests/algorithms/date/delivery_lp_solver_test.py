@@ -4,10 +4,10 @@ import pytest
 from src.algorithms.adapters.result_adapter import ResultAdapter
 
 from src.algorithms.date.delivery_lp_solver import DeliveryLPSolver
-from src.model.group import Group
-from src.model.period import TutorPeriod
-from src.model.tutor import Tutor
-from src.model.utils.delivery_date import DeliveryDate
+from src.core.group import Group
+from src.core.period import TutorPeriod
+from src.core.tutor import Tutor
+from src.core.delivery_date import DeliveryDate
 from tests.algorithms.date.helper import TestLPHelper
 
 

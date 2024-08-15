@@ -3,7 +3,7 @@ import src.exceptions as e
 
 # To evoid circular importing
 # https://peps.python.org/pep-0484/#forward-references
-import src.model.period as period
+import src.core.period as period
 
 
 class Tutor:

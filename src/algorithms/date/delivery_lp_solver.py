@@ -1,8 +1,8 @@
 import pyscipopt as scip
 from src.algorithms.adapters.result_context import ResultContext
 from src.constants import DATE_ID, EVALUATOR_ID, GROUP_ID, TUTOR_ID
-from src.model.period import TutorPeriod
-from src.model.utils.delivery_date import DeliveryDate
+from src.core.period import TutorPeriod
+from src.core.delivery_date import DeliveryDate
 
 GROUP = 0
 TUTOR = 1

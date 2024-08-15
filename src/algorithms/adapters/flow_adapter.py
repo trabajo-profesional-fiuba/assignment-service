@@ -1,7 +1,7 @@
 from src.algorithms.adapters.exceptions import EvaluatorNotFound
 from src.exceptions import WrongDateFormat
-from src.model.utils.result import AssignmentResult
-from src.model.utils.delivery_date import DeliveryDate
+from src.core.result import AssignmentResult
+from src.core.delivery_date import DeliveryDate
 from src.constants import GROUP_ID, EVALUATOR_ID
 
 

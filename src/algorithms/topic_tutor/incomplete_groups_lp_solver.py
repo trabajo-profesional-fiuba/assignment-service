@@ -7,7 +7,7 @@ from pulp import (
     PULP_CBC_CMD,
 )
 
-from src.model.group_topic_preferences import GroupTopicPreferences
+from src.core.group_topic_preferences import GroupTopicPreferences
 
 
 class IncompleteGroupsLPSolver:

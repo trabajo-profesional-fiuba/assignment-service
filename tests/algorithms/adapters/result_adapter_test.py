@@ -4,7 +4,7 @@ from src.algorithms.adapters.result_adapter import ResultAdapter
 from src.algorithms.adapters.flow_adapter import FlowAdapter
 from src.algorithms.adapters.lp_adapter import LPAdapter
 from src.algorithms.adapters.result_context import ResultContext
-from src.model.utils.result import AssignmentResult
+from src.core.result import AssignmentResult
 
 
 class TestResultAdapter:

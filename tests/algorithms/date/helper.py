@@ -1,9 +1,9 @@
 """Module providing helpers function to create different use cases for testing."""
 
-from src.model.group import Group
-from src.model.period import TutorPeriod
-from src.model.tutor import Tutor
-from src.model.utils.delivery_date import DeliveryDate
+from src.core.group import Group
+from src.core.period import TutorPeriod
+from src.core.tutor import Tutor
+from src.core.delivery_date import DeliveryDate
 
 
 class TestLPHelper:
