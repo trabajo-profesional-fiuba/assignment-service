@@ -9,11 +9,7 @@ from src.api.users.repository import UserRepository
 from src.api.users.model import User, Role
 from src.api.topic.repository import TopicRepository
 from src.api.topic.models import Topic, Category
-from src.api.tutors.exceptions import (
-    TutorNotFound,
-    TutorPeriodNotFound
-)
-from src.api.users.repository import UserRepository
+from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from src.api.topic.exceptions import TopicNotFound
 
 
@@ -71,7 +67,7 @@ class TestTutorRepository:
     def test_add_topic_tutor_period_with_success(self, tables):
         t_repository = TutorRepository(self.Session)
         t_repository.add_period(Period(id="1C2024"))
-        tutor_period = t_repository.add_tutor_period(12345, "1C2024")
+        t_repository.add_tutor_period(12345, "1C2024")
 
         topics = [Topic(name="topic 1", category="category 1")]
         capacities = [2]
