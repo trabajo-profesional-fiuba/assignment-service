@@ -1,7 +1,7 @@
 import pytest
 
-from src.algorithms.adapters.flow_adapter import FlowAdapter
-from src.algorithms.adapters.result_context import ResultContext
+from src.core.algorithms.adapters.flow_adapter import FlowAdapter
+from src.core.algorithms.adapters.result_context import ResultContext
 from src.core.period import TutorPeriod
 from src.core.group import Group
 from src.exceptions import WrongDateFormat

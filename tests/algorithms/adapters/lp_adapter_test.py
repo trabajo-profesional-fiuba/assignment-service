@@ -1,7 +1,7 @@
 import pytest
-from src.algorithms.adapters.lp_adapter import LPAdapter
+from src.core.algorithms.adapters.lp_adapter import LPAdapter
 from tests.algorithms.date.helper import TestLPHelper
-from src.algorithms.adapters.result_context import ResultContext
+from src.core.algorithms.adapters.result_context import ResultContext
 
 
 class TestLPAdapter:

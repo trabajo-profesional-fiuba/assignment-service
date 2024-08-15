@@ -1,9 +1,9 @@
 import time
 import pytest
 
-from src.algorithms.adapters.result_adapter import ResultAdapter
+from src.core.algorithms.adapters.result_adapter import ResultAdapter
 
-from src.algorithms.date.delivery_lp_solver import DeliveryLPSolver
+from src.core.algorithms.date.delivery_lp_solver import DeliveryLPSolver
 from src.core.group import Group
 from src.core.period import TutorPeriod
 from src.core.tutor import Tutor

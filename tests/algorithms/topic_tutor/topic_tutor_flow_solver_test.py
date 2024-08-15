@@ -1,6 +1,6 @@
 # import pytest
 # import time
-# from src.algorithms.group_tutor_flow_solver import (
+# from src.core.algorithms.group_tutor_flow_solver import (
 #     GroupTutorFlowSolver,
 # )
 # from tests.algorithms.helper import TestHelper

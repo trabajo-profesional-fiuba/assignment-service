@@ -1,13 +1,13 @@
 import pytest
 import networkx as nx
-from src.algorithms.date.delivery_flow_solver import DeliveryFlowSolver
-from src.algorithms.adapters.result_adapter import ResultAdapter
+from src.core.algorithms.date.delivery_flow_solver import DeliveryFlowSolver
+from src.core.algorithms.adapters.result_adapter import ResultAdapter
 from src.core.group import Group
 from src.core.delivery_date import DeliveryDate
 from src.core.tutor import Tutor
 from src.core.period import TutorPeriod
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
-from src.algorithms.exceptions import AssigmentIsNotPossible
+from src.core.algorithms.exceptions import AssigmentIsNotPossible
 
 
 class TestDeliveryFlowSolver:

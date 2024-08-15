@@ -1,7 +1,7 @@
 # import pytest
 # import time
 
-# from src.algorithms.group_tutor_lp_solver import GroupTutorLPSolver
+# from src.core.algorithms.group_tutor_lp_solver import GroupTutorLPSolver
 # from tests.algorithms.helper import TestHelper
 # from src.io.output.output_formatter import OutputFormatter
 
