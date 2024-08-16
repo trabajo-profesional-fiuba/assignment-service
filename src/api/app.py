@@ -21,7 +21,7 @@ app = FastAPI(
     version=api_config.api_version,
     redoc_url=None,
     docs_url='/docs',
-    root_path='/api/v1'   
+    root_path='/api'   
 )
 app.include_router(auth_router)
 app.include_router(student_router)
