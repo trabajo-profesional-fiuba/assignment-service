@@ -19,9 +19,9 @@ def read_csv_and_create_objects(file_path):
         for row in reader:
             # Crear o obtener los tópicos de las preferencias
             preferences = [
-                row["Preferencia 1"],
-                row["Preferencia 2"],
-                row["Preferencia 3"],
+                row["Preferencia_1"],
+                row["Preferencia_2"],
+                row["Preferencia_3"],
             ]
             group_topics = []
 
@@ -64,51 +64,51 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_groups(self):
         topics = [
-            Topic(1, "Tema C", 0),
-            Topic(2, "Tema A", 0),
-            Topic(3, "Tema B", 0),
-            Topic(4, "Tema E", 0),
-            Topic(5, "Tema D", 0),
+            Topic(1, "Tema_C", 0),
+            Topic(2, "Tema_A", 0),
+            Topic(3, "Tema_B", 0),
+            Topic(4, "Tema_E", 0),
+            Topic(5, "Tema_D", 0),
         ]
 
         groups = [
             GroupTopicPreferences(
-                1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]
+                1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]
             ),
             GroupTopicPreferences(
                 2,
                 topics=[topics[2], topics[3], topics[1]],
-                students=["Student 2", "Student 3"],
+                students=["Student_2", "Student_3"],
             ),
             GroupTopicPreferences(
                 3,
                 topics=[topics[0], topics[4], topics[1]],
-                students=["Student 4", "Student 5"],
+                students=["Student_4", "Student_5"],
             ),
             GroupTopicPreferences(
                 4,
                 topics=[topics[1], topics[4], topics[2]],
-                students=["Student 6", "Student 7"],
+                students=["Student_6", "Student_7"],
             ),
             GroupTopicPreferences(
                 5,
                 topics=[topics[2], topics[3], topics[1]],
-                students=["Student 8", "Student 9"],
+                students=["Student_8", "Student_9"],
             ),
             GroupTopicPreferences(
-                6, topics=[topics[3], topics[3], topics[1]], students=["Student 10"]
+                6, topics=[topics[3], topics[3], topics[1]], students=["Student_10"]
             ),
             GroupTopicPreferences(
-                7, topics=[topics[2], topics[0], topics[4]], students=["Student 11"]
+                7, topics=[topics[2], topics[0], topics[4]], students=["Student_11"]
             ),
             GroupTopicPreferences(
-                8, topics=[topics[2], topics[0], topics[4]], students=["Student 12"]
+                8, topics=[topics[2], topics[0], topics[4]], students=["Student_12"]
             ),
             GroupTopicPreferences(
-                9, topics=[topics[2], topics[0], topics[4]], students=["Student 13"]
+                9, topics=[topics[2], topics[0], topics[4]], students=["Student_13"]
             ),
             GroupTopicPreferences(
-                10, topics=[topics[2], topics[0], topics[4]], students=["Student 14"]
+                10, topics=[topics[2], topics[0], topics[4]], students=["Student_14"]
             ),
         ]
 
@@ -132,10 +132,10 @@ class TestIncompleteGroupsLPSolver:
 
     @pytest.mark.unit
     def test_single_group(self):
-        topics = [Topic(1, "Tema C", 0), Topic(2, "Tema A", 0), Topic(3, "Tema B", 0)]
+        topics = [Topic(1, "Tema_C", 0), Topic(2, "Tema_A", 0), Topic(3, "Tema_B", 0)]
         groups = [
             GroupTopicPreferences(
-                1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]
+                1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]
             )
         ]
 
@@ -151,21 +151,21 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_different_topics_and_categories(self):
         topics = [
-            Topic(1, "Tema C", 0),
-            Topic(2, "Tema A", 0),
-            Topic(3, "Tema B", 0),
-            Topic(4, "Tema D", 0),
-            Topic(5, "Tema E", 0),
-            Topic(6, "Tema F", 0),
+            Topic(1, "Tema_C", 0),
+            Topic(2, "Tema_A", 0),
+            Topic(3, "Tema_B", 0),
+            Topic(4, "Tema_D", 0),
+            Topic(5, "Tema_E", 0),
+            Topic(6, "Tema_F", 0),
         ]
         groups = [
             GroupTopicPreferences(
-                1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]
+                1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]
             ),
             GroupTopicPreferences(
                 2,
                 topics=[topics[3], topics[4], topics[5]],
-                students=["Student 2", "Student 3", "Student 4"],
+                students=["Student_2", "Student_3", "Student_4"],
             ),
         ]
 
@@ -181,21 +181,21 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_same_category(self):
         topics = [
-            Topic(1, "Tema C", 0, category="Category 1"),
-            Topic(2, "Tema A", 0, category="Category 2"),
-            Topic(3, "Tema B", 0, category="Category 3"),
-            Topic(4, "Tema D", 0, category="Category 3"),
-            Topic(5, "Tema E", 0, category="Category 2"),
-            Topic(6, "Tema F", 0, category="Category 1"),
+            Topic(1, "Tema_C", 0, category="Category_1"),
+            Topic(2, "Tema_A", 0, category="Category_2"),
+            Topic(3, "Tema_B", 0, category="Category_3"),
+            Topic(4, "Tema_D", 0, category="Category_3"),
+            Topic(5, "Tema_E", 0, category="Category_2"),
+            Topic(6, "Tema_F", 0, category="Category_1"),
         ]
         groups = [
             GroupTopicPreferences(
-                1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]
+                1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]
             ),
             GroupTopicPreferences(
                 2,
                 topics=[topics[3], topics[4], topics[5]],
-                students=["Student 2", "Student 3", "Student 4"],
+                students=["Student_2", "Student_3", "Student_4"],
             ),
         ]
 
@@ -211,21 +211,21 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_different_topics_with_three_students(self):
         topics = [
-            Topic(1, "Tema C", 0),
-            Topic(2, "Tema A", 0),
-            Topic(3, "Tema B", 0),
-            Topic(4, "Tema D", 0),
-            Topic(5, "Tema E", 0),
-            Topic(6, "Tema F", 0),
+            Topic(1, "Tema_C", 0),
+            Topic(2, "Tema_A", 0),
+            Topic(3, "Tema_B", 0),
+            Topic(4, "Tema_D", 0),
+            Topic(5, "Tema_E", 0),
+            Topic(6, "Tema_F", 0),
         ]
         groups = [
             GroupTopicPreferences(
-                1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]
+                1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]
             ),
             GroupTopicPreferences(
                 2,
                 topics=[topics[3], topics[4], topics[5]],
-                students=["Student 2", "Student 3"],
+                students=["Student_2", "Student_3"],
             ),
         ]
 
@@ -241,36 +241,36 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_multiple_groups(self):
         topics = [
-            Topic(1, "Tema A", 0),
-            Topic(2, "Tema B", 0),
-            Topic(3, "Tema C", 0),
-            Topic(4, "Tema D", 0),
-            Topic(5, "Tema E", 0),
-            Topic(6, "Tema F", 0),
+            Topic(1, "Tema_A", 0),
+            Topic(2, "Tema_B", 0),
+            Topic(3, "Tema_C", 0),
+            Topic(4, "Tema_D", 0),
+            Topic(5, "Tema_E", 0),
+            Topic(6, "Tema_F", 0),
         ]
         groups = [
             GroupTopicPreferences(
-                1, topics=[topics[0], topics[1], topics[2]], students=["Student 1"]
+                1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]
             ),
             GroupTopicPreferences(
                 2,
                 topics=[topics[0], topics[3], topics[4]],
-                students=["Student 2", "Student 3"],
+                students=["Student_2", "Student_3"],
             ),
             GroupTopicPreferences(
                 3,
                 topics=[topics[1], topics[3], topics[5]],
-                students=["Student 4", "Student 5"],
+                students=["Student_4", "Student_5"],
             ),
             GroupTopicPreferences(
                 4,
                 topics=[topics[2], topics[4], topics[5]],
-                students=["Student 6", "Student 7"],
+                students=["Student_6", "Student_7"],
             ),
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups, _ = solver.solve()
 
         # Verificar que se formaron varios grupos
         assert len(formed_groups) == 2

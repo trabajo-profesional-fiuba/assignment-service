@@ -51,6 +51,10 @@ class ApiConfiguration:
     @property
     def host(self) -> str:
         return self.config("HOST", cast=str, default="127.0.0.1")
+    
+    @property
+    def api_version(self) -> str:
+        return self.config("API_VERSION", cast=str, default="1.0.0")
 
     def set_env(self, key: str, value):
         environ[key.to_upper()] = value

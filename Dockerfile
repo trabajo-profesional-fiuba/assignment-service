@@ -20,7 +20,7 @@ RUN poetry install --no-root
 COPY src .
 
 # Expone el puerto que usará la aplicación
-EXPOSE 8000
+EXPOSE 5000
 
 # Define el comando por defecto para ejecutar la aplicación
 CMD ["python", "./main.py"]

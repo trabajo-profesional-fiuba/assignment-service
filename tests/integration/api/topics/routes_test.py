@@ -117,7 +117,9 @@ def test_add_topics_with_same_category_success(fastapi, tables, tutors):
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    with open("tests/integration/api/topics/data/duplicated_category.csv", "rb") as file:
+    with open(
+        "tests/integration/api/topics/data/duplicated_category.csv", "rb"
+    ) as file:
         content = file.read()
 
     filename = "test_data"

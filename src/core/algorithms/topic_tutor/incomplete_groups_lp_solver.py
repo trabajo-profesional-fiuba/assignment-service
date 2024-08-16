@@ -286,8 +286,8 @@ class IncompleteGroupsLPSolver:
 
     def combine_topics(self, group1, group2):
         """
-        Combina los tópicos de dos grupos, manteniendo el orden y asegurando al\
-            menos 3 tópicos.
+        Combina los tópicos de dos grupos, manteniendo el orden y asegurando al
+        menos 3 tópicos.
         """
         common_topics = set(group1.topics).intersection(set(group2.topics))
         all_topics = sorted(common_topics, key=lambda topic: group1.topics.index(topic))
