@@ -20,8 +20,8 @@ app = FastAPI(
     title="Assignment Service Api",
     version=api_config.api_version,
     redoc_url=None,
-    docs_url='/docs',
-    root_path='/api'   
+    docs_url="/docs",
+    root_path="/api",
 )
 app.include_router(auth_router)
 app.include_router(student_router)
