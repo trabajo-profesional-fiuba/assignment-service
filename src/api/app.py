@@ -16,9 +16,39 @@ from src.api.groups.router import router as group_router
 
 create_tables()
 
+api_description = """
+
+## Group 54 - Final Project
+
+The Assignment Management API is designed to optimize the allocation of resources and scheduling within educational projects. Key functionalities include:
+
+- **Group Assignments**: Allocate individuals to incomplete student groups.
+- **Topic and Tutor Assignments**: Assign relevant topics and tutors to student groups.
+- **Presentation Scheduling**: Set and manage presentation dates for each group.
+
+This API is crucial for efficiently matching group members, topics, and presentation slots, ensuring effective project organization and execution.
+
+**Key Entities**:
+- Students
+- Groups
+- Tutors
+- Topics
+- Categories
+
+Interact with these entities through a series of dedicated API endpoints tailored to facilitate smooth and effective assignments.
+
+## Contributors
+- Celeste Dituro       - cdituro@fi.uba.ar
+- Victoria Abril Lopez - vlopez@fi.uba.ar
+- Iván Lautaro Pfaab   - ipfaab@fi.uba.ar
+- Alejo Villores       - avillores@fi.uba.ar
+"""
+
+
 app = FastAPI(
     title="Assignment Service Api",
     version=api_config.api_version,
+    description=api_description,
     redoc_url=None,
     docs_url="/docs",
     root_path="/api",
