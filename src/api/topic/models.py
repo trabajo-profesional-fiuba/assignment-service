@@ -15,7 +15,7 @@ class Category(Base):
         lazy="joined",
         cascade="all, delete-orphan",
     )
-    # cascade="all, delete-orphan" => to delete category if there are no topics assigned to it
+    # cascade="all, delete-orphan" => delete a category if there are no topics assigned to it
 
 
 class Topic(Base):
@@ -23,7 +23,9 @@ class Topic(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True)
-    category = Column(String, ForeignKey("categories.name"), nullable=False)
+    category = Column(
+        Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False
+    )
 
     topic_category = relationship("Category", back_populates="topic")
     groups = relationship("Group", back_populates="topic", lazy="noload")

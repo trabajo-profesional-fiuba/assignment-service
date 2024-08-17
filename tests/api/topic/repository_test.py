@@ -37,7 +37,7 @@ class TestTopicRepository:
         result = t_repository.add_topics(topics)
         assert len(result) == 1
         assert result[0].name == "topic 1"
-        assert result[0].category == "category 1"
+        assert result[0].topic_category.name == "category 1"
 
     @pytest.mark.integration
     def test_get_topics_with_success(self, tables):
@@ -45,7 +45,7 @@ class TestTopicRepository:
         result = t_repository.get_topics()
         assert len(result) == 1
         assert result[0].name == "topic 1"
-        assert result[0].category == "category 1"
+        assert result[0].category == 2
 
     @pytest.mark.integration
     def test_delete_topics_with_success(self, tables):
