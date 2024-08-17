@@ -21,11 +21,15 @@ Also, the interaction through this features are made by an API that has a serie 
 - Topics
 - Categories
 
+# Instalation 
+
+For this project is necessary to have  installed ``Python 3.11.*`` and ``Poetry (version 1.8.3)`` for dependency manganment
+
 ## Dependencies
 
 This project uses [Poetry](https://python-poetry.org/) for managing dependencies. Poetry simplifies the process of dependency management by providing a single tool for installing and managing project dependencies. To ensure that your environment is properly set up, follow the installation instructions below.
 
-### Execution
+### Execution with Docker
 
 To run the backend service using Docker, run the following command in the terminal:
 
@@ -40,9 +44,11 @@ docker compose -f docker-compose.dev.yml down -v
 -v remove volumes (not always necessary)
 ```
 
-### Tests
+### Run Tests Locally
 
 To run tests using Poetry, run the following commands in your terminal:
+
+**Notice:** You need to have `docker installed`
 
 ```bash
 # if you want to start a postgres db using Docker
@@ -53,7 +59,7 @@ To run tests using Poetry, run the following commands in your terminal:
 ```
 
 ```bash
-poetry run pytest
+poetry run pytest or just pytest is env is activated.
 ```
 
 ### Important Note
