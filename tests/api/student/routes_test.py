@@ -45,7 +45,7 @@ def test_upload_file_and_create_students(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_upload_file_raise_execption_if_type_is_not_csv(fastapi, tables):
+def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
 
     # Arrange
     filename = "test_data"
@@ -127,6 +127,7 @@ def test_update_student_file_with_success(fastapi, tables):
     response = fastapi.post(f"{PREFIX}/upload", files=files)
     assert response.status_code == 201
     assert len(response.json()) == 30
+
     response = fastapi.post(f"{PREFIX}/upload", files=files)
     assert response.status_code == 201
     assert len(response.json()) == 30

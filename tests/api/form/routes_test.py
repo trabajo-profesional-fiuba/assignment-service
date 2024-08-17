@@ -431,8 +431,17 @@ def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
     }
     response = fastapi.post(f"{PREFIX}/answers", json=body)
     assert response.status_code == status.HTTP_201_CREATED
+
     response = fastapi.delete(f"{PREFIX}/answers/{today}")
     assert response.status_code == status.HTTP_200_OK
+
+    # validate that students are not deleted when deleting answers
+    response = fastapi.get(
+        f"{STUDENT_PREFIX}/",
+        params={"user_ids": ["105285", "105286", "105287", "105288"]},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 4
 
 
 @pytest.mark.integration

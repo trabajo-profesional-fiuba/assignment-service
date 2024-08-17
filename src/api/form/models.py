@@ -19,4 +19,4 @@ class FormPreferences(Base):
         Integer, ForeignKey("topics.id", ondelete="CASCADE"), nullable=False
     )
 
-    student = relationship("User", lazy="noload", cascade="all, delete")
+    student = relationship("User", lazy="noload")
