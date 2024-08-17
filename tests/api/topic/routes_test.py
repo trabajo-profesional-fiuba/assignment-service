@@ -40,17 +40,17 @@ def tutors():
 
 
 @pytest.fixture
-def topics():
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
+def topics(request):
+    filename = request.param
+    with open(f"tests/api/topic/data/{filename}.csv", "rb") as file:
         content = file.read()
 
-    filename = "test_data"
     content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-    return files
+    return {"file": (filename, content, content_type)}
 
 
 @pytest.mark.integration
+@pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_add_topics_with_tutor_not_found(fastapi, tables, topics):
     response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -58,6 +58,7 @@ def test_add_topics_with_tutor_not_found(fastapi, tables, topics):
 
 
 @pytest.mark.integration
+@pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_add_topics_with_period_not_found(fastapi, tables, tutors, topics):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
@@ -68,6 +69,7 @@ def test_add_topics_with_period_not_found(fastapi, tables, tutors, topics):
 
 
 @pytest.mark.integration
+@pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_add_topics_with_diff_categories_success(fastapi, tables, tutors, topics):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
@@ -92,7 +94,9 @@ def test_add_topics_with_diff_categories_success(fastapi, tables, tutors, topics
     ]
 
 
-def test_add_topics_with_same_category_success(fastapi, tables, tutors):
+@pytest.mark.integration
+@pytest.mark.parametrize("topics", ["duplicated_category"], indirect=True)
+def test_add_topics_with_same_category_success(fastapi, tables, tutors, topics):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -107,14 +111,7 @@ def test_add_topics_with_same_category_success(fastapi, tables, tutors):
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    with open("tests/api/topic/data/duplicated_category.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {"id": 1, "name": "topic 1", "category": "category 1"},
@@ -124,7 +121,8 @@ def test_add_topics_with_same_category_success(fastapi, tables, tutors):
 
 
 @pytest.mark.integration
-def test_add_existing_topic_with_success(fastapi, tables, tutors):
+@pytest.mark.parametrize("topics", ["duplicated_topic"], indirect=True)
+def test_add_existing_topic_with_success(fastapi, tables, tutors, topics):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -138,14 +136,7 @@ def test_add_existing_topic_with_success(fastapi, tables, tutors):
         f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
     )
 
-    with open("tests/api/topic/data/duplicated_topic.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == 2
 
@@ -161,21 +152,15 @@ def test_upload_wrong_type_file(fastapi, tables):
     assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
 
 
+@pytest.mark.parametrize("topics", ["wrong_format"], indirect=True)
 @pytest.mark.integration
-def test_upload_wrong_format_file(fastapi, tables):
-    with open("tests/api/topic/data/wrong_format.csv", "rb") as file:
-        content = file.read()
-
-    filename = "wrong_format"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
-
+def test_upload_wrong_format_file(fastapi, tables, topics):
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.integration
+@pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_get_topics_with_success(fastapi, tables, tutors, topics):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
@@ -208,6 +193,7 @@ def test_get_topics_with_success(fastapi, tables, tutors, topics):
 
 
 @pytest.mark.integration
+@pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     # add tutors
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
