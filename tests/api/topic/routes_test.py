@@ -193,7 +193,7 @@ def test_get_topics_with_success(fastapi, tables, tutors, topics):
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("topics", ["test_data"], indirect=True)
+@pytest.mark.parametrize("topics", ["test_data", "update_test_data"], indirect=True)
 def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     # add tutors
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
@@ -214,11 +214,5 @@ def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     assert response.status_code == status.HTTP_201_CREATED
 
     # update topics
-    with open("tests/api/topic/data/update_test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "update_test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
