@@ -90,5 +90,5 @@ class TestTutorRepository:
         response = t_repository.get_tutors()
         assert len(response) == 0
 
-        with pytest.raises(TopicNotFound):
+        with pytest.raises(TutorPeriodNotFound):
             t_repository.get_topic_tutor_period(1, 1)

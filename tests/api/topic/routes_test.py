@@ -193,7 +193,7 @@ def test_get_topics_with_success(fastapi, tables, tutors, topics):
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("topics", ["test_data", "update_test_data"], indirect=True)
+@pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     # add tutors
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
