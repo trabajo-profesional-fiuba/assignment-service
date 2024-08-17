@@ -39,39 +39,36 @@ def tutors():
     return {"file": (filename, content, content_type)}
 
 
-@pytest.mark.integration
-def test_add_topics_with_tutor_not_found(fastapi, tables):
+@pytest.fixture
+def topics():
     with open("tests/api/topic/data/test_data.csv", "rb") as file:
         content = file.read()
 
     filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
+    return files
 
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+
+@pytest.mark.integration
+def test_add_topics_with_tutor_not_found(fastapi, tables, topics):
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Tutor 'juan.perez@fi.uba.ar' not found."}
 
 
 @pytest.mark.integration
-def test_add_topics_with_period_not_found(fastapi, tables, tutors):
+def test_add_topics_with_period_not_found(fastapi, tables, tutors, topics):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
 
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Tutor 'juan.perez@fi.uba.ar' has no period."}
 
 
 @pytest.mark.integration
-def test_add_topics_with_diff_categories_success(fastapi, tables, tutors):
+def test_add_topics_with_diff_categories_success(fastapi, tables, tutors, topics):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -86,14 +83,7 @@ def test_add_topics_with_diff_categories_success(fastapi, tables, tutors):
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {"id": 1, "name": "topic 1", "category": "category 1"},
@@ -186,7 +176,7 @@ def test_upload_wrong_format_file(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_get_topics_with_success(fastapi, tables, tutors):
+def test_get_topics_with_success(fastapi, tables, tutors, topics):
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -205,14 +195,7 @@ def test_get_topics_with_success(fastapi, tables, tutors):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
 
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
     response = fastapi.get(f"{PREFIX}/")
@@ -225,30 +208,31 @@ def test_get_topics_with_success(fastapi, tables, tutors):
 
 
 @pytest.mark.integration
-def test_update_topics_csv_with_success(fastapi, tables, tutors):
+def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
+    # add tutors
     response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
 
+    # add period
     response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
-    assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
-    assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
+
+    # assign period to tutors
+    for tutor_id in ["12345678", "23456789", "45678901", "56789012"]:
+        assert response.status_code == status.HTTP_201_CREATED
+        response = fastapi.post(
+            f"{TUTOR_PREFIX}/{tutor_id}/periods", params={"period_id": "1C2024"}
+        )
+
+    # add topics
+    response = fastapi.post(f"{PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
-    with open("tests/api/topic/data/test_data.csv", "rb") as file:
+    # update topics
+    with open("tests/api/topic/data/update_test_data.csv", "rb") as file:
         content = file.read()
 
-    filename = "test_data"
+    filename = "update_test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
-    assert response.status_code == status.HTTP_201_CREATED
-
     response = fastapi.post(f"{PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED

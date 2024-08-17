@@ -9,7 +9,13 @@ class Category(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True)
 
-    topic = relationship("Topic", back_populates="topic_category", lazy="joined")
+    topic = relationship(
+        "Topic",
+        back_populates="topic_category",
+        lazy="joined",
+        cascade="all, delete-orphan",
+    )
+    # cascade="all, delete-orphan" => to delete category if there are no topics assigned to it
 
 
 class Topic(Base):
