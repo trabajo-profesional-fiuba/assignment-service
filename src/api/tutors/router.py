@@ -57,9 +57,7 @@ async def upload_csv_file(
             )
         content = (await file.read()).decode("utf-8")
         service = TutorService(UserRepository(session))
-        res = service.create_tutors_from_string(content, hasher)
-
-        return res
+        return service.create_tutors_from_string(content, hasher)
     except InvalidTutorCsv as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

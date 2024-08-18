@@ -109,21 +109,37 @@ class TopicService:
         Add a list of capacities and a list of topics.
         """
         self._repository.add_categories(categories)
-        return self._repository.add_topics(topics)
+        logger.info("Categories already created.")
+        topics = self._repository.add_topics(topics)
+        logger.info("Topics already created.")
+        return topics
+
+    def _topic_response(self, topic: Topic):
+        return Topic(id=topic.id, name=topic.name, category=topic.topic_category.name)
+
+    def _topic_list_response(self, topics: list[Topic]):
+        result = []
+        for topic in topics:
+            result.append(self._topic_response(topic))
+        return result
 
     def create_topics_from_string(self, csv: str, tutor_repository: TutorRepository):
         """
         Processes a CSV string to create topics, categories, and tutor-topic
-        assignments. Returns the list of topics added.
+        assignments. Deletes existing topics if applies and returns the list
+        of topics created.
         """
         rows = self._get_csv_rows(csv)
         categories, topics, topics_by_tutor = self._get_info(rows)
-        topics = self._add_topics(topics, categories)
+        self._repository.delete_topics()
+        db_topics = self._add_topics(topics, categories)
         self._add_topic_tutor_periods(topics_by_tutor, tutor_repository)
+        topics = self._topic_list_response(db_topics)
         return TopicList.model_validate(topics)
 
     def get_topics(self):
-        topics = self._repository.get_topics()
+        db_topics = self._repository.get_topics()
+        topics = self._topic_list_response(db_topics)
         return TopicList.model_validate(topics)
 
     def get_or_add_topic(self, topic_name: str):
@@ -132,7 +148,7 @@ class TopicService:
         if the topic is not in db, it creates it with a
         default category
         """
-        topic_db = self._repository.get_topic_by_name(topic_name)
+        db_topic = self._repository.get_topic_by_name(topic_name)
         if not topic_db:
             logger.info(
                 f"Topic name {topic_name} is not in db, adding it with default category"
@@ -140,4 +156,5 @@ class TopicService:
             topic_db = self._repository.add_topic(
                 Topic(name=topic_name, category="default")
             )
-        return TopicResponse.model_validate(topic_db)
+        topic = self._topic_response(db_topic)
+        return TopicResponse.model_validate(topic)
