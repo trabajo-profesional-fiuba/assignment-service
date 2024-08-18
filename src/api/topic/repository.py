@@ -63,6 +63,7 @@ class TopicRepository:
             session.add(topic)
             session.commit()
             session.refresh(topic)
+            topic.topic_category
             session.expunge(topic)
         return topic
 

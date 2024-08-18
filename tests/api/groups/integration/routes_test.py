@@ -34,7 +34,7 @@ def fastapi():
     yield client
 
 
-@pytest.mark.skip
+@pytest.mark.integration
 def test_add_group(fastapi, tables):
     tutor_repository = TutorRepository(Session)
     tutor_repository.add_period(Period(id="1C2025"))
