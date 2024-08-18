@@ -27,13 +27,17 @@ class TutorPeriod(Base):
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     period_id = Column(String, ForeignKey("periods.id"))
-    tutor_id = Column(Integer, ForeignKey("users.id"), index=True)
+    tutor_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True)
     capacity = Column(Integer, default=0)
     is_evaluator = Column(Boolean, default=False)
 
-    tutor = relationship("User", back_populates="periods", lazy="joined")
+    tutor = relationship(
+        "User", back_populates="periods", lazy="joined", cascade="all, delete"
+    )
     period = relationship("Period", back_populates="periods")
-    topics = relationship("Topic", secondary="topics_tutor_periods")
+    topics = relationship(
+        "Topic", secondary="topics_tutor_periods", cascade="all, delete"
+    )
     groups = relationship(
         "Group", back_populates="tutor_period", uselist=True, lazy="noload"
     )

@@ -99,3 +99,11 @@ class TestStudentRepository:
         response = repository.get_students()
 
         assert len(response) == 4
+
+    @pytest.mark.integration
+    def test_delete_students_with_success(self, tables):
+        u_repository = UserRepository(self.Session)
+        u_repository.delete_students()
+        s_repository = StudentRepository(self.Session)
+        response = s_repository.get_students()
+        assert len(response) == 0

@@ -80,8 +80,7 @@ async def get_topics(
 ):
     try:
         service = TopicService(TopicRepository(session))
-        topics = service.get_topics()
-        return topics
+        return service.get_topics()
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

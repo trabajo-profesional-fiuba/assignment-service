@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import exc
 
 
-from src.api.users.model import User
+from src.api.users.model import User, Role
 from src.api.users.exceptions import UserNotFound
 
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
@@ -51,3 +51,13 @@ class UserRepository:
             raise StudentDuplicated("Student duplicated")
         except Exception:
             raise StudentNotInserted("Could not insert a student in the database")
+
+    def delete_students(self):
+        with self.Session() as session:
+            session.query(User).filter(User.role == Role.STUDENT).delete()
+            session.commit()
+
+    def delete_tutors(self):
+        with self.Session() as session:
+            session.query(User).filter(User.role == Role.TUTOR).delete()
+            session.commit()

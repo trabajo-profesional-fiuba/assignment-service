@@ -21,7 +21,11 @@ class User(Base):
     role = Column(Enum(Role))
 
     form_preferences = relationship(
-        "FormPreferences", back_populates="student", uselist=False, lazy="noload"
+        "FormPreferences",
+        back_populates="student",
+        uselist=False,
+        lazy="noload",
+        cascade="all, delete",
     )
     # immediate - items should be loaded as the parents are loaded,
     # using a separate SELECT statement
