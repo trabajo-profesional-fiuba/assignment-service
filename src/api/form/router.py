@@ -11,6 +11,7 @@ from src.api.form.schemas import (
 )
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
+from src.api.topic.repository import TopicRepository
 from src.api.form.exceptions import (
     StudentNotFound,
     TopicNotFound,
@@ -73,7 +74,7 @@ async def add_answers(
 async def get_answers(session: Annotated[Session, Depends(get_db)]):
     try:
         service = FormService(FormRepository(session))
-        return service.get_answers()
+        return service.get_answers(TopicRepository(session))
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

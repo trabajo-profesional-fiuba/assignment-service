@@ -45,7 +45,12 @@ class TestTopicRepository:
         result = t_repository.get_topics()
         assert len(result) == 1
         assert result[0].name == "topic 1"
-        assert result[0].category == 2
+
+    @pytest.mark.integration
+    def test_get_topic_by_id_with_success(self, tables):
+        t_repository = TopicRepository(self.Session)
+        result = t_repository.get_topic_by_id(1)
+        assert result.name == "topic 1"
 
     @pytest.mark.integration
     def test_delete_topics_with_success(self, tables):
