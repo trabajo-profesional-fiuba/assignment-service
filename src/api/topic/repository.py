@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from src.api.topic.models import Category, Topic
+from src.api.topic.exceptions import CategoryNotFound
 
 
 class TopicRepository:
@@ -18,24 +19,53 @@ class TopicRepository:
                 session.expunge(category)
         return categories
 
-    """ Add a list of topics and detached them from the session"""
-
     def add_topics(self, topics: list[Topic]):
         with self.Session() as session:
             session.add_all(topics)
             session.commit()
+
             for topic in topics:
                 session.refresh(topic)
+                topic.topic_category
                 session.expunge(topic)
+
         return topics
+
+    def add_topic_with_category(self, topic: Topic, category_name: str):
+        with self.Session() as session:
+            category = session.query(Category).filter_by(
+                name=category_name).first()
+            if not category:
+                raise CategoryNotFound(
+                    f"Category with name: {category_name} is not in db")
+
+            topic.category = category.id
+            session.add(topic)
+            session.commit()
+            session.expunge(topic)
+
+        return topic
 
     """ Get all the topics"""
 
     def get_topics(self):
         with self.Session() as session:
             topics = session.query(Topic).all()
-            session.expunge_all()
+
+            for topic in topics:
+                topic.topic_category
+                session.expunge(topic)
+
         return topics
+
+    """ Get all the categories"""
+
+    def get_categories(self):
+        with self.Session() as session:
+            categories = session.query(Category).all()
+            session.expunge_all()
+
+        return categories
 
     """ Add a category and detached it from the session"""
 
@@ -54,6 +84,8 @@ class TopicRepository:
             session.add(topic)
             session.commit()
             session.refresh(topic)
+            # force loading the category
+            topic.topic_category
             session.expunge(topic)
         return topic
 
@@ -65,3 +97,9 @@ class TopicRepository:
             if topic:
                 session.expunge(topic)
         return topic
+
+    def delete_topics(self):
+        with self.Session() as session:
+            session.query(Category).delete()
+            session.query(Topic).delete()
+            session.commit()

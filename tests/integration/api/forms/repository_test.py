@@ -83,9 +83,9 @@ class TestFormRepository:
         topic_repository = TopicRepository(self.Session)
         topic_repository.add_categories([category_1, category_2, category_3])
 
-        topic_1 = Topic(name="topic 1", category="category 1")
-        topic_2 = Topic(name="topic 2", category="category 2")
-        topic_3 = Topic(name="topic 3", category="category 3")
+        topic_1 = Topic(name="topic 1", category=2)
+        topic_2 = Topic(name="topic 2", category=3)
+        topic_3 = Topic(name="topic 3", category=4)
         topic_repository.add_topics([topic_1, topic_2, topic_3])
 
         topics = ["topic 1", "topic 2", "topic 3"]

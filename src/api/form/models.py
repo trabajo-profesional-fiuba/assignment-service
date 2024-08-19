@@ -12,10 +12,16 @@ class FormPreferences(Base):
     __tablename__ = "form_preferences"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     answer_id = Column(DateTime, nullable=False)
-    topic_1 = Column(Integer, ForeignKey("topics.id"), nullable=False)
-    topic_2 = Column(Integer, ForeignKey("topics.id"), nullable=False)
-    topic_3 = Column(Integer, ForeignKey("topics.id"), nullable=False)
+    topic_1 = Column(
+        Integer, ForeignKey("topics.id", ondelete="CASCADE"), nullable=False
+    )
+    topic_2 = Column(
+        Integer, ForeignKey("topics.id", ondelete="CASCADE"), nullable=False
+    )
+    topic_3 = Column(
+        Integer, ForeignKey("topics.id", ondelete="CASCADE"), nullable=False
+    )
 
     student = relationship("User", lazy="noload")

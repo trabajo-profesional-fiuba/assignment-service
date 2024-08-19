@@ -33,7 +33,6 @@ async def upload_csv_file(
     session: Annotated[Session, Depends(get_db)],
 ):
     try:
-        # Check if content-type is a text/csv
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided")
 

@@ -60,5 +60,5 @@ async def add_group(
         )
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
-    except Exception:
+    except Exception as e:
         raise ServerError(message=str(e))

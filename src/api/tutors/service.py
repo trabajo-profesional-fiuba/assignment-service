@@ -26,25 +26,31 @@ class TutorService:
     def __init__(self, repository) -> None:
         self._repository = repository
 
+    def _get_csv_content(self, csv: str):
+        csv_file = TutorCsvFile(csv=csv)
+        return csv_file.get_info_as_rows()
+
+    def _get_tutors(self, rows, hasher: ShaHasher):
+        tutors = []
+        for i in rows:
+            name, last_name, id, email = i
+            tutor = User(
+                id=int(id),
+                name=name,
+                last_name=last_name,
+                email=email,
+                password=hasher.hash(str(id)),
+                role=Role.TUTOR,
+            )
+            tutors.append(tutor)
+        return tutors
+
     def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
         try:
-            tutors = []
-            csv_file = TutorCsvFile(csv=csv)
-            rows = csv_file.get_info_as_rows()
-            for i in rows:
-                name, last_name, id, email = i
-                tutor = User(
-                    id=int(id),
-                    name=name,
-                    last_name=last_name,
-                    email=email,
-                    password=hasher.hash(str(id)),
-                    role=Role.TUTOR,
-                )
-                tutors.append(tutor)
-            tutors = TutorList.model_validate(self._repository.add_tutors(tutors))
-
-            return tutors
+            rows = self._get_csv_content(csv)
+            tutors = self._get_tutors(rows, hasher)
+            self._repository.delete_tutors()
+            return TutorList.model_validate(self._repository.add_tutors(tutors))
         except TutorDuplicated as e:
             raise Duplicated(str(e))
         except TutorNotFound as e:
