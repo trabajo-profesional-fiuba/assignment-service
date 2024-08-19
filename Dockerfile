@@ -1,26 +1,26 @@
-# Usa una imagen base de Python
 FROM python:3.11-slim
 
-# Instala Poetry
+
 RUN pip install poetry
 
-# Establece el directorio de trabajo
+# Set a workdir
 WORKDIR /app
 
-# Copia los archivos de Poetry
+
 COPY pyproject.toml poetry.lock ./
 
-# Deshabilita la creación de entorno virtual
+# As we are in a container, is not necessary for poetry to work
+# inside a virtual enviroment.
 RUN poetry config virtualenvs.create false
 
-# Instala las dependencias del proyecto
+# We want to use Poetry only for dependency management but not for packaging
 RUN poetry install --no-root
 
-# Copia todo el código del proyecto
+# Copy the src of the project, test and other files are not necessary
 COPY src .
 
-# Expone el puerto que usará la aplicación
-EXPOSE 8000
+# Open port 5000 for be available
+EXPOSE 5000
 
-# Define el comando por defecto para ejecutar la aplicación
+# Define cmd to be executed.
 CMD ["python", "./main.py"]

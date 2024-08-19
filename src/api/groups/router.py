@@ -2,10 +2,9 @@ from typing_extensions import Annotated
 
 from fastapi import APIRouter, Depends, status, Query
 
-from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
-from src.api.groups.exceptions import GroupError
+from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import GroupRequest, GroupResponse
 from src.api.groups.service import GroupService
@@ -21,10 +20,25 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
 @router.post(
     "/",
     response_model=GroupResponse,
-    status_code=status.HTTP_201_CREATED,
     summary="Creates a new group",
     description="""This endpoint is intended to use for those cases which the group of
     students already have a tutor and a topic""",
+    responses={
+        status.HTTP_201_CREATED: {"description": "Successfully added a new group."},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unkown operation"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happend inside the backend"
+        },
+    },
+    status_code=status.HTTP_201_CREATED,
 )
 async def add_group(
     group: GroupRequest,
@@ -44,10 +58,7 @@ async def add_group(
         return group_service.create_assigned_group(
             group.students_ids, tutor_period.id, topic.id
         )
-    except GroupError as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error",
-        )
+    except (EntityNotInserted, EntityNotFound) as e:
+        raise e
+    except Exception as e:
+        raise ServerError(message=str(e))

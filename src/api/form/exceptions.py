@@ -1,29 +1,8 @@
-from fastapi import status
-
-
-class StudentNotFound(Exception):
+# Internal
+class AnswerNotFound(Exception):
     def __init__(self, message: str):
         super().__init__(message)
         self.message = message
-        self.status_code = status.HTTP_404_NOT_FOUND
 
 
-class TopicNotFound(Exception):
-    def __init__(self, message: str):
-        super().__init__(message)
-        self.message = message
-        self.status_code = status.HTTP_404_NOT_FOUND
-
-
-class DuplicatedAnswer(Exception):
-    def __init__(self, message: str):
-        super().__init__(message)
-        self.message = message
-        self.status_code = status.HTTP_409_CONFLICT
-
-
-class AnswerIdNotFound(Exception):
-    def __init__(self, message: str):
-        super().__init__(message)
-        self.message = message
-        self.status_code = status.HTTP_404_NOT_FOUND
+# External

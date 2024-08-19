@@ -4,6 +4,11 @@ from src.config.database.base import Base
 
 
 class FormPreferences(Base):
+    """
+    A FormPreference is a answer that is send by a student
+    when the period started
+    """
+
     __tablename__ = "form_preferences"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

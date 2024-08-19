@@ -1,11 +1,14 @@
 from sqlalchemy.orm import Session
 from src.api.topic.models import Category, Topic
+from src.api.topic.exceptions import CategoryNotFound
 
 
 class TopicRepository:
 
     def __init__(self, sess: Session):
         self.Session = sess
+
+    """ Add a list of categories and detached them from the session"""
 
     def add_categories(self, categories: list[Category]):
         with self.Session() as session:
@@ -16,29 +19,34 @@ class TopicRepository:
                 session.expunge(category)
         return categories
 
-    def _format_topics(self, session, topics: list[Topic]):
-        topics_to_add = []
-        for topic_request in topics:
-            category = (
-                session.query(Category).filter_by(name=topic_request.category).first()
-            )
-            topic = Topic(name=topic_request.name, category=category.id)
-            topics_to_add.append(topic)
-
-        return topics_to_add
-
     def add_topics(self, topics: list[Topic]):
         with self.Session() as session:
-            formatted_topics = self._format_topics(session, topics)
-            session.add_all(formatted_topics)
+            session.add_all(topics)
             session.commit()
 
-            for topic in formatted_topics:
+            for topic in topics:
                 session.refresh(topic)
                 topic.topic_category
                 session.expunge(topic)
 
-            return formatted_topics
+        return topics
+
+    def add_topic_with_category(self, topic: Topic, category_name: str):
+        with self.Session() as session:
+            category = session.query(Category).filter_by(
+                name=category_name).first()
+            if not category:
+                raise CategoryNotFound(
+                    f"Category with name: {category_name} is not in db")
+
+            topic.category = category.id
+            session.add(topic)
+            session.commit()
+            session.expunge(topic)
+
+        return topic
+
+    """ Get all the topics"""
 
     def get_topics(self):
         with self.Session() as session:
@@ -48,7 +56,18 @@ class TopicRepository:
                 topic.topic_category
                 session.expunge(topic)
 
-            return topics
+        return topics
+
+    """ Get all the categories"""
+
+    def get_categories(self):
+        with self.Session() as session:
+            categories = session.query(Category).all()
+            session.expunge_all()
+
+        return categories
+
+    """ Add a category and detached it from the session"""
 
     def add_category(self, category: Category):
         with self.Session() as session:
@@ -58,14 +77,19 @@ class TopicRepository:
             session.expunge(category)
         return category
 
+    """ Add a topic and detached it from the session"""
+
     def add_topic(self, topic: Topic):
         with self.Session() as session:
             session.add(topic)
             session.commit()
             session.refresh(topic)
+            # force loading the category
             topic.topic_category
             session.expunge(topic)
         return topic
+
+    """ Get a topic based on the name and detached it from the session"""
 
     def get_topic_by_name(self, name: str):
         with self.Session() as session:

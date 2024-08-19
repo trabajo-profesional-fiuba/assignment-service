@@ -1,15 +1,35 @@
-from src.api.groups.exceptions import GroupError
+from src.api.student.exceptions import StudentNotFound
+from src.api.exceptions import EntityNotInserted, EntityNotFound
 from src.api.groups.schemas import GroupResponse
 
 
+from src.config.logging import logger
+
+
 class GroupService:
+    """
+    The group service contains the necessary logi to performs operations
+    with Groups as schemas, as entities and as ORM Objects
+    """
 
     def __init__(self, repository) -> None:
         self._repository = repository
 
     def create_assigned_group(self, ids, period_id, topic_id):
-        group = self._repository.add_group(ids, period_id, topic_id)
-        return GroupResponse.model_validate(group)
+        try:
+            group = self._repository.add_group(ids, period_id, topic_id)
+            logger.info(f"New group with id {group.id} created")
+            return GroupResponse.model_validate(group)
+        except StudentNotFound as e:
+            logger.error(f"Could not insert a group because some ids are not valid")
+            raise EntityNotFound(message=str(e))
+        except Exception:
+            logger.error(
+                f"Could not insert a group with ids: {str(ids)}, topic id {topic_id} and period id: {period_id}"
+            )
+            raise EntityNotInserted(
+                message="Group could't be created check if params exits"
+            )
 
     def create_basic_group(self, ids, preferred_topics=[]):
         try:
@@ -17,5 +37,11 @@ class GroupService:
                 ids=ids, preferred_topics=preferred_topics
             )
             return GroupResponse.model_validate(group)
+        except StudentNotFound as e:
+            logger.error(f"Could not insert a group because some ids are not valid")
+            raise EntityNotFound(message=str(e))
         except Exception:
-            raise GroupError(message="Group could't be created")
+            logger.error(f"Could not insert a group with ids: {str(ids)}")
+            raise EntityNotInserted(
+                message="Group could't be created check if params exits"
+            )

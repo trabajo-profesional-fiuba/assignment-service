@@ -2,7 +2,12 @@ from src.api.student.utils import StudentCsvFile
 from src.api.users.schemas import UserList
 from src.api.users.model import User, Role
 from src.api.auth.hasher import ShaHasher
-from src.api.student.exceptions import StudentDuplicated, StudentNotFound
+from src.api.student.exceptions import (
+    StudentDuplicated,
+    StudentNotFound,
+    StudentNotInserted,
+)
+from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 
 
 class StudentService:
@@ -30,25 +35,38 @@ class StudentService:
         return students
 
     def create_students_from_string(self, csv: str, hasher: ShaHasher):
-        rows = self._get_csv_rows(csv)
-        students = self._get_students(rows, hasher)
-        self._repository.delete_students()
-        students_saved = self._repository.add_students(students)
-        return UserList.model_validate(students_saved)
+        try:
+            rows = self._get_csv_rows(csv)
+            students = self._get_students(rows, hasher)
+            self._repository.delete_students()
+            students_saved = self._repository.add_students(students)
+            return UserList.model_validate(students_saved)
+        except InvalidCsv as e:
+            raise e
+        except StudentDuplicated as e:
+            raise Duplicated(str(e))
+        except StudentNotInserted as e:
+            raise EntityNotInserted(str(e))
 
     def get_students_by_ids(self, ids: list[int]):
-        if len(list(set(ids))) != len(list(ids)):
-            raise StudentDuplicated("Query params student ids contain duplicates")
 
-        if len(ids) > 0:
-            students_db = self._repository.get_students_by_ids(ids)
-        else:
-            students_db = self._repository.get_students()
+        try:
+            if len(list(set(ids))) != len(list(ids)):
+                raise StudentDuplicated("Query params udis contain duplicates")
 
-        students = UserList.model_validate(students_db)
-        udis_from_db = [student.id for student in students]
-        for id in ids:
-            if id not in udis_from_db:
-                raise StudentNotFound(f"{id}, is not registered in the database")
+            if len(ids) > 0:
+                students_db = self._repository.get_students_by_ids(ids)
+            else:
+                students_db = self._repository.get_students()
 
-        return students
+            students = UserList.model_validate(students_db)
+            udis_from_db = [student.id for student in students]
+            for id in ids:
+                if id not in udis_from_db:
+                    raise StudentNotFound(f"{id}, is not registered in the database")
+
+            return students
+        except StudentNotFound as e:
+            raise EntityNotFound(str(e))
+        except StudentDuplicated as e:
+            raise Duplicated(str(e))

@@ -1,5 +1,6 @@
 import re
 
+from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.users.model import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import (
@@ -11,7 +12,12 @@ from src.api.tutors.schemas import (
     PeriodList,
 )
 from src.api.tutors.utils import TutorCsvFile
-from src.api.tutors.exceptions import InvalidPeriodId, TutorNotFound
+from src.api.tutors.exceptions import (
+    InvalidPeriod,
+    PeriodDuplicated,
+    TutorDuplicated,
+    TutorNotFound,
+)
 from src.api.tutors.model import Period
 
 
@@ -40,10 +46,15 @@ class TutorService:
         return tutors
 
     def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
-        rows = self._get_csv_content(csv)
-        tutors = self._get_tutors(rows, hasher)
-        self._repository.delete_tutors()
-        return TutorList.model_validate(self._repository.add_tutors(tutors))
+        try:
+            rows = self._get_csv_content(csv)
+            tutors = self._get_tutors(rows, hasher)
+            self._repository.delete_tutors()
+            return TutorList.model_validate(self._repository.add_tutors(tutors))
+        except TutorDuplicated as e:
+            raise Duplicated(str(e))
+        except TutorNotFound as e:
+            EntityNotFound(str(e))
 
     def _validate(self, id):
         # Regex pattern
@@ -56,29 +67,40 @@ class TutorService:
             return False
 
     def add_period(self, period: PeriodRequest):
-        valid = self._validate(period.id)
-        if valid:
-            period_db = Period(id=period.id)
-            return PeriodResponse.model_validate(self._repository.add_period(period_db))
-        else:
-            raise InvalidPeriodId(
-                message="Period id should follow patter nC20year, ie. 1C2024"
-            )
+        try:
+            valid = self._validate(period.id)
+            if valid:
+                period_db = Period(id=period.id)
+                return PeriodResponse.model_validate(
+                    self._repository.add_period(period_db)
+                )
+            else:
+                raise InvalidPeriod(
+                    message="Period id should follow patter nC20year, ie. 1C2024"
+                )
+        except PeriodDuplicated as e:
+            raise Duplicated(str(e))
 
     def add_period_to_tutor(self, tutor_id, period_id):
-        if self._repository.is_tutor(tutor_id):
-            tutor = self._repository.add_tutor_period(tutor_id, period_id)
-            return TutorResponse.model_validate(tutor)
-        else:
-            raise TutorNotFound(f"{tutor_id} was not found as TUTOR")
+        try:
+            if self._repository.is_tutor(tutor_id):
+                tutor = self._repository.add_tutor_period(tutor_id, period_id)
+                return TutorResponse.model_validate(tutor)
+            else:
+                raise EntityNotFound(f"{tutor_id} was not found as TUTOR")
+        except PeriodDuplicated as e:
+            raise Duplicated(str(e))
 
     def get_all_periods(self, order):
         return PeriodList.model_validate(self._repository.get_all_periods(order))
 
     def get_periods_by_tutor_id(self, tutor_id):
-        return TutorResponse.model_validate(
-            self._repository.get_all_periods_by_id(tutor_id)
-        )
+        try:
+            return TutorResponse.model_validate(
+                self._repository.get_all_periods_by_id(tutor_id)
+            )
+        except TutorNotFound as e:
+            raise EntityNotFound(str(e))
 
     def get_tutor_period_by_email(self, period, tutor_email):
         return TutorPeriodResponse.model_validate(

@@ -1,10 +1,13 @@
+from src.api.exceptions import EntityNotFound
 from src.api.topic.schemas import TopicList, TopicResponse
 from src.api.topic.repository import TopicRepository
 from src.api.topic.utils import TopicCsvFile
 from src.api.topic.models import Topic, Category
+from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from src.api.tutors.repository import TutorRepository
 
 from src.config.logging import logger
+from src.core.topic import Topic as TopicDto
 
 
 class TopicService:
@@ -12,69 +15,17 @@ class TopicService:
     def __init__(self, topic_repository: TopicRepository):
         self._repository = topic_repository
 
-    def _add_category(self, category_name: str, categories: list[Category]):
-        """
-        Add a category to the list if it hasn't been added yet.
-        Returns a list of unique categories.
-        """
-        new_category = Category(name=category_name)
-        if not any(category.name == category_name for category in categories):
-            categories.append(new_category)
-        return categories
 
-    def _add_topic(self, topic_name: str, category_name: str, topics: list[Topic]):
-        """
-        Add a topic to the list if it hasn't been added yet.
-        Returns a list of unique topics.
-        """
-        new_topic = Topic(name=topic_name, category=category_name)
-        if not any(
-            (topic.name == topic_name and topic.category == category_name)
-            for topic in topics
-        ):
-            topics.append(new_topic)
-        return topics, new_topic
+    def _get_categories_mapped(self):
+        # looks for all the categories and create a diccionary to map name:id
+        categories = self._repository.get_categories()
+        id_by_categories = {}
+        for category in categories:
+            id_by_categories[category.name] = category.id
+        
+        return id_by_categories
 
-    def _add_topic_by_tutor(
-        self, tutor: str, topics_by_tutor: dict, new_topic: Topic, capacity: int
-    ):
-        """
-        Adds a topic and its capacity under a specific tutor in the dictionary.
-        """
-        if tutor not in topics_by_tutor:
-            topics_by_tutor[tutor] = []
-        topics_by_tutor[tutor].append({"topic": new_topic, "capacity": capacity})
-        return topics_by_tutor
-
-    def _get_info(self, rows):
-        """
-        Processes a list of rows containing topic names, categories, tutors and
-        capacities.
-        Returns necessary information to create a topic:
-            - Unique categories list: to add categories.
-            - Unique topics list.
-            - Dictionary with tutor emails as keys and a a list of dictionaries
-            with topic and capacity.
-        """
-        categories = []
-        topics = []
-        topics_by_tutor = {}
-        for row in rows:
-            name, category, tutor, capacity = row
-            categories = self._add_category(category, categories)
-            topics, new_topic = self._add_topic(name, category, topics)
-            topics_by_tutor = self._add_topic_by_tutor(
-                tutor, topics_by_tutor, new_topic, capacity
-            )
-        return categories, topics, topics_by_tutor
-
-    def _get_csv_rows(self, csv: str):
-        """
-        Processes a CSV string and returns its content as rows of information.
-        """
-        csv_file = TopicCsvFile(csv=csv)
-        return csv_file.get_info_as_rows()
-
+    #
     def _get_topics_and_capacities_by_tutor(
         self, tutor_email: str, topics_by_tutor: dict
     ):
@@ -83,10 +34,14 @@ class TopicService:
             - A list of topic names assigned to that tutor.
             - A list of capacities assigned to those topics.
         """
+        id_by_categories = self._get_categories_mapped()
         topics = []
         capacities = []
         for topic_info in topics_by_tutor[tutor_email]:
-            topics.append(topic_info["topic"])
+            name = topic_info["topic"]
+            category = id_by_categories[topic_info["category"]]
+            topic = Topic(name=name, category=category)
+            topics.append(topic)
             capacities.append(topic_info["capacity"])
         return topics, capacities
 
@@ -96,7 +51,7 @@ class TopicService:
         """
         Add a topic tutor period entity for each topic of each tutor.
         """
-        for tutor, topics_list in topics_by_tutor.items():
+        for tutor, _ in topics_by_tutor.items():
             tutor_topics, tutor_capacities = self._get_topics_and_capacities_by_tutor(
                 tutor, topics_by_tutor
             )
@@ -104,14 +59,35 @@ class TopicService:
                 tutor, tutor_topics, tutor_capacities
             )
 
-    def _add_topics(self, topics, categories):
+    def _add_categories(self, categories):
         """
-        Add a list of capacities and a list of topics.
+        Add a list of categories.
         """
-        self._repository.add_categories(categories)
+        categories_db = []
+        for category in categories:
+            category_db = Category(name=category)
+            categories_db.append(category_db)
+        categories_saved = self._repository.add_categories(categories_db)
         logger.info("Categories already created.")
-        topics = self._repository.add_topics(topics)
+
+        return categories_saved
+
+    def _add_topics(self, topics: list[tuple[str, str]]):
+        """
+        Add a list of list of topics.
+        """
+        
+        id_by_categories = self._get_categories_mapped() 
+
+        # Make Topic ORM objs based on the name and category
+        topics_db = []
+        for topic in topics:
+            category_id = id_by_categories[topic[1]]
+            topic_db = Topic(name=topic[0], category=category_id)
+            topics_db.append(topic_db)
+        topics = self._repository.add_topics(topics_db)
         logger.info("Topics already created.")
+
         return topics
 
     def _topic_response(self, topic: Topic):
@@ -131,18 +107,27 @@ class TopicService:
         assignments. Deletes existing topics if applies and returns the list
         of topics created.
         """
-        rows = self._get_csv_rows(csv)
-        categories, topics, topics_by_tutor = self._get_info(rows)
-        self._repository.delete_topics()
-        db_topics = self._add_topics(topics, categories)
-        self._add_topic_tutor_periods(topics_by_tutor, tutor_repository)
-        topics = self._topic_list_response(db_topics)
-        return TopicList.model_validate(topics)
+        try:
+            csv_file = TopicCsvFile(csv=csv)
+            categories = csv_file.get_categories()
+            topics = csv_file.get_topics()
+            topics_by_tutor = csv_file.get_topics_by_tutor()
+
+            self._repository.delete_topics()
+
+            self._add_categories(categories)
+            db_topics = self._add_topics(topics)
+
+            self._add_topic_tutor_periods(topics_by_tutor, tutor_repository)
+            topics = self._topic_list_response(db_topics)
+
+            return TopicList.model_validate(topics)
+        except (TutorNotFound, TutorPeriodNotFound) as e:
+            raise EntityNotFound(str(e))
 
     def get_topics(self):
         db_topics = self._repository.get_topics()
-        topics = self._topic_list_response(db_topics)
-        return TopicList.model_validate(topics)
+        return TopicList.model_validate(self._topic_list_response(db_topics))
 
     def get_or_add_topic(self, topic_name: str):
         """

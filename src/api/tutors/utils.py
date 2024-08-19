@@ -1,7 +1,8 @@
 from io import StringIO
 import pandas as pd
 
-from src.api.tutors.exceptions import InvalidTutorCsv, TutorDuplicated
+from src.api.exceptions import InvalidCsv
+from src.api.tutors.exceptions import TutorDuplicated
 
 
 class TutorCsvFile:
@@ -18,7 +19,7 @@ class TutorCsvFile:
 
     def _validate_csv_headers(self, df):
         if list(df.columns.values) != ["NOMBRE", "APELLIDO", "DNI", "MAIL"]:
-            raise InvalidTutorCsv("Columns don't match with expected ones")
+            raise InvalidCsv("Columns don't match with expected ones")
 
     def _check_duplicates(self, df):
         duplicate = df[df.duplicated()]

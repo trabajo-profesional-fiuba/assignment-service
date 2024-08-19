@@ -1,9 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 
 from src.config.database.database import create_tables
+from src.config.config import api_config
 
 from src.api.student.router import router as student_router
 from src.api.topic.router import router as topic_router
@@ -15,7 +16,43 @@ from src.api.groups.router import router as group_router
 
 create_tables()
 
-app = FastAPI(title="Assignment Service Api", version="1.0.0")
+api_description = """
+
+## Group 54 - Final Project
+
+The Assignment Management API is designed to optimize the allocation of resources and scheduling within educational projects. Key functionalities include:
+
+- **Group Assignments**: Allocate individuals to incomplete student groups.
+- **Topic and Tutor Assignments**: Assign relevant topics and tutors to student groups.
+- **Presentation Scheduling**: Set and manage presentation dates for each group.
+
+This API is crucial for efficiently matching group members, topics, and presentation slots, ensuring effective project organization and execution.
+
+**Key Entities**:
+- Students
+- Groups
+- Tutors
+- Topics
+- Categories
+
+Interact with these entities through a series of dedicated API endpoints tailored to facilitate smooth and effective assignments.
+
+## Contributors
+- Celeste Dituro       - cdituro@fi.uba.ar
+- Victoria Abril Lopez - vlopez@fi.uba.ar
+- Iván Lautaro Pfaab   - ipfaab@fi.uba.ar
+- Alejo Villores       - avillores@fi.uba.ar
+"""
+
+
+app = FastAPI(
+    title="Assignment Service Api",
+    version=api_config.api_version,
+    description=api_description,
+    redoc_url=None,
+    docs_url="/docs",
+    root_path="/api",
+)
 app.include_router(auth_router)
 app.include_router(student_router)
 app.include_router(topic_router)
@@ -27,6 +64,7 @@ app.add_middleware(
 )
 
 
-@app.get("/", description="This endpoint returns a ping message.")
-async def root():
-    return RedirectResponse("/docs")
+@app.get("/", description="This endpoint redirects to docs")
+async def root(request: Request):
+    docs_url = str(request.base_url) + "docs"
+    return RedirectResponse(docs_url)
