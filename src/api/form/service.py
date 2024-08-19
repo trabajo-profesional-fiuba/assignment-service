@@ -7,12 +7,14 @@ from src.api.form.schemas import (
     FormPreferencesList,
     UserAnswerList,
     GroupAnswerResponse,
+    UserAnswerResponse,
 )
 from src.api.form.exceptions import (
     AnswerNotFound,
 )
 from src.api.exceptions import EntityNotFound
 from src.api.form.models import FormPreferences
+from src.api.topic.repository import TopicRepository
 
 from src.api.student.exceptions import StudentNotFound
 from src.api.topic.exceptions import TopicNotFound
@@ -97,7 +99,7 @@ class FormService:
             )
         return result
 
-    def get_answers(self):
+    def get_answers(self, topic_repository: TopicRepository):
         """
         Retrieves answers from the repository, processes the data to group students
         by their answers, and returns a formatted response.
@@ -105,13 +107,32 @@ class FormService:
         Returns a list of dictionaries, each representing an answer with its associated
         students and topics, with duplicate topics removed.
         """
-        answers = UserAnswerList.model_validate(self._repository.get_answers())
-        students_topics = self._get_students_topics(answers)
-        return [
-            GroupAnswerResponse(
-                answer_id=answer_id,
-                students=data["students"],
-                topics=list(set(data["topics"])),
-            )
-            for answer_id, data in students_topics.items()
-        ]
+        db_answers = self._repository.get_answers()
+
+        if len(db_answers) != 0:
+            topic_1 = topic_repository.get_topic_by_id(db_answers[0].topic_1)
+            topic_2 = topic_repository.get_topic_by_id(db_answers[0].topic_2)
+            topic_3 = topic_repository.get_topic_by_id(db_answers[0].topic_3)
+
+            answers = []
+            for db_answer in db_answers:
+                answers.append(
+                    UserAnswerResponse(
+                        answer_id=db_answer.answer_id,
+                        email=db_answer.email,
+                        topic_1=topic_1.name,
+                        topic_2=topic_2.name,
+                        topic_3=topic_3.name,
+                    )
+                )
+
+            students_topics = self._get_students_topics(answers)
+            return [
+                GroupAnswerResponse(
+                    answer_id=answer_id,
+                    students=data["students"],
+                    topics=list(set(data["topics"])),
+                )
+                for answer_id, data in students_topics.items()
+            ]
+        return []

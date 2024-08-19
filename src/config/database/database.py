@@ -39,6 +39,24 @@ def init_default_values():
         logger.warn("Database engine is not initialized.")
 
 
+def init_default_values():
+    with open("src/config/database/set_default_category.sql", "r") as file:
+        stm = file.read()
+
+    if engine:
+        with engine.connect() as connection:
+            try:
+                # Execute the SQL script
+                sql = text(stm)
+                connection.execute(sql)
+                connection.commit()
+                logger.info("SQL script executed successfully.")
+            except Exception as e:
+                logger.error(f"An error occurred: {e}")
+    else:
+        logger.warn("Database engine is not initialized.")
+
+
 def create_tables():
     """
     Creates all tables in the database.

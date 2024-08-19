@@ -5,16 +5,43 @@ from datetime import datetime
 from src.api.form.service import FormService
 from src.api.form.repository import FormRepository
 from src.api.form.schemas import UserAnswerResponse, GroupAnswerResponse
+from src.api.topic.repository import TopicRepository
+from src.api.topic.models import Topic
 
 
 @pytest.fixture
-def mock_repository(mocker):
+def mock_form_repository(mocker):
     return create_autospec(FormRepository)
 
 
 @pytest.fixture
-def service(mock_repository):
-    return FormService(mock_repository)
+def mock_topic():
+    def _create_mock_topic(name, category):
+        mock = create_autospec(Topic)
+        mock.name = name
+        mock.category = category
+        return mock
+
+    return _create_mock_topic
+
+
+@pytest.fixture
+def mock_topic_repository(mocker, mock_topic):
+    repository = create_autospec(TopicRepository)
+
+    mock_topic_1 = mock_topic(name="topic 1", category=2)
+    mock_topic_2 = mock_topic(name="topic 2", category=3)
+    mock_topic_3 = mock_topic(name="topic 3", category=4)
+
+    # retrieve topics in expected order}
+    repository.get_topic_by_id.side_effect = [mock_topic_1, mock_topic_2, mock_topic_3]
+
+    return repository
+
+
+@pytest.fixture
+def service(mock_form_repository):
+    return FormService(mock_form_repository)
 
 
 @pytest.mark.integration
@@ -45,18 +72,18 @@ def test_filter_user_ids_with_all_none_user_ids(service):
 
 
 @pytest.mark.integration
-def test_get_answers_empty(service, mock_repository):
-    mock_repository.get_answers.return_value = []
+def test_get_answers_empty(service, mock_form_repository, mock_topic_repository):
+    mock_form_repository.get_answers.return_value = []
     expected_result = []
 
-    result = service.get_answers()
+    result = service.get_answers(mock_topic_repository)
     assert result == expected_result
 
 
 @pytest.mark.integration
-def test_get_answers_single_group(service, mock_repository):
+def test_get_answers_single_group(service, mock_form_repository, mock_topic_repository):
     answer_id_1 = datetime(2024, 8, 1)
-    mock_repository.get_answers.return_value = [
+    mock_form_repository.get_answers.return_value = [
         UserAnswerResponse(
             answer_id=answer_id_1,
             email="student1@example.com",
@@ -73,8 +100,7 @@ def test_get_answers_single_group(service, mock_repository):
         ),
     ]
 
-    result = service.get_answers()
-
+    result = service.get_answers(mock_topic_repository)
     expected_result = [
         GroupAnswerResponse(
             answer_id=answer_id_1,
@@ -91,10 +117,12 @@ def test_get_answers_single_group(service, mock_repository):
 
 
 @pytest.mark.integration
-def test_get_answers_multiple_groups(service, mock_repository):
+def test_get_answers_multiple_groups(
+    service, mock_form_repository, mock_topic_repository
+):
     answer_id_1 = datetime(2024, 8, 1)
     answer_id_2 = datetime(2024, 8, 2)
-    mock_repository.get_answers.return_value = [
+    mock_form_repository.get_answers.return_value = [
         UserAnswerResponse(
             answer_id=answer_id_1,
             email="student1@example.com",
@@ -118,7 +146,7 @@ def test_get_answers_multiple_groups(service, mock_repository):
         ),
     ]
 
-    result = service.get_answers()
+    result = service.get_answers(mock_topic_repository)
     expected_result = [
         GroupAnswerResponse(
             answer_id=answer_id_1,

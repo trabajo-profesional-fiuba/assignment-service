@@ -91,7 +91,9 @@ class TopicService:
         return topics
 
     def _topic_response(self, topic: Topic):
-        return TopicResponse(id=topic.id, name=topic.name, category=topic.topic_category.name)
+        return TopicResponse(
+            id=topic.id, name=topic.name, category=topic.topic_category.name
+        )
 
     def _topic_list_response(self, topics: list[Topic]):
         result = []
@@ -133,13 +135,10 @@ class TopicService:
         if the topic is not in db, it creates it with a
         default category
         """
-        topic_db = self._repository.get_topic_by_name(topic_name)
-        if not topic_db:
+        db_topic = self._repository.get_topic_by_name(topic_name)
+        if not db_topic:
             logger.info(
                 f"Topic name {topic_name} is not in db, adding it with default category"
             )
-            topic_db = self._repository.add_topic(
-                Topic(name=topic_name, category=1)
-            )
-
-        return self._topic_response(topic_db)
+            db_topic = self._repository.add_topic(Topic(name=topic_name, category=1))
+        return self._topic_response(db_topic)

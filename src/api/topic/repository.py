@@ -98,6 +98,13 @@ class TopicRepository:
                 session.expunge(topic)
         return topic
 
+    def get_topic_by_id(self, id: int):
+        with self.Session() as session:
+            topic = session.query(Topic).filter(Topic.id == id).first()
+            if topic:
+                session.expunge(topic)
+        return topic
+
     def delete_topics(self):
         with self.Session() as session:
             session.query(Category).delete()
