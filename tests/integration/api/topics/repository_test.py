@@ -3,8 +3,8 @@ import pytest
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from src.api.topic.repository import TopicRepository
-from src.api.topic.models import Topic, Category
+from src.api.topics.repository import TopicRepository
+from src.api.topics.models import Topic, Category
 
 
 class TestTopicRepository:

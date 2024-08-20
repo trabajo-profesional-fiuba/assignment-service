@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from src.api.student.exceptions import StudentNotFound
+from src.api.students.exceptions import StudentNotFound
 from src.api.groups.models import Group
-from src.api.users.model import User
+from src.api.users.models import User
 
 
 class GroupRepository:

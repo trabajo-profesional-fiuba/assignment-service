@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 
 
 from src.api.exceptions import EntityNotFound, InvalidCsv, InvalidFileType, ServerError
-from src.api.topic.schemas import TopicList
-from src.api.topic.service import TopicService
-from src.api.topic.repository import TopicRepository
+from src.api.topics.schemas import TopicList
+from src.api.topics.service import TopicService
+from src.api.topics.repository import TopicRepository
 from src.config.database.database import get_db
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound

@@ -1,8 +1,8 @@
 from src.api.exceptions import EntityNotFound
-from src.api.topic.schemas import TopicList, TopicResponse
-from src.api.topic.repository import TopicRepository
-from src.api.topic.utils import TopicCsvFile
-from src.api.topic.models import Topic, Category
+from src.api.topics.schemas import TopicList, TopicResponse
+from src.api.topics.repository import TopicRepository
+from src.api.topics.utils import TopicCsvFile
+from src.api.topics.models import Topic, Category
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from src.api.tutors.repository import TutorRepository
 

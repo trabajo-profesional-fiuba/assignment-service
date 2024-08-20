@@ -2,11 +2,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import exc
 
 
-from src.api.users.model import User, Role
+from src.api.users.models import User, Role
 from src.api.users.exceptions import UserNotFound
 
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
-from src.api.student.exceptions import StudentDuplicated, StudentNotInserted
+from src.api.students.exceptions import StudentDuplicated, StudentNotInserted
 
 
 class UserRepository:

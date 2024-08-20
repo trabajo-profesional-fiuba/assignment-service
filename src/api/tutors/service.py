@@ -1,7 +1,7 @@
 import re
 
 from src.api.exceptions import Duplicated, EntityNotFound
-from src.api.users.models import User, Role
+from src.api.users.modelss import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import (
     PeriodRequest,

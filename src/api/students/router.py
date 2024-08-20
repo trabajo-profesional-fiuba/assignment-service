@@ -9,9 +9,9 @@ from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, Serv
 from src.api.users.schemas import UserList
 from src.api.users.repository import UserRepository
 
-from src.api.student.service import StudentService
-from src.api.student.repository import StudentRepository
-from src.api.student.exceptions import StudentNotFound, StudentDuplicated
+from src.api.students.service import StudentService
+from src.api.students.repository import StudentRepository
+from src.api.students.exceptions import StudentNotFound, StudentDuplicated
 
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.config.database.database import get_db

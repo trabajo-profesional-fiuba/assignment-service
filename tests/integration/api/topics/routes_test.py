@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from fastapi import FastAPI, status
 
-from src.api.topic.router import router as topic_router
+from src.api.topics.router import router as topic_router
 from src.api.tutors.router import router as tutor_router
 
 PREFIX = "/topics"

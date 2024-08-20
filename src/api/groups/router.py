@@ -8,8 +8,8 @@ from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import GroupRequest, GroupResponse
 from src.api.groups.service import GroupService
-from src.api.topic.repository import TopicRepository
-from src.api.topic.service import TopicService
+from src.api.topics.repository import TopicRepository
+from src.api.topics.service import TopicService
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.config.database.database import get_db

@@ -1,15 +1,15 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc, exc
 
-from src.api.users.model import User, Role
-from src.api.tutors.model import Period, TutorPeriod
+from src.api.users.models import User, Role
+from src.api.tutors.models import Period, TutorPeriod
 from src.api.tutors.exceptions import (
     TutorNotFound,
     PeriodDuplicated,
     TutorPeriodNotFound,
 )
-from src.api.topic.models import Topic, TopicTutorPeriod
-from src.api.topic.exceptions import TopicNotFound
+from src.api.topics.models import Topic, TopicTutorPeriod
+from src.api.topics.exceptions import TopicNotFound
 
 
 class TutorRepository:

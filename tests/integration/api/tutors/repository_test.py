@@ -4,13 +4,13 @@ from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.model import Period
+from src.api.tutors.models import Period
 from src.api.users.repository import UserRepository
-from src.api.users.model import User, Role
-from src.api.topic.repository import TopicRepository
-from src.api.topic.models import Topic, Category
+from src.api.users.models import User, Role
+from src.api.topics.repository import TopicRepository
+from src.api.topics.models import Topic, Category
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
-from src.api.topic.exceptions import TopicNotFound
+from src.api.topics.exceptions import TopicNotFound
 
 
 class TestTutorRepository:

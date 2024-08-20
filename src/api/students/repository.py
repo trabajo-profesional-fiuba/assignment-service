@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.api.users.model import User, Role
+from src.api.users.models import User, Role
 
 
 class StudentRepository:

@@ -2,11 +2,11 @@ import pytest
 from unittest.mock import create_autospec
 from datetime import datetime
 
-from src.api.form.service import FormService
-from src.api.form.repository import FormRepository
-from src.api.form.schemas import UserAnswerResponse, GroupAnswerResponse
-from src.api.topic.repository import TopicRepository
-from src.api.topic.models import Topic
+from src.api.forms.service import FormService
+from src.api.forms.repository import FormRepository
+from src.api.forms.schemas import UserAnswerResponse, GroupAnswerResponse
+from src.api.topics.repository import TopicRepository
+from src.api.topics.models import Topic
 
 
 @pytest.fixture
