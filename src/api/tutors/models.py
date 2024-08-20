@@ -32,11 +32,11 @@ class TutorPeriod(Base):
     is_evaluator = Column(Boolean, default=False)
 
     tutor = relationship(
-        "User", back_populates="periods", lazy="joined", cascade="all, delete"
+        "User", back_populates="periods", lazy="joined"
     )
     period = relationship("Period", back_populates="periods")
     topics = relationship(
-        "Topic", secondary="topics_tutor_periods", cascade="all, delete"
+        "Topic", secondary="topics_tutor_periods"
     )
     groups = relationship(
         "Group", back_populates="tutor_period", uselist=True, lazy="noload"
