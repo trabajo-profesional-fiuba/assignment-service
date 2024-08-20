@@ -15,14 +15,13 @@ class TopicService:
     def __init__(self, topic_repository: TopicRepository):
         self._repository = topic_repository
 
-
     def _get_categories_mapped(self):
         # looks for all the categories and create a diccionary to map name:id
         categories = self._repository.get_categories()
         id_by_categories = {}
         for category in categories:
             id_by_categories[category.name] = category.id
-        
+
         return id_by_categories
 
     #
@@ -76,8 +75,8 @@ class TopicService:
         """
         Add a list of list of topics.
         """
-        
-        id_by_categories = self._get_categories_mapped() 
+
+        id_by_categories = self._get_categories_mapped()
 
         # Make Topic ORM objs based on the name and category
         topics_db = []

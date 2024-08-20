@@ -53,7 +53,9 @@ class TestTutorRepository:
     def test_add_topic_tutor_period_with_tutor_period_not_found(self, tables):
         topic_repository = TopicRepository(self.Session)
         topic_repository.add_categories([Category(name="category 1")])
-        topic = topic_repository.add_topic_with_category(Topic(name="topic 1"), "category 1")
+        topic = topic_repository.add_topic_with_category(
+            Topic(name="topic 1"), "category 1"
+        )
         capacities = [2]
 
         t_repository = TutorRepository(self.Session)

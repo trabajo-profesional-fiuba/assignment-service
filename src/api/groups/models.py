@@ -29,7 +29,11 @@ class Group(Base):
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     assigned_topic_id = Column(Integer, ForeignKey("topics.id"), nullable=True)
-    tutor_period_id = Column(Integer, ForeignKey("tutor_periods.id"), nullable=True,)
+    tutor_period_id = Column(
+        Integer,
+        ForeignKey("tutor_periods.id"),
+        nullable=True,
+    )
     pre_report_date = Column(DateTime(timezone=False))
     pre_report_approved = Column(Boolean, default=False)
     intermediate_assigment_date = Column(DateTime(timezone=False))

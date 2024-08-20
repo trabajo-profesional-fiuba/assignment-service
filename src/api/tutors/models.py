@@ -31,13 +31,9 @@ class TutorPeriod(Base):
     capacity = Column(Integer, default=0)
     is_evaluator = Column(Boolean, default=False)
 
-    tutor = relationship(
-        "User", back_populates="periods", lazy="joined"
-    )
+    tutor = relationship("User", back_populates="periods", lazy="joined")
     period = relationship("Period", back_populates="periods")
-    topics = relationship(
-        "Topic", secondary="topics_tutor_periods"
-    )
+    topics = relationship("Topic", secondary="topics_tutor_periods")
     groups = relationship(
         "Group", back_populates="tutor_period", uselist=True, lazy="noload"
     )

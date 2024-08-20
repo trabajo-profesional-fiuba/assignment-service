@@ -33,11 +33,11 @@ class TopicRepository:
 
     def add_topic_with_category(self, topic: Topic, category_name: str):
         with self.Session() as session:
-            category = session.query(Category).filter_by(
-                name=category_name).first()
+            category = session.query(Category).filter_by(name=category_name).first()
             if not category:
                 raise CategoryNotFound(
-                    f"Category with name: {category_name} is not in db")
+                    f"Category with name: {category_name} is not in db"
+                )
 
             topic.category = category.id
             session.add(topic)

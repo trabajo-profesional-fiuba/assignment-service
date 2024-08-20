@@ -99,6 +99,7 @@ def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables
     assert response.status_code == status.HTTP_409_CONFLICT
     assert http_exception.get("detail") == "Duplicate values inside the csv file"
 
+
 @pytest.mark.integration
 def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
     # Arrange

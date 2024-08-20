@@ -1,7 +1,7 @@
 import re
 
 from src.api.exceptions import Duplicated, EntityNotFound
-from src.api.users.modelss import User, Role
+from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import (
     PeriodRequest,
@@ -28,18 +28,18 @@ class TutorService:
 
     def _get_csv_content(self, csv: str):
         """
-            Parse the row information from the
-            csv of tutors
+        Parse the row information from the
+        csv of tutors
         """
         csv_file = TutorCsvFile(csv=csv)
         return csv_file.get_info_as_rows()
 
     def _make_tutors(self, rows, hasher: ShaHasher):
         """
-            Instanciates new Users as tutors
-            based on the rows with the necessary
-            information.
-            It also uses the hasher to create a hashed password.
+        Instanciates new Users as tutors
+        based on the rows with the necessary
+        information.
+        It also uses the hasher to create a hashed password.
         """
         tutors = []
         for i in rows:
@@ -60,8 +60,8 @@ class TutorService:
     def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
         try:
             """
-                With a csv file as string, it 
-                make new tutors and override the existing ones
+            With a csv file as string, it
+            make new tutors and override the existing ones
             """
             csv_rows = self._get_csv_content(csv)
             tutors = self._make_tutors(csv_rows, hasher)
@@ -73,11 +73,11 @@ class TutorService:
             EntityNotFound(str(e))
 
     def _validate_period(self, period_id):
-        """ Validates that the period id
-            follows the expected pattern
-            ^[1|2]C20[0-9]{2}$
-            
-            Matches cases where 1|2C20xx where xx are numbers from 0-9
+        """Validates that the period id
+        follows the expected pattern
+        ^[1|2]C20[0-9]{2}$
+
+        Matches cases where 1|2C20xx where xx are numbers from 0-9
         """
         regex = re.compile("^[1|2]C20[0-9]{2}$")
         if regex.search(period_id) is not None:
@@ -87,7 +87,7 @@ class TutorService:
 
     def add_period(self, period: PeriodRequest):
         """
-            Creates a nw global period
+        Creates a nw global period
         """
         try:
             valid = self._validate_period(period.id)
@@ -105,7 +105,7 @@ class TutorService:
 
     def add_period_to_tutor(self, tutor_id, period_id):
         """
-            Assigns an existing period to a tutor.
+        Assigns an existing period to a tutor.
         """
         try:
             if self._repository.is_tutor(tutor_id):
@@ -118,14 +118,14 @@ class TutorService:
 
     def get_all_periods(self, order):
         """
-            Returns the list of periods
+        Returns the list of periods
         """
         return PeriodList.model_validate(self._repository.get_all_periods(order))
 
     def get_periods_by_tutor_id(self, tutor_id):
         """
-            Returns the list of periods
-            of a tutor based on its id
+        Returns the list of periods
+        of a tutor based on its id
         """
         try:
             return TutorResponse.model_validate(
@@ -136,7 +136,7 @@ class TutorService:
 
     def get_tutor_period_by_email(self, period, tutor_email):
         """
-            Looks up for a tutor based on its email
+        Looks up for a tutor based on its email
         """
         return TutorPeriodResponse.model_validate(
             self._repository.get_tutor_period_by_email(period, tutor_email)
