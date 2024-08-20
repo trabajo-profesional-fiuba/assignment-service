@@ -4,7 +4,7 @@ from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.models import Period
+from src.api.tutors.models import Period, TutorPeriod
 from src.api.users.repository import UserRepository
 from src.api.users.models import User, Role
 from src.api.topics.repository import TopicRepository
@@ -91,3 +91,33 @@ class TestTutorRepository:
 
         with pytest.raises(TutorPeriodNotFound):
             t_repository.get_topic_tutor_period(1, 1)
+
+
+    @pytest.mark.integration
+    def test_delete_tutors_by_also_deletes_tutor_periods(self, tables):
+        t_repository = TutorRepository(self.Session)
+        tutor = User(
+            id=11111,
+            name="Juan",
+            last_name="Perez",
+            email="tutor1@com",
+            password="password",
+            role=Role.TUTOR,
+        )
+        u_repository = UserRepository(self.Session)
+        _ = u_repository.add_tutors([tutor])
+
+        t_repository.add_period(Period(id="1C2025"))
+        t_repository.add_tutor_period(11111, "1C2024")
+        t_repository.add_tutor_period(11111, "1C2025")
+
+
+        with self.Session() as sess:
+            tutor_periods = sess.query(TutorPeriod).all()
+            assert len(tutor_periods) == 2
+
+        _ = t_repository.delete_tutor_by_id(11111)
+
+        with self.Session() as sess:
+            tutor_periods = sess.query(TutorPeriod).all()
+            assert len(tutor_periods) == 0

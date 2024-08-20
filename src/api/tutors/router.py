@@ -64,6 +64,27 @@ async def upload_csv_file(
         raise ServerError(str(e))
 
 
+@router.delete(
+    "/{tutor_id}",
+    description="Deletes a tutor",
+    summary="Deletes a tutor based on its id.",
+    tags=["Tutors"],
+    responses={
+        status.HTTP_404_NOT_FOUND: {"description": "Tutor id not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def delete_tutor(tutor_id: int, session: Annotated[Session, Depends(get_db)]):
+    try:
+        service = TutorService(TutorRepository(session))
+        return service.delete_tutor(tutor_id)
+    except EntityNotFound as e:
+        raise e
+    except Exception as e:
+        raise ServerError(str(e))
+
+
 @router.post(
     "/periods",
     response_model=PeriodResponse,

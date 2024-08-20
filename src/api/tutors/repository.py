@@ -68,15 +68,34 @@ class TutorRepository:
             session.expunge_all()
         return results
 
-    def get_all_periods_by_id(self, tutor_id) -> User:
+    def get_all_tutor_periods_by_tutor_id(self, tutor_id) -> User:
         with self.Session() as session:
             tutor = session.query(User).filter(User.id == tutor_id).first()
             if tutor is None:
                 raise TutorNotFound("Tutor doesn't exists")
 
+            tutor.periods
             session.expunge(tutor)
 
         return tutor
+    
+    def get_tutor_period_by_tutor_email(self, period, tutor_email) -> TutorPeriod:
+        with self.Session() as session:
+            tutor_period = (
+                session.query(TutorPeriod)
+                .join(User)
+                .filter(User.email == tutor_email)
+                .filter(TutorPeriod.period_id == period)
+            ).first()
+
+            if tutor_period is None:
+                raise TutorNotFound(
+                    "The tutor does not exits or this period is not present"
+                )
+
+            session.expunge(tutor_period)
+
+        return tutor_period
 
     def add_topic_tutor_period(
         self, tutor_email: str, topics: list[Topic], capacities: list[int]
@@ -118,23 +137,7 @@ class TutorRepository:
                 raise TutorPeriodNotFound(f"Tutor '{tutor_email}' has no period.")
             raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
 
-    def get_tutor_period_by_email(self, period, tutor_email) -> TutorPeriod:
-        with self.Session() as session:
-            tutor_period = (
-                session.query(TutorPeriod)
-                .join(User)
-                .filter(User.email == tutor_email)
-                .filter(TutorPeriod.period_id == period)
-            ).first()
 
-            if tutor_period is None:
-                raise TutorNotFound(
-                    "The tutor does not exits or this period is not present"
-                )
-
-            session.expunge(tutor_period)
-
-        return tutor_period
 
     def get_tutors(self):
         with self.Session() as session:
@@ -164,3 +167,14 @@ class TutorRepository:
                     raise TutorPeriodNotFound("Tutor period not found.")
             else:
                 raise TopicNotFound("Topic not found.")
+
+    def delete_tutor_by_id(self, tutor_id):
+        with self.Session() as session:
+            tutor = session.query(User).filter(User.role == Role.TUTOR and User.id == tutor_id).first()
+            if not tutor:
+                raise TutorNotFound(f"Tutor with id: {tutor_id} not exists")
+            
+            session.delete(tutor)
+            session.commit()
+        
+        return tutor
