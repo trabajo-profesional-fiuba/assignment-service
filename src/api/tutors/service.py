@@ -23,8 +23,8 @@ from src.api.tutors.models import Period
 
 class TutorService:
 
-    def __init__(self, user_repository) -> None:
-        self._user_repository = user_repository
+    def __init__(self, repository) -> None:
+        self._repository = repository
 
     def _get_csv_content(self, csv: str):
         """
