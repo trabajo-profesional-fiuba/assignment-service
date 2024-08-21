@@ -92,7 +92,6 @@ class TestTutorRepository:
         with pytest.raises(TutorPeriodNotFound):
             t_repository.get_topic_tutor_period(1, 1)
 
-
     @pytest.mark.integration
     def test_delete_tutors_by_also_deletes_tutor_periods(self, tables):
         t_repository = TutorRepository(self.Session)
@@ -110,7 +109,6 @@ class TestTutorRepository:
         t_repository.add_period(Period(id="1C2025"))
         t_repository.add_tutor_period(11111, "1C2024")
         t_repository.add_tutor_period(11111, "1C2025")
-
 
         with self.Session() as sess:
             tutor_periods = sess.query(TutorPeriod).all()

@@ -33,7 +33,7 @@ class TutorPeriod(Base):
 
     tutor = relationship("User", back_populates="periods", lazy="joined")
     period = relationship("Period", back_populates="periods")
-    topics = relationship("Topic", secondary="topics_tutor_periods")
+    topics = relationship("Topic", secondary="topics_tutor_periods", lazy="subquery")
     groups = relationship(
         "Group", back_populates="tutor_period", uselist=True, lazy="noload"
     )

@@ -18,6 +18,8 @@ from src.api.tutors.schemas import (
     TutorResponse,
     TutorList,
     PeriodList,
+    TutorResponseWithTopics,
+    TutorWithTopicsList,
 )
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.exceptions import InvalidPeriod
@@ -179,6 +181,31 @@ async def get_tutor_periods(
     try:
         service = TutorService(TutorRepository(session))
         return service.get_periods_by_tutor_id(tutor_id)
+    except EntityNotFound as e:
+        raise e
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.get(
+    "/periods/{period_id}",
+    response_model=TutorWithTopicsList,
+    description="Returns the tutors with topics",
+    summary="Get all the tutors with their topics based on a period",
+    tags=["Periods"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_tutor_periods(
+    session: Annotated[Session, Depends(get_db)],
+    period_id: str,
+):
+    try:
+        service = TutorService(TutorRepository(session))
+        return service.get_tutors_by_period(period_id)
     except EntityNotFound as e:
         raise e
     except Exception as e:

@@ -1,4 +1,6 @@
-from io import StringIO # StringIO makes us use a string as a file, so we can call read/write methods
+from io import (
+    StringIO,
+)  # StringIO makes us use a string as a file, so we can call read/write methods
 import pandas as pd
 
 from src.api.exceptions import InvalidCsv

@@ -78,7 +78,7 @@ class TutorRepository:
             session.expunge(tutor)
 
         return tutor
-    
+
     def get_tutor_period_by_tutor_email(self, period, tutor_email) -> TutorPeriod:
         with self.Session() as session:
             tutor_period = (
@@ -137,8 +137,6 @@ class TutorRepository:
                 raise TutorPeriodNotFound(f"Tutor '{tutor_email}' has no period.")
             raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
 
-
-
     def get_tutors(self):
         with self.Session() as session:
             return session.query(User).filter(User.role == Role.TUTOR).all()
@@ -170,11 +168,28 @@ class TutorRepository:
 
     def delete_tutor_by_id(self, tutor_id):
         with self.Session() as session:
-            tutor = session.query(User).filter(User.role == Role.TUTOR and User.id == tutor_id).first()
+            tutor = (
+                session.query(User)
+                .filter(User.role == Role.TUTOR and User.id == tutor_id)
+                .first()
+            )
             if not tutor:
                 raise TutorNotFound(f"Tutor with id: {tutor_id} not exists")
-            
+
             session.delete(tutor)
             session.commit()
-        
+
         return tutor
+
+    def get_tutors_by_period(self, period_id):
+        with self.Session() as session:
+            tutors = (
+                session.query(User)
+                .join(TutorPeriod)
+                .join(Period)
+                .filter(Period.id == period_id)
+                .all()
+            )
+            session.expunge_all()
+
+        return tutors

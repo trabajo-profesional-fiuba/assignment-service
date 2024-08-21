@@ -10,6 +10,8 @@ from src.api.tutors.schemas import (
     TutorPeriodResponse,
     TutorResponse,
     PeriodList,
+    TutorResponseWithTopics,
+    TutorWithTopicsList,
 )
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import (
@@ -141,14 +143,28 @@ class TutorService:
         return TutorPeriodResponse.model_validate(
             self._repository.get_tutor_period_by_tutor_email(period, tutor_email)
         )
-    
+
     def delete_tutor(self, tutor_id):
         """
-        Deletes a tutor by id 
+        Deletes a tutor by id
         """
-        try: 
+        try:
             return TutorResponse.model_validate(
                 self._repository.delete_tutor_by_id(tutor_id)
             )
         except TutorNotFound as e:
             raise EntityNotFound(str(e))
+
+    def get_tutors_by_period(self, period_id):
+        """From a period id, it retrieves all the tutors with their topics"""
+        try:
+            valid = self._validate_period(period_id)
+            if valid:
+                tutors = self._repository.get_tutors_by_period(period_id)
+                return TutorWithTopicsList.model_validate(tutors)
+            else:
+                raise InvalidPeriod(
+                    message="Period id should follow patter nC20year, ie. 1C2024"
+                )
+        except PeriodDuplicated as e:
+            raise Duplicated(str(e))

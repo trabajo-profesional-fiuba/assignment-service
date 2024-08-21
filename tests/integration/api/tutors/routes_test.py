@@ -407,7 +407,7 @@ def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
 
     response = fastapi.post(f"{PREFIX}/upload", files=files)
     assert response.status_code == status.HTTP_201_CREATED
-    periods = ["1C2024","2C2024","1C2025"]    
+    periods = ["1C2024", "2C2024", "1C2025"]
     tutor_id = 12345678
 
     for p in periods:
@@ -431,3 +431,29 @@ def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
 
     response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.integration
+def test_all_topics_from_tutors_in_specific_period(fastapi, tables):
+    # Arrange
+    with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
+
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+
+    body = {"id": "1C2024"}
+    response = fastapi.post(f"{PREFIX}/periods", json=body)
+    tutor_ids = [12345678, 55678901, 44567890, 23456789]
+    params = {"period_id": "1C2024"}
+    for tutor_id in tutor_ids:
+        response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.get(f"{PREFIX}/periods/1C2024")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) == 4

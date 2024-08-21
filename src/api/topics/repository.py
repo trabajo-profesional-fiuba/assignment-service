@@ -107,6 +107,6 @@ class TopicRepository:
 
     def delete_topics(self):
         with self.Session() as session:
-            session.query(Category).filter(Category.name != 'default').delete()
+            session.query(Category).filter(Category.name != "default").delete()
             session.query(Topic).delete()
             session.commit()
