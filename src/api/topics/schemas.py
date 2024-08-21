@@ -1,16 +1,19 @@
 from typing import List
-from pydantic import BaseModel, ConfigDict, RootModel
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
-class CategoryRequest(BaseModel):
+class SimpleCategory(BaseModel):
+    """ Represents a simple category with just a name"""
     name: str
-
-
-class CategoryResponse(CategoryRequest):
-    name: str
-
+class CategoryResponse(SimpleCategory):
+    """Can validate models from Categories"""
     model_config = ConfigDict(from_attributes=True)
 
+class CompleteCategoryResponse(SimpleCategory):
+    """ Represents a complete category with id and name"""
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 class TopicRequest(BaseModel):
     name: str
@@ -20,7 +23,7 @@ class TopicRequest(BaseModel):
 class TopicResponse(BaseModel):
     id: int
     name: str
-    category: str
+    category: CategoryResponse = Field(validation_alias='category')
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -10,7 +10,7 @@ from src.api.topics.service import TopicService
 from src.api.topics.repository import TopicRepository
 from src.config.database.database import get_db
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
+
 
 router = APIRouter(prefix="/topics", tags=["Topics"])
 

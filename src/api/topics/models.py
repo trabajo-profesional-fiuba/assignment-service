@@ -11,7 +11,7 @@ class Category(Base):
 
     topic = relationship(
         "Topic",
-        back_populates="topic_category",
+        back_populates="category",
         lazy="joined",
         cascade="all, delete-orphan",
     )
@@ -23,11 +23,11 @@ class Topic(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True)
-    category = Column(
+    category_id = Column(
         Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False
     )
 
-    topic_category = relationship("Category", back_populates="topic")
+    category = relationship("Category", back_populates="topic")
     groups = relationship("Group", back_populates="topic", lazy="noload")
 
 

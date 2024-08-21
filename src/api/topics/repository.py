@@ -26,7 +26,7 @@ class TopicRepository:
 
             for topic in topics:
                 session.refresh(topic)
-                topic.topic_category
+                topic.category
                 session.expunge(topic)
 
         return topics
@@ -53,7 +53,7 @@ class TopicRepository:
             topics = session.query(Topic).all()
 
             for topic in topics:
-                topic.topic_category
+                topic.category
                 session.expunge(topic)
 
         return topics
@@ -85,7 +85,7 @@ class TopicRepository:
             session.commit()
             session.refresh(topic)
             # force loading the category
-            topic.topic_category
+            topic.category
             session.expunge(topic)
         return topic
 
@@ -107,6 +107,6 @@ class TopicRepository:
 
     def delete_topics(self):
         with self.Session() as session:
-            session.query(Category).delete()
+            session.query(Category).filter(Category.name != 'default').delete()
             session.query(Topic).delete()
             session.commit()

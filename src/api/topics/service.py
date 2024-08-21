@@ -39,7 +39,7 @@ class TopicService:
         for topic_info in topics_by_tutor[tutor_email]:
             name = topic_info["topic"]
             category = id_by_categories[topic_info["category"]]
-            topic = Topic(name=name, category=category)
+            topic = Topic(name=name, category_id=category)
             topics.append(topic)
             capacities.append(topic_info["capacity"])
         return topics, capacities
@@ -82,23 +82,12 @@ class TopicService:
         topics_db = []
         for topic in topics:
             category_id = id_by_categories[topic[1]]
-            topic_db = Topic(name=topic[0], category=category_id)
+            topic_db = Topic(name=topic[0], category_id=category_id)
             topics_db.append(topic_db)
         topics = self._repository.add_topics(topics_db)
         logger.info("Topics already created.")
 
         return topics
-
-    def _topic_response(self, topic: Topic):
-        return TopicResponse(
-            id=topic.id, name=topic.name, category=topic.topic_category.name
-        )
-
-    def _topic_list_response(self, topics: list[Topic]):
-        result = []
-        for topic in topics:
-            result.append(self._topic_response(topic))
-        return result
 
     def create_topics_from_string(self, csv: str, tutor_repository: TutorRepository):
         """
@@ -118,15 +107,14 @@ class TopicService:
             db_topics = self._add_topics(topics)
 
             self._add_topic_tutor_periods(topics_by_tutor, tutor_repository)
-            topics = self._topic_list_response(db_topics)
 
-            return TopicList.model_validate(topics)
+            return TopicList.model_validate(db_topics)
         except (TutorNotFound, TutorPeriodNotFound) as e:
             raise EntityNotFound(str(e))
 
     def get_topics(self):
         db_topics = self._repository.get_topics()
-        return TopicList.model_validate(self._topic_list_response(db_topics))
+        return TopicList.model_validate(db_topics)
 
     def get_or_add_topic(self, topic_name: str):
         """
@@ -139,5 +127,5 @@ class TopicService:
             logger.info(
                 f"Topic name {topic_name} is not in db, adding it with default category"
             )
-            db_topic = self._repository.add_topic(Topic(name=topic_name, category=1))
-        return self._topic_response(db_topic)
+            db_topic = self._repository.add_topic(Topic(name=topic_name, category_id=1))
+        return TopicResponse.model_validate(db_topic)

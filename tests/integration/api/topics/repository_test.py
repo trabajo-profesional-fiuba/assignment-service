@@ -31,13 +31,12 @@ class TestTopicRepository:
 
     @pytest.mark.integration
     def test_add_topic_with_success(self, tables):
-        topics = [Topic(name="topic 1", category=2)]
-
+        topics = [Topic(name="topic 1", category_id=2)]
         t_repository = TopicRepository(self.Session)
         result = t_repository.add_topics(topics)
         assert len(result) == 1
         assert result[0].name == "topic 1"
-        assert result[0].topic_category.name == "category 1"
+        assert result[0].category.name == "category 1"
 
     @pytest.mark.integration
     def test_get_topics_with_success(self, tables):
