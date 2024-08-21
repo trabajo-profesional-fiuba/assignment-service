@@ -28,7 +28,7 @@ class TestTutorRepository:
 
     @pytest.mark.integration
     def test_add_topic_tutor_period_with_tutor_not_found(self, tables):
-        topics = [Topic(name="topic 1", category=2)]
+        topics = [Topic(name="topic 1", category_id=2)]
         capacities = [2]
 
         t_repository = TutorRepository(self.Session)
@@ -68,7 +68,7 @@ class TestTutorRepository:
         t_repository.add_period(Period(id="1C2024"))
         t_repository.add_tutor_period(12345, "1C2024")
 
-        topics = [Topic(name="topic 1", category=2)]
+        topics = [Topic(name="topic 1", category_id=2)]
         capacities = [2]
         response = t_repository.add_topic_tutor_period("tutor1@com", topics, capacities)
         assert len(response) == 1

@@ -36,7 +36,7 @@ def test_add_new_group_with_tutor_and_topic(tables):
     u_repository = UserRepository(Session)
 
     topic_repository.add_categories([Category(name="cat1")])
-    topic_repository.add_topics([Topic(name="nombre", category=1)])
+    topic_repository.add_topics([Topic(name="nombre", category_id=1)])
     tutor_repository.add_period(Period(id="1C2025"))
     tutor = User(
         id=5,

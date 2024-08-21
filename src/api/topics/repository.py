@@ -39,7 +39,7 @@ class TopicRepository:
                     f"Category with name: {category_name} is not in db"
                 )
 
-            topic.category = category.id
+            topic.category_id = category.id
             session.add(topic)
             session.commit()
             session.expunge(topic)

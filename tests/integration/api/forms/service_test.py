@@ -29,9 +29,9 @@ def mock_topic():
 def mock_topic_repository(mocker, mock_topic):
     repository = create_autospec(TopicRepository)
 
-    mock_topic_1 = mock_topic(name="topic 1", category=2)
-    mock_topic_2 = mock_topic(name="topic 2", category=3)
-    mock_topic_3 = mock_topic(name="topic 3", category=4)
+    mock_topic_1 = mock_topic(name="topic 1", category_id=2)
+    mock_topic_2 = mock_topic(name="topic 2", category_id=3)
+    mock_topic_3 = mock_topic(name="topic 3", category_id=4)
 
     # retrieve topics in expected order}
     repository.get_topic_by_id.side_effect = [mock_topic_1, mock_topic_2, mock_topic_3]
