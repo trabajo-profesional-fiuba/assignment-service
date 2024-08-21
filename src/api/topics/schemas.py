@@ -2,6 +2,7 @@ from typing import List
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
+# Category schemas
 class SimpleCategory(BaseModel):
     """ Represents a simple category with just a name"""
     name: str
@@ -15,14 +16,19 @@ class CompleteCategoryResponse(SimpleCategory):
 
     model_config = ConfigDict(from_attributes=True)
 
-class TopicRequest(BaseModel):
+
+# Topic schemas
+
+class SimpleTopic(BaseModel):
+    """ Represents a simple topic with just a name"""
     name: str
+
+class TopicRequest(SimpleTopic):
     category: str
 
 
-class TopicResponse(BaseModel):
+class TopicResponse(SimpleTopic):
     id: int
-    name: str
     category: CategoryResponse = Field(validation_alias='category')
 
     model_config = ConfigDict(from_attributes=True)
