@@ -16,10 +16,10 @@ def mock_form_repository(mocker):
 
 @pytest.fixture
 def mock_topic():
-    def _create_mock_topic(name, category):
+    def _create_mock_topic(name, category_id):
         mock = create_autospec(Topic)
         mock.name = name
-        mock.category = category
+        mock.category_id = category_id
         return mock
 
     return _create_mock_topic
