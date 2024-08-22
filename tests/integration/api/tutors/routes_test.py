@@ -3,7 +3,7 @@ from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
 from src.api.tutors.router import router
-from src.api.users.model import Role, User
+from src.api.users.models import Role, User
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker
 
@@ -98,6 +98,7 @@ def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT
     assert http_exception.get("detail") == "Duplicate values inside the csv file"
+
 
 @pytest.mark.integration
 def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
@@ -392,3 +393,67 @@ def test_update_tutors_and_period_is_not_deleted(fastapi, tables):
     response = fastapi.get(f"{PREFIX}/periods")
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
+
+
+@pytest.mark.integration
+def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
+    # Arrange
+    with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
+
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    assert response.status_code == status.HTTP_201_CREATED
+    periods = ["1C2024", "2C2024", "1C2025"]
+    tutor_id = 12345678
+
+    for p in periods:
+        body = {"id": p}
+        response = fastapi.post(f"{PREFIX}/periods", json=body)
+        assert response.status_code == status.HTTP_201_CREATED
+
+        params = {"period_id": p}
+        response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["periods"]) == 3
+
+    # Act
+    response = fastapi.delete(f"{PREFIX}/{tutor_id}")
+
+    # Assert
+    assert response.status_code == status.HTTP_202_ACCEPTED
+
+    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.integration
+def test_all_topics_from_tutors_in_specific_period(fastapi, tables):
+    # Arrange
+    with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
+        content = file.read()
+
+    filename = "test_data"
+    content_type = "text/csv"
+    files = {"file": (filename, content, content_type)}
+
+    response = fastapi.post(f"{PREFIX}/upload", files=files)
+
+    body = {"id": "1C2024"}
+    response = fastapi.post(f"{PREFIX}/periods", json=body)
+    tutor_ids = [12345678, 55678901, 44567890, 23456789]
+    params = {"period_id": "1C2024"}
+    for tutor_id in tutor_ids:
+        response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.get(f"{PREFIX}/periods/1C2024")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) == 4

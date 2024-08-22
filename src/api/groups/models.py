@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Mapped
 
-from src.api.users.model import User
+from src.api.users.models import User
 from src.config.database.base import Base
 
 
@@ -29,7 +29,11 @@ class Group(Base):
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     assigned_topic_id = Column(Integer, ForeignKey("topics.id"), nullable=True)
-    tutor_period_id = Column(Integer, ForeignKey("tutor_periods.id"), nullable=True)
+    tutor_period_id = Column(
+        Integer,
+        ForeignKey("tutor_periods.id"),
+        nullable=True,
+    )
     pre_report_date = Column(DateTime(timezone=False))
     pre_report_approved = Column(Boolean, default=False)
     intermediate_assigment_date = Column(DateTime(timezone=False))
@@ -46,7 +50,7 @@ class Group(Base):
     preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1), default=[])
 
     students: Mapped[List[User]] = relationship(
-        secondary=association_table, lazy="joined", cascade="all"
+        secondary=association_table, lazy="joined"
     )
     topic = relationship("Topic", back_populates="groups", lazy="joined")
     tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="joined")
