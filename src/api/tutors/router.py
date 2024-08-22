@@ -205,7 +205,7 @@ async def get_tutor_periods(
 ):
     try:
         service = TutorService(TutorRepository(session))
-        return service.get_tutors_by_period(period_id)
+        return service.get_tutors_by_period_id(period_id)
     except EntityNotFound as e:
         raise e
     except Exception as e:

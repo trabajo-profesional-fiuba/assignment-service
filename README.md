@@ -63,7 +63,7 @@ To run tests using Poetry, run the following commands in your terminal:
 ```
 
 ```bash
-poetry run pytest or just pytest is env is activated.
+poetry run pytest or just pytest if env is activated.
 ```
 
 ### Important Note
@@ -75,7 +75,7 @@ poetry run pytest or just pytest is env is activated.
 To format code using Poetry, run the following command in your terminal:
 
 ```bash
-poetry run black . or just black . is env is activated.
+poetry run black . or just black . if env is activated.
 ```
 
 ### Check format

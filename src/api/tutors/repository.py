@@ -68,13 +68,11 @@ class TutorRepository:
             session.expunge_all()
         return results
 
-    def get_all_tutor_periods_by_tutor_id(self, tutor_id) -> User:
+    def get_tutor_by_tutor_id(self, tutor_id) -> User:
         with self.Session() as session:
             tutor = session.query(User).filter(User.id == tutor_id).first()
             if tutor is None:
                 raise TutorNotFound("Tutor doesn't exists")
-
-            tutor.periods
             session.expunge(tutor)
 
         return tutor
@@ -181,7 +179,7 @@ class TutorRepository:
 
         return tutor
 
-    def get_tutors_by_period(self, period_id):
+    def get_tutors_by_period_id(self, period_id):
         with self.Session() as session:
             tutors = (
                 session.query(User)

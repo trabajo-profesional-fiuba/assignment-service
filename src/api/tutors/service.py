@@ -131,7 +131,7 @@ class TutorService:
         """
         try:
             return TutorResponse.model_validate(
-                self._repository.get_all_tutor_periods_by_tutor_id(tutor_id)
+                self._repository.get_tutor_by_tutor_id(tutor_id)
             )
         except TutorNotFound as e:
             raise EntityNotFound(str(e))
@@ -155,12 +155,12 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(str(e))
 
-    def get_tutors_by_period(self, period_id):
+    def get_tutors_by_period_id(self, period_id):
         """From a period id, it retrieves all the tutors with their topics"""
         try:
             valid = self._validate_period(period_id)
             if valid:
-                tutors = self._repository.get_tutors_by_period(period_id)
+                tutors = self._repository.get_tutors_by_period_id(period_id)
                 return TutorWithTopicsList.model_validate(tutors)
             else:
                 raise InvalidPeriod(
