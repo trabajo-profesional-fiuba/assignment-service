@@ -1,7 +1,7 @@
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from src.api.student.router import router
+from src.api.students.router import router
 from fastapi import status
 from src.config.database.database import create_tables, drop_tables
 

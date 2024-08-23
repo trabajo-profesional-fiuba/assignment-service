@@ -3,14 +3,14 @@ from typing_extensions import Annotated
 
 from fastapi import APIRouter, status, Depends
 from sqlalchemy.orm import Session
-from src.api.form.schemas import (
+from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
     GroupAnswerList,
 )
-from src.api.form.service import FormService
-from src.api.form.repository import FormRepository
-from src.api.topic.repository import TopicRepository
+from src.api.forms.service import FormService
+from src.api.forms.repository import FormRepository
+from src.api.topics.repository import TopicRepository
 
 from src.api.exceptions import (
     EntityNotFound,

@@ -8,9 +8,9 @@ from src.config.config import api_config
 from src.config.logging import logger
 
 
-from src.api.student.router import router as student_router
-from src.api.topic.router import router as topic_router
-from src.api.form.router import router as form_router
+from src.api.students.router import router as student_router
+from src.api.topics.router import router as topic_router
+from src.api.forms.router import router as form_router
 from src.api.tutors.router import router as tutor_router
 from src.api.auth.router import router as auth_router
 from src.api.groups.router import router as group_router

@@ -1,8 +1,8 @@
 import pytest
 
-from src.api.student.repository import StudentRepository
+from src.api.students.repository import StudentRepository
 from src.api.users.repository import UserRepository
-from src.api.users.model import User, Role
+from src.api.users.models import User, Role
 
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session

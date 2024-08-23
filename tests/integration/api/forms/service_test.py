@@ -2,11 +2,11 @@ import pytest
 from unittest.mock import create_autospec
 from datetime import datetime
 
-from src.api.form.service import FormService
-from src.api.form.repository import FormRepository
-from src.api.form.schemas import UserAnswerResponse, GroupAnswerResponse
-from src.api.topic.repository import TopicRepository
-from src.api.topic.models import Topic
+from src.api.forms.service import FormService
+from src.api.forms.repository import FormRepository
+from src.api.forms.schemas import UserAnswerResponse, GroupAnswerResponse
+from src.api.topics.repository import TopicRepository
+from src.api.topics.models import Topic
 
 
 @pytest.fixture
@@ -16,10 +16,10 @@ def mock_form_repository(mocker):
 
 @pytest.fixture
 def mock_topic():
-    def _create_mock_topic(name, category):
+    def _create_mock_topic(name, category_id):
         mock = create_autospec(Topic)
         mock.name = name
-        mock.category = category
+        mock.category_id = category_id
         return mock
 
     return _create_mock_topic
@@ -29,9 +29,9 @@ def mock_topic():
 def mock_topic_repository(mocker, mock_topic):
     repository = create_autospec(TopicRepository)
 
-    mock_topic_1 = mock_topic(name="topic 1", category=2)
-    mock_topic_2 = mock_topic(name="topic 2", category=3)
-    mock_topic_3 = mock_topic(name="topic 3", category=4)
+    mock_topic_1 = mock_topic(name="topic 1", category_id=2)
+    mock_topic_2 = mock_topic(name="topic 2", category_id=3)
+    mock_topic_3 = mock_topic(name="topic 3", category_id=4)
 
     # retrieve topics in expected order}
     repository.get_topic_by_id.side_effect = [mock_topic_1, mock_topic_2, mock_topic_3]

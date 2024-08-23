@@ -26,18 +26,14 @@ class TutorPeriod(Base):
     __tablename__ = "tutor_periods"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    period_id = Column(String, ForeignKey("periods.id"))
+    period_id = Column(String, ForeignKey("periods.id", ondelete="SET NULL"))
     tutor_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True)
     capacity = Column(Integer, default=0)
     is_evaluator = Column(Boolean, default=False)
 
-    tutor = relationship(
-        "User", back_populates="periods", lazy="joined", cascade="all, delete"
-    )
+    tutor = relationship("User", back_populates="periods", lazy="joined")
     period = relationship("Period", back_populates="periods")
-    topics = relationship(
-        "Topic", secondary="topics_tutor_periods", cascade="all, delete"
-    )
+    topics = relationship("Topic", secondary="topics_tutor_periods", lazy="subquery")
     groups = relationship(
         "Group", back_populates="tutor_period", uselist=True, lazy="noload"
     )

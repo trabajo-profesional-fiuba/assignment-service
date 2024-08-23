@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from src.api.form.models import FormPreferences
+from src.api.forms.models import FormPreferences
 from src.api.exceptions import Duplicated
 
-from src.api.student.exceptions import StudentNotFound
-from src.api.topic.exceptions import TopicNotFound
-from src.api.users.model import User, Role
-from src.api.topic.models import Topic
+from src.api.students.exceptions import StudentNotFound
+from src.api.topics.exceptions import TopicNotFound
+from src.api.users.models import User, Role
+from src.api.topics.models import Topic
 
 from src.config.logging import logger
 

@@ -1,8 +1,8 @@
 import pytest
 
 from src.api.exceptions import EntityNotFound, InvalidCsv
-from src.api.student.service import StudentService
-from src.api.student.repository import StudentRepository
+from src.api.students.service import StudentService
+from src.api.students.repository import StudentRepository
 from src.api.users.repository import UserRepository
 from src.api.users.schemas import UserResponse
 
