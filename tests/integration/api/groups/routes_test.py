@@ -49,10 +49,10 @@ def test_add_group(fastapi, tables):
         role=Role.TUTOR,
     )
     student1 = User(
-        id=1,
+        id=10000,
         name="Juan",
         last_name="Perez",
-        email="1@fi.uba.ar",
+        email="10000@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
