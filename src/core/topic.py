@@ -1,7 +1,7 @@
 class Topic:
-    def __init__(self, id: int, title: str, cost: int, capacity=0, category=None):
+    def __init__(self, id: int, name: str, capacity, category, cost=0):
         self._id = id
-        self._title = title
+        self._name = name
         self._category = category
         self._cost = cost
         self._capacity = capacity
@@ -17,8 +17,8 @@ class Topic:
         return self._id
 
     @property
-    def title(self):
-        return self._title
+    def name(self):
+        return self._name
 
     @property
     def cost(self):

@@ -30,12 +30,12 @@ class TestGroup:
 
     @pytest.mark.unit
     def test_group_can_have_topics(self):
-        topics = [Topic(1, "topic1", 1), Topic(2, "topic2", 2), Topic(3, "topic3", 3)]
+        topics = [Topic(1, "topic1", 1, "Category A", 1), Topic(2, "topic2", 2, "Category A"), Topic(3, "topic3", 3, "Category A")]
         group = Group(1)
 
         group.add_topics(topics)
 
-        assert group.preference_of(Topic(1, "topic1", 1)) == 1
+        assert group.preference_of(Topic(1, "topic1", 1, "Category A")) == 1
 
     @pytest.mark.unit
     def test_group_can_have_available_dates(self):

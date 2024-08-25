@@ -4,7 +4,6 @@ import src.core.group as group
 
 import src.exceptions as e
 
-
 class TutorPeriod:
     def __init__(self, period: str, tutor=None):
         self._period = period
@@ -51,6 +50,9 @@ class TutorPeriod:
     def capacity(self):
         return self._capacity
 
+    def set_capacity(self, capacity):
+        self._capacity = capacity
+    
     def period_name(self):
         return self._period
 

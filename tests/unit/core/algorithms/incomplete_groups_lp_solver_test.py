@@ -64,11 +64,11 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_groups(self):
         topics = [
-            Topic(1, "Tema_C", 0),
-            Topic(2, "Tema_A", 0),
-            Topic(3, "Tema_B", 0),
-            Topic(4, "Tema_E", 0),
-            Topic(5, "Tema_D", 0),
+            Topic(1, "Tema_C", 0, "Category A"),
+            Topic(2, "Tema_A", 0, "Category A"),
+            Topic(3, "Tema_B", 0, "Category A"),
+            Topic(4, "Tema_E", 0, "Category A"),
+            Topic(5, "Tema_D", 0, "Category A"),
         ]
 
         groups = [
@@ -132,7 +132,7 @@ class TestIncompleteGroupsLPSolver:
 
     @pytest.mark.unit
     def test_single_group(self):
-        topics = [Topic(1, "Tema_C", 0), Topic(2, "Tema_A", 0), Topic(3, "Tema_B", 0)]
+        topics = [Topic(1, "Tema_C", 0, "Category A"), Topic(2, "Tema_A", 0, "Category A"), Topic(3, "Tema_B", 0, "Category A")]
         groups = [
             GroupTopicPreferences(
                 1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]
@@ -151,12 +151,12 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_different_topics_and_categories(self):
         topics = [
-            Topic(1, "Tema_C", 0),
-            Topic(2, "Tema_A", 0),
-            Topic(3, "Tema_B", 0),
-            Topic(4, "Tema_D", 0),
-            Topic(5, "Tema_E", 0),
-            Topic(6, "Tema_F", 0),
+            Topic(1, "Tema_C", 0, "Category A"),
+            Topic(2, "Tema_A", 0, "Category A"),
+            Topic(3, "Tema_B", 0, "Category A"),
+            Topic(4, "Tema_D", 0, "Category A"),
+            Topic(5, "Tema_E", 0, "Category A"),
+            Topic(6, "Tema_F", 0, "Category A"),
         ]
         groups = [
             GroupTopicPreferences(
@@ -181,12 +181,12 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_same_category(self):
         topics = [
-            Topic(1, "Tema_C", 0, category="Category_1"),
-            Topic(2, "Tema_A", 0, category="Category_2"),
-            Topic(3, "Tema_B", 0, category="Category_3"),
-            Topic(4, "Tema_D", 0, category="Category_3"),
-            Topic(5, "Tema_E", 0, category="Category_2"),
-            Topic(6, "Tema_F", 0, category="Category_1"),
+            Topic(1, "Tema_C", 0, "Category_1"),
+            Topic(2, "Tema_A", 0, "Category_2"),
+            Topic(3, "Tema_B", 0, "Category_3"),
+            Topic(4, "Tema_D", 0, "Category_3"),
+            Topic(5, "Tema_E", 0, "Category_2"),
+            Topic(6, "Tema_F", 0, "Category_1"),
         ]
         groups = [
             GroupTopicPreferences(
@@ -211,12 +211,12 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_different_topics_with_three_students(self):
         topics = [
-            Topic(1, "Tema_C", 0),
-            Topic(2, "Tema_A", 0),
-            Topic(3, "Tema_B", 0),
-            Topic(4, "Tema_D", 0),
-            Topic(5, "Tema_E", 0),
-            Topic(6, "Tema_F", 0),
+            Topic(1, "Tema_C", 0, "Category A"),
+            Topic(2, "Tema_A", 0, "Category A"),
+            Topic(3, "Tema_B", 0, "Category A"),
+            Topic(4, "Tema_D", 0, "Category A"),
+            Topic(5, "Tema_E", 0, "Category A"),
+            Topic(6, "Tema_F", 0, "Category A"),
         ]
         groups = [
             GroupTopicPreferences(
@@ -241,12 +241,12 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_multiple_groups(self):
         topics = [
-            Topic(1, "Tema_A", 0),
-            Topic(2, "Tema_B", 0),
-            Topic(3, "Tema_C", 0),
-            Topic(4, "Tema_D", 0),
-            Topic(5, "Tema_E", 0),
-            Topic(6, "Tema_F", 0),
+            Topic(1, "Tema_A", 0, "Category A"),
+            Topic(2, "Tema_B", 0, "Category A"),
+            Topic(3, "Tema_C", 0, "Category A"),
+            Topic(4, "Tema_D", 0, "Category A"),
+            Topic(5, "Tema_E", 0, "Category A"),
+            Topic(6, "Tema_F", 0, "Category A"),
         ]
         groups = [
             GroupTopicPreferences(

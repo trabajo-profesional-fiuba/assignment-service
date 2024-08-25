@@ -10,6 +10,7 @@ class Group:
         self._available_dates = []
         self._assigned_date = None
         self._topics = []
+        self._assigned_topic = None
 
     def id(self) -> str:
         return self._id
@@ -27,6 +28,10 @@ class Group:
         return self._available_dates
 
     @property
+    def assigned_topic(self):
+        return self._assigned_topic
+    
+    @property
     def topics(self) -> list[Topic]:
         """
         Returns a list of topics.
@@ -35,6 +40,9 @@ class Group:
 
     def add_topics(self, topics: list[Topic]):
         self._topics = topics
+
+    def assign_topic(self, topic: Topic):
+        self._assigned_topic = topic
 
     def preference_of(self, topic: Topic) -> int:
         """
