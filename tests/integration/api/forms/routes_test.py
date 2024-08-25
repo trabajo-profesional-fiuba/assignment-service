@@ -3,10 +3,10 @@ from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 import datetime as dt
 
-from src.api.form.router import router as form_router
-from src.api.student.router import router as student_router
+from src.api.forms.router import router as form_router
+from src.api.students.router import router as student_router
 from src.api.tutors.router import router as tutor_router
-from src.api.topic.router import router as topic_router
+from src.api.topics.router import router as topic_router
 from src.config.database.database import create_tables, drop_tables
 
 PREFIX = "/forms"

@@ -21,9 +21,13 @@ Also, the interaction through this features are made by an API that has a serie 
 - Topics
 - Categories
 
-# Instalation 
+We think that each tutor contains what we call _Periods_, in each period, the tutor has different groups, capacity and topics that the tutor can bring. Also, a tutor can be an evaluator in a specific period.
 
-For this project is necessary to have  installed ``Python 3.11.*`` and ``Poetry (version 1.8.3)`` for dependency manganment
+A tutor can be present in one period but the following be ausent.
+
+# Installation 
+
+For this project is necessary to have  installed ``Python 3.11.*`` and ``Poetry (version 1.8.3)`` for dependency manganment.
 
 ## Dependencies
 
@@ -59,7 +63,7 @@ To run tests using Poetry, run the following commands in your terminal:
 ```
 
 ```bash
-poetry run pytest or just pytest is env is activated.
+poetry run pytest or just pytest if env is activated.
 ```
 
 ### Important Note
@@ -71,7 +75,7 @@ poetry run pytest or just pytest is env is activated.
 To format code using Poetry, run the following command in your terminal:
 
 ```bash
-poetry run black .
+poetry run black . or just black . if env is activated.
 ```
 
 ### Check format
@@ -79,5 +83,5 @@ poetry run black .
 To check format code using Poetry, run the following command in your terminal:
 
 ```bash
-poetry run flake8
+poetry run flake8 or just flake8 is env is activated.
 ```

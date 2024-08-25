@@ -8,8 +8,8 @@ from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import GroupRequest, GroupResponse
 from src.api.groups.service import GroupService
-from src.api.topic.repository import TopicRepository
-from src.api.topic.service import TopicService
+from src.api.topics.repository import TopicRepository
+from src.api.topics.service import TopicService
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.config.database.database import get_db
@@ -50,7 +50,7 @@ async def add_group(
         topic_service = TopicService(TopicRepository(session))
         group_service = GroupService(GroupRepository(session))
 
-        tutor_period = tutor_service.get_tutor_period_by_email(
+        tutor_period = tutor_service.get_tutor_period_by_tutor_email(
             period, group.tutor_email
         )
         topic = topic_service.get_or_add_topic(group.topic)

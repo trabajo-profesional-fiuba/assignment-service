@@ -1,15 +1,15 @@
 import pytest
 
-from src.api.student.exceptions import StudentNotFound
+from src.api.students.exceptions import StudentNotFound
 from src.api.exceptions import Duplicated, EntityNotInserted, EntityNotFound
 from src.api.groups.service import GroupService
 from src.api.groups.repository import GroupRepository
-from src.api.topic.models import Category, Topic
-from src.api.topic.repository import TopicRepository
-from src.api.tutors.model import Period
+from src.api.topics.models import Category, Topic
+from src.api.topics.repository import TopicRepository
+from src.api.tutors.models import Period
 from src.api.tutors.repository import TutorRepository
 from src.api.users.repository import UserRepository
-from src.api.users.model import User, Role
+from src.api.users.models import User, Role
 
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -36,7 +36,7 @@ def test_add_new_group_with_tutor_and_topic(tables):
     u_repository = UserRepository(Session)
 
     topic_repository.add_categories([Category(name="cat1")])
-    topic_repository.add_topics([Topic(name="nombre", category=1)])
+    topic_repository.add_topics([Topic(name="nombre", category_id=1)])
     tutor_repository.add_period(Period(id="1C2025"))
     tutor = User(
         id=5,
@@ -47,18 +47,18 @@ def test_add_new_group_with_tutor_and_topic(tables):
         role=Role.TUTOR,
     )
     student1 = User(
-        id=1,
+        id=10000,
         name="Juan",
         last_name="Perez",
-        email="1@fi.uba.ar",
+        email="10000@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
     student2 = User(
-        id=2,
+        id=2000,
         name="Pedro",
         last_name="Pipo",
-        email="2@fi.uba.ar",
+        email="2000@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -66,7 +66,7 @@ def test_add_new_group_with_tutor_and_topic(tables):
     u_repository.add_students([student1, student2])
     tutor_repository.add_tutor_period(5, "1C2025")
 
-    uids = [1, 2]
+    uids = [10000, 2000]
     period_id = 1
     topic_id = 1
 
@@ -83,24 +83,24 @@ def test_add_new_group_without_tutor_and_topic(tables):
     repository = GroupRepository(Session)
     u_repository = UserRepository(Session)
     student1 = User(
-        id=3,
+        id=3000,
         name="Juan",
         last_name="Perez",
-        email="3@fi.uba.ar",
+        email="3000@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
     student2 = User(
-        id=4,
+        id=4000,
         name="Pedro",
         last_name="Pipo",
-        email="4@fi.uba.ar",
+        email="4000@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
     u_repository.add_students([student1, student2])
 
-    uids = [3, 4]
+    uids = [3000, 4000]
 
     group = repository.add_group(uids)
     ids = [user.id for user in group.students]
@@ -124,18 +124,18 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
         role=Role.TUTOR,
     )
     student1 = User(
-        id=10,
+        id=100000,
         name="Juan",
         last_name="Perez",
-        email="10@fi.uba.ar",
+        email="100000@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
     student2 = User(
-        id=12,
+        id=12000,
         name="Pedro",
         last_name="Pipo",
-        email="12@fi.uba.ar",
+        email="12000@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -143,7 +143,7 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
     u_repository.add_students([student1, student2])
     tutor_repository.add_tutor_period(6, "1C2025")
 
-    uids = [10, 12]
+    uids = [100000, 12000]
     period_id = 2
 
     group = repository.add_group(uids, period_id)
@@ -159,23 +159,23 @@ def test_add_new_group_with_three_topics(tables):
     repository = GroupRepository(Session)
     u_repository = UserRepository(Session)
     student1 = User(
-        id=13,
+        id=13000,
         name="Juan",
         last_name="Perez",
-        email="13@fi.uba.ar",
+        email="13000@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
     student2 = User(
-        id=14,
+        id=14000,
         name="Pedro",
         last_name="Pipo",
-        email="14@fi.uba.ar",
+        email="14000@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
     u_repository.add_students([student1, student2])
-    uids = [13, 14]
+    uids = [13000, 14000]
 
     group = repository.add_group(ids=uids, preferred_topics=[1, 2, 3])
     ids = [user.id for user in group.students]
@@ -200,18 +200,18 @@ def test_add_new_group_with_tutor_and_topic_using_service(tables):
         role=Role.TUTOR,
     )
     student1 = User(
-        id=16,
+        id=160000,
         name="Juan",
         last_name="Perez",
-        email="16@fi.uba.ar",
+        email="16000@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
     student2 = User(
-        id=17,
+        id=17000,
         name="Pedro",
         last_name="Pipo",
-        email="17@fi.uba.ar",
+        email="17000@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
@@ -219,7 +219,7 @@ def test_add_new_group_with_tutor_and_topic_using_service(tables):
     u_repository.add_students([student1, student2])
     tutor_repository.add_tutor_period(15, "1C2025")
 
-    uids = [16, 17]
+    uids = [160000, 17000]
     period_id = 2
     topic_id = 1
 
@@ -237,23 +237,23 @@ def test_add_new_group_with_three_topics_using_service(tables):
     repository = GroupRepository(Session)
     u_repository = UserRepository(Session)
     student1 = User(
-        id=18,
+        id=18000,
         name="Juan",
         last_name="Perez",
-        email="18@fi.uba.ar",
+        email="18000@fi.uba.ar",
         password="password",
         role=Role.STUDENT,
     )
     student2 = User(
-        id=19,
+        id=19000,
         name="Pedro",
         last_name="Pipo",
-        email="19@fi.uba.ar",
+        email="19000@fi.uba.ar",
         password="password1",
         role=Role.STUDENT,
     )
     u_repository.add_students([student1, student2])
-    uids = [18, 19]
+    uids = [18000, 19000]
 
     service = GroupService(repository)
     group = service.create_basic_group(uids, [1, 2, 3])

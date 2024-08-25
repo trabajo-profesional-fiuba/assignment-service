@@ -5,16 +5,17 @@ from fastapi.responses import RedirectResponse
 
 from src.config.database.database import create_tables
 from src.config.config import api_config
+from src.config.logging import logger
 
-from src.api.student.router import router as student_router
-from src.api.topic.router import router as topic_router
-from src.api.form.router import router as form_router
+
+from src.api.students.router import router as student_router
+from src.api.topics.router import router as topic_router
+from src.api.forms.router import router as form_router
 from src.api.tutors.router import router as tutor_router
 from src.api.auth.router import router as auth_router
 from src.api.groups.router import router as group_router
 
 
-create_tables()
 
 api_description = """
 
@@ -43,8 +44,10 @@ Interact with these entities through a series of dedicated API endpoints tailore
 - Iván Lautaro Pfaab   - ipfaab@fi.uba.ar
 - Alejo Villores       - avillores@fi.uba.ar
 """
+logger.info("Creating databases")
+create_tables()
 
-
+logger.info("Instanciates App")
 app = FastAPI(
     title="Assignment Service Api",
     version=api_config.api_version,
