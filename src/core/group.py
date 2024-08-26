@@ -12,6 +12,7 @@ class Group:
         self._topics = []
         self._assigned_topic = None
 
+    @property
     def id(self) -> str:
         return self._id
 

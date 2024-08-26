@@ -3,7 +3,6 @@ import time
 
 from src.core.algorithms.topic_tutor.group_tutor_lp_solver import GroupTutorLPSolver
 from src.core.group_topic_preferences import GroupTopicPreferences
-from src.core.period import TutorPeriod
 from src.core.topic import Topic
 from src.core.tutor import Tutor
 
@@ -30,22 +29,18 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor_period1 = TutorPeriod("2C2024")
         tutor1 = Tutor(1, "Email", "Name")
-        tutor_period1.add_parent(tutor1)
-        tutor_period1.add_topic(topics[0])
-        tutor_period1.add_topic(topics[1])
-        tutor_period1.set_capacity(2)
+        tutor1.add_topic(topics[0])
+        tutor1.add_topic(topics[1])
+        tutor1.set_capacity(2)
 
-        tutor_period2 = TutorPeriod("2C2024")
         tutor2 = Tutor(2, "Email", "Name")
-        tutor_period2.add_parent(tutor2)
-        tutor_period2.add_topic(topics[2])
-        tutor_period2.add_topic(topics[3])
-        tutor_period2.set_capacity(2)
+        tutor2.add_topic(topics[2])
+        tutor2.add_topic(topics[3])
+        tutor2.set_capacity(2)
 
         tutors = [
-            tutor_period1, tutor_period2
+            tutor1, tutor2
         ]
 
         solver = GroupTutorLPSolver(groups, topics, tutors)
@@ -53,10 +48,10 @@ class TestGroupTutorLPSolver:
 
         assert len(result) == 2
 
-        assert result[0].id() == 1
+        assert result[0].id == 1
         assert result[0].assigned_topic == topics[0]
 
-        assert result[1].id() == 2
+        assert result[1].id == 2
         assert result[1].assigned_topic == topics[1]
     
     @pytest.mark.unit
@@ -84,36 +79,32 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor_period1 = TutorPeriod("2C2024")
         tutor1 = Tutor(1, "tutor1@example.com", "Tutor 1")
-        tutor_period1.add_parent(tutor1)
-        tutor_period1.add_topic(topics[0])
-        tutor_period1.add_topic(topics[1])
-        tutor_period1.set_capacity(1)
+        tutor1.add_topic(topics[0])
+        tutor1.add_topic(topics[1])
+        tutor1.set_capacity(1)
 
-        tutor_period2 = TutorPeriod("2C2024")
         tutor2 = Tutor(2, "tutor2@example.com", "Tutor 2")
-        tutor_period2.add_parent(tutor2)
-        tutor_period2.add_topic(topics[2])
-        tutor_period2.add_topic(topics[3])
-        tutor_period2.add_topic(topics[4])
-        tutor_period2.add_topic(topics[5])
-        tutor_period2.set_capacity(1)
+        tutor2.add_topic(topics[2])
+        tutor2.add_topic(topics[3])
+        tutor2.add_topic(topics[4])
+        tutor2.add_topic(topics[5])
+        tutor2.set_capacity(1)
 
-        tutors = [tutor_period1, tutor_period2]
+        tutors = [tutor1, tutor2]
 
         solver = GroupTutorLPSolver(groups, topics, tutors)
         result = solver.solve()
         
         assert len(result) == 3
 
-        assert result[0].id() == 1
+        assert result[0].id == 1
         assert result[0].assigned_topic == topics[0]
 
-        assert result[1].id() == 2
+        assert result[1].id == 2
         assert result[1].assigned_topic == topics[3]
 
-        assert result[2].id() == 3
+        assert result[2].id == 3
         assert result[2].assigned_topic == topics[4]
         
     # @pytest.mark.unit

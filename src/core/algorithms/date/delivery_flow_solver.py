@@ -2,14 +2,14 @@ import networkx as nx
 
 from src.core.algorithms.adapters.result_context import ResultContext
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
-from src.core.period import TutorPeriod
 from src.core.algorithms.exceptions import AssigmentIsNotPossible
+from src.core.tutor import Tutor
 
 
 class DeliveryFlowSolver:
 
     def __init__(
-        self, tutor_periods: list[TutorPeriod] = [], adapter=None, available_dates=[]
+        self, tutor_periods: list[Tutor] = [], adapter=None, available_dates=[]
     ):
         self._evaluators = self.create_evaluators(tutor_periods)
         self._tutors = tutor_periods
@@ -17,11 +17,11 @@ class DeliveryFlowSolver:
         self._available_dates = available_dates
         self._adapter = adapter
 
-    def create_evaluators(self, tutor_periods: list[TutorPeriod] = []):
+    def create_evaluators(self, tutor_periods: list[Tutor] = []):
         evaluators = list(filter(lambda x: x.is_evaluator(), tutor_periods))
         return evaluators
 
-    def get_all_groups(self, tutor_periods: list[TutorPeriod] = []):
+    def get_all_groups(self, tutor_periods: list[Tutor] = []):
         groups = []
         for t in tutor_periods:
             groups += t.groups
@@ -40,7 +40,7 @@ class DeliveryFlowSolver:
         for node in nodes:
             edge = (
                 "s",
-                f"{prefix_node}-{node.id()}",
+                f"{prefix_node}-{node.id}",
                 {"capacity": capacity, "cost": 1},
             )
             edges.append(edge)
@@ -71,7 +71,7 @@ class DeliveryFlowSolver:
         edges = []
         final_dates = []
         for group in self._groups:
-            week, evaluator_id = clean_results[f"{GROUP_ID}-{group.id()}"]
+            week, evaluator_id = clean_results[f"{GROUP_ID}-{group.id}"]
             evaluators_dates = self._get_evaluator_dates(evaluator_id)
             group.filter_dates(evaluators_dates)
             for date in group.available_dates:
@@ -80,7 +80,7 @@ class DeliveryFlowSolver:
                     cost_date = group.cost_of_date(date)
                     edges.append(
                         (
-                            f"{GROUP_ID}-{group.id()}",
+                            f"{GROUP_ID}-{group.id}",
                             f"{DATE_ID}-{date_label}",
                             {"capacity": 1, "cost": cost_date},
                         )
@@ -109,7 +109,7 @@ class DeliveryFlowSolver:
         """
         groups = []
         for group in self._groups:
-            if group.id() not in groups_ids:
+            if group.id not in groups_ids:
                 group_dates = list(d.label() for d in group.available_dates)
                 weeks_dates = list(
                     filter(lambda x: x.split("-")[0] == str(week), dates)
@@ -117,7 +117,7 @@ class DeliveryFlowSolver:
                 mutual_dates = list(set(group_dates) & set(weeks_dates))
                 if len(mutual_dates) > 0:
                     cost = group.cost_of_week(week)
-                    groups.append((group.id(), cost))
+                    groups.append((group.id, cost))
         return groups
 
     # Evaluators methods
@@ -139,8 +139,8 @@ class DeliveryFlowSolver:
                 if week not in weeks_checked:
                     weeks_checked.append(week)
                     week_edge = (
-                        f"evaluator-{evaluator.id()}",
-                        f"{DATE_ID}-{week}-evaluator-{evaluator.id()}",
+                        f"evaluator-{evaluator.id}",
+                        f"{DATE_ID}-{week}-evaluator-{evaluator.id}",
                         {"capacity": 5, "cost": 1},
                     )
                     edges.append(week_edge)
@@ -153,7 +153,7 @@ class DeliveryFlowSolver:
                             all_group_ids.append(group[0])
 
                         edge = (
-                            f"{DATE_ID}-{week}-evaluator-{evaluator.id()}",
+                            f"{DATE_ID}-{week}-evaluator-{evaluator.id}",
                             f"{GROUP_ID}-{group[0]}",
                             {"capacity": 1, "cost": group[1]},
                         )
@@ -179,7 +179,7 @@ class DeliveryFlowSolver:
         """
         cleaned_results = {}
         for evaluator in self._evaluators:
-            evaluator_key = f"{EVALUATOR_ID}-{evaluator.id()}"
+            evaluator_key = f"{EVALUATOR_ID}-{evaluator.id}"
             evaluator_results = results[evaluator_key]
 
             for week, week_value in evaluator_results.items():
@@ -190,7 +190,7 @@ class DeliveryFlowSolver:
 
                     for group, group_value in results[week_key].items():
                         if group_value > 0:
-                            cleaned_results[group] = (int(week_num), evaluator.id())
+                            cleaned_results[group] = (int(week_num), evaluator.id)
 
         return cleaned_results
 
@@ -199,7 +199,7 @@ class DeliveryFlowSolver:
         Collect of the evaluators dates labels based on an id
         """
         for evaluator in self._evaluators:
-            if evaluator.id() == evaluator_id:
+            if evaluator.id == evaluator_id:
                 return [d.label() for d in evaluator._available_dates]
 
         return []
@@ -207,7 +207,7 @@ class DeliveryFlowSolver:
     def _find_substitutes_on_date(self, date, evaluator_id):
         substitutes = []
         for evaluator in self._evaluators:
-            if evaluator.is_avaliable(date) and evaluator.id() != evaluator_id:
+            if evaluator.is_avaliable(date) and evaluator.id != evaluator_id:
                 substitutes.append(evaluator)
 
         return substitutes
@@ -250,7 +250,7 @@ class DeliveryFlowSolver:
 
         all_evaluated = True
         for group in self._groups:
-            group_key = f"{GROUP_ID}-{group.id()}"
+            group_key = f"{GROUP_ID}-{group.id}"
             if group_key not in clean_results:
                 all_evaluated = False
 
@@ -259,7 +259,7 @@ class DeliveryFlowSolver:
     def _valid_groups_result(self, groups_results):
         all_evaluated = True
         for group in self._groups:
-            group_key = f"{GROUP_ID}-{group.id()}"
+            group_key = f"{GROUP_ID}-{group.id}"
             group_dates = sum(groups_results[group_key].values())
             if group_dates <= 0:
                 all_evaluated = False

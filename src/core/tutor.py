@@ -1,9 +1,6 @@
-import src.exceptions as e
-
-
-# To evoid circular importing
-# https://peps.python.org/pep-0484/#forward-references
-import src.core.period as period
+from src.core import group
+from src.core.delivery_date import DeliveryDate
+from src.core.topic import Topic
 
 
 class Tutor:
@@ -12,7 +9,14 @@ class Tutor:
         self._id = id
         self._name = name
         self._email = email
-        self._periods = {}
+        self._available_dates = []
+        self._as_tutor_dates = []
+        self._as_evaluator_dates = []
+        self._substitute_dates = []
+        self._groups = []
+        self._topics = []
+        self._is_evaluator = False
+        self._capacity = 0
 
     @property
     def id(self) -> int:
@@ -25,27 +29,77 @@ class Tutor:
     @property
     def email(self) -> str:
         return self._email
+    
+    @property
+    def available_dates(self):
+        return self._available_dates
 
     @property
-    def periods(self) -> dict[str, "period.TutorPeriod"]:
-        return self._periods
+    def as_tutor_dates(self):
+        return self._as_tutor_dates
 
-    def add_period(self, period: "period.TutorPeriod"):
-        period_key = period.period_name()
-        if period_key in self._periods:
-            raise e.PeriodAlreadyExists(f"{period_key} already in tutor's periods")
+    @property
+    def as_evaluator_dates(self):
+        return self._as_evaluator_dates
 
-        self._periods[period_key] = period
-        period.add_parent(self)
+    @property
+    def substitute_dates(self):
+        return self._substitute_dates
 
-    def get_period(self, period_name: str):
-        if period_name not in self._periods:
-            raise e.PeriodNotFound(f"{period_name} is not part of tutor's periods")
+    @property
+    def groups(self):
+        return self._groups
+    
+    @property
+    def topics(self):
+        return self._topics
+    
+    @property
+    def capacity(self):
+        return self._capacity
 
-        return self._periods.get(period_name)
+    def set_capacity(self, capacity):
+        self._capacity = capacity
 
-    def add_groups_to_period(self, groups, period_name):
-        period = self.get_period(period_name)
-        for g in groups:
-            g.assign_tutor(self)
-        period.add_groups(groups)
+    def add_groups(self, groups: list["group.Group"]):
+        self._groups = groups
+    
+    def is_evaluator(self):
+        return self._is_evaluator
+    
+    def groups_ids(self):
+        return [g.id for g in self._groups]
+    
+    def make_evaluator(self):
+        self._is_evaluator = True
+
+    # Date manipulations
+    def add_available_dates(self, dates: list[DeliveryDate]):
+        self._available_dates += dates
+
+    def evaluate_date(self, date: DeliveryDate):
+        self._as_evaluator_dates.append(date)
+
+    def tutor_date(self, date: DeliveryDate):
+        self._as_tutor_dates.append(date)
+
+    def is_avaliable(self, date: str):
+        label = (d.label() for d in self._available_dates)
+        return date in label
+
+    def add_substitute_date(self, date: DeliveryDate):
+        self._substitute_dates.append(date)
+
+    def add_topic(self, topic: Topic):
+        self._topics.append(topic)   
+
+    def find_mutual_dates(self, dates: list[DeliveryDate]):
+        labels = [d.label() for d in dates]
+        mutual_dates = list()
+
+        for av in self._available_dates:
+            available_date_label = av.label()
+            if available_date_label in labels:
+                mutual_dates.append(available_date_label)
+
+        return mutual_dates

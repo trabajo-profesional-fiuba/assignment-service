@@ -1,8 +1,8 @@
 from src.core.result import AssignmentResult
 from src.core.group import Group
 from src.core.delivery_date import DeliveryDate
-from src.core.period import TutorPeriod
 from src.core.algorithms.adapters.result_context import ResultContext
+from src.core.tutor import Tutor
 
 
 class LPAdapter:
@@ -35,8 +35,8 @@ class LPAdapter:
         return groups
 
     def _evaluators(
-        self, result: list[str], evaluators: list[TutorPeriod]
-    ) -> list[TutorPeriod]:
+        self, result: list[str], evaluators: list[Tutor]
+    ) -> list[Tutor]:
         for evaluator in evaluators:
             for assignment in result:
                 # get number_id of evaluator with evaluator-number_id as evaluator id

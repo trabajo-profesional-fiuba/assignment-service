@@ -2,8 +2,8 @@ import pytest
 
 from src.core.algorithms.adapters.flow_adapter import FlowAdapter
 from src.core.algorithms.adapters.result_context import ResultContext
-from src.core.period import TutorPeriod
 from src.core.group import Group
+from src.core.tutor import Tutor
 from src.exceptions import WrongDateFormat
 from src.core.delivery_date import DeliveryDate
 
@@ -41,13 +41,12 @@ class TestFlowAdapter:
             assert "1-1-1" == formatter._create_date("1-1-1").label()
 
     @pytest.mark.unit
-    def test_adapt_results(self, mocker):
+    def test_adapt_results(self):
         """
         Tests adapt_results method for assigning delivery dates to evaluators based
         on the flow solver result.
         """
-        ev1 = TutorPeriod("1C2024")
-        mocker.patch.object(ev1, "id", return_value=2)
+        ev1 = Tutor(2, "email", "name")
         evaluators = [ev1]
         clean_results = {
             "group-1": (2, 2),
@@ -77,13 +76,12 @@ class TestFlowAdapter:
         assert all(d in expected for d in result)
 
     @pytest.mark.unit
-    def test_adapt_results_assign_dates(self, mocker):
+    def test_adapt_results_assign_dates(self):
         """
         Tests adapt_results method for assigning delivery dates to evaluators based
         on the flow solver result.
         """
-        ev1 = TutorPeriod("1C2024")
-        mocker.patch.object(ev1, "id", return_value=2)
+        ev1 = Tutor(2, "email", "name")
         evaluators = [ev1]
         clean_results = {
             "group-1": (1, 2),

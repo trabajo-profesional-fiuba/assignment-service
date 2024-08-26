@@ -5,7 +5,6 @@ from src.core.algorithms.adapters.result_adapter import ResultAdapter
 from src.core.group import Group
 from src.core.delivery_date import DeliveryDate
 from src.core.tutor import Tutor
-from src.core.period import TutorPeriod
 from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
 from src.core.algorithms.exceptions import AssigmentIsNotPossible
 
@@ -31,7 +30,9 @@ class TestDeliveryFlowSolver:
 
         # Act
         result = delivery_flow_solver._create_source_edges(groups, 1, GROUP_ID)
-
+        
+        for e in result:
+            print(e)
         # Assert
         assert all(e in result for e in expected_edges)
 
@@ -59,10 +60,8 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_source_to_evaluators_edges(self, mocker):
         # Arrange
-        period1 = TutorPeriod(period="1C2024")
-        mocker.patch.object(period1, "id", return_value=1)
-        period2 = TutorPeriod(period="1C2024")
-        mocker.patch.object(period2, "id", return_value=2)
+        period1 = Tutor(1, "email", "name")
+        period2 = Tutor(2, "email", "name")
 
         delivery_flow_solver = DeliveryFlowSolver()
         # 35 = 5 entregas x 7 semanas
@@ -89,10 +88,10 @@ class TestDeliveryFlowSolver:
         mocker.patch.object(group1, "filter_dates", return_value=None)
         mocker.patch.object(group1, "cost_of_date", return_value=10)
         groups = [group1]
-        period = TutorPeriod(period="1C2024")
-        period.add_groups(groups)
+        tutor = Tutor(1, "email", "name")
+        tutor.add_groups(groups)
 
-        delivery_flow_solver = DeliveryFlowSolver(tutor_periods=[period])
+        delivery_flow_solver = DeliveryFlowSolver(tutor_periods=[tutor])
         mocker.patch.object(
             delivery_flow_solver, "_get_evaluator_dates", return_value=[self.dates[0]]
         )
@@ -130,10 +129,10 @@ class TestDeliveryFlowSolver:
         group2.add_available_dates([self.dates[1]])
 
         groups = [group1, group2]
-        period = TutorPeriod(period="1C2024")
-        period.add_groups(groups)
+        tutor = Tutor(1, "email", "name")
+        tutor.add_groups(groups)
 
-        delivery_flow_solver = DeliveryFlowSolver(tutor_periods=[period])
+        delivery_flow_solver = DeliveryFlowSolver(tutor_periods=[tutor])
 
         expected_edges = [self.dates[0].label(), self.dates[1].label()]
 
@@ -150,10 +149,10 @@ class TestDeliveryFlowSolver:
         group1.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
         groups = [group1]
         dates = [self.dates[0].label(), self.dates[1].label()]
-        period = TutorPeriod(period="1C2024")
-        period.add_groups(groups)
+        tutor = Tutor(1, "email", "name")
+        tutor.add_groups(groups)
 
-        delivery_flow_solver = DeliveryFlowSolver(tutor_periods=[period])
+        delivery_flow_solver = DeliveryFlowSolver(tutor_periods=[tutor])
 
         # Act
         expected_groups = delivery_flow_solver._get_groups_id_with_mutual_dates(
@@ -168,12 +167,12 @@ class TestDeliveryFlowSolver:
     def test_filter_evaluators_dates(self):
 
         # Arrange
-        period = TutorPeriod(period="1C2024")
-        period.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
-        period.make_evaluator()
+        tutor = Tutor(1, "email", "name")
+        tutor.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
+        tutor.make_evaluator()
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period], available_dates=self.dates
+            tutor_periods=[tutor], available_dates=self.dates
         )
         expected_dates = [
             self.dates[0].label(),
@@ -190,13 +189,12 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_clean_evaluators_results(self, mocker):
         # Arrange
-        period = TutorPeriod(period="1C2024")
-        mocker.patch.object(period, "id", return_value=1)
-        period.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
-        period.make_evaluator()
+        tutor = Tutor(1, "email", "name")
+        tutor.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
+        tutor.make_evaluator()
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period], available_dates=self.dates
+            tutor_periods=[tutor], available_dates=self.dates
         )
 
         evaluator_results = {
@@ -213,13 +211,12 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_get_evaluators_dates_by_id(self, mocker):
         # Arrange
-        period = TutorPeriod(period="1C2024")
-        mocker.patch.object(period, "id", return_value=1)
-        period.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
-        period.make_evaluator()
+        tutor = Tutor(1, "email", "name")
+        tutor.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
+        tutor.make_evaluator()
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period], available_dates=self.dates
+            tutor_periods=[tutor], available_dates=self.dates
         )
         expected_dates = [
             self.dates[0].label(),
@@ -236,20 +233,18 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_find_substitutes_for_group_on_date(self, mocker):
         # Arrange
-        period1 = TutorPeriod(period="1C2024")
-        mocker.patch.object(period1, "id", return_value=1)
-        period1.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
-        period1.make_evaluator()
+        tutor1 = Tutor(1, "email", "name")
+        tutor1.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
+        tutor1.make_evaluator()
 
-        period2 = TutorPeriod(period="1C2024")
-        mocker.patch.object(period2, "id", return_value=2)
-        period2.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
-        period2.make_evaluator()
+        tutor2 = Tutor(2, "email", "name")
+        tutor2.add_available_dates([self.dates[0], self.dates[1], self.dates[2]])
+        tutor2.make_evaluator()
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period1, period2], available_dates=self.dates
+            tutor_periods=[tutor1, tutor2], available_dates=self.dates
         )
-        expected_substitutes = [period2]
+        expected_substitutes = [tutor2]
 
         # Act
         result = delivery_flow_solver._find_substitutes_on_date(
@@ -262,12 +257,11 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_evaluator_edges(self, mocker):
         # Arrange
-        period1 = TutorPeriod(period="1C2024")
-        mocker.patch.object(period1, "id", return_value=1)
-        period1.add_available_dates([self.dates[0], self.dates[1]])
-        period1.make_evaluator()
+        tutor1 = Tutor(1, "email", "name")
+        tutor1.add_available_dates([self.dates[0], self.dates[1]])
+        tutor1.make_evaluator()
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period1], available_dates=self.dates
+            tutor_periods=[tutor1], available_dates=self.dates
         )
 
         mocker.patch.object(
@@ -298,15 +292,13 @@ class TestDeliveryFlowSolver:
     @pytest.mark.unit
     def test_find_substitutes_for_group(self, mocker):
         # Arrange
-        period1 = TutorPeriod(period="1C2024")
-        period1.make_evaluator()
-        mocker.patch.object(period1, "id", return_value=1)
-        mocker.patch.object(period1, "is_avaliable", return_value=True)
+        tutor1 = Tutor(1, "email", "name")
+        tutor1.make_evaluator()
+        mocker.patch.object(tutor1, "is_avaliable", return_value=True)
 
-        period2 = TutorPeriod(period="1C2024")
-        period2.make_evaluator()
-        mocker.patch.object(period2, "id", return_value=2)
-        mocker.patch.object(period2, "is_avaliable", return_value=True)
+        tutor2 = Tutor(2, "email", "name")
+        tutor2.make_evaluator()
+        mocker.patch.object(tutor2, "is_avaliable", return_value=True)
 
         group_info = {"group-1": (1, 1), "group-2": (2, 2)}
         groups_result = {
@@ -314,15 +306,15 @@ class TestDeliveryFlowSolver:
             "group-2": {"date-1-1-1": 0, "date-2-2-1": 1},
         }
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period1, period2], available_dates=self.dates
+            tutor_periods=[tutor1, tutor2], available_dates=self.dates
         )
 
         # Act
         substitutes = delivery_flow_solver._find_substitutes(group_info, groups_result)
 
         # Assert
-        assert substitutes["group-1"][0] == period2
-        assert substitutes["group-2"][0] == period1
+        assert substitutes["group-1"][0] == tutor2
+        assert substitutes["group-2"][0] == tutor1
 
     @pytest.mark.unit
     def test_evaluator_valid_flow(self, mocker):
@@ -333,17 +325,15 @@ class TestDeliveryFlowSolver:
         group2 = Group(2)
         group2.add_available_dates([dates[2]])
 
-        period = TutorPeriod(period="1C2024")
-        period.make_evaluator()
-        period.add_available_dates(dates)
-        mocker.patch.object(period, "id", return_value=3)
+        tutor = Tutor(3, "email", "name")
+        tutor.make_evaluator()
+        tutor.add_available_dates(dates)
 
-        period2 = TutorPeriod(period="1C2024")
-        mocker.patch.object(period2, "id", return_value=2)
-        period2.add_groups([group1, group2])
+        tutor2 = Tutor(2, "email", "name")
+        tutor2.add_groups([group1, group2])
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period, period2], available_dates=dates
+            tutor_periods=[tutor, tutor2], available_dates=dates
         )
 
         evaluator_edges = delivery_flow_solver._create_evaluators_edges()
@@ -373,17 +363,15 @@ class TestDeliveryFlowSolver:
         group2.add_available_dates([dates[2]])
         groups = [group1, group2]
 
-        period = TutorPeriod(period="1C2024")
-        period.make_evaluator()
-        period.add_available_dates(dates)
-        period.add_parent(Tutor(1, "f@fi.uba.ar", "Juan"))
+        tutor = Tutor(1, "f@fi.uba.ar", "Juan")
+        tutor.make_evaluator()
+        tutor.add_available_dates(dates)
 
-        period2 = TutorPeriod(period="1C2024")
-        period2.add_parent(Tutor(2, "f@fi.uba.ar", "Pepe"))
-        period2.add_groups(groups)
+        tutor2 = Tutor(2, "f@fi.uba.ar", "Pepe")
+        tutor2.add_groups(groups)
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period, period2], available_dates=dates, adapter=adapter
+            tutor_periods=[tutor, tutor2], available_dates=dates, adapter=adapter
         )
 
         # Act
@@ -396,9 +384,9 @@ class TestDeliveryFlowSolver:
     def test_some_groups_does_not_contains_evaluators(self):
         group1 = Group(1)
         group2 = Group(2)
-        period = TutorPeriod(period="1C2024")
-        period.add_groups([group1, group2])
-        delivery_flow_solver = DeliveryFlowSolver([period])
+        tutor = Tutor(1, "f@fi.uba.ar", "Juan")
+        tutor.add_groups([group1, group2])
+        delivery_flow_solver = DeliveryFlowSolver([tutor])
 
         group_info = {"group-1": (1, 1)}
 
@@ -410,9 +398,9 @@ class TestDeliveryFlowSolver:
     def test_some_groups_does_not_contains_dates_assigned(self):
         group1 = Group(1)
         group2 = Group(2)
-        period = TutorPeriod(period="1C2024")
-        period.add_groups([group1, group2])
-        delivery_flow_solver = DeliveryFlowSolver([period])
+        tutor = Tutor(1, "f@fi.uba.ar", "Juan")
+        tutor.add_groups([group1, group2])
+        delivery_flow_solver = DeliveryFlowSolver([tutor])
 
         groups_result = {
             "group-1": {"date-1-1-1": 1, "date-1-2-1": 0},
@@ -436,17 +424,15 @@ class TestDeliveryFlowSolver:
         group2.add_available_dates([dates[0]])
         groups = [group1, group2]
 
-        period = TutorPeriod(period="1C2024")
-        period.make_evaluator()
-        period.add_available_dates(dates)
-        period.add_parent(Tutor(1, "f@fi.uba.ar", "Juan"))
+        tutor = Tutor(1, "f@fi.uba.ar", "Juan")
+        tutor.make_evaluator()
+        tutor.add_available_dates(dates)
 
-        period2 = TutorPeriod(period="1C2024")
-        period2.add_parent(Tutor(2, "f@fi.uba.ar", "Pepe"))
-        period2.add_groups(groups)
+        tutor2 = Tutor(2, "f@fi.uba.ar", "Pepe")
+        tutor2.add_groups(groups)
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period, period2], available_dates=dates, adapter=adapter
+            tutor_periods=[tutor, tutor2], available_dates=dates, adapter=adapter
         )
 
         # Act & Assert
@@ -467,17 +453,15 @@ class TestDeliveryFlowSolver:
         group2 = Group(2)
         groups = [group1, group2]
 
-        period = TutorPeriod(period="1C2024")
-        period.make_evaluator()
-        period.add_available_dates(dates)
-        period.add_parent(Tutor(1, "f@fi.uba.ar", "Juan"))
+        tutor = Tutor(1, "f@fi.uba.ar", "Juan")
+        tutor.make_evaluator()
+        tutor.add_available_dates(dates)
 
-        period2 = TutorPeriod(period="1C2024")
-        period2.add_parent(Tutor(2, "f@fi.uba.ar", "Pepe"))
-        period2.add_groups(groups)
+        tutor2 = Tutor(2, "f@fi.uba.ar", "Pepe")
+        tutor2.add_groups(groups)
 
         delivery_flow_solver = DeliveryFlowSolver(
-            tutor_periods=[period, period2], available_dates=dates, adapter=adapter
+            tutor_periods=[tutor, tutor2], available_dates=dates, adapter=adapter
         )
 
         # Act & Assert

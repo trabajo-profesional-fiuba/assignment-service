@@ -3,12 +3,12 @@ from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CM
 from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.core.group import Group
 from src.core.group_topic_preferences import GroupTopicPreferences
-from src.core.period import TutorPeriod
 from src.core.topic import Topic
+from src.core.tutor import Tutor
 
 
 class GroupTutorLPSolver:
-    def __init__(self, groups: list[GroupTopicPreferences], topics: list[Topic], tutors: list[TutorPeriod]):
+    def __init__(self, groups: list[GroupTopicPreferences], topics: list[Topic], tutors: list[Tutor]):
         """
         Constructor of the class.
 
@@ -34,8 +34,8 @@ class GroupTutorLPSolver:
         for group in self._groups:
             for tutor in self._tutors:
                 for topic in tutor.topics:
-                    assignment_vars[(group.id, tutor.id(), topic.id)] = LpVariable(
-                        f"Assignment-{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor.id()}-{TOPIC_ID}-{topic.id}", 0, 1, LpBinary
+                    assignment_vars[(group.id, tutor.id, topic.id)] = LpVariable(
+                        f"Assignment-{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor.id}-{TOPIC_ID}-{topic.id}", 0, 1, LpBinary
                     )
         return assignment_vars
 
@@ -85,7 +85,7 @@ class GroupTutorLPSolver:
 
         # Función objetivo que maximiza la asignación de temas con los pesos establecidos
         prob += lpSum(
-            topic_scores[(group.id, topic.id)] * assignment_vars[(group.id, tutor.id(), topic.id)]
+            topic_scores[(group.id, topic.id)] * assignment_vars[(group.id, tutor.id, topic.id)]
             for group in self._groups
             for tutor in self._tutors
             for topic in tutor.topics
@@ -114,7 +114,7 @@ class GroupTutorLPSolver:
         for group in self._groups:
             prob += (
                 lpSum(
-                    assignment_vars[(group.id, tutor.id(), topic.id)]
+                    assignment_vars[(group.id, tutor.id, topic.id)]
                     for tutor in self._tutors
                     for topic in tutor.topics
                 )
@@ -132,7 +132,7 @@ class GroupTutorLPSolver:
 
         for topic in self._topics:
             prob += lpSum(
-                assignment_vars[(group.id, tutor.id(), topic.id)]
+                assignment_vars[(group.id, tutor.id, topic.id)]
                 for group in self._groups
                 for tutor in self._tutors
                 if topic in tutor.topics
@@ -151,7 +151,7 @@ class GroupTutorLPSolver:
             assigned_topics = [topic.id for topic in tutor.topics]
             prob += (
                 lpSum(
-                    assignment_vars[(group.id, tutor.id(), topic)]
+                    assignment_vars[(group.id, tutor.id, topic)]
                     for group in self._groups
                     for topic in assigned_topics
                 )
@@ -221,7 +221,7 @@ class GroupTutorLPSolver:
 
         Returns the tutor instance.
         """
-        return next(tutor for tutor in self._tutors if tutor.id() == tutor_id)
+        return next(tutor for tutor in self._tutors if tutor.id == tutor_id)
 
     def _get_topic_by_id(self, topic_id):
         """

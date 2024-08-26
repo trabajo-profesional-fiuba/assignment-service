@@ -5,7 +5,6 @@ from src.core.algorithms.adapters.result_adapter import ResultAdapter
 
 from src.core.algorithms.date.delivery_lp_solver import DeliveryLPSolver
 from src.core.group import Group
-from src.core.period import TutorPeriod
 from src.core.tutor import Tutor
 from src.core.delivery_date import DeliveryDate
 from tests.integration.core.algorithms.helper import TestLPHelper
@@ -36,7 +35,7 @@ class TestDeliveryLPSolver:
             groups_aux = []
             for i in range(1, num_groups + 1):
                 for group in groups:
-                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                    if ((i % 4) + 1) == tutor.id and group.id == i:
                         groups_aux.append(group)
             tutor.add_groups(groups_aux)
 
@@ -77,7 +76,7 @@ class TestDeliveryLPSolver:
             groups_aux = []
             for i in range(1, num_groups + 1):
                 for group in groups:
-                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                    if ((i % 4) + 1) == tutor.id and group.id == i:
                         groups_aux.append(group)
             tutor.add_groups(groups_aux)
 
@@ -118,7 +117,7 @@ class TestDeliveryLPSolver:
             groups_aux = []
             for i in range(1, num_groups + 1):
                 for group in groups:
-                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                    if ((i % 4) + 1) == tutor.id and group.id == i:
                         groups_aux.append(group)
             tutor.add_groups(groups_aux)
 
@@ -228,24 +227,18 @@ class TestDeliveryLPSolver:
             DeliveryDate(5, 5, 11),
         ]
 
-        tutor_period1 = TutorPeriod("1C2024")
         tutor1 = Tutor(1, "Tutor 1", "email@tutor1.com")
-        tutor_period1.add_parent(tutor1)
-        tutor_period1.add_available_dates(
+        tutor1.add_available_dates(
             possible_dates[0:11] + possible_dates[33:44] + possible_dates[44:55]
         )
 
-        tutor_period2 = TutorPeriod("1C2024")
         tutor2 = Tutor(2, "Tutor 2", "email@tutor2.com")
-        tutor_period2.add_parent(tutor2)
-        tutor_period2.add_available_dates(
+        tutor2.add_available_dates(
             possible_dates[11:22] + possible_dates[22:33] + possible_dates[44:55]
         )
 
-        tutor_period3 = TutorPeriod("1C2024")
         tutor3 = Tutor(3, "Tutor 3", "email@tutor3.com")
-        tutor_period3.add_parent(tutor3)
-        tutor_period3.add_available_dates(possible_dates[22:33] + possible_dates[33:44])
+        tutor3.add_available_dates(possible_dates[22:33] + possible_dates[33:44])
 
         group1 = Group(1)
         group1.add_available_dates(possible_dates[0:22])
@@ -258,29 +251,25 @@ class TestDeliveryLPSolver:
         group5 = Group(5)
         group5.add_available_dates(possible_dates[0:11] + possible_dates[33:44])
 
-        tutor_period1.add_groups([group1, group4])
-        tutor_period2.add_groups([group2])
-        tutor_period3.add_groups([group3, group5])
+        tutor1.add_groups([group1, group4])
+        tutor2.add_groups([group2])
+        tutor3.add_groups([group3, group5])
 
-        tutors = [tutor_period1, tutor_period2, tutor_period3]
+        tutors = [tutor1, tutor2, tutor3]
 
-        evaluator1 = TutorPeriod("1C2024")
-        evaluator1.add_parent(Tutor(11, "email", "name"))
+        evaluator1 = Tutor(11, "email", "name")
         evaluator1.make_evaluator()
         evaluator1.add_available_dates(possible_dates[0:22])
 
-        evaluator2 = TutorPeriod("1C2024")
-        evaluator2.add_parent(Tutor(12, "email", "name"))
+        evaluator2 = Tutor(12, "email", "name")
         evaluator2.make_evaluator()
         evaluator2.add_available_dates(possible_dates[11:33])
 
-        evaluator3 = TutorPeriod("1C2024")
-        evaluator3.add_parent(Tutor(13, "email", "name"))
+        evaluator3 = Tutor(13, "email", "name")
         evaluator3.make_evaluator()
         evaluator3.add_available_dates(possible_dates[22:44])
 
-        evaluator4 = TutorPeriod("1C2024")
-        evaluator4.add_parent(Tutor(14, "email", "name"))
+        evaluator4 = Tutor(14, "email", "name")
         evaluator4.make_evaluator()
         evaluator4.add_available_dates(possible_dates[33:55])
 
@@ -348,7 +337,7 @@ class TestDeliveryLPSolver:
             groups_aux = []
             for i in range(1, num_groups + 1):
                 for group in groups:
-                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                    if ((i % 4) + 1) == tutor.id and group.id == i:
                         groups_aux.append(group)
             tutor.add_groups(groups_aux)
 
@@ -379,7 +368,7 @@ class TestDeliveryLPSolver:
             groups_aux = []
             for i in range(1, num_groups + 1):
                 for group in groups:
-                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                    if ((i % 4) + 1) == tutor.id and group.id == i:
                         groups_aux.append(group)
             tutor.add_groups(groups_aux)
 
@@ -410,7 +399,7 @@ class TestDeliveryLPSolver:
             groups_aux = []
             for i in range(1, num_groups + 1):
                 for group in groups:
-                    if ((i % 4) + 1) == tutor.id() and group.id() == i:
+                    if ((i % 4) + 1) == tutor.id and group.id == i:
                         groups_aux.append(group)
             tutor.add_groups(groups_aux)
 
@@ -520,8 +509,8 @@ class TestDeliveryLPSolver:
         }
         for group in groups:
             assert (
-                f"group-{group.id()}" in assigned_dates
-            ), f"Group {group.id()} does not have an assigned date."
+                f"group-{group.id}" in assigned_dates
+            ), f"Group {group.id} does not have an assigned date."
 
         # Verificar que las fechas asignadas estén dentro de las disponibles para los
         # evaluadores
@@ -529,7 +518,7 @@ class TestDeliveryLPSolver:
             f"date-{date.label()}" for date in evaluators[0].available_dates
         ]
         for group in groups:
-            assigned_date = assigned_dates[f"group-{group.id()}"]
+            assigned_date = assigned_dates[f"group-{group.id}"]
             assert (
                 assigned_date in available_dates_labels
-            ), f"Group {group.id()} assigned date is not available for the evaluator."
+            ), f"Group {group.id} assigned date is not available for the evaluator."
