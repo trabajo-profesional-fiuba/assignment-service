@@ -50,7 +50,7 @@ class UserAnswerList(RootModel):
 
 
 class GroupAnswerResponse(BaseModel):
-    answer_id: datetime
+    id: datetime
     students: list[str]
     topics: list[str]
 

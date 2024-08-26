@@ -69,8 +69,8 @@ class TutorRepository:
                 session.expunge_all()
 
             return tutor_periods
-        except exc.IntegrityError:
-            raise PeriodDuplicated(message="Period can't be assigned to tutor")
+        except exc.IntegrityError as e:
+            raise PeriodDuplicated(message=f"{e}")
 
 
     def get_all_periods(self, order: str) -> list[Period]:

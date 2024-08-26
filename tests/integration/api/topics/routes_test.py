@@ -4,6 +4,7 @@ from fastapi import FastAPI, status
 
 from src.api.topics.router import router as topic_router
 from src.api.tutors.router import router as tutor_router
+from tests.integration.api.helper import ApiHelper
 
 PREFIX = "/topics"
 TUTOR_PREFIX = "/tutors"
@@ -60,34 +61,12 @@ def test_add_topics_with_tutor_not_found(fastapi, tables, topics):
 
 @pytest.mark.integration
 @pytest.mark.parametrize("topics", ["test_data"], indirect=True)
-def test_add_topics_with_period_not_found(fastapi, tables, tutors, topics):
-    # add tutors
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    # add topics
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Tutor 'juan.perez@fi.uba.ar' has no period."}
-
-
-@pytest.mark.integration
-@pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_add_topics_with_diff_categories_success(fastapi, tables, tutors, topics):
     # add tutors
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
+    helper = ApiHelper()
+    helper.create_period('1C2024')
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
     assert response.status_code == status.HTTP_201_CREATED
-
-    # add period
-    response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
-    assert response.status_code == status.HTTP_201_CREATED
-
-    # assign period to tutors
-    for tutor_id in ["12345678", "23456789"]:
-        response = fastapi.post(
-            f"{TUTOR_PREFIX}/{tutor_id}/periods", params={"period_id": "1C2024"}
-        )
-        assert response.status_code == status.HTTP_201_CREATED
 
     # add topics
     response = fastapi.post(f"{PREFIX}/upload", files=topics)
@@ -102,18 +81,9 @@ def test_add_topics_with_diff_categories_success(fastapi, tables, tutors, topics
 @pytest.mark.integration
 @pytest.mark.parametrize("topics", ["duplicated_category"], indirect=True)
 def test_add_topics_with_same_category_success(fastapi, tables, tutors, topics):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
-    assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
-    assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
+    helper = ApiHelper()
+    helper.create_period('1C2024')
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
     assert response.status_code == status.HTTP_201_CREATED
 
     response = fastapi.post(f"{PREFIX}/upload", files=topics)
@@ -129,19 +99,10 @@ def test_add_topics_with_same_category_success(fastapi, tables, tutors, topics):
 @pytest.mark.parametrize("topics", ["duplicated_topic"], indirect=True)
 def test_add_existing_topic_with_success(fastapi, tables, tutors, topics):
     # add tutors
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
+    helper = ApiHelper()
+    helper.create_period('1C2024')
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
     assert response.status_code == status.HTTP_201_CREATED
-
-    # add period
-    response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
-    assert response.status_code == status.HTTP_201_CREATED
-
-    # assign period to tutors
-    for tutor_id in ["12345678", "23456789"]:
-        response = fastapi.post(
-            f"{TUTOR_PREFIX}/{tutor_id}/periods", params={"period_id": "1C2024"}
-        )
-        assert response.status_code == status.HTTP_201_CREATED
 
     # add topics
     response = fastapi.post(f"{PREFIX}/upload", files=topics)
@@ -172,19 +133,10 @@ def test_upload_wrong_format_file(fastapi, tables, topics):
 @pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_get_topics_with_success(fastapi, tables, tutors, topics):
     # add tutors
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
+    helper = ApiHelper()
+    helper.create_period('1C2024')
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
     assert response.status_code == status.HTTP_201_CREATED
-
-    # add period
-    response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
-    assert response.status_code == status.HTTP_201_CREATED
-
-    # assign period to tutors
-    for tutor_id in ["12345678", "23456789"]:
-        response = fastapi.post(
-            f"{TUTOR_PREFIX}/{tutor_id}/periods", params={"period_id": "1C2024"}
-        )
-        assert response.status_code == status.HTTP_201_CREATED
 
     # add topics
     response = fastapi.post(f"{PREFIX}/upload", files=topics)
@@ -204,18 +156,10 @@ def test_get_topics_with_success(fastapi, tables, tutors, topics):
 @pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     # add tutors
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
+    helper = ApiHelper()
+    helper.create_period('1C2024')
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
     assert response.status_code == status.HTTP_201_CREATED
-
-    # add period
-    response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
-
-    # assign period to tutors
-    for tutor_id in ["12345678", "23456789"]:
-        assert response.status_code == status.HTTP_201_CREATED
-        response = fastapi.post(
-            f"{TUTOR_PREFIX}/{tutor_id}/periods", params={"period_id": "1C2024"}
-        )
 
     # add topics
     response = fastapi.post(f"{PREFIX}/upload", files=topics)

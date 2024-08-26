@@ -81,8 +81,24 @@ def test_get_answers_empty(service, mock_form_repository, mock_topic_repository)
 
 
 @pytest.mark.integration
-def test_get_answers_single_group(service, mock_form_repository, mock_topic_repository):
+def test_get_answers_single_group(service, mock_form_repository, mock_topic):
     answer_id_1 = datetime(2024, 8, 1)
+    repository = create_autospec(TopicRepository)
+
+    mock_topic_1 = mock_topic(name="topic 1", category_id=2)
+    mock_topic_2 = mock_topic(name="topic 2", category_id=3)
+    mock_topic_3 = mock_topic(name="topic 3", category_id=4)
+
+    # retrieve topics in expected order}
+    repository.get_topic_by_id.side_effect = [
+        mock_topic_1,
+        mock_topic_2,
+        mock_topic_3,
+        mock_topic_1,
+        mock_topic_2,
+        mock_topic_3,
+    ]
+
     mock_form_repository.get_answers.return_value = [
         UserAnswerResponse(
             answer_id=answer_id_1,
@@ -100,10 +116,10 @@ def test_get_answers_single_group(service, mock_form_repository, mock_topic_repo
         ),
     ]
 
-    result = service.get_answers(mock_topic_repository)
+    result = service.get_answers(repository)
     expected_result = [
         GroupAnswerResponse(
-            answer_id=answer_id_1,
+            id=answer_id_1,
             students=["student1@example.com", "student2@example.com"],
             topics=["topic 1", "topic 2", "topic 3"],
         )
@@ -117,11 +133,28 @@ def test_get_answers_single_group(service, mock_form_repository, mock_topic_repo
 
 
 @pytest.mark.integration
-def test_get_answers_multiple_groups(
-    service, mock_form_repository, mock_topic_repository
-):
+def test_get_answers_multiple_groups(service, mock_form_repository, mock_topic):
     answer_id_1 = datetime(2024, 8, 1)
     answer_id_2 = datetime(2024, 8, 2)
+    repository = create_autospec(TopicRepository)
+
+    mock_topic_1 = mock_topic(name="topic 1", category_id=2)
+    mock_topic_2 = mock_topic(name="topic 2", category_id=3)
+    mock_topic_3 = mock_topic(name="topic 3", category_id=4)
+
+    # retrieve topics in expected order}
+    repository.get_topic_by_id.side_effect = [
+        mock_topic_1,
+        mock_topic_2,
+        mock_topic_3,
+        mock_topic_1,
+        mock_topic_2,
+        mock_topic_3,
+        mock_topic_2,
+        mock_topic_3,
+        mock_topic_1,
+    ]
+
     mock_form_repository.get_answers.return_value = [
         UserAnswerResponse(
             answer_id=answer_id_1,
@@ -146,15 +179,15 @@ def test_get_answers_multiple_groups(
         ),
     ]
 
-    result = service.get_answers(mock_topic_repository)
+    result = service.get_answers(repository)
     expected_result = [
         GroupAnswerResponse(
-            answer_id=answer_id_1,
+            id=answer_id_1,
             students=["student1@example.com", "student2@example.com"],
             topics=["topic 1", "topic 2", "topic 3"],
         ),
         GroupAnswerResponse(
-            answer_id=answer_id_2,
+            id=answer_id_2,
             students=["student3@example.com"],
             topics=["topic 2", "topic 3", "topic 1"],
         ),

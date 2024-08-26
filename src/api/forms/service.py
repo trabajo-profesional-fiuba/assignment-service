@@ -110,12 +110,12 @@ class FormService:
         db_answers = self._repository.get_answers()
 
         if len(db_answers) != 0:
-            topic_1 = topic_repository.get_topic_by_id(db_answers[0].topic_1)
-            topic_2 = topic_repository.get_topic_by_id(db_answers[0].topic_2)
-            topic_3 = topic_repository.get_topic_by_id(db_answers[0].topic_3)
 
             answers = []
             for db_answer in db_answers:
+                topic_1 = topic_repository.get_topic_by_id(db_answer.topic_1)
+                topic_2 = topic_repository.get_topic_by_id(db_answer.topic_2)
+                topic_3 = topic_repository.get_topic_by_id(db_answer.topic_3)
                 answers.append(
                     UserAnswerResponse(
                         answer_id=db_answer.answer_id,
@@ -129,7 +129,7 @@ class FormService:
             students_topics = self._get_students_topics(answers)
             return [
                 GroupAnswerResponse(
-                    answer_id=answer_id,
+                    id=answer_id,
                     students=data["students"],
                     topics=list(set(data["topics"])),
                 )

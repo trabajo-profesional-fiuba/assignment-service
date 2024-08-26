@@ -3,9 +3,7 @@ from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
 from src.api.tutors.router import router
-from src.api.users.models import Role, User
 from src.config.database.database import create_tables, drop_tables, engine
-from sqlalchemy.orm import sessionmaker
 
 from tests.integration.api.helper import ApiHelper
 

@@ -10,7 +10,6 @@ from src.api.tutors.schemas import (
     TutorPeriodResponse,
     TutorResponse,
     PeriodList,
-    TutorResponseWithTopics,
     TutorWithTopicsList,
 )
 from src.api.tutors.utils import TutorCsvFile
@@ -49,6 +48,14 @@ class TutorService:
             tutors.append(tutor)
         return tutors
 
+    def _get_existing_ids(self,tutors_ids):
+        tutors = self._repository.get_tutors()
+        existing_tutors_id = []
+        for tutor in tutors:
+            if tutor.id in tutors_ids:
+                existing_tutors_id.append(tutor.id)
+        return existing_tutors_id
+
     def create_tutors_from_csv(self, csv: str, period: str, hasher: ShaHasher, user_repository):
         try:
             """
@@ -58,16 +65,9 @@ class TutorService:
             self._repository.delete_tutors_periods_by_period_id(period)
             csv_file = TutorCsvFile(csv=csv)
             tutors_ids = csv_file.get_tutors_id()
-
-            tutors = self._repository.get_tutors()
-            existing_tutors_id = []
-            for tutor in tutors:
-                if tutor.id in tutors_ids:
-                    existing_tutors_id.append(tutor.id)
-
-            remaining_ids = list(
-                filter(lambda x: x not in existing_tutors_id, tutors_ids))
             tutors_dtos = csv_file.get_tutors()
+
+            remaining_ids = list(filter(lambda x: x not in self._get_existing_ids(tutors_ids), tutors_ids))
 
             tutor_periods = []
             tutors = []
@@ -81,16 +81,15 @@ class TutorService:
                     password=hasher.hash(str(tutor_dto.id)),
                     role=Role.TUTOR,
                 )
-                tutor_periods.append(TutorPeriod(
-                    period_id=period, tutor_id=tutor_dto.id, capacity=tutor_dto.capacity))
                 tutors.append(tutor)
-            user_repository.add_tutors(tutors)
 
-            for id in existing_tutors_id:
+            
+            for id in tutors_ids:
                 tutor_dto = tutors_dtos[id]
                 tutor_periods.append(TutorPeriod(
                     period_id=period, tutor_id=tutor_dto.id, capacity=tutor_dto.capacity))
 
+            user_repository.add_tutors(tutors)
             self._repository.add_tutor_periods(tutor_periods)
             tutors = self._repository.get_tutors_by_period_id(period)
 

@@ -8,6 +8,7 @@ from src.api.students.router import router as student_router
 from src.api.tutors.router import router as tutor_router
 from src.api.topics.router import router as topic_router
 from src.config.database.database import create_tables, drop_tables
+from tests.integration.api.helper import ApiHelper
 
 PREFIX = "/forms"
 TOPIC_PREFIX = "/topics"
@@ -37,6 +38,7 @@ def fastapi():
 
 @pytest.fixture
 def topics():
+    
     with open("tests/integration/api/topics/data/test_data.csv", "rb") as file:
         content = file.read()
 
@@ -85,18 +87,10 @@ def test_add_answers_with_topic_not_found(fastapi, tables):
 
 @pytest.mark.integration
 def test_add_answers_with_student_not_found(fastapi, tables, topics, tutors):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
+    helper = ApiHelper()
+    helper.create_period('1C2024')
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload",params={"period": "1C2024"}, files=tutors)
     assert response.status_code == status.HTTP_201_CREATED
-
-    response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
-    assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
-    assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
 
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
@@ -121,18 +115,11 @@ def test_add_answers_with_student_not_found(fastapi, tables, topics, tutors):
 
 @pytest.mark.integration
 def test_add_answers_with_success(fastapi, tables, topics, students, tutors):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
-
     response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
+
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors, params={"period": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
 
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
@@ -187,18 +174,11 @@ def test_add_answers_with_success(fastapi, tables, topics, students, tutors):
 
 @pytest.mark.integration
 def test_add_answers_with_invalid_role(fastapi, tables, topics, tutors):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
-
     response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
+
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors, params={"period": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
 
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
@@ -223,19 +203,13 @@ def test_add_answers_with_invalid_role(fastapi, tables, topics, tutors):
 
 @pytest.mark.integration
 def test_add_answers_duplicated(fastapi, tables, topics, students, tutors):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
 
     response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
-    assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
 
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors, params={"period": "1C2024"})
+    assert response.status_code == status.HTTP_201_CREATED
+    
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -293,18 +267,11 @@ def test_add_answers_duplicated(fastapi, tables, topics, students, tutors):
 
 @pytest.mark.integration
 def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
-
     response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
+
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors, params={"period": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
 
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
@@ -403,18 +370,11 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
 
 @pytest.mark.integration
 def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
-
     response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
+
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors, params={"period": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
 
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
@@ -465,18 +425,11 @@ def test_get_empty_answers_with_success(fastapi, tables, topics):
 def test_delete_answers_when_updating_students_with_success(
     fastapi, tables, topics, students, tutors
 ):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
-
     response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
+
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors, params={"period": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
 
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
@@ -509,19 +462,12 @@ def test_delete_answers_when_updating_students_with_success(
 def test_delete_answers_when_updating_topics_with_success(
     fastapi, tables, topics, students, tutors
 ):
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors)
-    assert response.status_code == status.HTTP_201_CREATED
-
     response = fastapi.post(f"{TUTOR_PREFIX}/periods", json={"id": "1C2024"})
     assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/12345678/periods", params={"period_id": "1C2024"}
-    )
-    assert response.status_code == status.HTTP_201_CREATED
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/23456789/periods", params={"period_id": "1C2024"}
-    )
 
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors, params={"period": "1C2024"})
+    assert response.status_code == status.HTTP_201_CREATED
+    
     response = fastapi.post(f"{TOPIC_PREFIX}/upload", files=topics)
     assert response.status_code == status.HTTP_201_CREATED
 
