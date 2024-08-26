@@ -193,6 +193,11 @@ class TutorRepository:
 
         return tutor
 
+    def delete_tutors_periods_by_period_id(self, period_id):
+        with self.Session() as session:
+            session.query(TutorPeriod).filter(TutorPeriod.period_id == period_id).delete()
+            session.commit()
+
     def get_tutors_by_period_id(self, period_id):
         with self.Session() as session:
             tutors = (

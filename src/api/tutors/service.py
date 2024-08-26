@@ -55,6 +55,7 @@ class TutorService:
             With a csv file as string, it
             make new tutors and override the existing ones
             """
+            self._repository.delete_tutors_periods_by_period_id(period)
             csv_file = TutorCsvFile(csv=csv)
             tutors_ids = csv_file.get_tutors_id()
 

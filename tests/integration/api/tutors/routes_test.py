@@ -11,6 +11,7 @@ from tests.integration.api.helper import ApiHelper
 
 PREFIX = "/tutors"
 
+
 @pytest.fixture(scope="function")
 def tables():
     # Create all tables
@@ -39,10 +40,10 @@ def test_upload_file_and_create_tutors(fastapi, tables):
     filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-    params={"period": "1C2024"}
+    params = {"period": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload",params=params,files=files)
+    response = fastapi.post(f"{PREFIX}/upload", params=params, files=files)
 
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
@@ -58,7 +59,7 @@ def test_upload_file_with_invalid_columns_raise_exception(fastapi, tables):
     filename = "wrong_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-    params ={"period": "1C2O24"}
+    params = {"period": "1C2O24"}
 
     # Act
     response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
@@ -78,7 +79,7 @@ def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables
     filename = "duplicate_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-    params ={"period": "1C2O24"}
+    params = {"period": "1C2O24"}
 
     # Act
     response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
@@ -95,7 +96,7 @@ def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
     filename = "test_data"
     content_type = "application/json"
     files = {"file": (filename, "test".encode(), content_type)}
-    params ={"period": "1C2O24"}
+    params = {"period": "1C2O24"}
 
     # Act
     response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
@@ -103,12 +104,13 @@ def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
 
+
 @pytest.mark.integration
 def test_upload_file_with_existing_tutors(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("1C2024")
-    helper.create_tutor("Juan","Perez","12345678","juan.perez@fi.uba.ar")
-    helper.create_tutor("Paula","Diaz","33456789","paula.diaz@fi.uba.ar")
+    helper.create_tutor("Juan", "Perez", "12345678", "juan.perez@fi.uba.ar")
+    helper.create_tutor("Paula", "Diaz", "33456789", "paula.diaz@fi.uba.ar")
 
     with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
         content = file.read()
@@ -116,15 +118,14 @@ def test_upload_file_with_existing_tutors(fastapi, tables):
     filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-    params={"period": "1C2024"}
+    params = {"period": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload",params=params,files=files)
+    response = fastapi.post(f"{PREFIX}/upload", params=params, files=files)
 
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == 15
-
 
 
 @pytest.mark.integration
@@ -246,7 +247,7 @@ def test_add_new_tutor_period_with_success(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2024")
-    helper.create_tutor("Juan","Perez","10600","email@fi.uba.ar")
+    helper.create_tutor("Juan", "Perez", "10600", "email@fi.uba.ar")
     params = {"period_id": "1C2024"}
 
     # Act
@@ -261,7 +262,7 @@ def test_if_id_is_not_tutor_raises_a_404(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2024")
-    helper.create_student("Juan","Perez","105600","email@fi.uba.ar")
+    helper.create_student("Juan", "Perez", "105600", "email@fi.uba.ar")
     params = {"period_id": "1C2024"}
 
     # Act
@@ -277,8 +278,8 @@ def test_add_same_period_to_two_tutors_with_success(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2024")
-    helper.create_tutor("Juan","Perez","105600","email@fi.uba.ar")
-    helper.create_tutor("Juan","Perez","105601","email2@fi.uba.ar")
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    helper.create_tutor("Juan", "Perez", "105601", "email2@fi.uba.ar")
     params = {"period_id": "1C2024"}
 
     # Act
@@ -295,8 +296,8 @@ def test_get_tutors_period_with_success(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2024")
-    helper.create_tutor("Juan","Perez","105600","email@fi.uba.ar")
-    helper.create_tutor_period("105600","1C2024")
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    helper.create_tutor_period("105600", "1C2024")
     params = {"period_id": "1C2024"}
 
     # Act
@@ -323,8 +324,8 @@ def test_add_same_period_to_same_tutor_raise_error(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2024")
-    helper.create_tutor("Juan","Perez","105600","email@fi.uba.ar")
-    helper.create_tutor_period("105600","1C2024")
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    helper.create_tutor_period("105600", "1C2024")
     params = {"period_id": "1C2024"}
 
     # Act
@@ -334,33 +335,29 @@ def test_add_same_period_to_same_tutor_raise_error(fastapi, tables):
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
-@pytest.mark.skip
-def test_update_tutors_and_tutor_period_is_deleted(fastapi, tables):
+@pytest.mark.integration
+def test_new_upload_override_tutor_periods(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_tutor("Juan", "Perez", "12345678", "juan.perez@fi.uba.ar")
+    helper.create_tutor_period("12345678", "1C2024", 5)
+
+    tutor = helper.get_tutor_by_tutor_id(12345678)
+    assert tutor.periods[0].capacity == 5
+
     with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
         content = file.read()
 
     filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    params = {"period": "1C2024"}
+    response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
     assert response.status_code == status.HTTP_201_CREATED
 
-    body = {"id": "1C2024"}
-    response = fastapi.post(f"{PREFIX}/periods", json=body)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    tutor_id = 12345678
-    params = {"period_id": "1C2024"}
-    response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
+    response = fastapi.get(f"{PREFIX}/{12345678}/periods")
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()["periods"]) == 0
+    assert response.json()["periods"][0]["capacity"] == 1
 
 
 @pytest.mark.skip
@@ -433,15 +430,14 @@ def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
 @pytest.mark.integration
 def test_all_topics_from_tutors_in_specific_period(fastapi, tables):
     # Arrange
-
     helper = ApiHelper()
     helper.create_period("1C2024")
     helper.create_period("2C2024")
-    helper.create_tutor("Juan","Perez","105600","email@fi.uba.ar")
-    helper.create_tutor_period("105600","1C2024")
-    helper.create_tutor_period("105600","2C2024")
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    helper.create_tutor_period("105600", "1C2024")
+    helper.create_tutor_period("105600", "2C2024")
 
     response = fastapi.get(f"{PREFIX}/periods/1C2024")
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data[0]['periods']) == 1
+    assert len(data[0]["periods"]) == 1

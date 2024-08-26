@@ -44,7 +44,14 @@ class ApiHelper:
         )
 
         self._user_repository.add_students([student])
-    
-    def create_tutor_period(self, tutor_id, period_id):
-        self._tutor_repository.add_tutor_period(tutor_id, period_id)
 
+    def create_tutor_period(self, tutor_id, period_id, capacity = 1):
+        period = TutorPeriod(
+            tutor_id = tutor_id,
+            period_id = period_id,
+            capacity = capacity
+        )
+        self._tutor_repository.add_tutor_periods([period])
+
+    def get_tutor_by_tutor_id(self, tutor_id):
+        return self._tutor_repository.get_tutor_by_tutor_id(tutor_id)
