@@ -298,7 +298,6 @@ def test_get_tutors_period_with_success(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
     helper.create_tutor_period("105600", "1C2024")
-    params = {"period_id": "1C2024"}
 
     # Act
     response = fastapi.get(f"{PREFIX}/{105600}/periods")
@@ -352,6 +351,7 @@ def test_new_upload_override_tutor_periods(fastapi, tables):
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
     params = {"period": "1C2024"}
+
     response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -360,70 +360,52 @@ def test_new_upload_override_tutor_periods(fastapi, tables):
     assert response.json()["periods"][0]["capacity"] == 1
 
 
-@pytest.mark.skip
-def test_update_tutors_and_period_is_not_deleted(fastapi, tables):
-    with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    body = {"id": "1C2024"}
-    response = fastapi.post(f"{PREFIX}/periods", json=body)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    tutor_id = 12345678
-    params = {"period_id": "1C2024"}
-    response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
-    assert response.status_code == status.HTTP_201_CREATED
-
-    response = fastapi.get(f"{PREFIX}/periods")
-    assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 1
-
-
-@pytest.mark.skip
-def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
+@pytest.mark.integration
+def test_delete_tutor_no_affects_global_periods(fastapi, tables):
     # Arrange
-    with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
-        content = file.read()
-
-    filename = "test_data"
-    content_type = "text/csv"
-    files = {"file": (filename, content, content_type)}
-
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
-    assert response.status_code == status.HTTP_201_CREATED
+    helper = ApiHelper()
     periods = ["1C2024", "2C2024", "1C2025"]
-    tutor_id = 12345678
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
 
     for p in periods:
-        body = {"id": p}
-        response = fastapi.post(f"{PREFIX}/periods", json=body)
-        assert response.status_code == status.HTTP_201_CREATED
+        helper.create_period(p)
+        helper.create_tutor_period("105600", p)
 
-        params = {"period_id": p}
-        response = fastapi.post(f"{PREFIX}/{tutor_id}/periods", params=params)
-        assert response.status_code == status.HTTP_201_CREATED
-
-    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
-    assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()["periods"]) == 3
+    tutor = helper.get_tutor_by_tutor_id(105600)
+    assert len(tutor.periods) == 3
 
     # Act
-    response = fastapi.delete(f"{PREFIX}/{tutor_id}")
+    response = fastapi.delete(f"{PREFIX}/{105600}")
 
     # Assert
     assert response.status_code == status.HTTP_202_ACCEPTED
 
-    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
+    response = fastapi.get(f"{PREFIX}/periods")
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 3
+
+
+@pytest.mark.integration
+def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    periods = ["1C2024", "2C2024", "1C2025"]
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+
+    for p in periods:
+        helper.create_period(p)
+        helper.create_tutor_period("105600", p)
+
+    tutor = helper.get_tutor_by_tutor_id(105600)
+    assert len(tutor.periods) == 3
+
+    # Act
+    response = fastapi.delete(f"{PREFIX}/{105600}")
+
+    # Assert
+    assert response.status_code == status.HTTP_202_ACCEPTED
+
+    response = fastapi.get(f"{PREFIX}/{105600}/periods")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
