@@ -43,3 +43,11 @@ class Tutor:
     @property
     def capacity(self) -> int:
         return self._capacity
+    @property
+    def groups(self) -> int:
+        return self._groups
+    
+    def add_groups(self, groups):
+        for group in groups:
+            group.assign_tutor(self)
+        self._groups.append(group)
