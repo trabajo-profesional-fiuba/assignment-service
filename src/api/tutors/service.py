@@ -20,21 +20,13 @@ from src.api.tutors.exceptions import (
     TutorDuplicated,
     TutorNotFound,
 )
-from src.api.tutors.models import Period
+from src.api.tutors.models import Period, TutorPeriod
 
 
 class TutorService:
 
     def __init__(self, repository) -> None:
         self._repository = repository
-
-    def _get_csv_content(self, csv: str):
-        """
-        Parse the row information from the
-        csv of tutors
-        """
-        csv_file = TutorCsvFile(csv=csv)
-        return csv_file.get_info_as_rows()
 
     def _make_tutors(self, rows, hasher: ShaHasher):
         """
@@ -57,18 +49,51 @@ class TutorService:
             tutors.append(tutor)
         return tutors
 
-    # FIXME: This needs to be fixed so we create a new tutor period and if the tutor does not
-    # exists we create it.
-    def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
+    def create_tutors_from_csv(self, csv: str, period: str, hasher: ShaHasher, user_repository):
         try:
             """
             With a csv file as string, it
             make new tutors and override the existing ones
             """
-            csv_rows = self._get_csv_content(csv)
-            tutors = self._make_tutors(csv_rows, hasher)
-            self._repository.delete_tutors()
-            return TutorList.model_validate(self._repository.add_tutors(tutors))
+            csv_file = TutorCsvFile(csv=csv)
+            tutors_ids = csv_file.get_tutors_id()
+
+            tutors = self._repository.get_tutors()
+            existing_tutors_id = []
+            for tutor in tutors:
+                if tutor.id in tutors_ids:
+                    existing_tutors_id.append(tutor.id)
+
+            remaining_ids = list(
+                filter(lambda x: x not in existing_tutors_id, tutors_ids))
+            tutors_dtos = csv_file.get_tutors()
+
+            tutor_periods = []
+            tutors = []
+            for id in remaining_ids:
+                tutor_dto = tutors_dtos[id]
+                tutor = User(
+                    id=int(tutor_dto.id),
+                    name=tutor_dto.name,
+                    last_name=tutor_dto.last_name,
+                    email=tutor_dto.email,
+                    password=hasher.hash(str(tutor_dto.id)),
+                    role=Role.TUTOR,
+                )
+                tutor_periods.append(TutorPeriod(
+                    period_id=period, tutor_id=tutor_dto.id, capacity=tutor_dto.capacity))
+                tutors.append(tutor)
+            user_repository.add_tutors(tutors)
+
+            for id in existing_tutors_id:
+                tutor_dto = tutors_dtos[id]
+                tutor_periods.append(TutorPeriod(
+                    period_id=period, tutor_id=tutor_dto.id, capacity=tutor_dto.capacity))
+
+            self._repository.add_tutor_periods(tutor_periods)
+            tutors = self._repository.get_tutors_by_period_id(period)
+
+            return TutorList.model_validate(tutors)
         except TutorDuplicated as e:
             raise Duplicated(str(e))
         except TutorNotFound as e:

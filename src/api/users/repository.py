@@ -59,3 +59,9 @@ class UserRepository:
         with self.Session() as session:
             session.query(User).filter(User.role == Role.TUTOR).delete()
             session.commit()
+
+    def get_tutors(self):
+        with self.Session() as session:
+            tutors = session.query(User).filter(User.role == Role.TUTOR).all()
+            session.expunge_all()
+        return tutors

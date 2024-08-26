@@ -1,18 +1,28 @@
 import src.exceptions as e
 
 
-# To evoid circular importing
-# https://peps.python.org/pep-0484/#forward-references
-import src.core.period as period
-
-
 class Tutor:
+    """
+    This class represents a Tutor during a specific Period. 
+    Although a tutor may be active in multiple periods, this abstraction considers each tutor within the context of a single period.
+    Thus, each period has its tutors as a subset of objects that exist only within that period. 
+    """
 
-    def __init__(self, id: int, email: str, name: str) -> None:
+    def __init__(self, id: int,
+                 email: str,
+                 name: str,
+                 last_name: str,
+                 capacity: int = 0,
+                 groups=[],
+                 topics=[]
+                 ) -> None:
         self._id = id
         self._name = name
         self._email = email
-        self._periods = {}
+        self._last_name = last_name
+        self._capacity = capacity
+        self._groups = groups
+        self._topics = topics
 
     @property
     def id(self) -> int:
@@ -23,29 +33,13 @@ class Tutor:
         return self._name
 
     @property
+    def last_name(self) -> str:
+        return self._last_name
+
+    @property
     def email(self) -> str:
         return self._email
 
     @property
-    def periods(self) -> dict[str, "period.TutorPeriod"]:
-        return self._periods
-
-    def add_period(self, period: "period.TutorPeriod"):
-        period_key = period.period_name()
-        if period_key in self._periods:
-            raise e.PeriodAlreadyExists(f"{period_key} already in tutor's periods")
-
-        self._periods[period_key] = period
-        period.add_parent(self)
-
-    def get_period(self, period_name: str):
-        if period_name not in self._periods:
-            raise e.PeriodNotFound(f"{period_name} is not part of tutor's periods")
-
-        return self._periods.get(period_name)
-
-    def add_groups_to_period(self, groups, period_name):
-        period = self.get_period(period_name)
-        for g in groups:
-            g.assign_tutor(self)
-        period.add_groups(groups)
+    def capacity(self) -> int:
+        return self._capacity

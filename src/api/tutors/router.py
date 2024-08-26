@@ -50,14 +50,16 @@ async def upload_csv_file(
     file: UploadFile,
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
+    period: str = Query(...),
 ):
     try:
         # Check if content-type is a text/csv
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided")
         content = (await file.read()).decode("utf-8")
-        service = TutorService(UserRepository(session))
-        res = service.create_tutors_from_string(content, hasher)
+        service = TutorService(TutorRepository(session))
+        res = service.create_tutors_from_csv(
+            content, period, hasher, UserRepository(session))
 
         return res
     except (InvalidCsv, EntityNotFound, Duplicated, InvalidFileType) as e:
