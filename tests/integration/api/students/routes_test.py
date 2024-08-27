@@ -5,10 +5,12 @@ from src.api.students.router import router
 from fastapi import status
 from src.config.database.database import create_tables, drop_tables
 
+from tests.integration.api.helper import ApiHelper
+
 PREFIX = "/students"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def tables():
 
     # Create all tables
@@ -29,6 +31,8 @@ def fastapi():
 @pytest.mark.integration
 def test_upload_file_and_create_students(fastapi, tables):
     # Arrange
+    helper = ApiHelper()
+    token = helper.create_admin_token()
     with open("tests/integration/api/students/test_data.csv", "rb") as file:
         content = file.read()
 
@@ -37,7 +41,7 @@ def test_upload_file_and_create_students(fastapi, tables):
     files = {"file": (filename, content, content_type)}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=files, headers={'Authorization': f"Bearer {token.access_token}"})
 
     # Assert
     assert response.status_code == 201
