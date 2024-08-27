@@ -2,9 +2,10 @@ from typing_extensions import Annotated
 
 from fastapi import APIRouter, UploadFile, Depends, status, Query
 
-from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
+from src.api.auth.jwt import JwtResolver, get_jwt_resolver
+from src.api.auth.service import AuthenticationService
 from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
 from src.api.users.schemas import UserList
 from src.api.users.repository import UserRepository
@@ -14,6 +15,7 @@ from src.api.students.repository import StudentRepository
 from src.api.students.exceptions import StudentNotFound, StudentDuplicated
 
 from src.api.auth.hasher import get_hasher, ShaHasher
+from src.api.auth.schemas import oauth2_scheme
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -31,8 +33,13 @@ async def upload_csv_file(
     file: UploadFile,
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)]
 ):
     try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided")
 
@@ -63,8 +70,13 @@ async def upload_csv_file(
 )
 async def get_students_by_ids(
     session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     user_ids: list[int] = Query(default=[]),
 ):
+    auth_service = AuthenticationService(jwt_resolver)
+    auth_service.assert_only_admin(token)
+
     service = StudentService(StudentRepository(session))
     res = service.get_students_by_ids(user_ids)
     logger.info("Retrieve all students by ids.")

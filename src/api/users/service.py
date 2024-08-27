@@ -15,3 +15,4 @@ class UserService:
             raise InvalidCredentials(message="Email or password is incorrect")
 
         return user
+

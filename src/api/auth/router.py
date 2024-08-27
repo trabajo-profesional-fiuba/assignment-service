@@ -2,10 +2,12 @@ from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
 
 from src.api.auth.jwt import JwtResolver, JwtEncoded, get_jwt_resolver
 from src.api.auth.hasher import ShaHasher, get_hasher
+from src.api.auth.schemas import RequestForm
+
 from src.config.database.database import get_db
 from src.api.users.repository import UserRepository
 from src.api.users.service import UserService
@@ -13,7 +15,7 @@ from src.api.users.exceptions import UserNotFound, InvalidCredentials
 
 
 router = APIRouter(tags=["Authentication"])
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="connect")
+
 
 
 @router.post(
@@ -41,7 +43,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="connect")
     },
 )
 async def get_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    form_data: Annotated[RequestForm, Depends()],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],

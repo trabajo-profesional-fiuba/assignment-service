@@ -2,37 +2,12 @@ import datetime
 import jwt as jwt_provider
 from pydantic import BaseModel, Field
 
+from src.api.auth.schemas import JwtDecoded, JwtEncoded
 from src.config.config import api_config
 from src.config.logging import logger
 
 
-class JwtEncoded(BaseModel):
-    """
-    Schema to represent a Jwt encoded,
-    the fields that this jwt contains are the actual token as
-    the access token and the token type which is now Jwt
 
-    More information at https://jwt.io/
-    """
-
-    access_token: str
-    token_type: str = Field(default="Jwt Bearer token")
-
-
-class JwtDecoded(BaseModel):
-    """
-    Schema to represent a Jwt when it is decoded.
-    Som claims are considerer obligatory to have
-    such as:
-
-    sub - It is the subject of the Json Web Token
-    name - The name of the jwt's owner
-    exp - Expired date as a timestamp
-    """
-
-    sub: str
-    name: str
-    exp: float
 
 
 class InvalidJwt(Exception):
@@ -77,18 +52,18 @@ class JwtResolver:
         token = jwt_provider.encode(
             payload=payload, key=str(self.secret), algorithm=self.hash
         )
-        jwt = JwtEncoded(access_token=token, token_type="JWT")
+        jwt = JwtEncoded(access_token=token, token_type="Bearer")
         logger.info(f"New JWT created for {name} at {exp_time}")
         return jwt
 
-    def decode_token(self, jwt: JwtEncoded) -> JwtDecoded:
+    def decode_token(self, jwt: str) -> JwtDecoded:
         """Attempts to decode the encoded jwt
         with the expire verification based on the
         attr set.
         """
         try:
             jwt_decoded = jwt_provider.decode(
-                jwt.access_token,
+                jwt,
                 str(self.secret),
                 algorithms=[self.hash],
                 options={"verify_exp": self.verify_exp},
