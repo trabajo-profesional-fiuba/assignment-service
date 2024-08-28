@@ -62,7 +62,7 @@ class ApiHelper:
             "id": 1,
             "name": "admin",
             "last_name": "admin",
-            "role": "ADMIN",
+            "role": "admin",
         }
         jwt = JwtResolver()
         token = jwt.create_token(sub, "admin")

@@ -4,9 +4,10 @@ from fastapi import APIRouter, UploadFile, Depends, status, Query
 
 from sqlalchemy.orm import Session
 
-from src.api.auth.jwt import JwtResolver, get_jwt_resolver
+from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.service import AuthenticationService
 from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
+from src.api.users.exceptions import InvalidCredentials
 from src.api.users.schemas import UserList
 from src.api.users.repository import UserRepository
 
@@ -28,13 +29,17 @@ router = APIRouter(prefix="/students", tags=["Students"])
     response_model=UserList,
     description="Creates list of students based on a csv file",
     status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_201_CREATED: {"description": "Students were created"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+    },
 )
 async def upload_csv_file(
     file: UploadFile,
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)]
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -52,6 +57,8 @@ async def upload_csv_file(
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorizarion")
     except Exception as e:
         raise ServerError(str(e))
 
@@ -64,6 +71,7 @@ async def upload_csv_file(
         status.HTTP_404_NOT_FOUND: {
             "description": "Uid is not present inside the database"
         },
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
         status.HTTP_409_CONFLICT: {"description": "There are user_ids duplicated"},
     },
     status_code=status.HTTP_200_OK,

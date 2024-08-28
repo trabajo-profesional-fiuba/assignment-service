@@ -18,14 +18,14 @@ class AuthenticationService:
     def assert_student_role(self, token: str):
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
-        self._assert_role(user["role"], Role.STUDENT.name)
+        self._assert_role(user["role"], Role.STUDENT.value)
 
     def assert_only_admin(self, token: str):
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
-        self._assert_role(user["role"], Role.ADMIN.name)
+        self._assert_role(user["role"], Role.ADMIN.value)
 
     def assert_tutor_rol(self, token: str):
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
-        self._assert_multiple_role(user["role"], [Role.ADMIN.name, Role.TUTOR.name])
+        self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.TUTOR.value])

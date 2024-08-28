@@ -18,7 +18,6 @@ from src.api.tutors.schemas import (
     TutorResponse,
     TutorList,
     PeriodList,
-    TutorResponseWithTopics,
     TutorWithTopicsList,
 )
 from src.api.tutors.repository import TutorRepository
