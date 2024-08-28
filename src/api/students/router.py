@@ -58,7 +58,7 @@ async def upload_csv_file(
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
     except InvalidJwt as e:
-        raise InvalidCredentials("Invalid Authorizarion")
+        raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
 
@@ -82,11 +82,16 @@ async def get_students_by_ids(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     user_ids: list[int] = Query(default=[]),
 ):
-    auth_service = AuthenticationService(jwt_resolver)
-    auth_service.assert_only_admin(token)
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_role(token)
 
-    service = StudentService(StudentRepository(session))
-    res = service.get_students_by_ids(user_ids)
-    logger.info("Retrieve all students by ids.")
+        service = StudentService(StudentRepository(session))
+        res = service.get_students_by_ids(user_ids)
+        logger.info("Retrieve all students by ids.")
 
-    return res
+        return res
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise e

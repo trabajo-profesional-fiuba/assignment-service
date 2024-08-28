@@ -4,6 +4,9 @@ from fastapi import APIRouter, Depends, status, Query
 
 from sqlalchemy.orm import Session
 
+from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
+from src.api.auth.service import AuthenticationService
+from src.api.auth.schemas import oauth2_scheme
 from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import GroupRequest, GroupResponse
@@ -12,6 +15,7 @@ from src.api.topics.repository import TopicRepository
 from src.api.topics.service import TopicService
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
+from src.api.users.exceptions import InvalidCredentials
 from src.config.database.database import get_db
 
 router = APIRouter(prefix="/groups", tags=["Groups"])
@@ -43,9 +47,14 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
 async def add_group(
     group: GroupRequest,
     session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_role(token)
+
         tutor_service = TutorService(TutorRepository(session))
         topic_service = TopicService(TopicRepository(session))
         group_service = GroupService(GroupRepository(session))
@@ -60,5 +69,7 @@ async def add_group(
         )
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
