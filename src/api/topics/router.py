@@ -82,7 +82,8 @@ async def get_topics(
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service.assert_student_role(token)
+        
         service = TopicService(TopicRepository(session))
         topics = service.get_topics()
         return topics

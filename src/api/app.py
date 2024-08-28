@@ -63,7 +63,7 @@ app.include_router(form_router)
 app.include_router(tutor_router)
 app.include_router(group_router)
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"]
+    CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["Authorization", "Content-Type"]
 )
 
 
