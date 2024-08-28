@@ -10,6 +10,8 @@ from src.api.users.repository import UserRepository
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
+from tests.integration.api.helper import ApiHelper
+
 PREFIX = "/groups"
 
 
@@ -36,6 +38,8 @@ def fastapi():
 
 @pytest.mark.integration
 def test_add_group(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_student_token()
     tutor_repository = TutorRepository(Session)
     tutor_repository.add_period(Period(id="1C2025"))
 
@@ -76,5 +80,5 @@ def test_add_group(fastapi, tables):
     }
     params = {"period": "1C2025"}
 
-    response = fastapi.post(f"{PREFIX}/", json=body, params=params)
+    response = fastapi.post(f"{PREFIX}/", json=body, params=params, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
