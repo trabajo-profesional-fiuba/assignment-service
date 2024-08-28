@@ -17,8 +17,12 @@ from src.api.exceptions import (
     Duplicated,
     ServerError,
 )
+from src.api.users.exceptions import InvalidCredentials
 from src.config.database.database import get_db
 from src.config.logging import logger
+from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
+from src.api.auth.service import AuthenticationService
+from src.api.auth.schemas import oauth2_scheme
 
 router = APIRouter(prefix="/forms", tags=["Forms"])
 
@@ -42,13 +46,20 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
     status_code=status.HTTP_201_CREATED,
 )
 async def add_answers(
-    answers: FormPreferencesRequest, session: Annotated[Session, Depends(get_db)]
+    answers: FormPreferencesRequest,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
     try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_role(token)
         service = FormService(FormRepository(session))
         return service.add_answers(answers)
     except (Duplicated, EntityNotFound) as e:
         raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
 
@@ -66,10 +77,18 @@ async def add_answers(
     },
     status_code=status.HTTP_200_OK,
 )
-async def get_answers(session: Annotated[Session, Depends(get_db)]):
+async def get_answers(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
     try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
         return service.get_answers(TopicRepository(session))
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
         raise ServerError(message=str(e))
@@ -87,12 +106,19 @@ async def get_answers(session: Annotated[Session, Depends(get_db)]):
     status_code=status.HTTP_200_OK,
 )
 async def delete_answer(
-    answer_id: datetime, session: Annotated[Session, Depends(get_db)]
+    answer_id: datetime,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
     try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
         return service.delete_answers_by_answer_id(answer_id)
     except EntityNotFound as e:
         raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))

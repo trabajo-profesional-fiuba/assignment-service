@@ -53,8 +53,10 @@ def topics(request):
 @pytest.mark.integration
 @pytest.mark.parametrize("topics", ["test_data"], indirect=True)
 def test_add_topics_with_tutor_not_found(fastapi, tables, topics):
+    helper = ApiHelper()
+    token = helper.create_admin_token()
     # add topics
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Tutor 'juan.perez@fi.uba.ar' not found."}
 
@@ -64,12 +66,13 @@ def test_add_topics_with_tutor_not_found(fastapi, tables, topics):
 def test_add_topics_with_diff_categories_success(fastapi, tables, tutors, topics):
     # add tutors
     helper = ApiHelper()
+    token = helper.create_admin_token()
     helper.create_period('1C2024')
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'}, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
 
     # add topics
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {"id": 1, "name": "topic 1", "category": {"name": "category 1"}},
@@ -82,11 +85,12 @@ def test_add_topics_with_diff_categories_success(fastapi, tables, tutors, topics
 @pytest.mark.parametrize("topics", ["duplicated_category"], indirect=True)
 def test_add_topics_with_same_category_success(fastapi, tables, tutors, topics):
     helper = ApiHelper()
+    token = helper.create_admin_token()
     helper.create_period('1C2024')
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'}, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
 
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
     assert response.json() == [
         {"id": 1, "name": "topic 1", "category": {"name": "category 1"}},
@@ -100,12 +104,13 @@ def test_add_topics_with_same_category_success(fastapi, tables, tutors, topics):
 def test_add_existing_topic_with_success(fastapi, tables, tutors, topics):
     # add tutors
     helper = ApiHelper()
+    token = helper.create_admin_token()
     helper.create_period('1C2024')
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'}, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
 
     # add topics
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == 2
 
@@ -113,19 +118,23 @@ def test_add_existing_topic_with_success(fastapi, tables, tutors, topics):
 @pytest.mark.integration
 def test_upload_wrong_type_file(fastapi, tables):
     # add topics
+    helper = ApiHelper()
+    token = helper.create_admin_token()
     filename = "test_data"
     content_type = "application/json"
     files = {"file": (filename, "test".encode(), content_type)}
 
-    response = fastapi.post(f"{PREFIX}/upload", files=files)
+    response = fastapi.post(f"{PREFIX}/upload", files=files, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
 
 
 @pytest.mark.parametrize("topics", ["wrong_format"], indirect=True)
 @pytest.mark.integration
 def test_upload_wrong_format_file(fastapi, tables, topics):
+    helper = ApiHelper()
+    token = helper.create_admin_token()
     # add topics
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -134,16 +143,17 @@ def test_upload_wrong_format_file(fastapi, tables, topics):
 def test_get_topics_with_success(fastapi, tables, tutors, topics):
     # add tutors
     helper = ApiHelper()
+    token = helper.create_admin_token()
     helper.create_period('1C2024')
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'}, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
 
     # add topics
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
 
     # get topics
-    response = fastapi.get(f"{PREFIX}/")
+    response = fastapi.get(f"{PREFIX}/", headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
         {"id": 1, "name": "topic 1", "category": {"name": "category 1"}},
@@ -157,14 +167,15 @@ def test_get_topics_with_success(fastapi, tables, tutors, topics):
 def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     # add tutors
     helper = ApiHelper()
+    token = helper.create_admin_token()
     helper.create_period('1C2024')
-    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'})
+    response = fastapi.post(f"{TUTOR_PREFIX}/upload", files=tutors,params={'period':'1C2024'}, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
 
     # add topics
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
 
     # update topics
-    response = fastapi.post(f"{PREFIX}/upload", files=topics)
+    response = fastapi.post(f"{PREFIX}/upload", files=topics, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED

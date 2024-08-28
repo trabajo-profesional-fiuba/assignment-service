@@ -31,6 +31,7 @@ def fastapi():
 def test_upload_file_and_create_tutors(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("1C2024")
+    admin_token = helper.create_admin_token()
 
     with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
         content = file.read()
@@ -41,7 +42,12 @@ def test_upload_file_and_create_tutors(fastapi, tables):
     params = {"period": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload", params=params, files=files)
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        params=params,
+        files=files,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
@@ -51,6 +57,8 @@ def test_upload_file_and_create_tutors(fastapi, tables):
 @pytest.mark.integration
 def test_upload_file_with_invalid_columns_raise_exception(fastapi, tables):
     # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
     with open("tests/integration/api/tutors/data/wrong_data.csv", "rb") as file:
         content = file.read()
 
@@ -60,7 +68,12 @@ def test_upload_file_with_invalid_columns_raise_exception(fastapi, tables):
     params = {"period": "1C2O24"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     http_exception = response.json()
 
     # Assert
@@ -71,6 +84,8 @@ def test_upload_file_with_invalid_columns_raise_exception(fastapi, tables):
 @pytest.mark.integration
 def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables):
     # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
     with open("tests/integration/api/tutors/data/duplicate_data.csv", "rb") as file:
         content = file.read()
 
@@ -80,7 +95,12 @@ def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables
     params = {"period": "1C2O24"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     http_exception = response.json()
 
     # Assert
@@ -91,13 +111,20 @@ def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables
 @pytest.mark.integration
 def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
     # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
     filename = "test_data"
     content_type = "application/json"
     files = {"file": (filename, "test".encode(), content_type)}
     params = {"period": "1C2O24"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
@@ -109,6 +136,7 @@ def test_upload_file_with_existing_tutors(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_tutor("Juan", "Perez", "12345678", "juan.perez@fi.uba.ar")
     helper.create_tutor("Paula", "Diaz", "33456789", "paula.diaz@fi.uba.ar")
+    admin_token = helper.create_admin_token()
 
     with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
         content = file.read()
@@ -119,7 +147,12 @@ def test_upload_file_with_existing_tutors(fastapi, tables):
     params = {"period": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload", params=params, files=files)
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        params=params,
+        files=files,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
@@ -129,10 +162,16 @@ def test_upload_file_with_existing_tutors(fastapi, tables):
 @pytest.mark.integration
 def test_add_new_global_period(fastapi, tables):
     # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
     body = {"id": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/periods", json=body)
+    response = fastapi.post(
+        f"{PREFIX}/periods",
+        json=body,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
@@ -143,10 +182,15 @@ def test_duplicates_global_periods_raise_exception(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2024")
+    admin_token = helper.create_admin_token()
     body = {"id": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/periods", json=body)
+    response = fastapi.post(
+        f"{PREFIX}/periods",
+        json=body,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT
@@ -156,10 +200,16 @@ def test_duplicates_global_periods_raise_exception(fastapi, tables):
 @pytest.mark.integration
 def test_period_with_invalid_pattern_raise_exception(fastapi, tables):
     # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
     body = {"id": "1c25"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/periods", json=body)
+    response = fastapi.post(
+        f"{PREFIX}/periods",
+        json=body,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -176,9 +226,14 @@ def test_get_all_periods_order_by_asc(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_period("2C2024")
     helper.create_period("1C2025")
+    admin_token = helper.create_admin_token()
 
     # Act
-    response = fastapi.get(f"{PREFIX}/periods", params={"order": "ASC"})
+    response = fastapi.get(
+        f"{PREFIX}/periods",
+        params={"order": "ASC"},
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     data = response.json()
 
     # Assert
@@ -196,9 +251,14 @@ def test_get_all_periods_order_by_desc(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_period("2C2024")
     helper.create_period("1C2025")
+    admin_token = helper.create_admin_token()
 
     # Act
-    response = fastapi.get(f"{PREFIX}/periods", params={"order": "DESC"})
+    response = fastapi.get(
+        f"{PREFIX}/periods",
+        params={"order": "DESC"},
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     data = response.json()
 
     # Assert
@@ -216,9 +276,13 @@ def test_get_all_periods_order_by_default_desc(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_period("2C2024")
     helper.create_period("1C2025")
+    admin_token = helper.create_admin_token()
 
     # Act
-    response = fastapi.get(f"{PREFIX}/periods")
+    response = fastapi.get(
+        f"{PREFIX}/periods",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     data = response.json()
 
     # Assert
@@ -231,8 +295,13 @@ def test_get_all_periods_order_by_default_desc(fastapi, tables):
 
 @pytest.mark.integration
 def test_get_all_periods_is_empty(fastapi, tables):
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
     # Act
-    response = fastapi.get(f"{PREFIX}/periods")
+    response = fastapi.get(
+        f"{PREFIX}/periods",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     data = response.json()
 
     # Assert
@@ -246,10 +315,15 @@ def test_add_new_tutor_period_with_success(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("1C2024")
     helper.create_tutor("Juan", "Perez", "10600", "email@fi.uba.ar")
+    admin_token = helper.create_admin_token()
     params = {"period_id": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/{10600}/periods", params=params)
+    response = fastapi.post(
+        f"{PREFIX}/{10600}/periods",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
@@ -261,10 +335,15 @@ def test_if_id_is_not_tutor_raises_a_404(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("1C2024")
     helper.create_student("Juan", "Perez", "105600", "email@fi.uba.ar")
+    admin_token = helper.create_admin_token()
     params = {"period_id": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/{105600}/periods", params=params)
+    response = fastapi.post(
+        f"{PREFIX}/{105600}/periods",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -278,11 +357,20 @@ def test_add_same_period_to_two_tutors_with_success(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
     helper.create_tutor("Juan", "Perez", "105601", "email2@fi.uba.ar")
+    admin_token = helper.create_admin_token()
     params = {"period_id": "1C2024"}
 
     # Act
-    response1 = fastapi.post(f"{PREFIX}/{105600}/periods", params=params)
-    response2 = fastapi.post(f"{PREFIX}/{105601}/periods", params=params)
+    response1 = fastapi.post(
+        f"{PREFIX}/{105600}/periods",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    response2 = fastapi.post(
+        f"{PREFIX}/{105601}/periods",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response1.status_code == status.HTTP_201_CREATED
@@ -296,9 +384,10 @@ def test_get_tutors_period_with_success(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
     helper.create_tutor_period("105600", "1C2024")
+    admin_token = helper.create_admin_token()
 
     # Act
-    response = fastapi.get(f"{PREFIX}/{105600}/periods")
+    response = fastapi.get(f"{PREFIX}/{105600}/periods", headers={"Authorization": f"Bearer {admin_token.access_token}"})
 
     # Assert
     assert response.status_code == status.HTTP_200_OK
@@ -307,10 +396,15 @@ def test_get_tutors_period_with_success(fastapi, tables):
 @pytest.mark.integration
 def test_raise_404_if_tutor_not_exists(fastapi, tables):
     # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
     tutor_id = 10600
 
     # Act
-    response = fastapi.get(f"{PREFIX}/{tutor_id}/periods")
+    response = fastapi.get(
+        f"{PREFIX}/{tutor_id}/periods",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -323,10 +417,15 @@ def test_add_same_period_to_same_tutor_raise_error(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
     helper.create_tutor_period("105600", "1C2024")
+    admin_token = helper.create_admin_token()
     params = {"period_id": "1C2024"}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/{105600}/periods", params=params)
+    response = fastapi.post(
+        f"{PREFIX}/{105600}/periods",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT
@@ -338,6 +437,7 @@ def test_new_upload_override_tutor_periods(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_tutor("Juan", "Perez", "12345678", "juan.perez@fi.uba.ar")
     helper.create_tutor_period("12345678", "1C2024", 5)
+    admin_token = helper.create_admin_token()
 
     tutor = helper.get_tutor_by_tutor_id(12345678)
     assert tutor.periods[0].capacity == 5
@@ -350,10 +450,18 @@ def test_new_upload_override_tutor_periods(fastapi, tables):
     files = {"file": (filename, content, content_type)}
     params = {"period": "1C2024"}
 
-    response = fastapi.post(f"{PREFIX}/upload", files=files, params=params)
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     assert response.status_code == status.HTTP_201_CREATED
 
-    response = fastapi.get(f"{PREFIX}/{12345678}/periods")
+    response = fastapi.get(
+        f"{PREFIX}/{12345678}/periods",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["periods"][0]["capacity"] == 1
 
@@ -364,6 +472,7 @@ def test_delete_tutor_no_affects_global_periods(fastapi, tables):
     helper = ApiHelper()
     periods = ["1C2024", "2C2024", "1C2025"]
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    admin_token = helper.create_admin_token()
 
     for p in periods:
         helper.create_period(p)
@@ -373,12 +482,18 @@ def test_delete_tutor_no_affects_global_periods(fastapi, tables):
     assert len(tutor.periods) == 3
 
     # Act
-    response = fastapi.delete(f"{PREFIX}/{105600}")
+    response = fastapi.delete(
+        f"{PREFIX}/{105600}",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_202_ACCEPTED
 
-    response = fastapi.get(f"{PREFIX}/periods")
+    response = fastapi.get(
+        f"{PREFIX}/periods",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 3
 
@@ -389,6 +504,7 @@ def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
     helper = ApiHelper()
     periods = ["1C2024", "2C2024", "1C2025"]
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    admin_token = helper.create_admin_token()
 
     for p in periods:
         helper.create_period(p)
@@ -398,12 +514,18 @@ def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
     assert len(tutor.periods) == 3
 
     # Act
-    response = fastapi.delete(f"{PREFIX}/{105600}")
+    response = fastapi.delete(
+        f"{PREFIX}/{105600}",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_202_ACCEPTED
 
-    response = fastapi.get(f"{PREFIX}/{105600}/periods")
+    response = fastapi.get(
+        f"{PREFIX}/{105600}/periods",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -416,8 +538,12 @@ def test_all_topics_from_tutors_in_specific_period(fastapi, tables):
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
     helper.create_tutor_period("105600", "1C2024")
     helper.create_tutor_period("105600", "2C2024")
+    admin_token = helper.create_admin_token()
 
-    response = fastapi.get(f"{PREFIX}/periods/1C2024")
+    response = fastapi.get(
+        f"{PREFIX}/periods/1C2024",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert len(data[0]["periods"]) == 1

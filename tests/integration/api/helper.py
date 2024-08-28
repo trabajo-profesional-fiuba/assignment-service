@@ -1,3 +1,4 @@
+from src.api.auth.jwt import JwtResolver
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -55,3 +56,25 @@ class ApiHelper:
 
     def get_tutor_by_tutor_id(self, tutor_id):
         return self._tutor_repository.get_tutor_by_tutor_id(tutor_id)
+    
+    def create_admin_token(self):
+        sub = {
+            "id": 1,
+            "name": "admin",
+            "last_name": "admin",
+            "role": "admin",
+        }
+        jwt = JwtResolver()
+        token = jwt.create_token(sub, "admin")
+        return token
+
+    def create_student_token(self):
+        sub = {
+            "id": 1,
+            "name": "student",
+            "last_name": "student",
+            "role": "student",
+        }
+        jwt = JwtResolver()
+        token = jwt.create_token(sub, "student")
+        return token
