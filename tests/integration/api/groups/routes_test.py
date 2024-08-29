@@ -16,7 +16,7 @@ from tests.integration.api.helper import ApiHelper
 PREFIX = "/groups"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def tables():
     # Create all tables
     create_tables()
@@ -117,3 +117,34 @@ def test_get_groups(fastapi, tables):
     assert len(data[0]['students']) == 3
     assert data[0]['id'] == 1
 
+@pytest.mark.integration
+def test_get_groups_in_diff_period_is_empty(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_period("2C2025")
+    helper.create_tutor("Juan", "Perez","105000","perez@gmail.com")
+    helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A","105001","a@gmail.com")
+    helper.create_student("Alejo", "B","105002","b@gmail.com")
+    helper.create_student("Tomas", "C","105003","c@gmail.com")
+    user_token = helper.create_student_token()
+    admin_token = helper.create_admin_token()
+
+    body = {
+        "students_ids": [105001, 105002, 105003],
+        "tutor_email": "perez@gmail.com",
+        "topic": "My custom topic",
+    }
+    params = {"period": "1C2025"}
+    response = fastapi.post(f"{PREFIX}/", json=body, params=params, headers={'Authorization': f"Bearer {user_token.access_token}"})
+    assert response.status_code == status.HTTP_201_CREATED
+
+    # Act
+    params = {"period": "2C2025"}
+    response = fastapi.get(f"{PREFIX}/", params=params, headers={'Authorization': f"Bearer {admin_token.access_token}"})
+
+    # Assert 
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) == 0
