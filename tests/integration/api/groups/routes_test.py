@@ -3,6 +3,7 @@ from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
 from src.api.groups.router import router
+from src.api.groups.schemas import GroupList
 from src.api.tutors.models import Period
 from src.api.tutors.repository import TutorRepository
 from src.api.users.models import User, Role
@@ -82,3 +83,37 @@ def test_add_group(fastapi, tables):
 
     response = fastapi.post(f"{PREFIX}/", json=body, params=params, headers={'Authorization': f"Bearer {token.access_token}"})
     assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest.mark.integration
+def test_get_groups(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez","105000","perez@gmail.com")
+    helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A","105001","a@gmail.com")
+    helper.create_student("Alejo", "B","105002","b@gmail.com")
+    helper.create_student("Tomas", "C","105003","c@gmail.com")
+    user_token = helper.create_student_token()
+    admin_token = helper.create_admin_token()
+
+    body = {
+        "students_ids": [105001, 105002, 105003],
+        "tutor_email": "perez@gmail.com",
+        "topic": "My custom topic",
+    }
+    params = {"period": "1C2025"}
+    response = fastapi.post(f"{PREFIX}/", json=body, params=params, headers={'Authorization': f"Bearer {user_token.access_token}"})
+    assert response.status_code == status.HTTP_201_CREATED
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/", params=params, headers={'Authorization': f"Bearer {admin_token.access_token}"})
+
+    # Assert 
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) == 1
+    assert len(data[0]['students']) == 3
+    assert data[0]['id'] == 1
+

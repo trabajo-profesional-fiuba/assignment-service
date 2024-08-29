@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from src.api.students.exceptions import StudentNotFound
 from src.api.groups.models import Group
+from src.api.tutors.models import TutorPeriod
 from src.api.users.models import User
 
 
@@ -26,3 +27,16 @@ class GroupRepository:
             session.expunge(group)
 
         return group
+
+    def get_groups(self, period):
+        """Returns all groups for a specific period"""
+        with self.Session() as session:
+            groups = (
+                session.query(Group)
+                .join(TutorPeriod)
+                .filter(TutorPeriod.period_id == period)
+                .all()
+            )
+            session.expunge_all()
+        
+        return groups
