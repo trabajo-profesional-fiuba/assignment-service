@@ -22,7 +22,7 @@ class ApiHelper:
     def create_period(self, period: str):
         self._tutor_repository.add_period(Period(id=period))
     
-    def create_tutor(self, name, last_name, id, email):
+    def create_tutor(self, name: str, last_name: str, id: str, email: str):
         tutor = User(
             id=int(id),
             name=name,
@@ -34,7 +34,7 @@ class ApiHelper:
 
         self._user_repository.add_tutors([tutor])
 
-    def create_student(self, name, last_name, id, email):
+    def create_student(self, name: str, last_name: str, id: str, email: str):
         student = User(
             id=int(id),
             name=name,

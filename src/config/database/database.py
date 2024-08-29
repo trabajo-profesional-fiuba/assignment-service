@@ -11,6 +11,7 @@ from src.config.database.models import Base
 
 # Database Configurations
 database_url = api_config.database_url
+logger.info(f"Connecting postgres: {database_url}")
 pool_size = api_config.database_pool_size
 pool_timeout = api_config.database_pool_timeout
 
