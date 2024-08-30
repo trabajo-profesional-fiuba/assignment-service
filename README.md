@@ -2,6 +2,8 @@
 
 [![codecov](https://codecov.io/gh/trabajo-profesional-fiuba/assignment-service/graph/badge.svg?token=88MT80VD78)](https://codecov.io/gh/trabajo-profesional-fiuba/assignment-service)
 
+> _What problem are we trying to solve?_
+
 An assignment service designed to solve assignment problems such as:
 
 - Assign people or person to an incomplete group of students.
