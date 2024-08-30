@@ -11,12 +11,11 @@ from src.config.database.models import Base
 
 # Database Configurations
 database_url = api_config.database_url
-logger.info(f"Connecting postgres: {database_url}")
 pool_size = api_config.database_pool_size
 pool_timeout = api_config.database_pool_timeout
 
 engine = create_engine(
-    database_url, pool_size=pool_size, pool_timeout=pool_timeout, echo=True
+    database_url, pool_size=pool_size, pool_timeout=pool_timeout
 )
 
 
@@ -42,9 +41,11 @@ def create_tables():
     Creates all tables in the database.
     """
     try:
+        logger.info("Creating all the tables")
         Base.metadata.create_all(bind=engine)
         init_default_values()
     except Exception as err:
+        logger.error("An error ocurred during the table creation")
         raise err
 
 
