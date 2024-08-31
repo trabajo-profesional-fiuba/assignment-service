@@ -1,15 +1,14 @@
 from datetime import datetime
-from typing_extensions import Annotated
-
 from fastapi import APIRouter, status, Depends
 from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
     GroupAnswerList,
 )
-from src.api.forms.service import FormService
 from src.api.forms.repository import FormRepository
+from src.api.forms.service import FormService
 from src.api.topics.repository import TopicRepository
 
 from src.api.exceptions import (
@@ -17,12 +16,12 @@ from src.api.exceptions import (
     Duplicated,
     ServerError,
 )
+from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
+from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.service import AuthenticationService
 from src.api.users.exceptions import InvalidCredentials
 from src.config.database.database import get_db
 from src.config.logging import logger
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.service import AuthenticationService
-from src.api.auth.schemas import oauth2_scheme
 
 router = APIRouter(prefix="/forms", tags=["Forms"])
 

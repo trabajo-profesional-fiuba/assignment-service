@@ -1,7 +1,10 @@
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
 
 from src.api.forms.repository import FormRepository
+from src.api.exceptions import EntityNotFound
+from src.api.forms.exceptions import AnswerNotFound
+from src.api.forms.models import FormPreferences
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
@@ -9,16 +12,12 @@ from src.api.forms.schemas import (
     GroupAnswerResponse,
     UserAnswerResponse,
 )
-from src.api.forms.exceptions import (
-    AnswerNotFound,
-)
-from src.api.exceptions import EntityNotFound
-from src.api.forms.models import FormPreferences
-from src.api.topics.repository import TopicRepository
-
 from src.api.students.exceptions import StudentNotFound
 from src.api.topics.exceptions import TopicNotFound
+from src.api.topics.repository import TopicRepository
+
 from src.config.logging import logger
+
 from src.core.group_answer import GroupFormAnswer
 from src.core.topic import Topic
 

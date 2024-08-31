@@ -1,22 +1,22 @@
 from typing_extensions import Annotated
-
 from fastapi import APIRouter, UploadFile, Depends, status, Query
-
 from sqlalchemy.orm import Session
 
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.service import AuthenticationService
-from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
-from src.api.users.exceptions import InvalidCredentials
-from src.api.users.schemas import UserList
-from src.api.users.repository import UserRepository
-
-from src.api.students.service import StudentService
-from src.api.students.repository import StudentRepository
-from src.api.students.exceptions import StudentNotFound, StudentDuplicated
-
 from src.api.auth.hasher import get_hasher, ShaHasher
+from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.service import AuthenticationService
+
+from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
+
+from src.api.students.exceptions import StudentNotFound, StudentDuplicated
+from src.api.students.repository import StudentRepository
+from src.api.students.service import StudentService
+
+from src.api.users.exceptions import InvalidCredentials
+from src.api.users.repository import UserRepository
+from src.api.users.schemas import UserList
+
 from src.config.database.database import get_db
 from src.config.logging import logger
 

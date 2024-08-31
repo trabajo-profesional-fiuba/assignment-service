@@ -1,6 +1,6 @@
-from typing import List
-from pydantic import BaseModel, ConfigDict, Field, RootModel
 from datetime import datetime
+from pydantic import BaseModel, ConfigDict, Field, RootModel
+from typing import List
 from src.api.topics.schemas import SimpleTopic
 from src.api.users.schemas import UserResponse
 

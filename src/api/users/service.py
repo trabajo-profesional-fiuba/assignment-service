@@ -1,5 +1,5 @@
-from src.api.users.repository import UserRepository
 from src.api.users.exceptions import InvalidCredentials
+from src.api.users.repository import UserRepository
 from src.config.logging import logger
 
 

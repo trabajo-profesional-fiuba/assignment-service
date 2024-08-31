@@ -1,21 +1,24 @@
 from typing_extensions import Annotated
-
 from fastapi import APIRouter, Depends, status, Query
-
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.service import AuthenticationService
 from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.service import AuthenticationService
 from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
+
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import GroupList, GroupRequest, GroupResponse
 from src.api.groups.service import GroupService
+
 from src.api.topics.repository import TopicRepository
 from src.api.topics.service import TopicService
+
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
+
 from src.api.users.exceptions import InvalidCredentials
+
 from src.config.database.database import get_db
 
 router = APIRouter(prefix="/groups", tags=["Groups"])

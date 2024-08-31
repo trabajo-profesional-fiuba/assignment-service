@@ -2,18 +2,17 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-
-from src.config.database.database import create_tables
-from src.config.config import api_config
-from src.config.logging import logger
-
-
+from src.api.auth.router import router as auth_router
+from src.api.forms.router import router as form_router
+from src.api.groups.router import router as group_router
 from src.api.students.router import router as student_router
 from src.api.topics.router import router as topic_router
-from src.api.forms.router import router as form_router
 from src.api.tutors.router import router as tutor_router
-from src.api.auth.router import router as auth_router
-from src.api.groups.router import router as group_router
+
+from src.config.config import api_config
+from src.config.database.database import create_tables
+from src.config.logging import logger
+
 
 
 api_description = """

@@ -12,9 +12,9 @@ from src.api.exceptions import (
     InvalidFileType,
     ServerError,
 )
+from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
-from src.api.tutors.service import TutorService
 from src.api.tutors.schemas import (
     PeriodResponse,
     PeriodRequest,
@@ -23,10 +23,10 @@ from src.api.tutors.schemas import (
     PeriodList,
     TutorWithTopicsList,
 )
-from src.api.tutors.repository import TutorRepository
-from src.api.tutors.exceptions import InvalidPeriod
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
+from src.api.tutors.exceptions import InvalidPeriod
+from src.api.tutors.repository import TutorRepository
 from src.config.database.database import get_db
 
 router = APIRouter(prefix="/tutors")
