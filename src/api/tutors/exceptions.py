@@ -26,6 +26,9 @@ class TutorPeriodNotFound(Exception):
     def __init__(self, message):
         super().__init__(message)
 
+class TutorPeriodNotInserted(Exception):
+    def __init__(self, message):
+        super().__init__(message)
 
 # External
 class InvalidPeriod(HTTPException):

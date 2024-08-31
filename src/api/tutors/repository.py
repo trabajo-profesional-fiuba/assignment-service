@@ -1,15 +1,16 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc, exc
 
-from src.api.users.models import User, Role
 from src.api.tutors.models import Period, TutorPeriod
 from src.api.tutors.exceptions import (
     TutorNotFound,
     PeriodDuplicated,
     TutorPeriodNotFound,
+    TutorPeriodNotInserted
 )
-from src.api.topics.models import Topic, TopicTutorPeriod
 from src.api.topics.exceptions import TopicNotFound
+from src.api.topics.models import Topic, TopicTutorPeriod
+from src.api.users.models import User, Role
 
 
 class TutorRepository:
@@ -60,7 +61,7 @@ class TutorRepository:
             return tutor
         except exc.IntegrityError:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
-    
+
     def add_tutor_periods(self, tutor_periods: list[TutorPeriod]):
         try:
             with self.Session() as session:
@@ -71,7 +72,6 @@ class TutorRepository:
             return tutor_periods
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message=f"{e}")
-
 
     def get_all_periods(self, order: str) -> list[Period]:
         with self.Session() as session:
@@ -149,7 +149,8 @@ class TutorRepository:
 
     def get_tutors(self):
         with self.Session() as session:
-            tutors = session.query(User).filter(User.role.in_([Role.TUTOR, Role.ADMIN])).all()
+            tutors = session.query(User).filter(
+                User.role.in_([Role.TUTOR, Role.ADMIN])).all()
             session.expunge_all()
         return tutors
 
@@ -195,7 +196,8 @@ class TutorRepository:
 
     def delete_tutors_periods_by_period_id(self, period_id):
         with self.Session() as session:
-            session.query(TutorPeriod).filter(TutorPeriod.period_id == period_id).delete()
+            session.query(TutorPeriod).filter(
+                TutorPeriod.period_id == period_id).delete()
             session.commit()
 
     def get_tutors_by_period_id(self, period_id):
@@ -209,6 +211,13 @@ class TutorRepository:
             session.expunge_all()
 
         for tutor in tutors:
-            tutor.periods = [period for period in tutor.periods if period.period_id == period_id]
+            tutor.periods = [
+                period for period in tutor.periods if period.period_id == period_id]
 
         return tutors
+
+    def remove_tutor_periods_by_tutor_ids(self, period_id, tutors_ids):
+        with self.Session() as session:
+            session.query(TutorPeriod).filter(TutorPeriod.period_id == period_id).filter(
+                TutorPeriod.tutor_id.in_(tutors_ids)).delete()
+            session.commit()

@@ -1,8 +1,8 @@
-from sqlalchemy.dialects import postgresql
-from typing import List
 from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, Table
-from sqlalchemy.orm import relationship
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import relationship
+from typing import List
 
 from src.api.users.models import User
 from src.config.database.base import Base
@@ -12,7 +12,7 @@ from src.config.database.base import Base
 association_table = Table(
     "groups_students",
     Base.metadata,
-    Column("group_id", ForeignKey("groups.id")),
+    Column("group_id", ForeignKey("groups.id",ondelete="CASCADE")),
     Column("student_id", ForeignKey("users.id"), primary_key=True),
 )
 

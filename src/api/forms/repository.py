@@ -1,13 +1,12 @@
-from sqlalchemy.orm import Session
 from datetime import datetime
+from sqlalchemy.orm import Session
 
-from src.api.forms.models import FormPreferences
 from src.api.exceptions import Duplicated
-
+from src.api.forms.models import FormPreferences
 from src.api.students.exceptions import StudentNotFound
 from src.api.topics.exceptions import TopicNotFound
-from src.api.users.models import User, Role
 from src.api.topics.models import Topic
+from src.api.users.models import User, Role
 
 from src.config.logging import logger
 
@@ -92,6 +91,25 @@ class FormRepository:
             )
             session.expunge_all()
             logger.info(f"Look for answers of {answer_id}")
+
+        return answers
+
+    def get_answers_by_user_id(self, user_id):
+        with self.Session() as session:
+            answers = (
+                session.query(
+                    FormPreferences.answer_id,
+                    User.email.label("email"),
+                    FormPreferences.topic_1,
+                    FormPreferences.topic_2,
+                    FormPreferences.topic_3,
+                )
+                .join(User, User.id == FormPreferences.user_id)
+                .filter(FormPreferences.user_id == user_id)
+                .all()
+            )
+            session.expunge_all()
+            logger.info(f"Get all the answers")
 
         return answers
 

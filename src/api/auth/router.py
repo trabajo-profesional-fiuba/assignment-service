@@ -1,16 +1,19 @@
-from typing_extensions import Annotated
-from sqlalchemy.orm import Session
 from fastapi import APIRouter, status, Depends
+from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 
-
-from src.api.auth.jwt import JwtResolver, JwtEncoded, get_jwt_resolver
 from src.api.auth.hasher import ShaHasher, get_hasher
+from src.api.auth.jwt import JwtResolver, JwtEncoded, get_jwt_resolver
 from src.api.auth.schemas import RequestForm
 
-from src.config.database.database import get_db
+from src.api.users.exceptions import UserNotFound, InvalidCredentials
 from src.api.users.repository import UserRepository
 from src.api.users.service import UserService
-from src.api.users.exceptions import UserNotFound, InvalidCredentials
+
+from src.config.database.database import get_db
+
+
+
 
 
 router = APIRouter(tags=["Authentication"])

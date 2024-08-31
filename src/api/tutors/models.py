@@ -1,4 +1,3 @@
-from src.config.database.base import Base
 from sqlalchemy import (
     Column,
     String,
@@ -10,6 +9,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from src.config.database.base import Base
 
 
 class Period(Base):

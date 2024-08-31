@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from src.api.students.exceptions import StudentNotFound
 from src.api.groups.models import Group
+from src.api.students.exceptions import StudentNotFound
 from src.api.tutors.models import TutorPeriod
 from src.api.users.models import User
 
