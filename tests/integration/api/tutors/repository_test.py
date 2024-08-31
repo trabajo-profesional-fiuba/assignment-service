@@ -94,7 +94,8 @@ class TestTutorRepository:
         u_repository.delete_tutors()
         t_repository = TutorRepository(self.Session)
         response = t_repository.get_tutors()
-        assert len(response) == 0
+        # only the default admin
+        assert len(response) == 1
 
         with pytest.raises(TutorPeriodNotFound):
             t_repository.get_topic_tutor_period(1, 1)
