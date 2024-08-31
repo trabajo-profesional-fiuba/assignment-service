@@ -1,6 +1,6 @@
 from typing_extensions import Annotated
 
-from fastapi import APIRouter, UploadFile, Depends, status, Query
+from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
@@ -55,7 +55,7 @@ async def upload_csv_file(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period: str = Query(...),
+    period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -76,7 +76,8 @@ async def upload_csv_file(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
-    
+
+
 @router.delete(
     "/{tutor_id}",
     description="Deletes a tutor",
@@ -107,6 +108,7 @@ async def delete_tutor(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
+
 
 @router.post(
     "/periods",
@@ -140,6 +142,7 @@ async def add_period(
     except Exception as e:
         raise ServerError(str(e))
 
+
 @router.get(
     "/periods",
     response_model=PeriodList,
@@ -169,6 +172,7 @@ async def get_periods(
     except Exception as e:
         raise ServerError(str(e))
 
+
 @router.post(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
@@ -188,7 +192,7 @@ async def add_period_to_tutor(
     tutor_id: int,
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period_id: str = Query(...),
+    period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -201,6 +205,7 @@ async def add_period_to_tutor(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
+
 
 @router.get(
     "/{tutor_id}/periods",
@@ -233,6 +238,7 @@ async def get_tutor_periods(
     except Exception as e:
         raise ServerError(str(e))
 
+
 @router.get(
     "/periods/{period_id}",
     response_model=TutorWithTopicsList,
@@ -248,9 +254,9 @@ async def get_tutor_periods(
 )
 async def get_tutor_periods(
     session: Annotated[Session, Depends(get_db)],
-    period_id: str,
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)

@@ -65,7 +65,7 @@ def test_upload_file_with_invalid_columns_raise_exception(fastapi, tables):
     filename = "wrong_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-    params = {"period": "1C2O24"}
+    params = {"period": "1C2024"}
 
     # Act
     response = fastapi.post(
@@ -92,7 +92,7 @@ def test_upload_file_with_duplicates_rows_in_csv_raise_exception(fastapi, tables
     filename = "duplicate_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-    params = {"period": "1C2O24"}
+    params = {"period": "1C2024"}
 
     # Act
     response = fastapi.post(
@@ -116,7 +116,7 @@ def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
     filename = "test_data"
     content_type = "application/json"
     files = {"file": (filename, "test".encode(), content_type)}
-    params = {"period": "1C2O24"}
+    params = {"period": "1C2024"}
 
     # Act
     response = fastapi.post(
