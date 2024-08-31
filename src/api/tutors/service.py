@@ -177,7 +177,7 @@ class TutorService:
             return TutorPeriodResponse.model_validate(
                 self._repository.get_tutor_period_by_tutor_email(period, tutor_email)
             )
-        except TutorNotFound as e:
+        except  TutorNotFound as e:
             raise EntityNotFound(message=str(e))
 
     def delete_tutor(self, tutor_id):
