@@ -565,6 +565,84 @@ def test_get_answers_by_group(fastapi, tables, topics, students, tutors):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
 
+@pytest.mark.integration
+def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
+    user_token = helper.create_student_token()
+    response = fastapi.post(
+        f"{TUTOR_PREFIX}/periods",
+        json={"id": "1C2024"},
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(
+        f"{TUTOR_PREFIX}/upload",
+        files=tutors,
+        params={"period": "1C2024"},
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(
+        f"{TOPIC_PREFIX}/upload",
+        files=topics,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.post(
+        f"{STUDENT_PREFIX}/upload",
+        files=students,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    today1 = dt.datetime.today().timestamp()
+    body1 = {
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": 105287,
+        "user_id_student_4": 105288,
+        "answer_id": today1,
+        "topic_1": "topic 1",
+        "topic_2": "topic 2",
+        "topic_3": "topic 3",
+    }
+    response = fastapi.post(
+        f"{PREFIX}/answers",
+        json=body1,
+        headers={"Authorization": f"Bearer {user_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    today2 = dt.datetime.today().timestamp()
+    body2 = {
+        "user_id_sender": 105285,
+        "user_id_student_2": 105286,
+        "user_id_student_3": None,
+        "user_id_student_4": None,
+        "answer_id": today2,
+        "topic_1": "topic 3",
+        "topic_2": "topic 2",
+        "topic_3": "topic 1",
+    }
+    response = fastapi.post(
+        f"{PREFIX}/answers",
+        json=body2,
+        headers={"Authorization": f"Bearer {user_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = fastapi.get(
+        f"{PREFIX}/answers/{105285}",
+        headers={"Authorization": f"Bearer {user_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 2
+
+
 
 @pytest.mark.integration
 def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):

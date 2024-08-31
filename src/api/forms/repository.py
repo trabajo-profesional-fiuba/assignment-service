@@ -94,6 +94,25 @@ class FormRepository:
 
         return answers
 
+    def get_answers_by_user_id(self, user_id):
+        with self.Session() as session:
+            answers = (
+                session.query(
+                    FormPreferences.answer_id,
+                    User.email.label("email"),
+                    FormPreferences.topic_1,
+                    FormPreferences.topic_2,
+                    FormPreferences.topic_3,
+                )
+                .join(User, User.id == FormPreferences.user_id)
+                .filter(FormPreferences.user_id == user_id)
+                .all()
+            )
+            session.expunge_all()
+            logger.info(f"Get all the answers")
+
+        return answers
+
     def get_answers(self):
         with self.Session() as session:
             answers = (

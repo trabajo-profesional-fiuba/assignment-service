@@ -91,7 +91,7 @@ class FormService:
         id = topic.id
         name = topic.name
         category = topic.category.name
-        topic = Topic(id=id,title=name,category=category)
+        topic = Topic(id=id, title=name, category=category)
         return topic
 
     def get_answers(self, topic_repository: TopicRepository):
@@ -109,18 +109,20 @@ class FormService:
             answers = {}
             for db_answer in db_answers:
                 id = str(db_answer.answer_id.timestamp())
-                topic_1 = self._make_topic(topic_repository.get_topic_by_id(db_answer.topic_1))
-                topic_2 = self._make_topic(topic_repository.get_topic_by_id(db_answer.topic_2))
-                topic_3 = self._make_topic(topic_repository.get_topic_by_id(db_answer.topic_3))
+                topic_1 = self._make_topic(
+                    topic_repository.get_topic_by_id(db_answer.topic_1))
+                topic_2 = self._make_topic(
+                    topic_repository.get_topic_by_id(db_answer.topic_2))
+                topic_3 = self._make_topic(
+                    topic_repository.get_topic_by_id(db_answer.topic_3))
                 if id not in answers:
                     group = GroupFormAnswer(id)
                     answers[id] = group
 
-                group = answers[id] 
+                group = answers[id]
                 group.add_student(db_answer.email)
                 group.add_topics([topic_1, topic_2, topic_3])
 
-            
             for answer_id, data in answers.items():
                 response.append(
                     GroupAnswerResponse(
@@ -130,4 +132,31 @@ class FormService:
                     )
                 )
 
-        return response 
+        return response
+
+    def get_answers_by_user_id(self, user_id, topic_repository: TopicRepository):
+        """
+        Retrieves answers from one user based on his id
+        """
+        answers = self._repository.get_answers_by_user_id(user_id)
+        response = []
+        if len(answers) != 0:
+
+            for db_answer in answers:
+                topic_1 = self._make_topic(
+                    topic_repository.get_topic_by_id(db_answer.topic_1))
+                topic_2 = self._make_topic(
+                    topic_repository.get_topic_by_id(db_answer.topic_2))
+                topic_3 = self._make_topic(
+                    topic_repository.get_topic_by_id(db_answer.topic_3))
+
+                response.append(
+                    UserAnswerResponse(
+                        answer_id=db_answer.answer_id,
+                        email=db_answer.email,
+                        topic_1=topic_1.name,
+                        topic_2=topic_2.name,
+                        topic_3=topic_3.name
+                    )
+                )
+        return response
