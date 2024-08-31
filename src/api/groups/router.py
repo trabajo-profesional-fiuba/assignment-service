@@ -77,6 +77,7 @@ async def add_group(
     except Exception as e:
         raise ServerError(message=str(e))
 
+
 @router.get(
     "/",
     response_model=GroupList,
@@ -105,7 +106,7 @@ async def get_groups(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         group_service = GroupService(GroupRepository(session))
-        
+
         return group_service.get_goups(period)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
