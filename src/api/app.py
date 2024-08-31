@@ -16,7 +16,6 @@ from src.api.auth.router import router as auth_router
 from src.api.groups.router import router as group_router
 
 
-
 api_description = """
 
 ## Group 54 - Final Project
@@ -44,10 +43,10 @@ Interact with these entities through a series of dedicated API endpoints tailore
 - Iván Lautaro Pfaab   - ipfaab@fi.uba.ar
 - Alejo Villores       - avillores@fi.uba.ar
 """
-logger.info("Creating databases")
+logger.info("Initializing databases")
 create_tables()
 
-logger.info("Instanciates App")
+logger.info("Instanciating FastAPI App")
 app = FastAPI(
     title="Assignment Service Api",
     version=api_config.api_version,
@@ -56,16 +55,26 @@ app = FastAPI(
     docs_url="/docs",
     root_path="/api",
 )
+logger.info("Adding authentication router")
 app.include_router(auth_router)
+logger.info("Adding student router")
 app.include_router(student_router)
+logger.info("Adding topics router")
 app.include_router(topic_router)
+logger.info("Adding forms router")
 app.include_router(form_router)
+logger.info("Adding tutors router")
 app.include_router(tutor_router)
+logger.info("Adding groups router")
 app.include_router(group_router)
+logger.info("Adding middlewares")
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["Authorization", "Content-Type"]
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["Authorization", "Content-Type"],
 )
-
 
 @app.get("/", description="This endpoint redirects to docs")
 async def root(request: Request):

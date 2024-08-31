@@ -1,10 +1,10 @@
+import os
 from starlette.config import Config, environ
 from starlette.datastructures import Secret
 
 
 class ApiConfiguration:
-    # Config will be read from environment variables and/or ".env" files.
-    config = Config(".env")
+
 
     """
     The order in which configuration values are read is:
@@ -14,6 +14,12 @@ class ApiConfiguration:
     - The default value given in config.
     - If none of those match, then config(...) will raise an error.
     """
+
+    def __init__(self) -> None:
+        # Default to '.env.development' but use ENV_FILE if set
+        config_file = os.getenv('ENV_FILE', '.env.development')
+        print(f"Env file read: {config_file}")
+        self.config = Config(config_file)
 
     @property
     def database_url(self) -> str:
@@ -46,7 +52,7 @@ class ApiConfiguration:
 
     @property
     def port(self) -> int:
-        return self.config("PORT", cast=int, default=8000)
+        return self.config("PORT", cast=int, default=5000)
 
     @property
     def host(self) -> str:
@@ -55,6 +61,10 @@ class ApiConfiguration:
     @property
     def api_version(self) -> str:
         return self.config("API_VERSION", cast=str, default="1.0.0")
+    
+    @property
+    def workers(self) -> int:
+        return self.config("WORKERS", cast=int, default=1)
 
     def set_env(self, key: str, value):
         environ[key.to_upper()] = value

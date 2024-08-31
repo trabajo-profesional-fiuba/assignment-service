@@ -41,7 +41,7 @@ class TutorRepository:
         with self.Session() as session:
             exists = (
                 session.query(User)
-                .filter(User.role == Role.TUTOR)
+                .filter(User.role.in_([Role.TUTOR, Role.ADMIN]))
                 .filter(User.id == tutor_id)
                 .first()
             )
@@ -149,7 +149,7 @@ class TutorRepository:
 
     def get_tutors(self):
         with self.Session() as session:
-            tutors = session.query(User).filter(User.role == Role.TUTOR).all()
+            tutors = session.query(User).filter(User.role.in_([Role.TUTOR, Role.ADMIN])).all()
             session.expunge_all()
         return tutors
 
