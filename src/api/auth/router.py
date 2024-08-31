@@ -1,7 +1,6 @@
 from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, status, Depends
-from fastapi.exceptions import HTTPException
 
 
 from src.api.auth.jwt import JwtResolver, JwtEncoded, get_jwt_resolver

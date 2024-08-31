@@ -9,6 +9,7 @@ class UserService:
         self._repository = repository
 
     def authenticate(self, email, hashed_password):
+        logger.info(f"{email} is trying to log in")
         user = self._repository.get_user_by_email(email)
         if user.password != hashed_password:
             logger.error(f"The email {email} introduced wrong answerd")
