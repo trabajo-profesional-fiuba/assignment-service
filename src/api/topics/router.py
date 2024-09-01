@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, UploadFile
+from fastapi import APIRouter, status, Depends, UploadFile, Query
 from fastapi.exceptions import HTTPException
 from typing_extensions import Annotated
 from sqlalchemy.orm import Session
@@ -7,13 +7,18 @@ from sqlalchemy.orm import Session
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
+
 from src.api.exceptions import EntityNotFound, InvalidCsv, InvalidFileType, ServerError
+
+from src.api.topics.repository import TopicRepository
 from src.api.topics.schemas import TopicList
 from src.api.topics.service import TopicService
-from src.api.topics.repository import TopicRepository
-from src.api.users.exceptions import InvalidCredentials
-from src.config.database.database import get_db
+
 from src.api.tutors.repository import TutorRepository
+
+from src.api.users.exceptions import InvalidCredentials
+
+from src.config.database.database import get_db
 
 
 router = APIRouter(prefix="/topics", tags=["Topics"])
@@ -42,6 +47,7 @@ async def upload_csv_file(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -50,7 +56,7 @@ async def upload_csv_file(
             raise InvalidFileType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
-        return service.create_topics_from_string(content, TutorRepository(session))
+        return service.create_topics_from_string(period_id,content, TutorRepository(session))
     except (
         EntityNotFound,
         InvalidFileType,

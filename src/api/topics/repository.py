@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from src.api.topics.models import Category, Topic
 from src.api.topics.exceptions import CategoryNotFound
+from src.api.topics.models import Category, Topic
 
 
 class TopicRepository:

@@ -1,6 +1,6 @@
-from src.api.students.exceptions import StudentNotFound
 from src.api.exceptions import EntityNotInserted, EntityNotFound
 from src.api.groups.schemas import GroupList, GroupResponse
+from src.api.students.exceptions import StudentNotFound
 
 
 from src.config.logging import logger

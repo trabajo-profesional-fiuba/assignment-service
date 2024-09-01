@@ -1,12 +1,14 @@
-from src.api.students.utils import StudentCsvFile
-from src.api.users.schemas import UserList
-from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
+from src.api.students.utils import StudentCsvFile
 from src.api.students.exceptions import (
     StudentDuplicated,
     StudentNotFound,
     StudentNotInserted,
 )
+
+from src.api.users.models import User, Role
+from src.api.users.schemas import UserList
+
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 
 
@@ -38,8 +40,7 @@ class StudentService:
         try:
             rows = self._get_csv_rows(csv)
             students = self._get_students(rows, hasher)
-            self._repository.delete_students()
-            students_saved = self._repository.add_students(students)
+            students_saved = self._repository.upsert_students(students)
             return UserList.model_validate(students_saved)
         except InvalidCsv as e:
             raise e
@@ -49,7 +50,6 @@ class StudentService:
             raise EntityNotInserted(str(e))
 
     def get_students_by_ids(self, ids: list[int]):
-
         try:
             if len(list(set(ids))) != len(list(ids)):
                 raise StudentDuplicated("Query params udis contain duplicates")

@@ -1,12 +1,15 @@
 from src.api.exceptions import EntityNotFound
-from src.api.topics.schemas import TopicList, TopicResponse
-from src.api.topics.repository import TopicRepository
-from src.api.topics.utils import TopicCsvFile
+
 from src.api.topics.models import Topic, Category
+from src.api.topics.repository import TopicRepository
+from src.api.topics.schemas import TopicList, TopicResponse
+from src.api.topics.utils import TopicCsvFile
+
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from src.api.tutors.repository import TutorRepository
 
 from src.config.logging import logger
+
 from src.core.topic import Topic as TopicDto
 
 
@@ -45,7 +48,7 @@ class TopicService:
         return topics, capacities
 
     def _add_topic_tutor_periods(
-        self, topics_by_tutor: dict, tutor_repository: TutorRepository
+        self, period_id: str, topics_by_tutor: dict, tutor_repository: TutorRepository
     ):
         """
         Add a topic tutor period entity for each topic of each tutor.
@@ -55,7 +58,7 @@ class TopicService:
                 tutor, topics_by_tutor
             )
             tutor_repository.add_topic_tutor_period(
-                tutor, tutor_topics, tutor_capacities
+                period_id, tutor, tutor_topics, tutor_capacities
             )
 
     def _add_categories(self, categories):
@@ -89,7 +92,7 @@ class TopicService:
 
         return topics
 
-    def create_topics_from_string(self, csv: str, tutor_repository: TutorRepository):
+    def create_topics_from_string(self, period_id: str, csv: str, tutor_repository: TutorRepository):
         """
         Processes a CSV string to create topics, categories, and tutor-topic
         assignments. Deletes existing topics if applies and returns the list
@@ -106,7 +109,7 @@ class TopicService:
             self._add_categories(categories)
             db_topics = self._add_topics(topics)
 
-            self._add_topic_tutor_periods(topics_by_tutor, tutor_repository)
+            self._add_topic_tutor_periods(period_id, topics_by_tutor, tutor_repository)
 
             return TopicList.model_validate(db_topics)
         except (TutorNotFound, TutorPeriodNotFound) as e:
