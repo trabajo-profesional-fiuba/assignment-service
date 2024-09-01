@@ -99,3 +99,53 @@ class TestStudentRepository:
         response = repository.get_students()
 
         assert len(response) == 4
+
+
+    @pytest.mark.integration
+    def test_upsert_students(self, tables):
+        student1 = User(
+            id=121212,
+            name="Juan",
+            last_name="Perez",
+            email="121212@fi.uba.ar",
+            password="password",
+            role=Role.STUDENT,
+        )
+        student2 = User(
+            id=131313,
+            name="Pedro",
+            last_name="Pipo",
+            email="131313@fi.uba.ar",
+            password="password1",
+            role=Role.STUDENT,
+        )
+        students = [student1, student2]
+
+        u_repository = UserRepository(self.Session)
+        u_repository.add_students(students)
+
+        student3 = User(
+            id=121212,
+            name="Alejo",
+            last_name="Buenisimo",
+            email="121212@fi.uba.ar",
+            password="password",
+            role=Role.STUDENT,
+        )
+        student4 = User(
+            id=141414,
+            name="Pedro",
+            last_name="Pipo",
+            email="141414@fi.uba.ar",
+            password="password1",
+            role=Role.STUDENT,
+        ) 
+        students = u_repository.upsert_students([student3, student4])
+        repository = StudentRepository(self.Session)
+        response = repository.get_students()
+
+        student_changed = list(filter(lambda x: x.id == 121212, response))[0]
+
+        assert len(response) == 7
+        assert student_changed.name == "Alejo"
+        assert student_changed.last_name == "Buenisimo"
