@@ -33,7 +33,7 @@ class TestTutorRepository:
 
         t_repository = TutorRepository(self.Session)
         with pytest.raises(TutorNotFound):
-            t_repository.add_topic_tutor_period("tutor2@com", topics, capacities)
+            t_repository.add_topic_tutor_period("1C2024","tutor2@com", topics, capacities)
 
     @pytest.mark.integration
     def test_add_tutors_with_success(self, tables):
@@ -67,7 +67,7 @@ class TestTutorRepository:
 
         t_repository = TutorRepository(self.Session)
         with pytest.raises(TutorPeriodNotFound):
-            t_repository.add_topic_tutor_period("tutor1@com", [topic], capacities)
+            t_repository.add_topic_tutor_period("1C2024","tutor1@com", [topic], capacities)
 
     @pytest.mark.integration
     def test_add_topic_tutor_period_with_success(self, tables):
@@ -77,7 +77,7 @@ class TestTutorRepository:
 
         topics = [Topic(name="topic 1", category_id=2)]
         capacities = [2]
-        response = t_repository.add_topic_tutor_period("tutor1@com", topics, capacities)
+        response = t_repository.add_topic_tutor_period("1C2024","tutor1@com", topics, capacities)
         assert len(response) == 1
         assert response[0].topic_id == 1
         assert response[0].tutor_period_id == 1
