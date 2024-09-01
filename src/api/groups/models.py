@@ -28,7 +28,7 @@ class Group(Base):
     __tablename__ = "groups"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    assigned_topic_id = Column(Integer, ForeignKey("topics.id"), nullable=True)
+    assigned_topic_id = Column(Integer, ForeignKey("topics.id", ondelete="SET NULL"), nullable=True)
     tutor_period_id = Column(
         Integer,
         ForeignKey("tutor_periods.id"),

@@ -31,13 +31,39 @@ A tutor can be present in one period but the following be ausent.
 
 For this project is necessary to have  installed ``Python 3.11.*`` and ``Poetry (version 1.8.3)`` for dependency manganment.
 
+You can find how to install python in this [link](https://www.python.org/downloads/release/python-3110/)
+
 ## Dependencies
 
-This project uses [Poetry](https://python-poetry.org/) for managing dependencies. Poetry simplifies the process of dependency management by providing a single tool for installing and managing project dependencies. To ensure that your environment is properly set up, follow the installation instructions below.
+This project uses [Poetry](https://python-poetry.org/) for managing dependencies. Poetry simplifies the process of dependency management by providing a single tool for installing and managing project dependencies. 
 
-### Execution with Docker
+To ensure that your environment is properly set up, follow the installation instructions below.
 
-To run the backend service using Docker, run the following command in the terminal:
+```bash
+$ poetry --version
+
+Poetry (version 1.8.3)
+```
+Poetry creates a virtual enviroment where it handles all the dependencies, this avoid us to install them in our computer and having issues with versions.
+Because we are using a virtual enviroment, the python interpreter has to be changed in order to execute poetry commands without invoking poetry.
+
+If you are using vscode as you editor you can add the interpreter doing
+![interpreter](docs\image.png)
+
+Then select the one that is from poetry 
+![alt text](docs\image-1.png)
+
+Well done! Now you can run commands like `pytest` instead of `poetry run pytest`
+
+## Development
+
+In order to start the development, make sure you are following the [code guidelines](https://github.com/trabajo-profesional-fiuba/.github/blob/main/profile/code_guidelines.md)
+
+Remember to create a `.env.development` following the `.env.example` file. Ask to another dev for shared credentials
+
+## Docker
+
+To run the backend service using [Docker](https://docs.docker.com/), run the following command in the terminal:
 
 ```bash
 docker compose -f docker-compose.dev.yml up  --build -d
@@ -50,7 +76,7 @@ docker compose -f docker-compose.dev.yml down -v
 -v remove volumes (not always necessary)
 ```
 
-### Run Tests Locally
+## Run Tests Locally
 
 To run tests using Poetry, run the following commands in your terminal:
 
@@ -64,26 +90,29 @@ To run tests using Poetry, run the following commands in your terminal:
 .\InitTestDatabase.ps1 -StopDatabase
 ```
 
+> **Ensure that the PostgreSQL container is running beforehand, as the integration tests require access to the PostgreSQL database.**
+
 ```bash
 poetry run pytest or just pytest if env is activated.
 ```
 
-### Important Note
+## Format
 
-> **Ensure that the PostgreSQL container is running beforehand, as the integration tests require access to the PostgreSQL database.**
-
-### Format
-
+For formatting our code, the team chose to use [black](https://black.readthedocs.io/en/stable/index.html)
 To format code using Poetry, run the following command in your terminal:
 
 ```bash
 poetry run black . or just black . if env is activated.
 ```
 
-### Check format
+## Check format
 
 To check format code using Poetry, run the following command in your terminal:
 
 ```bash
 poetry run flake8 or just flake8 is env is activated.
 ```
+
+## Database and migrations
+
+This section can be found at [Migrations](https://github.com/trabajo-profesional-fiuba/assignment-service/blob/main/alembic/README.md)
