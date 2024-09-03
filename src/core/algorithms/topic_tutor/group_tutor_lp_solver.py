@@ -135,7 +135,7 @@ class GroupTutorLPSolver:
                 assignment_vars[(group.id, tutor.id, topic.id)]
                 for group in self._groups
                 for tutor in self._tutors
-                if topic in tutor.topics
+                if topic.id in tutor.topics_ids()
             ) <= topic.capacity
 
     def _add_tutor_capacity_constraints(self, prob, assignment_vars):

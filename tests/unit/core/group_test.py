@@ -17,11 +17,9 @@ class TestGroup:
 
     @pytest.mark.unit
     def test_group_can_be_assigned_to_a_tutor(self):
-        tutor = Tutor(1, "fake@fi.uba.ar", "Juan")
+        tutor = Tutor(1, "fake@fi.uba.ar", "Juan","Perez")
         group = Group(1)
-
         tutor.add_groups([group])
-        group.assign_tutor(tutor)
 
         assert group.is_tutored_by(1) is True
 

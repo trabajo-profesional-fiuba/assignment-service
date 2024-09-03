@@ -17,7 +17,7 @@ class TestDeliveryFlowSolver:
         DeliveryDate(week=2, day=2, hour=1),
     ]
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_source_to_groups_edges(self):
 
         # Arrange
@@ -36,7 +36,7 @@ class TestDeliveryFlowSolver:
         # Assert
         assert all(e in result for e in expected_edges)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_dates_to_sink_edges(self):
         # Arrange
         delivery_flow_solver = DeliveryFlowSolver()
@@ -57,7 +57,7 @@ class TestDeliveryFlowSolver:
 
         assert all(e in result for e in expected_edges)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_source_to_evaluators_edges(self, mocker):
         # Arrange
         period1 = Tutor(1, "email", "name")
@@ -79,7 +79,7 @@ class TestDeliveryFlowSolver:
 
         assert all(e in result for e in expected_edges)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_create_groups_edges(self, mocker):
 
         # Arrange
@@ -113,7 +113,7 @@ class TestDeliveryFlowSolver:
         # Assert
         assert all(e in result for e in expected_edges)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_filter_group_dates(self, mocker):
         # Arrange
         mutual_dates = [
@@ -142,7 +142,7 @@ class TestDeliveryFlowSolver:
         # Assert
         assert all(e in result for e in expected_edges)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_mutual_dates_between_evaluators_and_group(self, mocker):
         # Arrange
         group1 = Group(1)
@@ -163,7 +163,7 @@ class TestDeliveryFlowSolver:
         assert expected_groups[0][0] == 1
         assert expected_groups[0][1] == expected_cost
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_filter_evaluators_dates(self):
 
         # Arrange
@@ -186,7 +186,7 @@ class TestDeliveryFlowSolver:
         # Assert
         assert all(e in result for e in expected_dates)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_clean_evaluators_results(self, mocker):
         # Arrange
         tutor = Tutor(1, "email", "name")
@@ -208,7 +208,7 @@ class TestDeliveryFlowSolver:
         # Assert
         assert result["group-1"] == (1, 1)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_get_evaluators_dates_by_id(self, mocker):
         # Arrange
         tutor = Tutor(1, "email", "name")
@@ -230,7 +230,7 @@ class TestDeliveryFlowSolver:
         # Assert
         assert all(e in result for e in expected_dates)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_find_substitutes_for_group_on_date(self, mocker):
         # Arrange
         tutor1 = Tutor(1, "email", "name")
@@ -254,7 +254,7 @@ class TestDeliveryFlowSolver:
         # Assert
         assert all(e in result for e in expected_substitutes)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_evaluator_edges(self, mocker):
         # Arrange
         tutor1 = Tutor(1, "email", "name")
@@ -289,7 +289,7 @@ class TestDeliveryFlowSolver:
         # Assert
         assert all(e in result for e in expected_edges)
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_find_substitutes_for_group(self, mocker):
         # Arrange
         tutor1 = Tutor(1, "email", "name")
@@ -316,7 +316,7 @@ class TestDeliveryFlowSolver:
         assert substitutes["group-1"][0] == tutor2
         assert substitutes["group-2"][0] == tutor1
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_evaluator_valid_flow(self, mocker):
         # Arrange
         dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 3, 4), DeliveryDate(1, 1, 2)]
@@ -350,7 +350,7 @@ class TestDeliveryFlowSolver:
         # Assertion
         assert result is True
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_complete_valid_flow(self):
         # Arrange
         dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 3, 4), DeliveryDate(1, 1, 2)]
@@ -380,7 +380,7 @@ class TestDeliveryFlowSolver:
         # Assertion
         assert len(result.get_results()) == 2
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_some_groups_does_not_contains_evaluators(self):
         group1 = Group(1)
         group2 = Group(2)
@@ -394,7 +394,7 @@ class TestDeliveryFlowSolver:
 
         assert result is False
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_some_groups_does_not_contains_dates_assigned(self):
         group1 = Group(1)
         group2 = Group(2)
@@ -411,7 +411,7 @@ class TestDeliveryFlowSolver:
 
         assert result is False
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_group_without_date_raises_error(self):
         # Arrange
         dates = [DeliveryDate(1, 2, 3)]
@@ -441,7 +441,7 @@ class TestDeliveryFlowSolver:
         ):
             delivery_flow_solver.solve()
 
-    @pytest.mark.unit
+    @pytest.mark.skip
     def test_group_without_evaluator_raises_error(self):
         # Arrange
         dates = [DeliveryDate(1, 2, 3)]

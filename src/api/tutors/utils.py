@@ -5,6 +5,7 @@ import pandas as pd
 
 from src.api.exceptions import InvalidCsv
 from src.api.tutors.exceptions import TutorDuplicated
+from src.core.tutor import Tutor
 
 
 class TutorCsvFile:
@@ -26,7 +27,7 @@ class TutorCsvFile:
         """
         Checks is the columns are the expected ones
         """
-        if list(df.columns.values) != ["NOMBRE", "APELLIDO", "DNI", "MAIL"]:
+        if list(df.columns.values) != ["NOMBRE", "APELLIDO", "DNI", "MAIL", "CAPACIDAD"]:
             raise InvalidCsv("Columns don't match with expected ones")
 
     def _check_duplicates(self, df):
@@ -44,9 +45,27 @@ class TutorCsvFile:
         rows = []
         self._df.apply(
             lambda row: rows.append(
-                (row["NOMBRE"], row["APELLIDO"], row["DNI"], row["MAIL"])
+                (row["NOMBRE"], row["APELLIDO"], row["DNI"], row["MAIL"], row["CAPACIDAD"])
             ),
             axis=1,
         )
 
         return rows
+
+    def get_tutors_id(self):
+        return list(self._df['DNI'].unique())
+
+
+    def _add_tutor(self,row, tutors):
+        tutors[row["DNI"]] = Tutor(
+            id=row["DNI"],
+            email=row["MAIL"],
+            name=row["NOMBRE"],
+            last_name=row["APELLIDO"],
+            capacity=row["CAPACIDAD"]
+        )
+
+    def get_tutors(self) -> dict[str,Tutor]:
+        tutors = {}
+        self._df.apply(lambda row: self._add_tutor(row, tutors), axis=1)
+        return tutors

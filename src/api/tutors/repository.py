@@ -1,15 +1,16 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc, exc
 
-from src.api.users.models import User, Role
 from src.api.tutors.models import Period, TutorPeriod
 from src.api.tutors.exceptions import (
     TutorNotFound,
     PeriodDuplicated,
     TutorPeriodNotFound,
+    TutorPeriodNotInserted
 )
-from src.api.topics.models import Topic, TopicTutorPeriod
 from src.api.topics.exceptions import TopicNotFound
+from src.api.topics.models import Topic, TopicTutorPeriod
+from src.api.users.models import User, Role
 
 
 class TutorRepository:
@@ -41,7 +42,7 @@ class TutorRepository:
         with self.Session() as session:
             exists = (
                 session.query(User)
-                .filter(User.role == Role.TUTOR)
+                .filter(User.role.in_([Role.TUTOR, Role.ADMIN]))
                 .filter(User.id == tutor_id)
                 .first()
             )
@@ -60,6 +61,17 @@ class TutorRepository:
             return tutor
         except exc.IntegrityError:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
+
+    def add_tutor_periods(self, tutor_periods: list[TutorPeriod]):
+        try:
+            with self.Session() as session:
+                session.add_all(tutor_periods)
+                session.commit()
+                session.expunge_all()
+
+            return tutor_periods
+        except exc.IntegrityError as e:
+            raise PeriodDuplicated(message=f"{e}")
 
     def get_all_periods(self, order: str) -> list[Period]:
         with self.Session() as session:
@@ -137,7 +149,10 @@ class TutorRepository:
 
     def get_tutors(self):
         with self.Session() as session:
-            return session.query(User).filter(User.role == Role.TUTOR).all()
+            tutors = session.query(User).filter(
+                User.role.in_([Role.TUTOR, Role.ADMIN])).all()
+            session.expunge_all()
+        return tutors
 
     def get_topic_tutor_period(
         self, topic_id: int, tutor_period_id: int
@@ -179,15 +194,30 @@ class TutorRepository:
 
         return tutor
 
+    def delete_tutors_periods_by_period_id(self, period_id):
+        with self.Session() as session:
+            session.query(TutorPeriod).filter(
+                TutorPeriod.period_id == period_id).delete()
+            session.commit()
+
     def get_tutors_by_period_id(self, period_id):
         with self.Session() as session:
             tutors = (
                 session.query(User)
                 .join(TutorPeriod)
-                .join(Period)
-                .filter(Period.id == period_id)
+                .filter(TutorPeriod.period_id == period_id)
                 .all()
             )
             session.expunge_all()
 
+        for tutor in tutors:
+            tutor.periods = [
+                period for period in tutor.periods if period.period_id == period_id]
+
         return tutors
+
+    def remove_tutor_periods_by_tutor_ids(self, period_id, tutors_ids):
+        with self.Session() as session:
+            session.query(TutorPeriod).filter(TutorPeriod.period_id == period_id).filter(
+                TutorPeriod.tutor_id.in_(tutors_ids)).delete()
+            session.commit()

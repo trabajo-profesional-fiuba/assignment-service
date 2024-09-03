@@ -1,6 +1,6 @@
-from typing import List
-from pydantic import BaseModel, ConfigDict, RootModel
 from datetime import datetime
+from pydantic import BaseModel, ConfigDict, RootModel
+from typing import List
 
 
 class FormPreferencesRequest(BaseModel):
@@ -50,7 +50,7 @@ class UserAnswerList(RootModel):
 
 
 class GroupAnswerResponse(BaseModel):
-    answer_id: datetime
+    id: datetime
     students: list[str]
     topics: list[str]
 

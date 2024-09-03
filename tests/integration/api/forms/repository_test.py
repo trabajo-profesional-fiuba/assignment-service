@@ -235,3 +235,65 @@ class TestFormRepository:
         repository = FormRepository(self.Session)
         response = repository.get_answers()
         assert len(response) == 7
+
+    @pytest.mark.integration
+    def test_get_answers_by_user_id(self, tables):
+        topic_repository = TopicRepository(self.Session)
+        repository = FormRepository(self.Session)
+        user_repository = UserRepository(self.Session)
+        student = User(
+            id=101010,
+            name="Juan",
+            last_name="Perez",
+            email="101010@fi.uba.ar",
+            password="password",
+            role=Role.STUDENT,
+        )
+        topic_4 = Topic(name="topic 4", category_id=2)
+        topic_5 = Topic(name="topic 5", category_id=3)
+        topic_6 = Topic(name="topic 6", category_id=4)
+        topic_repository.add_topics([topic_4, topic_5, topic_6])
+        user_repository.add_students([student])
+        today = dt.datetime.today().isoformat()
+        answers = [
+            FormPreferences(
+                user_id=101010,
+                answer_id=today,
+                topic_1="topic 2",
+                topic_2="topic 3",
+                topic_3="topic 1",
+            ),
+        ]
+
+        response = repository.add_answers(
+            answers, ["topic 2", "topic 3", "topic 1"], [101010]
+        )
+        today = dt.datetime.today().isoformat()
+        answers = [
+            FormPreferences(
+                user_id=101010,
+                answer_id=today,
+                topic_1="topic 4",
+                topic_2="topic 5",
+                topic_3="topic 6",
+            )
+        ]
+        response = repository.add_answers(
+            answers, ["topic 4", "topic 5", "topic 6"], [101010]
+        )
+        today = dt.datetime.today().isoformat()
+        answers = [
+            FormPreferences(
+                user_id=101010,
+                answer_id=today,
+                topic_1="topic 1",
+                topic_2="topic 2",
+                topic_3="topic 4",
+            ),
+        ]
+        response = repository.add_answers(
+            answers, ["topic 1", "topic 2", "topic 4"], [101010]
+        )
+
+        answers = repository.get_answers_by_user_id(101010)
+        assert len(answers) == 3

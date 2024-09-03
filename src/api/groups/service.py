@@ -1,6 +1,6 @@
-from src.api.students.exceptions import StudentNotFound
 from src.api.exceptions import EntityNotInserted, EntityNotFound
-from src.api.groups.schemas import GroupResponse
+from src.api.groups.schemas import GroupList, GroupResponse
+from src.api.students.exceptions import StudentNotFound
 
 
 from src.config.logging import logger
@@ -45,3 +45,9 @@ class GroupService:
             raise EntityNotInserted(
                 message="Group could't be created check if params exits"
             )
+
+
+    def get_goups(self, period: str):
+        logger.info("Fetching all groups")
+        groups = self._repository.get_groups(period)
+        return GroupList.model_validate(groups)

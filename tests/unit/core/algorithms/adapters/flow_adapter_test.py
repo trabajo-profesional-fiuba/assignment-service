@@ -46,7 +46,7 @@ class TestFlowAdapter:
         Tests adapt_results method for assigning delivery dates to evaluators based
         on the flow solver result.
         """
-        ev1 = Tutor(2, "email", "name")
+        ev1 = Tutor(2, "email", "name", "lastname")
         evaluators = [ev1]
         clean_results = {
             "group-1": (2, 2),
@@ -81,7 +81,7 @@ class TestFlowAdapter:
         Tests adapt_results method for assigning delivery dates to evaluators based
         on the flow solver result.
         """
-        ev1 = Tutor(2, "email", "name")
+        ev1 = Tutor(2, "email", "name", "lastname")
         evaluators = [ev1]
         clean_results = {
             "group-1": (1, 2),

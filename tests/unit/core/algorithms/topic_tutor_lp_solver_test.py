@@ -29,12 +29,12 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor1 = Tutor(1, "Email", "Name")
+        tutor1 = Tutor(1, "Email", "Name", "Lastname")
         tutor1.add_topic(topics[0])
         tutor1.add_topic(topics[1])
         tutor1.set_capacity(2)
 
-        tutor2 = Tutor(2, "Email", "Name")
+        tutor2 = Tutor(2, "Email", "Name", "Lastname")
         tutor2.add_topic(topics[2])
         tutor2.add_topic(topics[3])
         tutor2.set_capacity(2)
@@ -79,12 +79,12 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor1 = Tutor(1, "tutor1@example.com", "Tutor 1")
+        tutor1 = Tutor(1, "tutor1@example.com", "Tutor 1 name",  "Tutor 1 lastname")
         tutor1.add_topic(topics[0])
         tutor1.add_topic(topics[1])
         tutor1.set_capacity(1)
 
-        tutor2 = Tutor(2, "tutor2@example.com", "Tutor 2")
+        tutor2 = Tutor(2, "tutor2@example.com", "Tutor 2 name", "Tutor 2 lastname")
         tutor2.add_topic(topics[2])
         tutor2.add_topic(topics[3])
         tutor2.add_topic(topics[4])

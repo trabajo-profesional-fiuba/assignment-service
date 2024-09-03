@@ -1,5 +1,5 @@
-from src.api.users.repository import UserRepository
 from src.api.users.exceptions import InvalidCredentials
+from src.api.users.repository import UserRepository
 from src.config.logging import logger
 
 
@@ -9,9 +9,11 @@ class UserService:
         self._repository = repository
 
     def authenticate(self, email, hashed_password):
+        logger.info(f"{email} is trying to log in")
         user = self._repository.get_user_by_email(email)
         if user.password != hashed_password:
             logger.error(f"The email {email} introduced wrong answerd")
             raise InvalidCredentials(message="Email or password is incorrect")
 
         return user
+

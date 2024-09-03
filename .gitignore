@@ -20,7 +20,8 @@ dist/
 db/
 
 # Env
-.env
+.env.development
+.env.production
 
 # Test env
 test.db

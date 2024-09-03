@@ -10,7 +10,10 @@ class TestJwtResolver:
     def test_jwt_resolver_can_creat_jwt(self):
 
         jwt_resolver = JwtResolver()
-        sub = "1234567890"
+        sub = {
+            'id':'1',
+            'role':'admin'
+        }
         name = "Juan Perez"
 
         jwt = jwt_resolver.create_token(sub, name)
@@ -23,11 +26,14 @@ class TestJwtResolver:
     def test_jwt_resolver_can_decode_jwt(self):
 
         jwt_resolver = JwtResolver()
-        sub = "1234567890"
+        sub = {
+            'id':'1',
+            'role':'admin'
+        }
         name = "Juan Perez"
 
         jwt = jwt_resolver.create_token(sub, name)
-        decoded_jwt = jwt_resolver.decode_token(jwt)
+        decoded_jwt = jwt_resolver.decode_token(jwt.access_token)
         jwt_info = dict(decoded_jwt)
 
         assert "sub" in jwt_info
@@ -38,7 +44,10 @@ class TestJwtResolver:
     def test_jwt_resolver_raise_invalid_jwt_if_it_is_expired(self):
 
         jwt_resolver = JwtResolver()
-        sub = "1234567890"
+        sub = {
+            'id':'1',
+            'role':'admin'
+        }
         name = "Juan Perez"
 
         exp_time = datetime.datetime(2024, 7, 25, 10).timestamp()

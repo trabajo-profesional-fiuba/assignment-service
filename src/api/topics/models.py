@@ -27,7 +27,7 @@ class Topic(Base):
         Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False
     )
 
-    category = relationship("Category", back_populates="topic")
+    category = relationship("Category", back_populates="topic", lazy="subquery")
     groups = relationship("Group", back_populates="topic", lazy="noload")
 
 

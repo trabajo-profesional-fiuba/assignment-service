@@ -1,12 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import exc
 
-
-from src.api.users.models import User, Role
-from src.api.users.exceptions import UserNotFound
-
-from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
 from src.api.students.exceptions import StudentDuplicated, StudentNotInserted
+from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
+from src.api.users.exceptions import UserNotFound
+from src.api.users.models import User, Role
 
 
 class UserRepository:
@@ -59,3 +57,9 @@ class UserRepository:
         with self.Session() as session:
             session.query(User).filter(User.role == Role.TUTOR).delete()
             session.commit()
+
+    def get_tutors(self):
+        with self.Session() as session:
+            tutors = session.query(User).filter(User.role == Role.TUTOR).all()
+            session.expunge_all()
+        return tutors

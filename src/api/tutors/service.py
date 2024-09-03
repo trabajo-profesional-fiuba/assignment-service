@@ -10,7 +10,6 @@ from src.api.tutors.schemas import (
     TutorPeriodResponse,
     TutorResponse,
     PeriodList,
-    TutorResponseWithTopics,
     TutorWithTopicsList,
 )
 from src.api.tutors.utils import TutorCsvFile
@@ -19,22 +18,15 @@ from src.api.tutors.exceptions import (
     PeriodDuplicated,
     TutorDuplicated,
     TutorNotFound,
+    TutorPeriodNotInserted
 )
-from src.api.tutors.models import Period
+from src.api.tutors.models import Period, TutorPeriod
 
 
 class TutorService:
 
     def __init__(self, repository) -> None:
         self._repository = repository
-
-    def _get_csv_content(self, csv: str):
-        """
-        Parse the row information from the
-        csv of tutors
-        """
-        csv_file = TutorCsvFile(csv=csv)
-        return csv_file.get_info_as_rows()
 
     def _make_tutors(self, rows, hasher: ShaHasher):
         """
@@ -57,21 +49,62 @@ class TutorService:
             tutors.append(tutor)
         return tutors
 
-    # FIXME: This needs to be fixed so we create a new tutor period and if the tutor does not
-    # exists we create it.
-    def create_tutors_from_string(self, csv: str, hasher: ShaHasher):
+    def _get_existing_ids(self, tutors_ids):
+        tutors = self._repository.get_tutors()
+        existing_tutors_id = []
+        for tutor in tutors:
+            if tutor.id in tutors_ids:
+                existing_tutors_id.append(tutor.id)
+        return existing_tutors_id
+
+    def create_tutors_from_csv(self, csv: str, period: str, hasher: ShaHasher, user_repository):
         try:
             """
             With a csv file as string, it
             make new tutors and override the existing ones
             """
-            csv_rows = self._get_csv_content(csv)
-            tutors = self._make_tutors(csv_rows, hasher)
-            self._repository.delete_tutors()
-            return TutorList.model_validate(self._repository.add_tutors(tutors))
+            csv_file = TutorCsvFile(csv=csv)
+            tutors_ids = csv_file.get_tutors_id()
+            tutors_dtos = csv_file.get_tutors()
+            existing_tutors_id = self._get_existing_ids(tutors_ids)
+
+            remaining_ids = list(
+                filter(lambda x: x not in existing_tutors_id, tutors_ids))
+
+            tutor_periods = []
+            tutors = []
+            for id in remaining_ids:
+                tutor_dto = tutors_dtos[id]
+                tutor = User(
+                    id=int(tutor_dto.id),
+                    name=tutor_dto.name,
+                    last_name=tutor_dto.last_name,
+                    email=tutor_dto.email,
+                    password=hasher.hash(str(tutor_dto.id)),
+                    role=Role.TUTOR,
+                )
+                tutors.append(tutor)
+
+            for id in tutors_ids:
+                tutor_dto = tutors_dtos[id]
+                tutor_periods.append(TutorPeriod(
+                    period_id=period, tutor_id=tutor_dto.id, capacity=tutor_dto.capacity))
+
+            user_repository.add_tutors(tutors)
+
+            # Clean if the tutor already contains a period asociated
+            if len(existing_tutors_id) > 0:
+                self._repository.remove_tutor_periods_by_tutor_ids(
+                    period, existing_tutors_id)
+
+            # Add new periods
+            self._repository.add_tutor_periods(tutor_periods)
+            tutors = self._repository.get_tutors_by_period_id(period)
+
+            return TutorList.model_validate(tutors)
         except TutorDuplicated as e:
             raise Duplicated(str(e))
-        except TutorNotFound as e:
+        except (TutorNotFound, TutorPeriodNotInserted) as e:
             EntityNotFound(str(e))
 
     def _validate_period(self, period_id):
@@ -140,9 +173,12 @@ class TutorService:
         """
         Looks up for a tutor based on its email
         """
-        return TutorPeriodResponse.model_validate(
-            self._repository.get_tutor_period_by_tutor_email(period, tutor_email)
-        )
+        try:
+            return TutorPeriodResponse.model_validate(
+                self._repository.get_tutor_period_by_tutor_email(period, tutor_email)
+            )
+        except TutorNotFound as e:
+            raise EntityNotFound(message=str(e))
 
     def delete_tutor(self, tutor_id):
         """

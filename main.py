@@ -1,15 +1,19 @@
 import uvicorn
 from src.config.config import api_config
+from src.config.logging import logger
 from src.api.app import app
 
 if __name__ == "__main__":
     host = api_config.host
     port = api_config.port
+    workers = api_config.workers
 
-    print(f"Host: {host}")
-    print(f"Port: {port}")
+    logger.warning(f"Server listening at host: {host}")
+    logger.warning(f"Server listening at port: {port}")
+    logger.warning(f"Server running with workers: {workers}")
+
 
     try:
-        uvicorn.run(app, host=host, port=port)
+        uvicorn.run(app, host=host, port=port,workers=workers )
     except KeyboardInterrupt:
-        print("Server stopped manually.")
+        logger.warning("Server stopped mannualy")

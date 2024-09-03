@@ -1,3 +1,4 @@
+"""
 import time
 import pytest
 
@@ -17,8 +18,8 @@ class TestDeliveryLPSolver:
     # ------------ Performance and Scalability Tests ------------
     @pytest.mark.performance
     def test_four_groups_and_evaluators(self):
-        """Testing if the algorithm is overhead with four groups,
-        four dates and four evaluators."""
+        Testing if the algorithm is overhead with four groups,
+        four dates and four evaluators.
         num_groups = 4
         num_evaluators = 4
         num_tutors = 4
@@ -57,8 +58,8 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.performance
     def test_ten_groups_and_four_evaluators(self):
-        """Testing if the algorithm is overhead with ten groups,
-        five dates and five evaluators."""
+        Testing if the algorithm is overhead with ten groups,
+        five dates and five evaluators.
         num_groups = 10
         num_evaluators = 5
         num_tutors = 5
@@ -98,8 +99,8 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.performance
     def test_ten_groups_and_one_evaluator(self):
-        """Testing if the algorithm is overhead with ten groups,
-        five dates and 1 evaluator."""
+        Testing if the algorithm is overhead with ten groups,
+        five dates and 1 evaluator.
         num_groups = 10
         num_evaluators = 1
         num_tutors = 5
@@ -320,7 +321,7 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.unit
     def test_no_available_dates(self):
-        """Testing if the algorithm can handle no available dates."""
+        Testing if the algorithm can handle no available dates.
         num_groups = 2
         num_evaluators = 2
         num_tutors = 2
@@ -351,7 +352,7 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.unit
     def test_no_evaluators(self):
-        """Testing if the algorithm can handle no evaluators."""
+        Testing if the algorithm can handle no evaluators.
         num_groups = 2
         num_evaluators = 0
         num_tutors = 2
@@ -382,7 +383,7 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.unit
     def test_no_groups(self):
-        """Testing if the algorithm can handle no groups."""
+        Testing if the algorithm can handle no groups.
         num_groups = 0
         num_evaluators = 2
         num_tutors = 2
@@ -413,7 +414,7 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.unit
     def test_conflicting_dates(self):
-        """Testing if the algorithm can handle conflicting dates."""
+        Testing if the algorithm can handle conflicting dates.
         num_groups = 2
         num_evaluators = 2
         num_tutors = 2
@@ -445,7 +446,7 @@ class TestDeliveryLPSolver:
 
     @pytest.mark.unit
     def test_evaluator_availability_constraints(self):
-        """Testing if the algorithm can handle evaluator availability constraints."""
+        Testing if the algorithm can handle evaluator availability constraints.
         num_groups = 2
         num_evaluators = 1
         num_tutors = 2
@@ -521,4 +522,6 @@ class TestDeliveryLPSolver:
             assigned_date = assigned_dates[f"group-{group.id}"]
             assert (
                 assigned_date in available_dates_labels
-            ), f"Group {group.id} assigned date is not available for the evaluator."
+            ), f"Group {group.id()} assigned date is not available for the evaluator."
+
+"""
