@@ -22,6 +22,8 @@ db/
 # Env
 .env.development
 .env.production
+.env.staging
+
 
 # Test env
 test.db

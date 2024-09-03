@@ -1,7 +1,6 @@
 import uvicorn
 from src.config.config import api_config
 from src.config.logging import logger
-from src.api.app import app
 
 if __name__ == "__main__":
     host = api_config.host
@@ -14,6 +13,6 @@ if __name__ == "__main__":
 
 
     try:
-        uvicorn.run(app, host=host, port=port,workers=workers )
+        uvicorn.run("src.api.app:app", host=host, port=port,workers=workers )
     except KeyboardInterrupt:
         logger.warning("Server stopped mannualy")
