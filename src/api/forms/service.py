@@ -158,17 +158,14 @@ class FormService:
         Retrieves answers from one user based on his id
         """
         answers = self._repository.get_answers_by_user_id(user_id)
+        topics = self._transform_topics(topic_repository)
         response = []
         if len(answers) != 0:
 
             for db_answer in answers:
-                topic_1 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_1))
-                topic_2 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_2))
-                topic_3 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_3))
-
+                topic_1 = topics[db_answer.topic_1]
+                topic_2 = topics[db_answer.topic_2]
+                topic_3 = topics[db_answer.topic_3]
                 response.append(
                     UserAnswerResponse(
                         answer_id=db_answer.answer_id,

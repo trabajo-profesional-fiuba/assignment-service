@@ -10,9 +10,6 @@ from pulp import (
 
 
 from src.core.group_answer import GroupFormAnswer
-from src.core.group_topic_preferences import GroupTopicPreferences
-
-
 class IncompleteGroupsLPSolver:
     def __init__(self, groups):
         self.groups = groups
