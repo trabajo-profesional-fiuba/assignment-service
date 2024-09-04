@@ -113,7 +113,7 @@ class TestIncompleteGroupsLPSolver:
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups = solver.solve()
 
         # Verificar que se formaron los grupos correctos
         assert len(formed_groups) == 4
@@ -122,13 +122,13 @@ class TestIncompleteGroupsLPSolver:
     def test_no_groups(self):
         groups = []
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups = solver.solve()
 
         # Verificar que no hay grupos formados
         assert len(formed_groups) == 0
 
         # Verificar que no hay grupos filtrados
-        assert len(filtered_groups) == 0
+        assert len(solver.filtered_groups) == 0
 
     @pytest.mark.unit
     def test_single_group(self):
@@ -140,13 +140,13 @@ class TestIncompleteGroupsLPSolver:
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups = solver.solve()
 
         # Verificar que no hay grupos formados
         assert len(formed_groups) == 1
 
         # Verificar que no hay grupos filtrados
-        assert len(filtered_groups) == 0
+        assert len(solver.filtered_groups) == 0
 
     @pytest.mark.unit
     def test_two_groups_with_different_topics_and_categories(self):
@@ -170,13 +170,13 @@ class TestIncompleteGroupsLPSolver:
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups = solver.solve()
 
         # Verificar que se formó un grupo con los estudiantes de ambos grupos
         assert len(formed_groups) == 1
 
         # Verificar que no hay grupos restantes
-        assert len(filtered_groups) == 0
+        assert len(solver.filtered_groups) == 0
 
     @pytest.mark.unit
     def test_two_groups_with_same_category(self):
@@ -200,13 +200,13 @@ class TestIncompleteGroupsLPSolver:
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups = solver.solve()
 
         # Verificar que se formó un grupo con los estudiantes de ambos grupos
         assert len(formed_groups) == 1
 
         # Verificar que no hay grupos restantes
-        assert len(filtered_groups) == 0
+        assert len(solver.filtered_groups) == 0
 
     @pytest.mark.unit
     def test_two_groups_with_different_topics_with_three_students(self):
@@ -230,13 +230,13 @@ class TestIncompleteGroupsLPSolver:
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups = solver.solve()
 
         # Verificar que se formó un grupo con los estudiantes de ambos grupos
         assert len(formed_groups) == 1
 
         # Verificar que no hay grupos restantes
-        assert len(filtered_groups) == 0
+        assert len(solver.filtered_groups) == 0
 
     @pytest.mark.unit
     def test_multiple_groups(self):
@@ -270,7 +270,7 @@ class TestIncompleteGroupsLPSolver:
         ]
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, _ = solver.solve()
+        formed_groups = solver.solve()
 
         # Verificar que se formaron varios grupos
         assert len(formed_groups) == 2
@@ -282,7 +282,7 @@ class TestIncompleteGroupsLPSolver:
         topics, groups = read_csv_and_create_objects("db/test_1c2024.csv")
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups = solver.solve()
 
         assert len(formed_groups) > 0
 
@@ -293,6 +293,6 @@ class TestIncompleteGroupsLPSolver:
         topics, groups = read_csv_and_create_objects("db/test_2c2023.csv")
 
         solver = IncompleteGroupsLPSolver(groups)
-        formed_groups, filtered_groups = solver.solve()
+        formed_groups = solver.solve()
 
         assert len(formed_groups) > 0

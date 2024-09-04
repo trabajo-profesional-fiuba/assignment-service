@@ -1,4 +1,9 @@
 from src.api.auth.jwt import JwtResolver
+from src.api.forms.models import FormPreferences
+from src.api.forms.repository import FormRepository
+from src.api.groups.repository import GroupRepository
+from src.api.topics.models import Category, Topic
+from src.api.topics.repository import TopicRepository
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -9,6 +14,9 @@ from src.api.users.repository import UserRepository
 from src.api.users.models import User, Role
 
 from src.api.auth.hasher import ShaHasher
+import datetime as dt
+
+
 
 class ApiHelper:
     SessionFactory = sessionmaker(bind=engine)
@@ -18,10 +26,14 @@ class ApiHelper:
     def __init__(self):
         self._user_repository = UserRepository(self.Session)
         self._tutor_repository = TutorRepository(self.Session)
+        self._topic_repository = TopicRepository(self.Session)
+        self._groups_repository = GroupRepository(self.Session)
+        self._form_repository = FormRepository(self.Session)
+
 
     def create_period(self, period: str):
         self._tutor_repository.add_period(Period(id=period))
-    
+
     def create_tutor(self, name: str, last_name: str, id: str, email: str):
         tutor = User(
             id=int(id),
@@ -46,17 +58,13 @@ class ApiHelper:
 
         self._user_repository.add_students([student])
 
-    def create_tutor_period(self, tutor_id, period_id, capacity = 1):
-        period = TutorPeriod(
-            tutor_id = tutor_id,
-            period_id = period_id,
-            capacity = capacity
-        )
+    def create_tutor_period(self, tutor_id: int, period_id: str, capacity: int = 1):
+        period = TutorPeriod(tutor_id=tutor_id, period_id=period_id, capacity=capacity)
         self._tutor_repository.add_tutor_periods([period])
 
     def get_tutor_by_tutor_id(self, tutor_id):
         return self._tutor_repository.get_tutor_by_tutor_id(tutor_id)
-    
+
     def create_admin_token(self):
         sub = {
             "id": 1,
@@ -78,3 +86,29 @@ class ApiHelper:
         jwt = JwtResolver()
         token = jwt.create_token(sub, "student")
         return token
+
+
+    def create_category(self, name):
+        category = Category(name=name)
+        self._topic_repository.add_category(category)
+
+    def create_default_topics(self, topic_names):
+        for name in topic_names:
+            topic = Topic(name=name, category_id=1)
+            self._topic_repository.add_topic(topic)
+
+    def add_tutor_to_topic(self, period_id, tutor_email, topics, capacities):
+        topics_db = [Topic(name=t, category_id=1) for t in topics]
+
+        self._tutor_repository.add_topic_tutor_period(
+            period_id, tutor_email, topics_db, capacities
+        )
+
+    def get_groups(self,period_id):
+        return self._groups_repository.get_groups(period=period_id)
+    
+    def register_answer(self, ids, topics):
+        today = dt.datetime.today().fromisoformat()
+        for id in ids:
+            FormPreferences()
+        self._form_repository.add_answers()

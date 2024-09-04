@@ -199,7 +199,7 @@ class IncompleteGroupsLPSolver:
             if "Union" in var.name and var.varValue == 1:
                 print(f"{var.name}: {var.varValue}")
 
-        return self.formed_groups, self.filtered_groups
+        return self.formed_groups + self.filtered_groups
 
     def _create_group_topic_preferences(self, group_indices):
         """

@@ -51,3 +51,10 @@ class GroupService:
         logger.info("Fetching all groups")
         groups = self._repository.get_groups(period)
         return GroupList.model_validate(groups)
+
+
+    def create_basic_groups(self, group_result):
+        for group in group_result:
+            topics = group.get_topic_names()
+            ids = group.students
+            self.create_basic_group(ids, topics)
