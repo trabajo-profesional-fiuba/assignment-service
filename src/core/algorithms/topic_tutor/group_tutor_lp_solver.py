@@ -8,7 +8,7 @@ from src.core.tutor import Tutor
 
 
 class GroupTutorLPSolver:
-    def __init__(self, groups: list[GroupTopicPreferences], topics: list[Topic], tutors: list[Tutor]):
+    def __init__(self, groups: list[GroupTopicPreferences], topics: list[Topic], tutors: list[Tutor], balance_limit):
         """
         Constructor of the class.
 
@@ -20,6 +20,7 @@ class GroupTutorLPSolver:
         self._groups = groups
         self._topics = topics
         self._tutors = tutors
+        self._balance_limit = balance_limit
 
     def _create_decision_variables(self):
         """
@@ -102,6 +103,7 @@ class GroupTutorLPSolver:
         self._add_group_assignment_constraints(prob, assignment_vars)
         self._add_topic_capacity_constraints(prob, assignment_vars)
         self._add_tutor_capacity_constraints(prob, assignment_vars)
+        self._add_balance_constraints(prob, assignment_vars)
 
     def _add_group_assignment_constraints(self, prob, assignment_vars):
         """
@@ -157,6 +159,39 @@ class GroupTutorLPSolver:
                 )
                 <= tutor.capacity
             )
+
+    def _add_balance_constraints(self, prob, assignment_vars):
+        """
+        Add constraints to balance the number of groups assigned to each tutor.
+
+        Args:
+            - prob: Instance of the optimization problem.
+            - assignment_vars: Assignment variables.
+            - max_difference: The maximum allowed difference in the number of groups assigned to any two tutors.
+        """
+        for tutor_1 in self._tutors:
+            for tutor_2 in self._tutors:
+                if tutor_1.id != tutor_2.id:
+                    prob += (
+                        lpSum(assignment_vars[(group.id, tutor_1.id, topic.id)]
+                            for group in self._groups
+                            for topic in tutor_1.topics) 
+                        -
+                        lpSum(assignment_vars[(group.id, tutor_2.id, topic.id)]
+                            for group in self._groups
+                            for topic in tutor_2.topics)
+                    ) <= self._balance_limit
+
+                    prob += (
+                        lpSum(assignment_vars[(group.id, tutor_2.id, topic.id)]
+                            for group in self._groups
+                            for topic in tutor_2.topics) 
+                        -
+                        lpSum(assignment_vars[(group.id, tutor_1.id, topic.id)]
+                            for group in self._groups
+                            for topic in tutor_1.topics)
+                    ) <= self._balance_limit
+
 
     def _solve_optimization_problem(self, prob):
         """

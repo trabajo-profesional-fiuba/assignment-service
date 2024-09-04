@@ -43,7 +43,7 @@ class TestGroupTutorLPSolver:
             tutor1, tutor2
         ]
 
-        solver = GroupTutorLPSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors, balance_limit=5)
         result = solver.solve()
 
         assert len(result) == 2
@@ -93,7 +93,7 @@ class TestGroupTutorLPSolver:
 
         tutors = [tutor1, tutor2]
 
-        solver = GroupTutorLPSolver(groups, topics, tutors)
+        solver = GroupTutorLPSolver(groups, topics, tutors, balance_limit=5)
         result = solver.solve()
         
         assert len(result) == 3
@@ -107,6 +107,75 @@ class TestGroupTutorLPSolver:
         assert result[2].id == 3
         assert result[2].assigned_topic == topics[4]
         
+    @pytest.mark.unit
+    def test_tutor_group_assignment_balance(self):
+        """
+        Testing that the difference in the number of groups assigned to each tutor 
+        does not exceed the allowed balance limit of 1.
+        """
+        topics = [
+            Topic(0, "Topic 1", 1, "Category A"),
+            Topic(1, "Topic 2", 1, "Category A"),
+            Topic(2, "Topic 3", 1, "Category B"),
+            Topic(3, "Topic 4", 1, "Category B"),
+            Topic(4, "Topic 5", 1, "Category C"),
+            Topic(5, "Topic 6", 1, "Category C"),
+        ]
+
+        groups = [
+            GroupTopicPreferences(
+                1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]
+            ),
+            GroupTopicPreferences(
+                2, topics=[topics[3], topics[4], topics[5]], students=["Student 3", "Student 4"]
+            ),
+            GroupTopicPreferences(
+                3, topics=[topics[4], topics[0], topics[2]], students=["Student 5", "Student 6"]
+            ),
+            GroupTopicPreferences(
+                4, topics=[topics[2], topics[1], topics[3]], students=["Student 7", "Student 8"]
+            ),
+        ]
+
+        tutor1 = Tutor(1, "tutor1@example.com", "Tutor 1 name",  "Tutor 1 lastname")
+        tutor1.add_topic(topics[0])
+        tutor1.add_topic(topics[1])
+        tutor1.set_capacity(3)
+
+        tutor2 = Tutor(2, "tutor2@example.com", "Tutor 2 name", "Tutor 2 lastname")
+        tutor2.add_topic(topics[2])
+        tutor2.add_topic(topics[3])
+        tutor2.add_topic(topics[4])
+        tutor2.add_topic(topics[5])
+        tutor2.set_capacity(3)
+
+        tutors = [tutor1, tutor2]
+
+        solver = GroupTutorLPSolver(groups, topics, tutors, balance_limit=1)
+        result = solver.solve()
+
+        # Verificar que la diferencia en el número de grupos asignados a los tutores no sea mayor a 1
+        tutor1_groups = len([assignment for assignment in result if assignment.tutor.id == tutor1.id])
+        tutor2_groups = len([assignment for assignment in result if assignment.tutor.id == tutor2.id])
+
+        assert abs(tutor1_groups - tutor2_groups) <= 1
+
+        # Verificar que todos los grupos hayan sido asignados
+        assert len(result) == len(groups)
+
+        assert result[0].id == 1
+        assert result[0].assigned_topic == topics[0]
+
+        assert result[1].id == 2
+        assert result[1].assigned_topic == topics[3]
+
+        assert result[2].id == 3
+        assert result[2].assigned_topic == topics[4]
+
+        assert result[3].id == 4
+        assert result[3].assigned_topic == topics[1]
+
+
     # @pytest.mark.unit
     # def test_more_groups_than_tutors_but_with_enough_capacity_all_groups_are_assigned(
     #     self,
