@@ -86,7 +86,7 @@ async def get_answers(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
-        return service.get_answers(TopicRepository(session))
+        return service.get_answers(TopicRepository(session),for_controller=True)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

@@ -1,5 +1,5 @@
 from typing_extensions import Annotated
-from fastapi import APIRouter, Depends, status, Path, Response
+from fastapi import APIRouter, Depends, status, Query, Response
 from sqlalchemy.orm import Session
 
 from src.api.assigments.service import AssigmentService
@@ -14,10 +14,6 @@ from src.api.groups.repository import GroupRepository
 from src.api.groups.service import GroupService
 
 from src.api.topics.repository import TopicRepository
-
-
-
-
 from src.api.users.exceptions import InvalidCredentials
 
 from src.config.database.database import get_db
@@ -25,7 +21,7 @@ from src.config.database.database import get_db
 router = APIRouter(prefix="/assigments", tags=["Assigments"])
 
 @router.post(
-    "{period_id}/incomplete-groups",
+    "/incomplete-groups",
     summary="Runs the assigment of incomplete groups",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Successfully assigned groups"},
@@ -51,7 +47,7 @@ async def assign_incomplete_groups(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"])):
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"])):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -64,7 +60,7 @@ async def assign_incomplete_groups(
         service = AssigmentService()
         
         group_result = service.assigment_incomplete_groups(answers)
-        group_service.create_basic_groups(period_id, group_result)
+        group_service.create_basic_groups(group_result)
         return Response(status_code=status.HTTP_202_ACCEPTED,content='Created')
-    except:
+    except Exception as e:
         raise ServerError("error")

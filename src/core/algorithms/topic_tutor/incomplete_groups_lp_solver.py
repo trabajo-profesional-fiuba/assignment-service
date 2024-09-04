@@ -1,3 +1,4 @@
+import re
 from pulp import (
     LpProblem,
     LpVariable,
@@ -7,6 +8,8 @@ from pulp import (
     PULP_CBC_CMD,
 )
 
+
+from src.core.group_answer import GroupFormAnswer
 from src.core.group_topic_preferences import GroupTopicPreferences
 
 
@@ -175,13 +178,7 @@ class IncompleteGroupsLPSolver:
         assigned_groups = set()
         for var in prob.variables():
             if var.varValue == 1:
-                group_indices = [
-                    int(idx)
-                    for idx in var.name.replace("Union_", "")
-                    .replace("(", "")
-                    .replace(")", "")
-                    .split(",_")
-                ]
+                group_indices = re.findall(r"'([\d\.]+)'", var.name)
                 assigned_groups.update(group_indices)
                 self.formed_groups.append(
                     self._create_group_topic_preferences(group_indices)
@@ -240,10 +237,10 @@ class IncompleteGroupsLPSolver:
         for group in groups:
             combined_students.extend(group.students)
 
-        new_group_id = len(self.formed_groups) + 1  # Generate a new ID
-        new_group = GroupTopicPreferences(
-            id=new_group_id, topics=common_topics_ordered, students=combined_students
-        )
+        new_group_id = group_with_most_students.id
+        new_group = GroupFormAnswer(id=new_group_id)
+        new_group.add_students(combined_students)
+        new_group.add_topics(common_topics_ordered)
         return new_group
 
     def _merge_remaining_groups(self):
@@ -260,14 +257,17 @@ class IncompleteGroupsLPSolver:
                     )
 
                     # Crear un nuevo GroupTopicPreferences para el grupo unido
+                    if len(group.students) > len(other_group.students):
+                        new_group_id = group.id
+                    else:
+                        new_group_id = other_group.id
+
                     new_topics = self.combine_topics(group, other_group)
                     new_students = group.students + other_group.students
 
-                    new_group_id = len(self.formed_groups) + 1
-                    new_group = GroupTopicPreferences(
-                        new_group_id, topics=new_topics, students=new_students
-                    )
-
+                    new_group = GroupFormAnswer(id=new_group_id)
+                    new_group.add_students(new_students)
+                    new_group.add_topics(new_topics)
                     # Añadir el nuevo grupo a formed_groups
                     self.formed_groups.append(new_group)
 
@@ -277,11 +277,9 @@ class IncompleteGroupsLPSolver:
 
         if len(self.remaining_groups) == 1:
             group = self.remaining_groups.pop(0)
-            new_group = GroupTopicPreferences(
-                len(self.formed_groups) + 1,
-                topics=group.topics,
-                students=group.students,
-            )
+            new_group = GroupFormAnswer(id=group.id)
+            new_group.add_students(group.students)
+            new_group.add_topics(group.topics)
             self.formed_groups.append(new_group)
 
     def combine_topics(self, group1, group2):

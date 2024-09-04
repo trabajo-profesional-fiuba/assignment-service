@@ -17,7 +17,6 @@ from src.api.auth.hasher import ShaHasher
 import datetime as dt
 
 
-
 class ApiHelper:
     SessionFactory = sessionmaker(bind=engine)
     Session = scoped_session(SessionFactory)
@@ -29,7 +28,6 @@ class ApiHelper:
         self._topic_repository = TopicRepository(self.Session)
         self._groups_repository = GroupRepository(self.Session)
         self._form_repository = FormRepository(self.Session)
-
 
     def create_period(self, period: str):
         self._tutor_repository.add_period(Period(id=period))
@@ -87,7 +85,6 @@ class ApiHelper:
         token = jwt.create_token(sub, "student")
         return token
 
-
     def create_category(self, name):
         category = Category(name=name)
         self._topic_repository.add_category(category)
@@ -104,11 +101,24 @@ class ApiHelper:
             period_id, tutor_email, topics_db, capacities
         )
 
-    def get_groups(self,period_id):
+    def get_groups(self, period_id = None):
         return self._groups_repository.get_groups(period=period_id)
-    
+
     def register_answer(self, ids, topics):
-        today = dt.datetime.today().fromisoformat()
+        today = dt.datetime.today().isoformat()
+        all_topics = self._topic_repository.get_topics()
+        all_topics_dict = dict()
+        for topic in all_topics:
+            all_topics_dict[topic.name] = topic.id
+
+        answers = []
         for id in ids:
-            FormPreferences()
-        self._form_repository.add_answers()
+            answer = FormPreferences(
+                user_id=id,
+                answer_id=today,
+                topic_1=all_topics_dict[topics[0]],
+                topic_2=all_topics_dict[topics[1]],
+                topic_3=all_topics_dict[topics[2]],
+            )
+            answers.append(answer)
+        self._form_repository.add_answers(answers, topics, ids)

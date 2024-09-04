@@ -41,7 +41,7 @@ def test_resolve_assigment_of_incomplete_groups(fastapi, tables):
     helper.create_tutor_period(1010, "2C2024", 1)
     helper.create_default_topics(["t1","t2","t3","t4"])
     helper.add_tutor_to_topic("2C2024","email@fi.uba.ar", ["t1","t2","t3","t4"], [1,1,1,1] )
-    helper.register_answer([105286,105286],["t1","t2","t3"])
+    helper.register_answer([105285,105286],["t1","t2","t3"])
     helper.register_answer([105287,105288],["t4","t2","t3"])
     admin_token = helper.create_admin_token()
 
@@ -50,7 +50,7 @@ def test_resolve_assigment_of_incomplete_groups(fastapi, tables):
         params={"period_id": "2C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
-
+ 
     groups = helper.get_groups()
     assert response.status_code == status.HTTP_202_ACCEPTED
     assert len(groups) == 1

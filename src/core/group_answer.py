@@ -19,6 +19,9 @@ class GroupFormAnswer:
     def add_student(self, student):
         self._students.append(student)
     
+    def add_students(self, students):
+        self._students.extend(students)
+    
     def add_topics(self, topics):
         names = [topic.name for topic in self._topics]
         for topic in topics:
@@ -28,3 +31,7 @@ class GroupFormAnswer:
     def get_topic_names(self):
         names = [topic.name for topic in self._topics]
         return names
+    
+    def get_topic_ids(self):
+        ids = [topic.id for topic in self._topics]
+        return ids

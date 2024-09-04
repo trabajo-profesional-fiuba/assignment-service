@@ -46,6 +46,22 @@ class GroupService:
                 message="Group could't be created check if params exits"
             )
 
+    def create_basic_group_with_email(self, emails, preferred_topics=[]):
+        try:
+            group = self._repository.add_group_having_emails(
+                emails=emails, preferred_topics=preferred_topics
+            )
+            return GroupResponse.model_validate(group)
+        except StudentNotFound as e:
+            logger.error(f"Could not insert a group because some ids are not valid")
+            raise EntityNotFound(message=str(e))
+        except Exception as e:
+            logger.error(f"Could not insert a group with email: {str(emails)}")
+            raise EntityNotInserted(
+                message="Group could't be created check if params exits"
+            )
+
+    
 
     def get_goups(self, period: str):
         logger.info("Fetching all groups")
@@ -55,6 +71,6 @@ class GroupService:
 
     def create_basic_groups(self, group_result):
         for group in group_result:
-            topics = group.get_topic_names()
-            ids = group.students
-            self.create_basic_group(ids, topics)
+            topics = group.get_topic_ids()
+            emails = group.students
+            self.create_basic_group_with_email(emails, topics)
