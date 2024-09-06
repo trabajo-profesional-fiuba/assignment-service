@@ -212,13 +212,13 @@ class IncompleteGroupsLPSolver:
         group_with_most_students = max(groups, key=lambda g: len(g.students))
 
         # Get topics that are common across all groups
-        common_topics = set(group_with_most_students.topics)
+        common_topics = set(group_with_most_students.get_topic_ids())
         for group in groups:
-            common_topics.intersection_update(set(group.topics))
+            common_topics.intersection_update(set(group.get_topic_ids()))
 
         # Order common topics based on the group with most students
         common_topics_ordered = [
-            topic for topic in group_with_most_students.topics if topic in common_topics
+            topic for topic in group_with_most_students.topics if topic.id in common_topics
         ]
 
         # If common topics are less than 3, add more topics from the group with most\
@@ -294,7 +294,7 @@ class IncompleteGroupsLPSolver:
 
         return all_topics
 
-    def _get_group_by_id(self, id):
+    def _get_group_by_id(self, id) -> GroupFormAnswer:
         """
         Retrieves a group by its ID.
 

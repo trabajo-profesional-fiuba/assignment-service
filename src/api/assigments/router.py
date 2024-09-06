@@ -47,7 +47,7 @@ async def assign_incomplete_groups(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"])):
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"])): #tenemos que usarlo para recuperar los grupos de tal cuatrimestre
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
