@@ -18,7 +18,7 @@ from src.api.topics.repository import TopicRepository
 
 from src.config.logging import logger
 
-from src.core.group_answer import GroupFormAnswer
+from src.core.group_form_answer import GroupFormAnswer
 from src.core.topic import Topic
 
 

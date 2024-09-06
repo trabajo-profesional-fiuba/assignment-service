@@ -2,7 +2,7 @@
 
 
 from src.core.algorithms.topic_tutor.incomplete_groups_lp_solver import IncompleteGroupsLPSolver
-from src.core.group_answer import GroupFormAnswer
+from src.core.group_form_answer import GroupFormAnswer
 
 
 class AssigmentService:

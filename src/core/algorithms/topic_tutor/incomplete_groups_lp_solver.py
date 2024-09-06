@@ -9,7 +9,7 @@ from pulp import (
 )
 
 
-from src.core.group_answer import GroupFormAnswer
+from src.core.group_form_answer import GroupFormAnswer
 class IncompleteGroupsLPSolver:
     def __init__(self, groups):
         self.groups = groups
