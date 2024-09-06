@@ -13,10 +13,10 @@ class TestGroupTutorLPSolver:
     @pytest.mark.unit
     def test_success(self):
         topics = [
-            Topic(0, "Tema C", 10, "Category A"),
-            Topic(1, "Tema A", 10, "Category A"),
-            Topic(2, "Tema B", 10, "Category A"),
-            Topic(3, "Tema E", 10, "Category B"),
+            Topic(id=0, title="Tema C", capacity=10, category="Category A"),
+            Topic(id=1, title="Tema A", capacity=10, category="Category A"),
+            Topic(id=2, title="Tema B", capacity=10, category="Category A"),
+            Topic(id=3, title="Tema E", capacity=10, category="Category B"),
         ]
 
         groups = [
@@ -59,12 +59,12 @@ class TestGroupTutorLPSolver:
         """Testing that tutors dont get all groups so they dont to
         exceed their capacities."""
         topics = [
-            Topic(0, "Topic 1", 3, "Category A"),
-            Topic(1, "Topic 2", 3, "Category A"),
-            Topic(2, "Topic 3", 3, "Category B"),
-            Topic(3, "Topic 4", 3, "Category B"),
-            Topic(4, "Topic 5", 3, "Category C"),
-            Topic(5, "Topic 6", 3, "Category C"),
+            Topic(id=0, title="Topic 1", capacity=3, category="Category A"),
+            Topic(id=1, title="Topic 2", capacity=3, category="Category A"),
+            Topic(id=2, title="Topic 3", capacity=3, category="Category B"),
+            Topic(id=3, title="Topic 4", capacity=3, category="Category B"),
+            Topic(id=4, title="Topic 5", capacity=3, category="Category C"),
+            Topic(id=5, title="Topic 6", capacity=3, category="Category C"),
         ]
 
         groups = [
@@ -114,12 +114,12 @@ class TestGroupTutorLPSolver:
         does not exceed the allowed balance limit of 1.
         """
         topics = [
-            Topic(0, "Topic 1", 1, "Category A"),
-            Topic(1, "Topic 2", 1, "Category A"),
-            Topic(2, "Topic 3", 1, "Category B"),
-            Topic(3, "Topic 4", 1, "Category B"),
-            Topic(4, "Topic 5", 1, "Category C"),
-            Topic(5, "Topic 6", 1, "Category C"),
+            Topic(id=0, title="Topic 1", capacity=1, category="Category A"),
+            Topic(id=1, title="Topic 2", capacity=1, category="Category A"),
+            Topic(id=2, title="Topic 3", capacity=1, category="Category B"),
+            Topic(id=3, title="Topic 4", capacity=1, category="Category B"),
+            Topic(id=4, title="Topic 5", capacity=1, category="Category C"),
+            Topic(id=5, title="Topic 6", capacity=1, category="Category C"),
         ]
 
         groups = [

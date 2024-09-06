@@ -1,5 +1,5 @@
 class Topic:
-    def __init__(self, id: int, title: str, capacity=0, category=None, cost: int = 0):
+    def __init__(self, id: int, title: str, cost: int = 0, capacity=0, category=None):        
         self._id = id
         self._title = title
         self._category = category

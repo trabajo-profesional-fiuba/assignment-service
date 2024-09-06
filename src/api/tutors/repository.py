@@ -108,7 +108,7 @@ class TutorRepository:
         return tutor_period
 
     def add_topic_tutor_period(
-        self, tutor_email: str, topics: list[Topic], capacities: list[int]
+        self, period_id:str, tutor_email: str, topics: list[Topic], capacities: list[int]
     ):
         with self.Session() as session:
             topic_tutor_periods = []
@@ -117,7 +117,8 @@ class TutorRepository:
                 tutor_period = (
                     session.query(TutorPeriod)
                     .filter(TutorPeriod.tutor_id == tutor.id)
-                    .first()
+                    .filter(TutorPeriod.period_id == period_id)
+                    .one_or_none()
                 )
                 if tutor_period:
                     for idx, topic in enumerate(topics):

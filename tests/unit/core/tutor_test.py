@@ -102,8 +102,8 @@ class TestTutor:
     
     @pytest.mark.unit
     def test_tutor_can_have_topics(self):
-        t1 = Topic(1, "foo", 1, "Category A")
-        t2 = Topic(2, "bar", 1, "Category A")
+        t1 = Topic(id=1, title="foo", capacity=1, category="Category A")
+        t2 = Topic(id=2, title="bar", capacity=1, category="Category A")
         tutor = Tutor(1, "test@fi.uba.ar", "Juan","Perez")
 
         tutor.add_topic(t1)
