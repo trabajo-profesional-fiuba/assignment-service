@@ -287,5 +287,4 @@ class GroupTutorLPSolver:
         self._add_objective_function(prob, assignment_vars)
         self._add_constraints(prob, assignment_vars)
         result = self._solve_optimization_problem(prob)
-        print(prob)
         return result
