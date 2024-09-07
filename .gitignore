@@ -6,6 +6,7 @@ __pycache__/
 /.venv/
 /.pytest_cache/
 poetry.lock
+requirements.txt
 
 # vscode
 .vscode
@@ -22,6 +23,7 @@ db/
 # Env
 .env.development
 .env.production
+.env.staging
 
 # Test env
 test.db
