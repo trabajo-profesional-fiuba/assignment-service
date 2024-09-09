@@ -30,7 +30,6 @@ PREFIX = "/assigments"
 
 @pytest.mark.integration
 def test_resolve_assigment_of_incomplete_groups(fastapi, tables):
-
     # Arrange
     helper = ApiHelper()
     helper.create_period("2C2024")
