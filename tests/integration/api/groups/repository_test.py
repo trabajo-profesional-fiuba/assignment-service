@@ -341,3 +341,13 @@ def test_add_assigned_group_without_period(tables):
     
     with pytest.raises(EntityNotInserted):
         service.create_assigned_group(uids, tutor_period_id, topic_id, period_id=None)
+        
+@pytest.mark.integration
+def test_add_basic_group_without_period(tables):
+    uids = [160000, 17000]
+    
+    repository = GroupRepository(Session)
+    service = GroupService(repository)
+    
+    with pytest.raises(EntityNotInserted):
+        service.create_basic_group(uids, [1, 2, 3], period_id="1C2025")
