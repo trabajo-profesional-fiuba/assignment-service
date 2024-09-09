@@ -10,6 +10,9 @@ from src.api.users.models import User, Role
 
 from src.api.auth.hasher import ShaHasher
 
+from src.api.topics.models import Topic, Category
+from src.api.topics.repository import TopicRepository
+
 class ApiHelper:
     SessionFactory = sessionmaker(bind=engine)
     Session = scoped_session(SessionFactory)
@@ -18,6 +21,7 @@ class ApiHelper:
     def __init__(self):
         self._user_repository = UserRepository(self.Session)
         self._tutor_repository = TutorRepository(self.Session)
+        self._topic_repository = TopicRepository(self.Session)
 
     def create_period(self, period: str):
         self._tutor_repository.add_period(Period(id=period))
@@ -78,3 +82,11 @@ class ApiHelper:
         jwt = JwtResolver()
         token = jwt.create_token(sub, "student")
         return token
+    
+    def create_topic(self, name: str, category_id: int):
+        topic = Topic(name=name, category_id=category_id)
+        self._topic_repository.add_topic(topic)
+        
+    def create_category(self, name: str):
+        category = Category(name=name)
+        self._topic_repository.add_category(category)

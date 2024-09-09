@@ -34,8 +34,7 @@ class GroupRepository:
         with self.Session() as session:
             groups = (
                 session.query(Group)
-                .join(TutorPeriod)
-                .filter(TutorPeriod.period_id == period)
+                .filter(Group.period_id == period)
                 .all()
             )
             session.expunge_all()

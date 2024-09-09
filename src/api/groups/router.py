@@ -28,12 +28,12 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
     "/",
     response_model=GroupResponse,
     summary="Creates a new group",
-    description="""This endpoint is intended to use for those cases which the group of
-    students already have a tutor and a topic""",
+    description="""This endpoint creates a new group. The group can already have tutor and topic
+    or just topic_preferences.""",
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully added a new group."},
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Bad Request due unkown operation"
+            "description": "Bad Request due unknown operation"
         },
         status.HTTP_404_NOT_FOUND: {
             "description": "Some information provided is not in db"
@@ -42,7 +42,7 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
             "description": "Input validation has failed, typically resulting in a client-facing error response."
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happend inside the backend"
+            "description": "Internal Server Error - Something happened inside the backend"
         },
     },
     status_code=status.HTTP_201_CREATED,
@@ -62,14 +62,17 @@ async def add_group(
         topic_service = TopicService(TopicRepository(session))
         group_service = GroupService(GroupRepository(session))
 
-        tutor_period = tutor_service.get_tutor_period_by_tutor_email(
-            period, group.tutor_email
-        )
-        topic = topic_service.get_or_add_topic(group.topic)
-
-        return group_service.create_assigned_group(
-            group.students_ids, tutor_period.id, topic.id, period_id=period
-        )
+        if group.preferred_topics is None:
+            tutor_period = tutor_service.get_tutor_period_by_tutor_email(
+                period, group.tutor_email
+            )
+            topic = topic_service.get_or_add_topic(group.topic)
+        
+            return group_service.create_assigned_group(
+                group.students_ids, tutor_period.id, topic.id, period_id=period
+            )
+        else:
+            return group_service.create_basic_group(group.students_ids, group.preferred_topics, period)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -85,13 +88,13 @@ async def add_group(
     responses={
         status.HTTP_200_OK: {"description": "Successfully added a new group."},
         status.HTTP_400_BAD_REQUEST: {
-            "description": "Bad Request due unkown operation"
+            "description": "Bad Request due unknown operation"
         },
         status.HTTP_404_NOT_FOUND: {
             "description": "Some information provided is not in db"
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happend inside the backend"
+            "description": "Internal Server Error - Something happened inside the backend"
         },
     },
     status_code=status.HTTP_200_OK,

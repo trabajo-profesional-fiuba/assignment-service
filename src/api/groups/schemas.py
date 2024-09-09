@@ -1,14 +1,14 @@
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator
 from src.api.users.schemas import UserResponse
-from typing import List
+from typing import List, Optional
 
 
 class GroupRequest(BaseModel):
-
-    students_ids: List[int] = Field(description="List of students ids")
-    tutor_email: str
-    topic: str
+    students_ids: List[int]
+    tutor_email: Optional[str] = None
+    topic: Optional[str] = None
+    preferred_topics: Optional[List[int]] = None
 
     @field_validator("students_ids", mode="before")
     def validate_group_length(cls, students_ids):

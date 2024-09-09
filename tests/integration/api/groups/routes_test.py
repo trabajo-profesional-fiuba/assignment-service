@@ -38,56 +38,7 @@ def fastapi():
 
 
 @pytest.mark.integration
-def test_add_group(fastapi, tables):
-    helper = ApiHelper()
-    token = helper.create_student_token()
-    tutor_repository = TutorRepository(Session)
-    tutor_repository.add_period(Period(id="1C2025"))
-
-    user_repository = UserRepository(Session)
-    tutor = User(
-        id=3,
-        name="Pedro",
-        last_name="Pipo",
-        email="tutor@fi.uba.ar",
-        password="password1",
-        role=Role.TUTOR,
-    )
-    student1 = User(
-        id=10000,
-        name="Juan",
-        last_name="Perez",
-        email="10000@fi.uba.ar",
-        password="password",
-        role=Role.STUDENT,
-    )
-    student2 = User(
-        id=2,
-        name="Pedro",
-        last_name="Pipo",
-        email="2@fi.uba.ar",
-        password="password1",
-        role=Role.STUDENT,
-    )
-    user_repository.add_tutors([tutor])
-    user_repository.add_students([student1, student2])
-
-    tutor_repository.add_tutor_period(3, "1C2025")
-
-    body = {
-        "students_ids": [1, 2],
-        "tutor_email": "tutor@fi.uba.ar",
-        "topic": "Custom topic",
-    }
-    params = {"period": "1C2025"}
-
-    response = fastapi.post(f"{PREFIX}/", json=body, params=params,
-                            headers={'Authorization': f"Bearer {token.access_token}"})
-    assert response.status_code == status.HTTP_201_CREATED
-
-
-@pytest.mark.integration
-def test_get_groups(fastapi, tables):
+def test_add_assigned_group_and_get_one_group(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2025")
@@ -96,6 +47,7 @@ def test_get_groups(fastapi, tables):
     helper.create_student("Pedro", "A", "105001", "a@gmail.com")
     helper.create_student("Alejo", "B", "105002", "b@gmail.com")
     helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    
     user_token = helper.create_student_token()
     admin_token = helper.create_admin_token()
 
@@ -227,3 +179,40 @@ def test_post_groups_without_token(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.integration
+def test_add_basic_group_and_get_one_group(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    
+    helper.create_category("category 1")
+    helper.create_topic("topic 1", 1)
+    helper.create_topic("topic 2", 1)
+    helper.create_topic("topic 3", 1)
+    
+    user_token = helper.create_student_token()
+    admin_token = helper.create_admin_token()
+
+    body = {
+        "students_ids": [105001, 105002, 105003],
+        "preferred_topics": [1, 2, 3],
+    }
+    
+    params = {"period": "1C2025"}
+    response = fastapi.post(f"{PREFIX}/", json=body, params=params,
+                            headers={'Authorization': f"Bearer {user_token.access_token}"})
+    assert response.status_code == status.HTTP_201_CREATED
+
+    # Act
+    response = fastapi.get(f"{PREFIX}/", params=params,
+                           headers={'Authorization': f"Bearer {admin_token.access_token}"})
+
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 1
