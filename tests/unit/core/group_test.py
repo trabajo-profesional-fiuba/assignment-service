@@ -2,7 +2,6 @@ import pytest
 
 from src.core.group import Group
 from src.core.tutor import Tutor
-from src.core.period import TutorPeriod
 from src.core.topic import Topic
 from src.core.delivery_date import DeliveryDate
 

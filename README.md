@@ -116,3 +116,7 @@ poetry run flake8 or just flake8 is env is activated.
 ## Database and migrations
 
 This section can be found at [Migrations](https://github.com/trabajo-profesional-fiuba/assignment-service/blob/main/alembic/README.md)
+### Deploy
+
+run before deploying
+sed -i -e 's/\r$//'
