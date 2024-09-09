@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, Table
+from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, Table, String
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, relationship
 from typing import List
 
 from src.api.users.models import User
@@ -48,9 +47,11 @@ class Group(Base):
         to skip the relationship config.
     """
     preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1), default=[])
+    period_id = Column(String, ForeignKey("periods.id"))
 
     students: Mapped[List[User]] = relationship(
         secondary=association_table, lazy="joined"
     )
     topic = relationship("Topic", back_populates="groups", lazy="joined")
     tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="joined")
+    period = relationship("Period", back_populates="groups", lazy="joined")
