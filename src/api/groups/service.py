@@ -15,7 +15,7 @@ class GroupService:
     def __init__(self, repository) -> None:
         self._repository = repository
 
-    def create_assigned_group(self, ids, tutor_period_id, topic_id, period_id=None):
+    def create_assigned_group(self, ids, tutor_period_id, topic_id, period_id):
         try:
             group = self._repository.add_group(ids, tutor_period_id, topic_id, period_id=period_id)
             logger.info(f"New group with id {group.id} created")
