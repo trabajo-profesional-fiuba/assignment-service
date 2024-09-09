@@ -33,7 +33,8 @@ class GroupResponse(BaseModel):
         description="Ids of topics the group selected in the form answer"
     )
     students: List[UserResponse] = Field(default=[])
-
+    period_id: str
+    
     model_config = ConfigDict(from_attributes=True)
 
 

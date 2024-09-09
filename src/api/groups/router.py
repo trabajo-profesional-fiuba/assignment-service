@@ -68,7 +68,7 @@ async def add_group(
         topic = topic_service.get_or_add_topic(group.topic)
 
         return group_service.create_assigned_group(
-            group.students_ids, tutor_period.id, topic.id
+            group.students_ids, tutor_period.id, topic.id, period_id=period
         )
     except (EntityNotInserted, EntityNotFound) as e:
         raise e

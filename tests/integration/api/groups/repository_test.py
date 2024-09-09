@@ -220,15 +220,15 @@ def test_add_new_group_with_tutor_and_topic_using_service(tables):
     tutor_repository.add_tutor_period(15, "1C2025")
 
     uids = [160000, 17000]
-    period_id = 2
+    tutor_period_id = 2
     topic_id = 1
 
     service = GroupService(repository)
-    group = service.create_assigned_group(uids, period_id, topic_id)
+    group = service.create_assigned_group(uids, tutor_period_id, topic_id, period_id="1C2025")
     ids = [user.id for user in group.students]
 
     assert ids == uids
-    assert group.tutor_period_id == period_id
+    assert group.tutor_period_id == tutor_period_id
     assert group.topic_id == topic_id
 
 
@@ -256,7 +256,7 @@ def test_add_new_group_with_three_topics_using_service(tables):
     uids = [18000, 19000]
 
     service = GroupService(repository)
-    group = service.create_basic_group(uids, [1, 2, 3])
+    group = service.create_basic_group(uids, [1, 2, 3], period_id="1C2025")
     ids = [user.id for user in group.students]
     expected_topics = [1, 2, 3]
 
@@ -289,7 +289,7 @@ def test_add_student_cannot_be_with_one_that_is_not_a_user(tables):
     uids = [200, 201]
 
     service = GroupService(repository)
-    _ = service.create_basic_group(uids, [1, 2, 3])
+    _ = service.create_basic_group(uids, [1, 2, 3], period_id="1C2025")
     with pytest.raises(EntityNotFound):
         _ = service.create_basic_group([200, 202], [1, 2, 3])
 
@@ -326,6 +326,6 @@ def test_add_student_cannot_be_in_two_groups(tables):
     uids = [203, 204]
 
     service = GroupService(repository)
-    _ = service.create_basic_group(uids, [1, 2, 3])
+    _ = service.create_basic_group(uids, [1, 2, 3], period_id="1C2025")
     with pytest.raises(EntityNotInserted):
         _ = service.create_basic_group([203, 205], [1, 2, 3])

@@ -15,26 +15,27 @@ class GroupService:
     def __init__(self, repository) -> None:
         self._repository = repository
 
-    def create_assigned_group(self, ids, period_id, topic_id):
+    def create_assigned_group(self, ids, tutor_period_id, topic_id, period_id=None):
         try:
-            group = self._repository.add_group(ids, period_id, topic_id)
+            group = self._repository.add_group(ids, tutor_period_id, topic_id, period_id=period_id)
             logger.info(f"New group with id {group.id} created")
             return GroupResponse.model_validate(group)
         except StudentNotFound as e:
             logger.error(f"Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
-        except Exception:
+        except Exception as err:
             logger.error(
-                f"Could not insert a group with ids: {str(ids)}, topic id {topic_id} and period id: {period_id}"
+                f"Could not insert a group with ids: {str(ids)}, topic id {topic_id}, tutor period id: {tutor_period_id} and period id: {period_id}"
             )
+            logger.error(err)
             raise EntityNotInserted(
                 message="Group could't be created check if params exits"
             )
 
-    def create_basic_group(self, ids, preferred_topics=[]):
+    def create_basic_group(self, ids, preferred_topics=[], period_id=None):
         try:
             group = self._repository.add_group(
-                ids=ids, preferred_topics=preferred_topics
+                ids=ids, preferred_topics=preferred_topics, period_id=period_id
             )
             return GroupResponse.model_validate(group)
         except StudentNotFound as e:

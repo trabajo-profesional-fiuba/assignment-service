@@ -10,12 +10,13 @@ class GroupRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def add_group(self, ids, period_id=None, topic_id=None, preferred_topics=[]):
+    def add_group(self, ids, tutor_period_id=None, topic_id=None, preferred_topics=[], period_id=None):
         with self.Session() as session:
             group = Group(
-                tutor_period_id=period_id,
+                tutor_period_id=tutor_period_id,
                 assigned_topic_id=topic_id,
                 preferred_topics=preferred_topics,
+                period_id=period_id
             )
             students = session.query(User).filter(User.id.in_(ids)).all()
             group.students = students
