@@ -54,9 +54,8 @@ class TutorRepository:
                 period_obj = TutorPeriod(period_id=period_id, tutor_id=tutor_id)
                 session.add(period_obj)
                 session.commit()
-                session.refresh(period_obj)
                 tutor = session.get(User, tutor_id)
-                session.expunge(tutor)
+                session.expunge_all()
 
             return tutor
         except exc.IntegrityError:

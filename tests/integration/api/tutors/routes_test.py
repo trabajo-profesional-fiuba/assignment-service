@@ -388,7 +388,7 @@ def test_get_tutors_period_with_success(fastapi, tables):
 
     # Act
     response = fastapi.get(f"{PREFIX}/{105600}/periods", headers={"Authorization": f"Bearer {admin_token.access_token}"})
-
+    data = response.json()
     # Assert
     assert response.status_code == status.HTTP_200_OK
 

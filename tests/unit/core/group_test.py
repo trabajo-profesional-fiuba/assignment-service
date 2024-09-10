@@ -2,7 +2,6 @@ import pytest
 
 from src.core.group import Group
 from src.core.tutor import Tutor
-from src.core.period import TutorPeriod
 from src.core.topic import Topic
 from src.core.delivery_date import DeliveryDate
 
@@ -13,7 +12,7 @@ class TestGroup:
     def test_group_starts_with_id_and_no_tutor(self):
         group = Group(1)
 
-        assert group.id() == 1
+        assert group.id == 1
         assert group.tutor is None
 
     @pytest.mark.unit
@@ -26,12 +25,12 @@ class TestGroup:
 
     @pytest.mark.unit
     def test_group_can_have_topics(self):
-        topics = [Topic(1, "topic1", 1), Topic(2, "topic2", 2), Topic(3, "topic3", 3)]
+        topics = [Topic(id=1, title="topic1", cost=1, category="Category A", capacity=1), Topic(id=2, title="topic2", cost=2, category="Category A"), Topic(id=3, title="topic3", cost=3, category="Category A")]
         group = Group(1)
 
         group.add_topics(topics)
 
-        assert group.preference_of(Topic(1, "topic1", 1)) == 1
+        assert group.preference_of(Topic(id=1, title="topic1", capacity=1, category="Category A")) == 1
 
     @pytest.mark.unit
     def test_group_can_have_available_dates(self):

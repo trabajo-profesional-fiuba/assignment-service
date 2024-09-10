@@ -131,4 +131,3 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_table('periods')
     op.drop_table('categories')
-
