@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status, Depends, UploadFile, Query
 from fastapi.exceptions import HTTPException
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 
@@ -92,7 +93,11 @@ async def get_topics(
         
         service = TopicService(TopicRepository(session))
         topics = service.get_topics()
-        return topics
+
+        response = JSONResponse(content = topics.model_dump())
+        response.headers["Cache-Control"] = "private, max-age=7200"
+    
+        return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

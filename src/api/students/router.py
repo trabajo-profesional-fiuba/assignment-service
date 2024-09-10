@@ -1,3 +1,4 @@
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi import APIRouter, UploadFile, Depends, status, Query
 from sqlalchemy.orm import Session
@@ -90,7 +91,10 @@ async def get_students_by_ids(
         res = service.get_students_by_ids(user_ids)
         logger.info("Retrieve all students by ids.")
 
-        return res
+        response = JSONResponse(content = res.model_dump())
+        response.headers["Cache-Control"] = "private, max-age=7200"
+    
+        return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
