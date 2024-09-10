@@ -2,13 +2,13 @@ from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CM
 
 from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.core.group import Group
-from src.core.group_topic_preferences import GroupTopicPreferences
+from src.core.group_form_answer import GroupFormAnswer
 from src.core.topic import Topic
 from src.core.tutor import Tutor
 
 
 class GroupTutorLPSolver:
-    def __init__(self, groups: list[GroupTopicPreferences], topics: list[Topic], tutors: list[Tutor], balance_limit):
+    def __init__(self, groups: list[GroupFormAnswer], topics: list[Topic], tutors: list[Tutor], balance_limit):
         """
         Constructor of the class.
 

@@ -2,7 +2,7 @@ import pytest
 import time
 
 from src.core.algorithms.topic_tutor.group_tutor_lp_solver import GroupTutorLPSolver
-from src.core.group_topic_preferences import GroupTopicPreferences
+from src.core.group_form_answer import GroupFormAnswer
 from src.core.topic import Topic
 from src.core.tutor import Tutor
 
@@ -20,11 +20,11 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2", "Student 3", "Student 4"]
             ),
             
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 2, topics=[topics[1], topics[2], topics[3]], students=["Student 5", "Student 6", "Student 7", "Student 8"]
             ),
         ]
@@ -68,13 +68,13 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]
             ),
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 2, topics=[topics[3], topics[4], topics[5]], students=["Student 3", "Student 4"]
             ),
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 3, topics=[topics[0], topics[4], topics[2]], students=["Student 5", "Student 6"]
             ),
         ]
@@ -123,16 +123,16 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]
             ),
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 2, topics=[topics[3], topics[4], topics[5]], students=["Student 3", "Student 4"]
             ),
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 3, topics=[topics[4], topics[0], topics[2]], students=["Student 5", "Student 6"]
             ),
-            GroupTopicPreferences(
+            GroupFormAnswer(
                 4, topics=[topics[2], topics[1], topics[3]], students=["Student 7", "Student 8"]
             ),
         ]
@@ -187,9 +187,9 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]),
-            GroupTopicPreferences(2, topics=[topics[1], topics[0], topics[2]], students=["Student 3", "Student 4"]),
-            GroupTopicPreferences(3, topics=[topics[0], topics[2], topics[1]], students=["Student 5", "Student 6"])
+            GroupFormAnswer(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]),
+            GroupFormAnswer(2, topics=[topics[1], topics[0], topics[2]], students=["Student 3", "Student 4"]),
+            GroupFormAnswer(3, topics=[topics[0], topics[2], topics[1]], students=["Student 5", "Student 6"])
         ]
 
         tutor1 = Tutor(1, "Email", "Name", "Lastname")
@@ -221,10 +221,10 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]),
-            GroupTopicPreferences(2, topics=[topics[0], topics[1], topics[2]], students=["Student 3", "Student 4"]),
-            GroupTopicPreferences(3, topics=[topics[0], topics[2], topics[1]], students=["Student 5", "Student 6"]),
-            GroupTopicPreferences(4, topics=[topics[0], topics[1], topics[2]], students=["Student 7", "Student 8"])
+            GroupFormAnswer(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]),
+            GroupFormAnswer(2, topics=[topics[0], topics[1], topics[2]], students=["Student 3", "Student 4"]),
+            GroupFormAnswer(3, topics=[topics[0], topics[2], topics[1]], students=["Student 5", "Student 6"]),
+            GroupFormAnswer(4, topics=[topics[0], topics[1], topics[2]], students=["Student 7", "Student 8"])
         ]
 
         tutor1 = Tutor(1, "Email", "Name", "Lastname")
@@ -257,9 +257,9 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupTopicPreferences(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]),
-            GroupTopicPreferences(2, topics=[topics[0], topics[1], topics[2]], students=["Student 3", "Student 4"]),
-            GroupTopicPreferences(3, topics=[topics[1], topics[2], topics[0]], students=["Student 5", "Student 6"])
+            GroupFormAnswer(1, topics=[topics[0], topics[1], topics[2]], students=["Student 1", "Student 2"]),
+            GroupFormAnswer(2, topics=[topics[0], topics[1], topics[2]], students=["Student 3", "Student 4"]),
+            GroupFormAnswer(3, topics=[topics[1], topics[2], topics[0]], students=["Student 5", "Student 6"])
         ]
 
         tutor1 = Tutor(1, "Email", "Name", "Lastname")

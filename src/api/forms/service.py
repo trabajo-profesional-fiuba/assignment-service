@@ -18,7 +18,7 @@ from src.api.topics.repository import TopicRepository
 
 from src.config.logging import logger
 
-from src.core.group_answer import GroupFormAnswer
+from src.core.group_form_answer import GroupFormAnswer
 from src.core.topic import Topic
 
 
@@ -88,13 +88,28 @@ class FormService:
         return self._repository.delete_answers_by_answer_id(answer_id)
 
     def _make_topic(self, topic):
+        """ Make a Topic based on a Topic Orm Object."""
         id = topic.id
         name = topic.name
         category = topic.category.name
         topic = Topic(id=id, title=name, category=category)
         return topic
 
-    def get_answers(self, topic_repository: TopicRepository):
+    def _transform_topics(self, topic_repository: TopicRepository) ->dict:
+        """ Builds a dictionary of name: Topic with all the topics from the
+            database.
+            The Topic object are not ORM objects.
+        """
+        topics = topic_repository.get_topics()
+        topcis_as_dict = dict()
+        for orm_topic in topics:
+            topic = self._make_topic(orm_topic)
+            topcis_as_dict[topic.id] = topic
+        
+        return topcis_as_dict
+
+
+    def get_answers(self, topic_repository: TopicRepository, for_controller:bool = False):
         """
         Retrieves answers from the repository, processes the data to group students
         by their answers, and returns a formatted response.
@@ -103,18 +118,17 @@ class FormService:
         students and topics, with duplicate topics removed.
         """
         db_answers = self._repository.get_answers()
+        topics = self._transform_topics(topic_repository)
+
         response = []
         if len(db_answers) != 0:
 
             answers = {}
             for db_answer in db_answers:
                 id = str(db_answer.answer_id.timestamp())
-                topic_1 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_1))
-                topic_2 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_2))
-                topic_3 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_3))
+                topic_1 = topics[db_answer.topic_1]
+                topic_2 = topics[db_answer.topic_2]
+                topic_3 = topics[db_answer.topic_3]
                 if id not in answers:
                     group = GroupFormAnswer(id)
                     answers[id] = group
@@ -123,14 +137,19 @@ class FormService:
                 group.add_student(db_answer.email)
                 group.add_topics([topic_1, topic_2, topic_3])
 
-            for answer_id, data in answers.items():
-                response.append(
-                    GroupAnswerResponse(
-                        id=answer_id,
-                        students=data.students,
-                        topics=data.get_topic_names(),
+            if for_controller:
+                for answer_id, data in answers.items():
+                    response.append(
+                        GroupAnswerResponse(
+                            id=answer_id,
+                            students=data.students,
+                            topics=data.get_topic_names(),
+                        )
                     )
-                )
+            else:
+                
+                response = list(answers.values())
+                
 
         return response
 
@@ -139,17 +158,14 @@ class FormService:
         Retrieves answers from one user based on his id
         """
         answers = self._repository.get_answers_by_user_id(user_id)
+        topics = self._transform_topics(topic_repository)
         response = []
         if len(answers) != 0:
 
             for db_answer in answers:
-                topic_1 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_1))
-                topic_2 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_2))
-                topic_3 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_3))
-
+                topic_1 = topics[db_answer.topic_1]
+                topic_2 = topics[db_answer.topic_2]
+                topic_3 = topics[db_answer.topic_3]
                 response.append(
                     UserAnswerResponse(
                         answer_id=db_answer.answer_id,

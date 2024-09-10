@@ -16,8 +16,8 @@ class TestTutor:
         assert len(tutor.available_dates) == 0
         assert len(tutor.as_tutor_dates) == 0
         assert len(tutor.as_evaluator_dates) == 0
-        assert len(tutor.groups) == 0
-        assert len(tutor.topics) == 0
+        assert tutor.groups is None
+        assert tutor.topics is None
         assert tutor.is_evaluator() is False
         assert tutor.capacity == 0
 
