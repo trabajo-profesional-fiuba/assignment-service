@@ -27,7 +27,7 @@ class FlowAdapter:
 
     def _find_evaluator(self, evaluators: list, id: int):
         for evaluator in evaluators:
-            if evaluator.id() == id:
+            if evaluator.id == id:
                 return evaluator
 
         return EvaluatorNotFound(
@@ -38,7 +38,7 @@ class FlowAdapter:
         results = []
         if g_info:
             for group in groups:
-                group_key = f"{GROUP_ID}-{group.id()}"
+                group_key = f"{GROUP_ID}-{group.id}"
                 group_edges = g_info[group_key]
                 evaluator_id = e_info[group_key][1]
                 for key, value in group_edges.items():

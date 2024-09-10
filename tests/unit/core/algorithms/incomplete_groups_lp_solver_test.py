@@ -65,11 +65,11 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_groups(self):
         topics = [
-            Topic(1, "Tema_C", 0),
-            Topic(2, "Tema_A", 0),
-            Topic(3, "Tema_B", 0),
-            Topic(4, "Tema_E", 0),
-            Topic(5, "Tema_D", 0),
+            Topic(id=1, title="Tema_C", capacity=0, category="Category A"),
+            Topic(id=2, title="Tema_A", capacity=0, category="Category A"),
+            Topic(id=3, title="Tema_B", capacity=0, category="Category A"),
+            Topic(id=4, title="Tema_E", capacity=0, category="Category A"),
+            Topic(id=5, title="Tema_D", capacity=0, category="Category A"),
         ]
 
         groups = [
@@ -133,7 +133,7 @@ class TestIncompleteGroupsLPSolver:
 
     @pytest.mark.unit
     def test_single_group(self):
-        topics = [Topic(1, "Tema_C", 0), Topic(2, "Tema_A", 0), Topic(3, "Tema_B", 0)]
+        topics = [Topic(id=1, title="Tema_C", capacity=0, category="Category A"), Topic(id=2, title="Tema_A", capacity=0, category="Category A"), Topic(id=3, title="Tema_B", capacity=0, category="Category A")]
         groups = [
             GroupFormAnswer(
                 1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]
@@ -152,12 +152,12 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_different_topics_and_categories(self):
         topics = [
-            Topic(1, "Tema_C", 0),
-            Topic(2, "Tema_A", 0),
-            Topic(3, "Tema_B", 0),
-            Topic(4, "Tema_D", 0),
-            Topic(5, "Tema_E", 0),
-            Topic(6, "Tema_F", 0),
+            Topic(id=1, title="Tema_C", capacity=0, category="Category A"),
+            Topic(id=2, title="Tema_A", capacity=0, category="Category A"),
+            Topic(id=3, title="Tema_B", capacity=0, category="Category A"),
+            Topic(id=4, title="Tema_D", capacity=0, category="Category A"),
+            Topic(id=5, title="Tema_E", capacity=0, category="Category A"),
+            Topic(id=6, title="Tema_F", capacity=0, category="Category A"),
         ]
         groups = [
             GroupFormAnswer(
@@ -182,12 +182,12 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_same_category(self):
         topics = [
-            Topic(1, "Tema_C", 0, category="Category_1"),
-            Topic(2, "Tema_A", 0, category="Category_2"),
-            Topic(3, "Tema_B", 0, category="Category_3"),
-            Topic(4, "Tema_D", 0, category="Category_3"),
-            Topic(5, "Tema_E", 0, category="Category_2"),
-            Topic(6, "Tema_F", 0, category="Category_1"),
+            Topic(id=1, title="Tema_C", capacity=0, category="Category_1"),
+            Topic(id=2, title="Tema_A", capacity=0, category="Category_2"),
+            Topic(id=3, title="Tema_B", capacity=0, category="Category_3"),
+            Topic(id=4, title="Tema_D", capacity=0, category="Category_3"),
+            Topic(id=5, title="Tema_E", capacity=0, category="Category_2"),
+            Topic(id=6, title="Tema_F", capacity=0, category="Category_1"),
         ]
         groups = [
             GroupFormAnswer(
@@ -212,12 +212,12 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_two_groups_with_different_topics_with_three_students(self):
         topics = [
-            Topic(1, "Tema_C", 0),
-            Topic(2, "Tema_A", 0),
-            Topic(3, "Tema_B", 0),
-            Topic(4, "Tema_D", 0),
-            Topic(5, "Tema_E", 0),
-            Topic(6, "Tema_F", 0),
+            Topic(id=1, title="Tema_C", capacity=0, category="Category A"),
+            Topic(id=2, title="Tema_A", capacity=0, category="Category A"),
+            Topic(id=3, title="Tema_B", capacity=0, category="Category A"),
+            Topic(id=4, title="Tema_D", capacity=0, category="Category A"),
+            Topic(id=5, title="Tema_E", capacity=0, category="Category A"),
+            Topic(id=6, title="Tema_F", capacity=0, category="Category A"),
         ]
         groups = [
             GroupFormAnswer(
@@ -242,12 +242,12 @@ class TestIncompleteGroupsLPSolver:
     @pytest.mark.unit
     def test_multiple_groups(self):
         topics = [
-            Topic(1, "Tema_A", 0),
-            Topic(2, "Tema_B", 0),
-            Topic(3, "Tema_C", 0),
-            Topic(4, "Tema_D", 0),
-            Topic(5, "Tema_E", 0),
-            Topic(6, "Tema_F", 0),
+            Topic(id=1, title="Tema_A", capacity=0, category="Category A"),
+            Topic(id=2, title="Tema_B", capacity=0, category="Category A"),
+            Topic(id=3, title="Tema_C", capacity=0, category="Category A"),
+            Topic(id=4, title="Tema_D", capacity=0, category="Category A"),
+            Topic(id=5, title="Tema_E", capacity=0, category="Category A"),
+            Topic(id=6, title="Tema_F", capacity=0, category="Category A"),
         ]
         groups = [
             GroupFormAnswer(
