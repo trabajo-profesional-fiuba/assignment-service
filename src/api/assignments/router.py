@@ -2,7 +2,7 @@ from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, status, Query, Response
 from sqlalchemy.orm import Session
 
-from src.api.assignments.service import AssignmentService
+from src.api.assignments.service import AssigmentService, AssignmentService
 from src.api.auth.jwt import JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
@@ -14,8 +14,13 @@ from src.api.groups.repository import GroupRepository
 from src.api.groups.service import GroupService
 
 from src.api.topics.repository import TopicRepository
+from src.api.topics.service import TopicService
+from src.api.tutors.repository import TutorRepository
+from src.api.tutors.service import TutorService
+from src.api.users.exceptions import InvalidCredentials
 
 from src.config.database.database import get_db
+from src.config.logging import logger
 
 router = APIRouter(prefix="/assignments", tags=["Assignments"])
 
@@ -65,5 +70,56 @@ async def assign_incomplete_groups(
         group_result = service.assignment_incomplete_groups(answers)
         group_service.create_basic_groups(group_result, period_id)
         return Response(status_code=status.HTTP_202_ACCEPTED, content="Created")
+    except Exception as e:
+        logger.error(str(e))
+        raise ServerError("Unexpected error happend")
+    
+
+@router.post(
+    "/group-topic-tutor",
+    summary="Runs the assigment of tutor and topic for grpi",
+    responses={
+        status.HTTP_202_ACCEPTED: {"description": "Successfully assigned groups"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unkown operation"
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "User not authorized to perform action"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happend inside the backend"
+        },
+    },
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def assign_incomplete_groups(    
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+    balance_limit:int =Query(gt=0, default=5)): #tenemos que usarlo para recuperar los grupos de tal cuatrimestre``
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+        
+
+        group_service = GroupService(GroupRepository(session))
+        topic_service = TopicService(TopicRepository(session))
+        tutors_service = TutorService(TutorRepository(session))
+
+        tutors = tutors_service.get_tutors_by_period_id(period_id)
+        topics = topic_service.get_topics()
+        groups = group_service.get_goups_without_tutor_and_topic()
+
+        service = AssigmentService()
+        
+        assigment_result = service.assigment_group_topic_tutor(groups,topics,tutors,balance_limit)
+        return Response(status_code=status.HTTP_202_ACCEPTED,content='Created')
     except Exception as e:
         raise ServerError("error")

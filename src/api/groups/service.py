@@ -4,6 +4,7 @@ from src.api.students.exceptions import StudentNotFound
 
 
 from src.config.logging import logger
+from src.core.group import Group
 
 
 class GroupService:
@@ -77,3 +78,8 @@ class GroupService:
             topics = group.get_topic_ids()
             emails = group.students
             self.create_basic_group_with_email(emails, topics, period_id)
+
+
+    def get_goups_without_tutor_and_topic(self):
+        db_groups = self._repository.get_groups_without_tutor_and_period()
+        return db_groups

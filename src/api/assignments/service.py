@@ -1,7 +1,9 @@
 from src.core.algorithms.topic_tutor.incomplete_groups_lp_solver import (
     IncompleteGroupsLPSolver,
 )
-
+from src.core.algorithms.topic_tutor.group_tutor_lp_solver import GroupTutorLPSolver
+from src.core.algorithms.topic_tutor.incomplete_groups_lp_solver import IncompleteGroupsLPSolver
+from src.core.group_form_answer import GroupFormAnswer
 
 class AssignmentService:
 
@@ -9,3 +11,12 @@ class AssignmentService:
         assigment_model = IncompleteGroupsLPSolver(answers)
         results = assigment_model.solve()
         return results
+    
+    def assigment_group_topic_tutor(self,groups, topics, tutors, balance_limit):
+        assigment_model = GroupTutorLPSolver(groups, topics, tutors, balance_limit)
+        results = assigment_model.solve()
+        return results
+
+
+
+
