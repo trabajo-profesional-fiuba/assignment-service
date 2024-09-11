@@ -1,7 +1,7 @@
 """Add form feature flag
 
 Revision ID: d8cd55091e57
-Revises: 
+Revises:
 Create Date: 2024-09-05 23:29:23.794122
 
 """

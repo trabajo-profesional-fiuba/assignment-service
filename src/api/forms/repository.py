@@ -52,7 +52,7 @@ class FormRepository:
             if answer is not None:
                 count += 1
         if count == len(user_ids):
-            logger.error(f"Answer duplicated send by ")
+            logger.error(f"Answer duplicated send by {user_id}")
             raise Duplicated(message="The answer already exists.")
 
     def add_answers(
@@ -109,7 +109,7 @@ class FormRepository:
                 .all()
             )
             session.expunge_all()
-            logger.info(f"Get all the answers")
+            logger.info("Get all the answers")
 
         return answers
 
@@ -127,6 +127,6 @@ class FormRepository:
                 .all()
             )
             session.expunge_all()
-            logger.info(f"Get all the answers")
+            logger.info("Get all the answers")
 
         return answers

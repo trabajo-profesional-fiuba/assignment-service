@@ -3,11 +3,6 @@ from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
 from src.api.groups.router import router
-from src.api.groups.schemas import GroupList
-from src.api.tutors.models import Period
-from src.api.tutors.repository import TutorRepository
-from src.api.users.models import User, Role
-from src.api.users.repository import UserRepository
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -192,7 +187,6 @@ def test_post_groups_without_token(fastapi, tables):
     helper.create_student("Pedro", "A", "105001", "a@gmail.com")
     helper.create_student("Alejo", "B", "105002", "b@gmail.com")
     helper.create_student("Tomas", "C", "105003", "c@gmail.com")
-    user_token = helper.create_student_token()
 
     body = {
         "students_ids": [105001, 105002, 105003],

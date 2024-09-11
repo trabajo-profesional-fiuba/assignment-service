@@ -10,7 +10,6 @@ from src.api.auth.service import AuthenticationService
 
 from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
 
-from src.api.students.exceptions import StudentNotFound, StudentDuplicated
 from src.api.students.repository import StudentRepository
 from src.api.students.service import StudentService
 

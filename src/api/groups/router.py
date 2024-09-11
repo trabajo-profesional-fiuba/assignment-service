@@ -11,7 +11,6 @@ from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import (
     GroupList,
-    GroupRequest,
     GroupResponse,
     GroupWithTutorTopicRequest,
     GroupWithPreferredTopicsRequest,
@@ -35,8 +34,8 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
     "/",
     response_model=GroupResponse,
     summary="Creates a new group",
-    description="""This endpoint creates a new group. The group can already have tutor and topic
-    or just preferred topics.""",
+    description="""This endpoint creates a new group. The group can already have \
+    tutor and topic or just preferred topics.""",
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully added a new group."},
         status.HTTP_400_BAD_REQUEST: {
@@ -46,10 +45,12 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
             "description": "Some information provided is not in db"
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
-            "description": "Input validation has failed, typically resulting in a client-facing error response."
+            "description": "Input validation has failed, typically resulting in a \
+            client-facing error response."
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happened inside the backend"
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
         },
     },
     status_code=status.HTTP_201_CREATED,
@@ -103,7 +104,8 @@ async def add_group(
             "description": "Some information provided is not in db"
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happened inside the backend"
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
         },
     },
     status_code=status.HTTP_200_OK,

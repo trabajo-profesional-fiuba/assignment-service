@@ -3,7 +3,6 @@ from src.core.delivery_date import DeliveryDate
 from src.core.topic import Topic
 from src.core.tutor import Tutor
 from src.core.group import Group
-import src.exceptions as e
 
 
 class TestTutor:

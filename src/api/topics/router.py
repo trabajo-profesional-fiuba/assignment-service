@@ -1,5 +1,4 @@
 from fastapi import APIRouter, status, Depends, UploadFile, Query
-from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from sqlalchemy.orm import Session

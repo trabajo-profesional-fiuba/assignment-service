@@ -278,9 +278,7 @@ class TestFormRepository:
                 topic_3="topic 6",
             )
         ]
-        response = repository.add_answers(
-            answers, ["topic 4", "topic 5", "topic 6"], [101010]
-        )
+        repository.add_answers(answers, ["topic 4", "topic 5", "topic 6"], [101010])
         today = dt.datetime.today().isoformat()
         answers = [
             FormPreferences(
@@ -291,9 +289,7 @@ class TestFormRepository:
                 topic_3="topic 4",
             ),
         ]
-        response = repository.add_answers(
-            answers, ["topic 1", "topic 2", "topic 4"], [101010]
-        )
+        repository.add_answers(answers, ["topic 1", "topic 2", "topic 4"], [101010])
 
         answers = repository.get_answers_by_user_id(101010)
         assert len(answers) == 3

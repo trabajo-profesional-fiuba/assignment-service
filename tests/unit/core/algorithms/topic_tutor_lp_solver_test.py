@@ -1,5 +1,4 @@
 import pytest
-import time
 
 from src.core.algorithms.topic_tutor.group_tutor_lp_solver import GroupTutorLPSolver
 from src.core.group_form_answer import GroupFormAnswer
@@ -169,7 +168,8 @@ class TestGroupTutorLPSolver:
         solver = GroupTutorLPSolver(groups, topics, tutors, balance_limit=1)
         result = solver.solve()
 
-        # Verificar que la diferencia en el número de grupos asignados a los tutores no sea mayor a 1
+        # Verificar que la diferencia en el número de grupos asignados a los tutores
+        # no sea mayor a 1
         tutor1_groups = len(
             [assignment for assignment in result if assignment.tutor.id == tutor1.id]
         )
@@ -197,7 +197,8 @@ class TestGroupTutorLPSolver:
     @pytest.mark.unit
     def test_tutor_without_capacity(self):
         """
-        Verifica que el solver no asigne más grupos a un tutor que ha alcanzado su capacidad.
+        Verifica que el solver no asigne más grupos a un tutor que ha alcanzado su
+        capacidad.
         """
         topics = [
             Topic(id=0, title="Tema 1", capacity=3, category="Category A"),
@@ -242,7 +243,8 @@ class TestGroupTutorLPSolver:
     @pytest.mark.unit
     def test_strict_balance_limit(self):
         """
-        Verifica que el solver respete estrictamente el balance límite al asignar grupos a los tutores.
+        Verifica que el solver respete estrictamente el balance límite al asignar grupos
+        a los tutores.
         """
         topics = [
             Topic(id=0, title="Topic 1", capacity=2, category="Category A"),
@@ -294,7 +296,8 @@ class TestGroupTutorLPSolver:
     @pytest.mark.unit
     def test_topic_capacity_exceeded(self):
         """
-        Verifica que el solver no asigne más grupos a un tema cuando su capacidad se ha alcanzado.
+        Verifica que el solver no asigne más grupos a un tema cuando su capacidad se ha
+        alcanzado.
         """
         topics = [
             Topic(id=0, title="Topic 1", capacity=1, category="Category A"),

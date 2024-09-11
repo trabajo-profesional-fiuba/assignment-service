@@ -1,4 +1,3 @@
-from collections import defaultdict
 from datetime import datetime
 
 from src.api.forms.repository import FormRepository
@@ -8,7 +7,6 @@ from src.api.forms.models import FormPreferences
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
-    UserAnswerList,
     GroupAnswerResponse,
     UserAnswerResponse,
 )

@@ -1,7 +1,6 @@
 import pytest
 
-from src.api.students.exceptions import StudentNotFound
-from src.api.exceptions import Duplicated, EntityNotInserted, EntityNotFound
+from src.api.exceptions import EntityNotInserted, EntityNotFound
 from src.api.groups.service import GroupService
 from src.api.groups.repository import GroupRepository
 from src.api.topics.models import Category, Topic

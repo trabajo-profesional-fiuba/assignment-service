@@ -27,7 +27,8 @@ class GroupService:
             raise EntityNotFound(message=str(e))
         except Exception as err:
             logger.error(
-                f"Could not insert a group with ids: {str(ids)}, topic id {topic_id}, tutor period id: {tutor_period_id} and period id: {period_id}"
+                f"Could not insert a group with ids: {str(ids)}, topic id {topic_id}, \
+                tutor period id: {tutor_period_id} and period id: {period_id}"
             )
             logger.error(err)
             raise EntityNotInserted(
@@ -41,7 +42,7 @@ class GroupService:
             )
             return GroupResponse.model_validate(group)
         except StudentNotFound as e:
-            logger.error(f"Could not insert a group because some ids are not valid")
+            logger.error("Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
         except Exception:
             logger.error(f"Could not insert a group with ids: {str(ids)}")
@@ -58,7 +59,7 @@ class GroupService:
             )
             return GroupResponse.model_validate(group)
         except StudentNotFound as e:
-            logger.error(f"Could not insert a group because some ids are not valid")
+            logger.error("Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
         except Exception as e:
             logger.error(f"Could not insert a group with email: {str(emails)}")

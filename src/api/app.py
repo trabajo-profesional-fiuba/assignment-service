@@ -19,13 +19,16 @@ api_description = """
 
 ## Group 54 - Final Project
 
-The Assignment Management API is designed to optimize the allocation of resources and scheduling within educational projects. Key functionalities include:
+The Assignment Management API is designed to optimize the allocation of resources and
+scheduling within educational projects. Key functionalities include:
 
 - **Group Assignments**: Allocate individuals to incomplete student groups.
-- **Topic and Tutor Assignments**: Assign relevant topics and tutors to student groups.
+- **Topic and Tutor Assignments**: Assign relevant topics and tutors to student
+groups.
 - **Presentation Scheduling**: Set and manage presentation dates for each group.
 
-This API is crucial for efficiently matching group members, topics, and presentation slots, ensuring effective project organization and execution.
+This API is crucial for efficiently matching group members, topics, and presentation
+slots, ensuring effective project organization and execution.
 
 **Key Entities**:
 - Students
@@ -34,7 +37,8 @@ This API is crucial for efficiently matching group members, topics, and presenta
 - Topics
 - Categories
 
-Interact with these entities through a series of dedicated API endpoints tailored to facilitate smooth and effective assignments.
+Interact with these entities through a series of dedicated API endpoints tailored to
+facilitate smooth and effective assignments.
 
 ## Contributors
 - Celeste Dituro       - cdituro@fi.uba.ar

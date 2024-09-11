@@ -6,7 +6,6 @@ from src.api.tutors.exceptions import (
     TutorNotFound,
     PeriodDuplicated,
     TutorPeriodNotFound,
-    TutorPeriodNotInserted,
 )
 from src.api.topics.exceptions import TopicNotFound
 from src.api.topics.models import Topic, TopicTutorPeriod

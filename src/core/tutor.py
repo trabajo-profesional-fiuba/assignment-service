@@ -1,13 +1,14 @@
 from src.core.delivery_date import DeliveryDate
 from src.core.topic import Topic
-import src.exceptions as e
 
 
 class Tutor:
     """
     This class represents a Tutor during a specific Period.
-    Although a tutor may be active in multiple periods, this abstraction considers each tutor within the context of a single period.
-    Thus, each period has its tutors as a subset of objects that exist only within that period.
+    Although a tutor may be active in multiple periods, this abstraction considers each
+    tutor within the context of a single period.
+    Thus, each period has its tutors as a subset of objects that exist only within that
+    period.
     """
 
     def __init__(

@@ -37,10 +37,12 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
             "description": "Successfully added topic preferences answers."
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
-            "description": "Input validation has failed, typically resulting in a client-facing error response."
+            "description": "Input validation has failed, typically resulting in a \
+            client-facing error response."
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happend inside the backend"
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
         },
     },
     status_code=status.HTTP_201_CREATED,
@@ -108,7 +110,7 @@ async def get_answers(
     },
     status_code=status.HTTP_200_OK,
 )
-async def get_answers(
+async def get_answers_by_user_id(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],

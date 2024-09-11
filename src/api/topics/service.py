@@ -10,8 +10,6 @@ from src.api.tutors.repository import TutorRepository
 
 from src.config.logging import logger
 
-from src.core.topic import Topic as TopicDto
-
 
 class TopicService:
 

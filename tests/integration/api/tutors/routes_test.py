@@ -3,7 +3,7 @@ from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
 from src.api.tutors.router import router
-from src.config.database.database import create_tables, drop_tables, engine
+from src.config.database.database import create_tables, drop_tables
 
 from tests.integration.api.helper import ApiHelper
 
@@ -391,7 +391,6 @@ def test_get_tutors_period_with_success(fastapi, tables):
         f"{PREFIX}/{105600}/periods",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
-    data = response.json()
     # Assert
     assert response.status_code == status.HTTP_200_OK
 

@@ -10,7 +10,6 @@ from src.api.users.models import User, Role
 from src.api.topics.repository import TopicRepository
 from src.api.topics.models import Topic, Category
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
-from src.api.topics.exceptions import TopicNotFound
 
 
 class TestTutorRepository:

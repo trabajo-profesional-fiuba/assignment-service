@@ -4,7 +4,7 @@ from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
 from src.api.topics.models import Category, Topic
 from src.api.topics.repository import TopicRepository
-from src.config.database.database import create_tables, drop_tables, engine
+from src.config.database.database import engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from src.api.tutors.repository import TutorRepository
@@ -15,10 +15,6 @@ from src.api.users.models import User, Role
 
 from src.api.auth.hasher import ShaHasher
 import datetime as dt
-
-
-from src.api.topics.models import Topic, Category
-from src.api.topics.repository import TopicRepository
 
 
 class ApiHelper:

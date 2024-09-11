@@ -482,7 +482,8 @@
 #
 #        # Act & Assert
 #        with pytest.raises(
-#            AssigmentIsNotPossible, match="There are groups without avaliable evaluator"
+#            AssignmentIsNotPossible, match="There are groups without available
+# evaluator"
 #        ):
 #            delivery_flow_solver.solve()
 #
