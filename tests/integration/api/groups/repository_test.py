@@ -230,7 +230,7 @@ def test_add_new_group_with_tutor_and_topic_using_service(tables):
 
     assert ids == uids
     assert group.tutor_period_id == tutor_period_id
-    assert group.topic_id == topic_id
+    assert group.assigned_topic_id == topic_id
 
 
 @pytest.mark.integration

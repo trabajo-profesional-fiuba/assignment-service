@@ -76,13 +76,13 @@ async def add_group(
             )
             topic = topic_service.get_or_add_topic(group.topic)
 
-            return group_service.create_assigned_group(
+            return GroupResponse.model_validate(group_service.create_assigned_group(
                 group.students_ids, tutor_period.id, topic.id, period_id=period
-            )
+            ))
         else:
-            return group_service.create_basic_group(
+            return GroupResponse.model_validate(group_service.create_basic_group(
                 group.students_ids, group.preferred_topics, period
-            )
+            ))
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -119,9 +119,10 @@ async def get_groups(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
+
         group_service = GroupService(GroupRepository(session))
 
-        return group_service.get_groups(period)
+        return GroupList.model_validate(group_service.get_groups(period))
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

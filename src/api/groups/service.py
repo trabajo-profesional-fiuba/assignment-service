@@ -22,7 +22,7 @@ class GroupService:
                 ids, tutor_period_id, topic_id, period_id=period_id
             )
             logger.info(f"New group with id {group.id} created")
-            return GroupResponse.model_validate(group)
+            return group
         except StudentNotFound as e:
             logger.error(f"Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
@@ -41,7 +41,7 @@ class GroupService:
             group = self._repository.add_group(
                 ids=ids, preferred_topics=preferred_topics, period_id=period_id
             )
-            return GroupResponse.model_validate(group)
+            return group
         except StudentNotFound as e:
             logger.error("Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
@@ -58,7 +58,7 @@ class GroupService:
             group = self._repository.add_group_having_emails(
                 emails=emails, preferred_topics=preferred_topics, period_id=period_id
             )
-            return GroupResponse.model_validate(group)
+            return group
         except StudentNotFound as e:
             logger.error("Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
@@ -71,7 +71,7 @@ class GroupService:
     def get_groups(self, period: str):
         logger.info("Fetching all groups")
         groups = self._repository.get_groups(period)
-        return GroupList.model_validate(groups)
+        return  groups
 
     def create_basic_groups(self, group_result, period_id):
         for group in group_result:

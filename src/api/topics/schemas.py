@@ -22,7 +22,6 @@ class CompleteCategoryResponse(SimpleCategory):
 
 class SimpleTopic(BaseModel):
     """Represents a simple topic with just a name"""
-
     name: str
 
     model_config = ConfigDict(from_attributes=True)

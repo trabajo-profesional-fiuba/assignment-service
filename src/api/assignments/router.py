@@ -2,7 +2,7 @@ from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, status, Query, Response
 from sqlalchemy.orm import Session
 
-from src.api.assignments.service import AssigmentService, AssignmentService
+from src.api.assignments.service import AssignmentService
 from src.api.auth.jwt import JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
