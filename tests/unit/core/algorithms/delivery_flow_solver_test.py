@@ -1,16 +1,16 @@
-#import pytest
-#import networkx as nx
-#from src.core.algorithms.date.delivery_flow_solver import DeliveryFlowSolver
-#from src.core.algorithms.adapters.result_adapter import ResultAdapter
-#from src.core.group import Group
-#from src.core.delivery_date import DeliveryDate
-#from src.core.tutor import Tutor
-#from src.core.period import TutorPeriod
-#from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
-#from src.core.algorithms.exceptions import AssigmentIsNotPossible
+# import pytest
+# import networkx as nx
+# from src.core.algorithms.date.delivery_flow_solver import DeliveryFlowSolver
+# from src.core.algorithms.adapters.result_adapter import ResultAdapter
+# from src.core.group import Group
+# from src.core.delivery_date import DeliveryDate
+# from src.core.tutor import Tutor
+# from src.core.period import TutorPeriod
+# from src.constants import GROUP_ID, EVALUATOR_ID, DATE_ID
+# from src.core.algorithms.exceptions import AssigmentIsNotPossible
 #
 #
-#class TestDeliveryFlowSolver:
+# class TestDeliveryFlowSolver:
 #    dates = [
 #        DeliveryDate(week=1, day=1, hour=1),
 #        DeliveryDate(week=1, day=2, hour=1),
@@ -482,7 +482,8 @@
 #
 #        # Act & Assert
 #        with pytest.raises(
-#            AssigmentIsNotPossible, match="There are groups without avaliable evaluator"
+#            AssignmentIsNotPossible, match="There are groups without available
+# evaluator"
 #        ):
 #            delivery_flow_solver.solve()
 #

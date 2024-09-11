@@ -1,14 +1,9 @@
 import jwt as jwt_provider
 import datetime
-from pydantic import BaseModel, Field
 
 from src.config.logging import logger
 from src.config.config import api_config
 from src.api.auth.schemas import JwtDecoded, JwtEncoded
-
-
-
-
 
 
 class InvalidJwt(Exception):
@@ -32,8 +27,10 @@ class JwtResolver:
     def _get_exp_time(self, minutes) -> float:
         """
         Gets timedelta of current time + minutes in utc(timedelta(0)).
-        Coordinated Universal Time (UTC) is the primary time standard globally used to regulate clocks and time.
-        It establishes a reference for the current time, forming the basis for civil time and time zones.
+        Coordinated Universal Time (UTC) is the primary time standard globally used
+        to regulate clocks and time.
+        It establishes a reference for the current time, forming the basis for civil
+        time and time zones.
         """
         delta = datetime.timedelta(minutes=minutes)
         now = datetime.datetime.now(tz=datetime.timezone.utc)

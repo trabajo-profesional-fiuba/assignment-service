@@ -10,7 +10,6 @@ from src.api.auth.service import AuthenticationService
 
 from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
 
-from src.api.students.exceptions import StudentNotFound, StudentDuplicated
 from src.api.students.repository import StudentRepository
 from src.api.students.service import StudentService
 
@@ -91,9 +90,9 @@ async def get_students_by_ids(
         res = service.get_students_by_ids(user_ids)
         logger.info("Retrieve all students by ids.")
 
-        response = JSONResponse(content = res.model_dump())
+        response = JSONResponse(content=res.model_dump())
         response.headers["Cache-Control"] = "private, max-age=7200"
-    
+
         return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")

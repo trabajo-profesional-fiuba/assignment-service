@@ -1,4 +1,3 @@
-from collections import defaultdict
 from datetime import datetime
 
 from src.api.forms.repository import FormRepository
@@ -8,7 +7,6 @@ from src.api.forms.models import FormPreferences
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
-    UserAnswerList,
     GroupAnswerResponse,
     UserAnswerResponse,
 )
@@ -88,28 +86,29 @@ class FormService:
         return self._repository.delete_answers_by_answer_id(answer_id)
 
     def _make_topic(self, topic):
-        """ Make a Topic based on a Topic Orm Object."""
+        """Make a Topic based on a Topic Orm Object."""
         id = topic.id
         name = topic.name
         category = topic.category.name
         topic = Topic(id=id, title=name, category=category)
         return topic
 
-    def _transform_topics(self, topic_repository: TopicRepository) ->dict:
-        """ Builds a dictionary of name: Topic with all the topics from the
-            database.
-            The Topic object are not ORM objects.
+    def _transform_topics(self, topic_repository: TopicRepository) -> dict:
+        """Builds a dictionary of name: Topic with all the topics from the
+        database.
+        The Topic object are not ORM objects.
         """
         topics = topic_repository.get_topics()
         topcis_as_dict = dict()
         for orm_topic in topics:
             topic = self._make_topic(orm_topic)
             topcis_as_dict[topic.id] = topic
-        
+
         return topcis_as_dict
 
-
-    def get_answers(self, topic_repository: TopicRepository, for_controller:bool = False):
+    def get_answers(
+        self, topic_repository: TopicRepository, for_controller: bool = False
+    ):
         """
         Retrieves answers from the repository, processes the data to group students
         by their answers, and returns a formatted response.
@@ -147,9 +146,8 @@ class FormService:
                         )
                     )
             else:
-                
+
                 response = list(answers.values())
-                
 
         return response
 
@@ -172,7 +170,7 @@ class FormService:
                         email=db_answer.email,
                         topic_1=topic_1.name,
                         topic_2=topic_2.name,
-                        topic_3=topic_3.name
+                        topic_3=topic_3.name,
                     )
                 )
         return response

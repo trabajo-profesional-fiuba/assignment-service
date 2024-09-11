@@ -41,7 +41,11 @@ def test_upload_file_and_create_students(fastapi, tables):
     files = {"file": (filename, content, content_type)}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload", files=files, headers={'Authorization': f"Bearer {token.access_token}"})
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == 201
@@ -59,7 +63,11 @@ def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
     files = {"file": (filename, "test".encode(), content_type)}
 
     # Act
-    response = fastapi.post(f"{PREFIX}/upload", files=files, headers={'Authorization': f"Bearer {token.access_token}"})
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
@@ -75,10 +83,18 @@ def test_get_student_by_ids(fastapi, tables):
     filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-    _ = fastapi.post(f"{PREFIX}/upload", files=files, headers={'Authorization': f"Bearer {token.access_token}"})
+    _ = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
 
     # Act
-    response = fastapi.get(f"{PREFIX}/", params={"user_ids": ["105001", "105002"]}, headers={'Authorization': f"Bearer {token.access_token}"})
+    response = fastapi.get(
+        f"{PREFIX}/",
+        params={"user_ids": ["105001", "105002"]},
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_200_OK
@@ -91,7 +107,11 @@ def test_get_wrongs_student_by_ids_response_404(fastapi, tables):
     token = helper.create_admin_token()
 
     # Act
-    response = fastapi.get(f"{PREFIX}/", params={"user_ids": ["1", "2"]},headers={'Authorization': f"Bearer {token.access_token}"})
+    response = fastapi.get(
+        f"{PREFIX}/",
+        params={"user_ids": ["1", "2"]},
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -102,7 +122,11 @@ def test_get_duplicate_student_by_ids_response_409(fastapi, tables):
     helper = ApiHelper()
     token = helper.create_admin_token()
     # Act
-    response = fastapi.get(f"{PREFIX}/", params={"user_ids": ["1", "1"]}, headers={'Authorization': f"Bearer {token.access_token}"})
+    response = fastapi.get(
+        f"{PREFIX}/",
+        params={"user_ids": ["1", "1"]},
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
 
     # Assert
     assert response.status_code == status.HTTP_409_CONFLICT
@@ -118,10 +142,16 @@ def test_get_all_students(fastapi, tables):
     filename = "test_data"
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
-    _ = fastapi.post(f"{PREFIX}/upload", files=files, headers={'Authorization': f"Bearer {token.access_token}"})
+    _ = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
 
     # Act
-    response = fastapi.get(f"{PREFIX}/",headers={'Authorization': f"Bearer {token.access_token}"})
+    response = fastapi.get(
+        f"{PREFIX}/", headers={"Authorization": f"Bearer {token.access_token}"}
+    )
 
     # Assert
     assert response.status_code == status.HTTP_200_OK
@@ -139,10 +169,18 @@ def test_update_student_file_with_success(fastapi, tables):
     content_type = "text/csv"
     files = {"file": (filename, content, content_type)}
 
-    response = fastapi.post(f"{PREFIX}/upload", files=files, headers={'Authorization': f"Bearer {token.access_token}"})
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
     assert response.status_code == 201
     assert len(response.json()) == 30
 
-    response = fastapi.post(f"{PREFIX}/upload", files=files, headers={'Authorization': f"Bearer {token.access_token}"})
+    response = fastapi.post(
+        f"{PREFIX}/upload",
+        files=files,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
     assert response.status_code == 201
     assert len(response.json()) == 30

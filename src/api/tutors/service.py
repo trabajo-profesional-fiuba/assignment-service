@@ -18,7 +18,7 @@ from src.api.tutors.exceptions import (
     PeriodDuplicated,
     TutorDuplicated,
     TutorNotFound,
-    TutorPeriodNotInserted
+    TutorPeriodNotInserted,
 )
 from src.api.tutors.models import Period, TutorPeriod
 
@@ -57,7 +57,9 @@ class TutorService:
                 existing_tutors_id.append(tutor.id)
         return existing_tutors_id
 
-    def create_tutors_from_csv(self, csv: str, period: str, hasher: ShaHasher, user_repository):
+    def create_tutors_from_csv(
+        self, csv: str, period: str, hasher: ShaHasher, user_repository
+    ):
         try:
             """
             With a csv file as string, it
@@ -69,7 +71,8 @@ class TutorService:
             existing_tutors_id = self._get_existing_ids(tutors_ids)
 
             remaining_ids = list(
-                filter(lambda x: x not in existing_tutors_id, tutors_ids))
+                filter(lambda x: x not in existing_tutors_id, tutors_ids)
+            )
 
             tutor_periods = []
             tutors = []
@@ -87,15 +90,21 @@ class TutorService:
 
             for id in tutors_ids:
                 tutor_dto = tutors_dtos[id]
-                tutor_periods.append(TutorPeriod(
-                    period_id=period, tutor_id=tutor_dto.id, capacity=tutor_dto.capacity))
+                tutor_periods.append(
+                    TutorPeriod(
+                        period_id=period,
+                        tutor_id=tutor_dto.id,
+                        capacity=tutor_dto.capacity,
+                    )
+                )
 
             user_repository.add_tutors(tutors)
 
             # Clean if the tutor already contains a period asociated
             if len(existing_tutors_id) > 0:
                 self._repository.remove_tutor_periods_by_tutor_ids(
-                    period, existing_tutors_id)
+                    period, existing_tutors_id
+                )
 
             # Add new periods
             self._repository.add_tutor_periods(tutor_periods)

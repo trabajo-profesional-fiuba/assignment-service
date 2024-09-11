@@ -31,7 +31,7 @@ class Group:
     @property
     def assigned_topic(self):
         return self._assigned_topic
-    
+
     @property
     def topics(self) -> list[Topic]:
         """

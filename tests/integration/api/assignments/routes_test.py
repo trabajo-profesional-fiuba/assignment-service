@@ -1,11 +1,10 @@
-import datetime as dt
 import pytest
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
 from src.config.database.database import create_tables, drop_tables
 from tests.integration.api.helper import ApiHelper
-from src.api.assigments.router import router as assigment_router
+from src.api.assignments.router import router as assignment_router
 
 
 @pytest.fixture(scope="function")
@@ -20,16 +19,16 @@ def tables():
 @pytest.fixture(scope="module")
 def fastapi():
     app = FastAPI()
-    app.include_router(assigment_router)
+    app.include_router(assignment_router)
     client = TestClient(app)
     yield client
 
 
-PREFIX = "/assigments"
+PREFIX = "/assignments"
 
 
 @pytest.mark.integration
-def test_resolve_assigment_of_incomplete_groups(fastapi, tables):
+def test_resolve_assignment_of_incomplete_groups(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("2C2024")
@@ -59,7 +58,7 @@ def test_resolve_assigment_of_incomplete_groups(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_resolve_assigment_of_incomplete_groups_more_answers(fastapi, tables):
+def test_resolve_assignment_of_incomplete_groups_more_answers(fastapi, tables):
 
     # Arrange
     helper = ApiHelper()
@@ -89,15 +88,57 @@ def test_resolve_assigment_of_incomplete_groups_more_answers(fastapi, tables):
         ]
     )
     helper.add_tutor_to_topic(
-        "2C2024", "email@fi.uba.ar", ["Introduction to Python", "Data Structures and Algorithms", "Web Development with Django"], [1, 1, 1]
+        "2C2024",
+        "email@fi.uba.ar",
+        [
+            "Introduction to Python",
+            "Data Structures and Algorithms",
+            "Web Development with Django",
+        ],
+        [1, 1, 1],
     )
     helper.add_tutor_to_topic(
-        "2C2024", "email2@fi.uba.ar", ["Machine Learning Basics", "Database Management Systems", "Version Control with Git"], [1, 1, 1]
+        "2C2024",
+        "email2@fi.uba.ar",
+        [
+            "Machine Learning Basics",
+            "Database Management Systems",
+            "Version Control with Git",
+        ],
+        [1, 1, 1],
     )
-    helper.register_answer([100001, 100002], ["Introduction to Python", "Data Structures and Algorithms", "Version Control with Git"])
-    helper.register_answer([100003, 100004,100005,100006], ["Introduction to Python", "Data Structures and Algorithms", "Version Control with Git"])
-    helper.register_answer([100007, 100008,100009], ["Machine Learning Basics", "Database Management Systems", "Version Control with Git"])
-    helper.register_answer([100010], ["Web Development with Django", "Version Control with Git", "Introduction to Python"])
+    helper.register_answer(
+        [100001, 100002],
+        [
+            "Introduction to Python",
+            "Data Structures and Algorithms",
+            "Version Control with Git",
+        ],
+    )
+    helper.register_answer(
+        [100003, 100004, 100005, 100006],
+        [
+            "Introduction to Python",
+            "Data Structures and Algorithms",
+            "Version Control with Git",
+        ],
+    )
+    helper.register_answer(
+        [100007, 100008, 100009],
+        [
+            "Machine Learning Basics",
+            "Database Management Systems",
+            "Version Control with Git",
+        ],
+    )
+    helper.register_answer(
+        [100010],
+        [
+            "Web Development with Django",
+            "Version Control with Git",
+            "Introduction to Python",
+        ],
+    )
     admin_token = helper.create_admin_token()
 
     response = fastapi.post(
