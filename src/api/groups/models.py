@@ -30,8 +30,9 @@ class Group(Base):
     assigned_topic_id = Column(Integer, ForeignKey("topics.id", ondelete="SET NULL"), nullable=True)
     tutor_period_id = Column(
         Integer,
-        ForeignKey("tutor_periods.id"),
+        ForeignKey("tutor_periods.id", ondelete="SET NULL"),
         nullable=True,
+        
     )
     pre_report_date = Column(DateTime(timezone=False))
     pre_report_approved = Column(Boolean, default=False)
@@ -50,7 +51,7 @@ class Group(Base):
     period_id = Column(String, ForeignKey("periods.id"))
 
     students: Mapped[List[User]] = relationship(
-        secondary=association_table, lazy="joined"
+        secondary=association_table, lazy="subquery"
     )
     topic = relationship("Topic", back_populates="groups", lazy="joined")
     tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="joined")

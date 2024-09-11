@@ -1,8 +1,8 @@
 import pyscipopt as scip
 from src.core.algorithms.adapters.result_context import ResultContext
 from src.constants import DATE_ID, EVALUATOR_ID, GROUP_ID, TUTOR_ID
-from src.core.period import TutorPeriod
 from src.core.delivery_date import DeliveryDate
+from src.core.tutor import Tutor
 
 GROUP = 0
 TUTOR = 1
@@ -33,7 +33,7 @@ class DeliveryLPSolver:
     """
 
     def __init__(
-        self, tutor_periods: list[TutorPeriod] = [], adapter=None, available_dates=[]
+        self, tutor_periods: list[Tutor] = [], adapter=None, available_dates=[]
     ):
         """
         Initializes the class with tutor_periods and dates.
@@ -55,17 +55,17 @@ class DeliveryLPSolver:
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
 
-    def get_tutors(self, tutor_periods: list[TutorPeriod] = []):
+    def get_tutors(self, tutor_periods: list[Tutor] = []):
         tutors = list(filter(lambda x: not x.is_evaluator(), tutor_periods))
         return tutors
 
-    def get_all_groups(self, tutor_periods: list[TutorPeriod] = []):
+    def get_all_groups(self, tutor_periods: list[Tutor] = []):
         groups = []
         for t in tutor_periods:
             groups += t.groups
         return groups
 
-    def create_evaluators(self, tutor_periods: list[TutorPeriod] = []):
+    def create_evaluators(self, tutor_periods: list[Tutor] = []):
         evaluators = list(filter(lambda x: x.is_evaluator(), tutor_periods))
         return evaluators
 
@@ -144,10 +144,10 @@ class DeliveryLPSolver:
         ]
 
         if group_tutor_evaluator_possible_dates:
-            if evaluator.id() != tutor.id():
+            if evaluator.id != tutor.id:
                 for week, day, hour in group_tutor_evaluator_possible_dates:
                     self._create_decision_variable(
-                        group, tutor.id(), evaluator, week, day, hour
+                        group, tutor.id, evaluator, week, day, hour
                     )
                     self._create_evaluator_day_variable(evaluator, week, day)
 
@@ -173,10 +173,10 @@ class DeliveryLPSolver:
         hour : int
             The hour of the day of the assignment.
         """
-        var_name = f"{GROUP_ID}-{group.id()}-{TUTOR_ID}-{tutor_id}-{EVALUATOR_ID}-\
-            {evaluator.id()}-{DATE_ID}-{week}-{day}-{hour}"
+        var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor_id}-{EVALUATOR_ID}-\
+            {evaluator.id}-{DATE_ID}-{week}-{day}-{hour}"
         self._decision_variables[
-            (group.id(), tutor_id, evaluator.id(), week, day, hour)
+            (group.id, tutor_id, evaluator.id, week, day, hour)
         ] = self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
 
     def _create_evaluator_day_variable(self, evaluator, week, day):
@@ -195,9 +195,9 @@ class DeliveryLPSolver:
         day : int
             The day of the week of the assignment.
         """
-        if (evaluator.id(), week, day) not in self._evaluator_day_vars:
-            day_var_name = f"{EVALUATOR_ID}-{evaluator.id()}-{DATE_ID}-{week}-{day}"
-            self._evaluator_day_vars[(evaluator.id(), week, day)] = self._model.addVar(
+        if (evaluator.id, week, day) not in self._evaluator_day_vars:
+            day_var_name = f"{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}"
+            self._evaluator_day_vars[(evaluator.id, week, day)] = self._model.addVar(
                 day_var_name, vtype="B", obj=0, lb=0, ub=1
             )
 
@@ -223,7 +223,7 @@ class DeliveryLPSolver:
         group_possible_dates = [
             (week, day, hour)
             for (g, t, e, week, day, hour) in self._decision_variables
-            if g == group.id()
+            if g == group.id
         ]
         if group_possible_dates:
             group_date_vars = self._create_group_date_variables(
@@ -231,7 +231,7 @@ class DeliveryLPSolver:
             )
             self._model.addCons(
                 scip.quicksum(group_date_vars.values()) == 1,
-                name=f"{GROUP_ID}-{group.id()}",
+                name=f"{GROUP_ID}-{group.id}",
             )
 
     def _create_group_date_variables(self, group, group_possible_dates, tutor):
@@ -257,7 +257,7 @@ class DeliveryLPSolver:
         group_date_vars = {}
         for date in group_possible_dates:
             group_date_var = self._model.addVar(
-                f"{GROUP_ID}-{group.id()}-{DATE_ID}-{date[0]}-{date[1]}-{date[2]}",
+                f"{GROUP_ID}-{group.id}-{DATE_ID}-{date[0]}-{date[1]}-{date[2]}",
                 vtype="B",
                 obj=0,
                 lb=0,
@@ -269,9 +269,9 @@ class DeliveryLPSolver:
                 >= scip.quicksum(
                     self._decision_variables[
                         (
-                            group.id(),
-                            tutor.id(),
-                            evaluator.id(),
+                            group.id,
+                            tutor.id,
+                            evaluator.id,
                             date[0],
                             date[1],
                             date[2],
@@ -279,9 +279,9 @@ class DeliveryLPSolver:
                     ]
                     for evaluator in self._evaluators
                     if (
-                        group.id(),
-                        tutor.id(),
-                        evaluator.id(),
+                        group.id,
+                        tutor.id,
+                        evaluator.id,
                         date[0],
                         date[1],
                         date[2],
@@ -289,7 +289,7 @@ class DeliveryLPSolver:
                     in self._decision_variables
                 )
                 / len(self._evaluators),
-                name=f"{GROUP_ID}-{group.id()}-{DATE_ID}-{date[0]}-{date[1]}-{date[2]}",
+                name=f"{GROUP_ID}-{group.id}-{DATE_ID}-{date[0]}-{date[1]}-{date[2]}",
             )
         return group_date_vars
 
@@ -305,12 +305,12 @@ class DeliveryLPSolver:
         variables = [
             self._decision_variables[var]
             for var in self._decision_variables
-            if var[GROUP] == group.id()
+            if var[GROUP] == group.id
         ]
         if variables:
             self._model.addCons(
                 scip.quicksum(variables) == 1,
-                name=f"min-assign-{GROUP_ID}-{group.id()}",
+                name=f"min-assign-{GROUP_ID}-{group.id}",
             )
 
     def add_unique_group_per_date_constraint(self):
@@ -372,10 +372,10 @@ class DeliveryLPSolver:
                 scip.quicksum(
                     self._decision_variables[var]
                     for var in self._decision_variables
-                    if var[EVALUATOR] == evaluator.id() and var[WEEK] == week
+                    if var[EVALUATOR] == evaluator.id and var[WEEK] == week
                 )
                 <= MAX_GROUPS_PER_WEEK,
-                name=f"max-10-groups-week-{EVALUATOR_ID}-{evaluator.id()}-{week}",
+                name=f"max-10-groups-week-{EVALUATOR_ID}-{evaluator.id}-{week}",
             )
 
     def define_objective(self):
@@ -397,8 +397,8 @@ class DeliveryLPSolver:
         """
         self._evaluator_assignment_vars = {}
         for evaluator in self._evaluators:
-            var_name = f"{EVALUATOR_ID}-{evaluator.id()}-assignments"
-            self._evaluator_assignment_vars[evaluator.id()] = self._model.addVar(
+            var_name = f"{EVALUATOR_ID}-{evaluator.id}-assignments"
+            self._evaluator_assignment_vars[evaluator.id] = self._model.addVar(
                 var_name, vtype="I", obj=0, lb=0
             )
 
@@ -408,13 +408,13 @@ class DeliveryLPSolver:
         """
         for evaluator in self._evaluators:
             self._model.addCons(
-                self._evaluator_assignment_vars[evaluator.id()]
+                self._evaluator_assignment_vars[evaluator.id]
                 == scip.quicksum(
                     self._decision_variables[var]
                     for var in self._decision_variables
-                    if var[EVALUATOR] == evaluator.id()
+                    if var[EVALUATOR] == evaluator.id
                 ),
-                name=f"count-assignments-{EVALUATOR_ID}-{evaluator.id()}",
+                name=f"count-assignments-{EVALUATOR_ID}-{evaluator.id}",
             )
 
     def add_balance_constraints(self):
@@ -425,18 +425,18 @@ class DeliveryLPSolver:
             for j, evaluator_j in enumerate(self._evaluators):
                 if i < j:
                     self._model.addCons(
-                        self._evaluator_assignment_vars[evaluator_i.id()]
-                        - self._evaluator_assignment_vars[evaluator_j.id()]
+                        self._evaluator_assignment_vars[evaluator_i.id]
+                        - self._evaluator_assignment_vars[evaluator_j.id]
                         <= MAX_DIF_EVALUATORS,  # Balance threshold
-                        name=f"balance-{EVALUATOR_ID}-{evaluator_i.id()}\
-                            -{evaluator_j.id()}",
+                        name=f"balance-{EVALUATOR_ID}-{evaluator_i.id}\
+                            -{evaluator_j.id}",
                     )
                     self._model.addCons(
-                        self._evaluator_assignment_vars[evaluator_j.id()]
-                        - self._evaluator_assignment_vars[evaluator_i.id()]
+                        self._evaluator_assignment_vars[evaluator_j.id]
+                        - self._evaluator_assignment_vars[evaluator_i.id]
                         <= MAX_DIF_EVALUATORS,  # Balance threshold
-                        name=f"balance-{EVALUATOR_ID}-{evaluator_j.id()}-\
-                            {evaluator_i.id()}",
+                        name=f"balance-{EVALUATOR_ID}-{evaluator_j.id}-\
+                            {evaluator_i.id}",
                     )
 
     def _find_substitutes_on_date(self, date, evaluator_id, tutor_id):
@@ -444,10 +444,10 @@ class DeliveryLPSolver:
         for evaluator in self._evaluators:
             if (
                 evaluator.is_avaliable(date.label())
-                and evaluator.id() != evaluator_id
-                and evaluator.id() != tutor_id
+                and evaluator.id != evaluator_id
+                and evaluator.id != tutor_id
             ):
-                substitutes.append(evaluator.id())
+                substitutes.append(evaluator.id)
                 evaluator.add_substitute_date(date)
 
         return substitutes
@@ -525,7 +525,7 @@ class DeliveryLPSolver:
                 )
 
                 group_id, _, _, week, day, hour = var
-                group = next(g for g in self._groups if g.id() == group_id)
+                group = next(g for g in self._groups if g.id == group_id)
                 group.assign_date(DeliveryDate(week, day, hour))
 
         print("\nAdditional activated variables (Evaluator, Week, Day):")
