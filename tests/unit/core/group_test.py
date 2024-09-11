@@ -17,7 +17,7 @@ class TestGroup:
 
     @pytest.mark.unit
     def test_group_can_be_assigned_to_a_tutor(self):
-        tutor = Tutor(1, "fake@fi.uba.ar", "Juan","Perez")
+        tutor = Tutor(1, "fake@fi.uba.ar", "Juan", "Perez")
         group = Group(1)
         tutor.add_groups([group])
 
@@ -25,12 +25,21 @@ class TestGroup:
 
     @pytest.mark.unit
     def test_group_can_have_topics(self):
-        topics = [Topic(id=1, title="topic1", cost=1, category="Category A", capacity=1), Topic(id=2, title="topic2", cost=2, category="Category A"), Topic(id=3, title="topic3", cost=3, category="Category A")]
+        topics = [
+            Topic(id=1, title="topic1", cost=1, category="Category A", capacity=1),
+            Topic(id=2, title="topic2", cost=2, category="Category A"),
+            Topic(id=3, title="topic3", cost=3, category="Category A"),
+        ]
         group = Group(1)
 
         group.add_topics(topics)
 
-        assert group.preference_of(Topic(id=1, title="topic1", capacity=1, category="Category A")) == 1
+        assert (
+            group.preference_of(
+                Topic(id=1, title="topic1", capacity=1, category="Category A")
+            )
+            == 1
+        )
 
     @pytest.mark.unit
     def test_group_can_have_available_dates(self):

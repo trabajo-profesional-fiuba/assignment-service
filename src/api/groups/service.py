@@ -17,7 +17,9 @@ class GroupService:
 
     def create_assigned_group(self, ids, tutor_period_id, topic_id, period_id):
         try:
-            group = self._repository.add_group(ids, tutor_period_id, topic_id, period_id=period_id)
+            group = self._repository.add_group(
+                ids, tutor_period_id, topic_id, period_id=period_id
+            )
             logger.info(f"New group with id {group.id} created")
             return GroupResponse.model_validate(group)
         except StudentNotFound as e:
@@ -47,7 +49,9 @@ class GroupService:
                 message="Group could't be created check if params exits"
             )
 
-    def create_basic_group_with_email(self, emails, preferred_topics=[], period_id=None):
+    def create_basic_group_with_email(
+        self, emails, preferred_topics=[], period_id=None
+    ):
         try:
             group = self._repository.add_group_having_emails(
                 emails=emails, preferred_topics=preferred_topics, period_id=period_id
@@ -62,13 +66,10 @@ class GroupService:
                 message="Group could't be created check if params exits"
             )
 
-    
-
     def get_groups(self, period: str):
         logger.info("Fetching all groups")
         groups = self._repository.get_groups(period)
         return GroupList.model_validate(groups)
-
 
     def create_basic_groups(self, group_result, period_id):
         for group in group_result:

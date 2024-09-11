@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="connect")
 
+
 class RequestForm(OAuth2PasswordRequestForm):
     pass
 

@@ -6,7 +6,7 @@ from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
     GroupAnswerList,
-    UserAnswerList
+    UserAnswerList,
 )
 from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService
@@ -86,12 +86,13 @@ async def get_answers(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
-        return service.get_answers(TopicRepository(session),for_controller=True)
+        return service.get_answers(TopicRepository(session), for_controller=True)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
         raise ServerError(message=str(e))
+
 
 @router.get(
     "/answers/{user_id}",
@@ -111,18 +112,19 @@ async def get_answers(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    user_id:int
+    user_id: int,
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
         service = FormService(FormRepository(session))
-        return service.get_answers_by_user_id(user_id,TopicRepository(session))
+        return service.get_answers_by_user_id(user_id, TopicRepository(session))
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
         raise ServerError(message=str(e))
+
 
 @router.delete(
     "/answers/{answer_id}",

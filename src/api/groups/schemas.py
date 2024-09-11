@@ -14,12 +14,15 @@ class GroupRequest(BaseModel):
 
         raise ValueError("The amount of student for this Group is not valid")
 
+
 class GroupWithTutorTopicRequest(GroupRequest):
     tutor_email: str
     topic: str
-    
+
+
 class GroupWithPreferredTopicsRequest(GroupRequest):
     preferred_topics: List[int]
+
 
 class GroupResponse(BaseModel):
     id: int = Field(description="Id of the group")
@@ -33,6 +36,7 @@ class GroupResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class CompleteGroupResponse(GroupResponse):
     pre_report_date: datetime | None
     pre_report_approved: bool
@@ -40,12 +44,13 @@ class CompleteGroupResponse(GroupResponse):
     intermediate_assigment_approved: bool
     final_report_approved: bool
     exhibition_date: datetime | None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
 class GroupList(RootModel):
     root: List[GroupResponse] = Field(default=[])
-    
+
+
 class CompleteGroupList(RootModel):
     root: List[CompleteGroupResponse] = Field(default=[])

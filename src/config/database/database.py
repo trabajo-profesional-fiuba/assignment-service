@@ -16,9 +16,7 @@ logger.info(f"Database ulr: {database_url}")
 pool_size = api_config.database_pool_size
 pool_timeout = api_config.database_pool_timeout
 
-engine = create_engine(
-    database_url, pool_size=pool_size, pool_timeout=pool_timeout
-)
+engine = create_engine(database_url, pool_size=pool_size, pool_timeout=pool_timeout)
 
 
 def init_default_values():
@@ -37,6 +35,7 @@ def init_default_values():
                 logger.error(f"An error occurred: {e}")
     else:
         logger.warn("Database engine is not initialized.")
+
 
 def create_tables():
     """
@@ -67,4 +66,3 @@ def get_db():
         yield Session
     else:
         yield None
-

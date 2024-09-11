@@ -57,7 +57,9 @@ async def upload_csv_file(
             raise InvalidFileType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
-        return service.create_topics_from_string(period_id,content, TutorRepository(session))
+        return service.create_topics_from_string(
+            period_id, content, TutorRepository(session)
+        )
     except (
         EntityNotFound,
         InvalidFileType,
@@ -90,13 +92,13 @@ async def get_topics(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
-        
+
         service = TopicService(TopicRepository(session))
         topics = service.get_topics()
 
-        response = JSONResponse(content = topics.model_dump())
+        response = JSONResponse(content=topics.model_dump())
         response.headers["Cache-Control"] = "private, max-age=7200"
-    
+
         return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")

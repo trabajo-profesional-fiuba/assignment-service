@@ -11,7 +11,7 @@ from src.config.database.base import Base
 association_table = Table(
     "groups_students",
     Base.metadata,
-    Column("group_id", ForeignKey("groups.id",ondelete="CASCADE")),
+    Column("group_id", ForeignKey("groups.id", ondelete="CASCADE")),
     Column("student_id", ForeignKey("users.id"), primary_key=True),
 )
 
@@ -27,12 +27,13 @@ class Group(Base):
     __tablename__ = "groups"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    assigned_topic_id = Column(Integer, ForeignKey("topics.id", ondelete="SET NULL"), nullable=True)
+    assigned_topic_id = Column(
+        Integer, ForeignKey("topics.id", ondelete="SET NULL"), nullable=True
+    )
     tutor_period_id = Column(
         Integer,
         ForeignKey("tutor_periods.id", ondelete="SET NULL"),
         nullable=True,
-        
     )
     pre_report_date = Column(DateTime(timezone=False))
     pre_report_approved = Column(Boolean, default=False)

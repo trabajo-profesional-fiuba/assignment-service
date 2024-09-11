@@ -20,6 +20,7 @@ from src.config.database.database import get_db
 
 router = APIRouter(prefix="/assigments", tags=["Assigments"])
 
+
 @router.post(
     "/incomplete-groups",
     summary="Runs the assigment of incomplete groups",
@@ -43,24 +44,25 @@ router = APIRouter(prefix="/assigments", tags=["Assigments"])
     },
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def assign_incomplete_groups(    
+async def assign_incomplete_groups(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"])): #tenemos que usarlo para recuperar los grupos de tal cuatrimestre
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):  # tenemos que usarlo para recuperar los grupos de tal cuatrimestre
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
-        
+
         form_service = FormService(FormRepository(session))
         topic_repository = TopicRepository(session)
         group_service = GroupService(GroupRepository(session))
 
         answers = form_service.get_answers(topic_repository)
         service = AssigmentService()
-        
+
         group_result = service.assigment_incomplete_groups(answers)
         group_service.create_basic_groups(group_result, period_id)
-        return Response(status_code=status.HTTP_202_ACCEPTED,content='Created')
+        return Response(status_code=status.HTTP_202_ACCEPTED, content="Created")
     except Exception as e:
         raise ServerError("error")

@@ -20,6 +20,7 @@ import datetime as dt
 from src.api.topics.models import Topic, Category
 from src.api.topics.repository import TopicRepository
 
+
 class ApiHelper:
     SessionFactory = sessionmaker(bind=engine)
     Session = scoped_session(SessionFactory)
@@ -87,11 +88,11 @@ class ApiHelper:
         jwt = JwtResolver()
         token = jwt.create_token(sub, "student")
         return token
-    
+
     def create_topic(self, name: str, category_id: int):
         topic = Topic(name=name, category_id=category_id)
         self._topic_repository.add_topic(topic)
-        
+
     def create_category(self, name: str):
         category = Category(name=name)
         self._topic_repository.add_category(category)
@@ -108,7 +109,7 @@ class ApiHelper:
             period_id, tutor_email, topics_db, capacities
         )
 
-    def get_groups(self, period_id = None):
+    def get_groups(self, period_id=None):
         return self._groups_repository.get_groups(period=period_id)
 
     def register_answer(self, ids, topics):

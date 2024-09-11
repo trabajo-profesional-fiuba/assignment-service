@@ -7,10 +7,6 @@ from src.config.config import api_config
 from src.api.auth.schemas import JwtDecoded, JwtEncoded
 
 
-
-
-
-
 class InvalidJwt(Exception):
 
     def __init__(self, message) -> None:

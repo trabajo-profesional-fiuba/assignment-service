@@ -9,7 +9,13 @@ from src.api.auth.service import AuthenticationService
 from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 
 from src.api.groups.repository import GroupRepository
-from src.api.groups.schemas import GroupList, GroupRequest, GroupResponse, GroupWithTutorTopicRequest, GroupWithPreferredTopicsRequest
+from src.api.groups.schemas import (
+    GroupList,
+    GroupRequest,
+    GroupResponse,
+    GroupWithTutorTopicRequest,
+    GroupWithPreferredTopicsRequest,
+)
 from src.api.groups.service import GroupService
 
 from src.api.topics.repository import TopicRepository
@@ -68,12 +74,14 @@ async def add_group(
                 period, group.tutor_email
             )
             topic = topic_service.get_or_add_topic(group.topic)
-        
+
             return group_service.create_assigned_group(
                 group.students_ids, tutor_period.id, topic.id, period_id=period
             )
         else:
-            return group_service.create_basic_group(group.students_ids, group.preferred_topics, period)
+            return group_service.create_basic_group(
+                group.students_ids, group.preferred_topics, period
+            )
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:

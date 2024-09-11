@@ -15,7 +15,7 @@ def read_csv_and_create_objects(file_path):
 
     with open(file_path, newline="", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
-        group_id = '2'
+        group_id = "2"
 
         for row in reader:
             # Crear o obtener los tópicos de las preferencias
@@ -133,7 +133,11 @@ class TestIncompleteGroupsLPSolver:
 
     @pytest.mark.unit
     def test_single_group(self):
-        topics = [Topic(id=1, title="Tema_C", capacity=0, category="Category A"), Topic(id=2, title="Tema_A", capacity=0, category="Category A"), Topic(id=3, title="Tema_B", capacity=0, category="Category A")]
+        topics = [
+            Topic(id=1, title="Tema_C", capacity=0, category="Category A"),
+            Topic(id=2, title="Tema_A", capacity=0, category="Category A"),
+            Topic(id=3, title="Tema_B", capacity=0, category="Category A"),
+        ]
         groups = [
             GroupFormAnswer(
                 1, topics=[topics[0], topics[1], topics[2]], students=["Student_1"]

@@ -6,7 +6,7 @@ from src.api.tutors.exceptions import (
     TutorNotFound,
     PeriodDuplicated,
     TutorPeriodNotFound,
-    TutorPeriodNotInserted
+    TutorPeriodNotInserted,
 )
 from src.api.topics.exceptions import TopicNotFound
 from src.api.topics.models import Topic, TopicTutorPeriod
@@ -107,7 +107,11 @@ class TutorRepository:
         return tutor_period
 
     def add_topic_tutor_period(
-        self, period_id:str, tutor_email: str, topics: list[Topic], capacities: list[int]
+        self,
+        period_id: str,
+        tutor_email: str,
+        topics: list[Topic],
+        capacities: list[int],
     ):
         with self.Session() as session:
             topic_tutor_periods = []
@@ -149,8 +153,11 @@ class TutorRepository:
 
     def get_tutors(self):
         with self.Session() as session:
-            tutors = session.query(User).filter(
-                User.role.in_([Role.TUTOR, Role.ADMIN])).all()
+            tutors = (
+                session.query(User)
+                .filter(User.role.in_([Role.TUTOR, Role.ADMIN]))
+                .all()
+            )
             session.expunge_all()
         return tutors
 
@@ -197,7 +204,8 @@ class TutorRepository:
     def delete_tutors_periods_by_period_id(self, period_id):
         with self.Session() as session:
             session.query(TutorPeriod).filter(
-                TutorPeriod.period_id == period_id).delete()
+                TutorPeriod.period_id == period_id
+            ).delete()
             session.commit()
 
     def get_tutors_by_period_id(self, period_id):
@@ -212,12 +220,14 @@ class TutorRepository:
 
         for tutor in tutors:
             tutor.periods = [
-                period for period in tutor.periods if period.period_id == period_id]
+                period for period in tutor.periods if period.period_id == period_id
+            ]
 
         return tutors
 
     def remove_tutor_periods_by_tutor_ids(self, period_id, tutors_ids):
         with self.Session() as session:
-            session.query(TutorPeriod).filter(TutorPeriod.period_id == period_id).filter(
-                TutorPeriod.tutor_id.in_(tutors_ids)).delete()
+            session.query(TutorPeriod).filter(
+                TutorPeriod.period_id == period_id
+            ).filter(TutorPeriod.tutor_id.in_(tutors_ids)).delete()
             session.commit()

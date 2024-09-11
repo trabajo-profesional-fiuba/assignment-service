@@ -92,7 +92,9 @@ class TopicService:
 
         return topics
 
-    def create_topics_from_string(self, period_id: str, csv: str, tutor_repository: TutorRepository):
+    def create_topics_from_string(
+        self, period_id: str, csv: str, tutor_repository: TutorRepository
+    ):
         """
         Processes a CSV string to create topics, categories, and tutor-topic
         assignments. Deletes existing topics if applies and returns the list

@@ -10,6 +10,8 @@ from pulp import (
 
 
 from src.core.group_form_answer import GroupFormAnswer
+
+
 class IncompleteGroupsLPSolver:
     def __init__(self, groups):
         self.groups = groups
@@ -218,7 +220,9 @@ class IncompleteGroupsLPSolver:
 
         # Order common topics based on the group with most students
         common_topics_ordered = [
-            topic for topic in group_with_most_students.topics if topic.id in common_topics
+            topic
+            for topic in group_with_most_students.topics
+            if topic.id in common_topics
         ]
 
         # If common topics are less than 3, add more topics from the group with most\

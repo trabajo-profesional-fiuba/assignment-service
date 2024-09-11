@@ -54,19 +54,21 @@ class UserRepository:
                     stmt = (
                         select(User)
                         .filter_by(role=Role.STUDENT)
-                        .where(User.id == student.id))
+                        .where(User.id == student.id)
+                    )
                     student_db = session.execute(stmt).scalars().first()
                     if student_db is None:
                         session.add(student)
                         session.commit()
                         session.refresh(student)
                         session.expunge(student)
-                        
+
                     else:
                         update_stmt = (
                             update(User)
                             .where(User.id == student.id)
-                            .values(name=student.name, last_name=student.last_name))
+                            .values(name=student.name, last_name=student.last_name)
+                        )
                         session.execute(update_stmt)
                         session.commit()
 

@@ -15,7 +15,6 @@ from src.config.database.database import create_tables
 from src.config.logging import logger
 
 
-
 api_description = """
 
 ## Group 54 - Final Project
@@ -77,6 +76,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
 
 @app.get("/", description="This endpoint redirects to docs")
 async def root(request: Request):

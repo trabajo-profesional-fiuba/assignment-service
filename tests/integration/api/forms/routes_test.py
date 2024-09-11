@@ -571,6 +571,7 @@ def test_get_answers_by_group(fastapi, tables, topics, students, tutors):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
 
+
 @pytest.mark.integration
 def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
@@ -648,7 +649,6 @@ def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     )
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
-
 
 
 @pytest.mark.integration
