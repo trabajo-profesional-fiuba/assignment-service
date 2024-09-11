@@ -8,7 +8,7 @@ from src.api.groups.router import router as group_router
 from src.api.students.router import router as student_router
 from src.api.topics.router import router as topic_router
 from src.api.tutors.router import router as tutor_router
-from src.api.assigments.router import router as assigment_router
+from src.api.assignments.router import router as assignment_router
 
 from src.config.config import api_config
 from src.config.database.database import create_tables
@@ -71,7 +71,7 @@ app.include_router(form_router)
 logger.info("Adding groups router")
 app.include_router(group_router)
 logger.info("Adding assigments router")
-app.include_router(assigment_router)
+app.include_router(assignment_router)
 logger.info("Adding middlewares")
 app.add_middleware(
     CORSMiddleware,
