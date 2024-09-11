@@ -55,7 +55,7 @@ async def assign_incomplete_groups(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
-):  # tenemos que usarlo para recuperar los grupos de tal cuatrimestre
+):  
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -103,7 +103,7 @@ async def assign_incomplete_groups(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
-    balance_limit:int =Query(gt=0, default=5)): #tenemos que usarlo para recuperar los grupos de tal cuatrimestre``
+    balance_limit:int =Query(gt=0, default=5)):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -117,7 +117,7 @@ async def assign_incomplete_groups(
         topics = topic_service.get_topics()
         groups = group_service.get_goups_without_tutor_and_topic()
 
-        service = AssigmentService()
+        service = AssignmentService()
         
         assigment_result = service.assigment_group_topic_tutor(groups,topics,tutors,balance_limit)
         return Response(status_code=status.HTTP_202_ACCEPTED,content='Created')
