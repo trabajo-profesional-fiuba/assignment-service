@@ -6,9 +6,6 @@ from typing import List, Optional
 
 class GroupRequest(BaseModel):
     students_ids: List[int]
-    tutor_email: Optional[str] = None
-    topic: Optional[str] = None
-    preferred_topics: Optional[List[int]] = None
 
     @field_validator("students_ids", mode="before")
     def validate_group_length(cls, students_ids):
@@ -17,26 +14,38 @@ class GroupRequest(BaseModel):
 
         raise ValueError("The amount of student for this Group is not valid")
 
+class GroupWithTutorTopicRequest(GroupRequest):
+    tutor_email: str
+    topic: str
+    
+class GroupWithPreferredTopicsRequest(GroupRequest):
+    preferred_topics: List[int]
 
 class GroupResponse(BaseModel):
-
     id: int = Field(description="Id of the group")
+    students: List[UserResponse] = Field(default=[])
+    period_id: str
     topic_id: int | None = Field(validation_alias="assigned_topic_id")
     tutor_period_id: int | None = Field(validation_alias="tutor_period_id")
+    preferred_topics: Optional[List[int]] = Field(
+        description="Ids of topics the group selected in the form answer"
+    )
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CompleteGroupResponse(GroupResponse):
     pre_report_date: datetime | None
     pre_report_approved: bool
     intermediate_assigment_date: datetime | None
     intermediate_assigment_approved: bool
     final_report_approved: bool
     exhibition_date: datetime | None
-    preferred_topics: List[int] = Field(
-        description="Ids of topics the group selected in the form answer"
-    )
-    students: List[UserResponse] = Field(default=[])
-    period_id: str
     
     model_config = ConfigDict(from_attributes=True)
 
 
 class GroupList(RootModel):
     root: List[GroupResponse] = Field(default=[])
+    
+class CompleteGroupList(RootModel):
+    root: List[CompleteGroupResponse] = Field(default=[])

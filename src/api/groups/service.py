@@ -48,7 +48,7 @@ class GroupService:
             )
 
 
-    def get_goups(self, period: str):
+    def get_groups(self, period: str):
         logger.info("Fetching all groups")
         groups = self._repository.get_groups(period)
         return GroupList.model_validate(groups)
