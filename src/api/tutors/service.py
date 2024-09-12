@@ -213,6 +213,5 @@ class TutorService:
     def get_tutor_periods_by_period_id(self, period_id):
         try:
             return self._repository.get_tutor_periods_by_periods_id(period_id)
-
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))

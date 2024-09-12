@@ -142,10 +142,16 @@ class Tutor:
 
 
 class SinglePeriodTutor:
+    """
+    This class represents a tutor as a single period,
+    meaning we abstract away the other periods of the tutor and consider them as a tutor per period.
+    This way, the algorithms do not have knowledge of the other periods of that tutor.
+    """
 
     def __init__(
         self,
         id: int,
+        period_id: int,
         name: str,
         last_name: str,
         email: str,
@@ -159,11 +165,16 @@ class SinglePeriodTutor:
         self._capacity = capacity
         self._topics = topics
         self._email = email
+        self._period_id = period_id
 
     @property
     def id(self) -> str:
         return self._id
-
+    
+    @property
+    def period_id(self) -> str:
+        return self._period_id
+    
     @property
     def topics(self) -> str:
         return self._topics

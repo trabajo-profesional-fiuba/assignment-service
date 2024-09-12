@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.api.assignments.service import AssignmentService
-from src.api.auth.jwt import JwtResolver, get_jwt_resolver
+from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
 from src.api.exceptions import ServerError
@@ -114,21 +114,21 @@ async def assign_incomplete_groups(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
 
-        group_service = GroupService(GroupRepository(session))
-        topic_service = TopicService(TopicRepository(session))
         tutors_service = TutorService(TutorRepository(session))
-
-        group_mapper = GroupMapper()
-        topic_mapper = TopicMapper()
         tutors_mapper = TutorMapper()
-
         tutors = tutors_mapper.convert_from_periods_to_single_period_tutors(
             tutors_service.get_tutor_periods_by_period_id(period_id)
         )
+
+        topic_service = TopicService(TopicRepository(session))
+        topic_mapper = TopicMapper()
         topics = topic_mapper.convert_from_models_to_topic(
             topic_service.get_topics_by_period(period_id)
         )
-        groups = group_mapper.convert_from_models_to_base_groups(
+
+        group_service = GroupService(GroupRepository(session))
+        group_mapper = GroupMapper()
+        groups = group_mapper.convert_from_models_to_unassigned_groups(
             group_service.get_goups_without_tutor_and_topic(), topics
         )
 
@@ -149,9 +149,8 @@ async def assign_incomplete_groups(
             ]
         )
 
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content=assignment_response.model_dump(),
-        )
+        return assignment_response
+    except InvalidJwt as e:
+        raise InvalidCredentials(str(e))
     except Exception as e:
         raise ServerError("error")

@@ -1,20 +1,19 @@
-from src.core.group import BaseGroup
+from src.core.group import UnassignedGroup
 
 
 class GroupMapper:
 
-    def convert_from_models_to_base_groups(self, db_groups, topics):
-        topics_mapped = {}
-        for topic in topics:
-            topics_mapped[topic.id] = topic
+    def convert_from_models_to_unassigned_groups(self, db_groups, topics):
+        topics_mapped = {topic.id: topic for topic in topics}
 
-        groups = list()
-        for db_group in db_groups:
-            id = db_group.id
-            students = [student.id for student in db_group.students]
-            group_topics = [topics_mapped[id] for id in db_group.preferred_topics]
-
-            group = BaseGroup(id=id, students=students, topics=group_topics)
-            groups.append(group)
+        groups = [
+            UnassignedGroup(
+                id=db_group.id,
+                students=[student.id for student in db_group.students],
+                topics=[topics_mapped[topic_id] for topic_id in db_group.preferred_topics]
+            )
+            for db_group in db_groups
+        ]
 
         return groups
+

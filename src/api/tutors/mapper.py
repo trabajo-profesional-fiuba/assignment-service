@@ -4,10 +4,10 @@ from src.core.tutor import SinglePeriodTutor
 
 class TutorMapper:
 
-    def convert_from_periods_to_single_period_tutors(self, db_tutors):
+    def convert_from_periods_to_single_period_tutors(self, db_periods):
         tutors = list()
-        for db_periods in db_tutors:
-            db_tutor = db_periods.tutor
+        for db_period in db_periods:
+            db_tutor = db_period.tutor
             topics = [
                 Topic(
                     id=topic.id,
@@ -15,15 +15,16 @@ class TutorMapper:
                     category=topic.category.name,
                     capacity=1,
                 )
-                for topic in db_periods.topics
+                for topic in db_period.topics
             ]
             tutor = SinglePeriodTutor(
                 id=db_tutor.id,
+                period_id=db_period.id,
                 name=db_tutor.name,
                 last_name=db_tutor.last_name,
                 email=db_tutor.email,
                 topics=topics,
-                capacity=db_periods.capacity,
+                capacity=db_period.capacity,
             )
             tutors.append(tutor)
 

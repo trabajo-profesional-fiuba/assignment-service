@@ -92,13 +92,13 @@ class Group:
         return cost
 
 
-class BaseGroup:
+class UnassignedGroup:
     """The base group only contains the id, Students and the Topics"""
 
-    def __init__(self, id, students, topics) -> None:
+    def __init__(self, id:int , students:list = None , topics: list = None) -> None:
         self._id = id
-        self._students = students
-        self._topics = topics
+        self._topics = topics if topics is not None else []
+        self._students = students if students is not None else []
 
     @property
     def id(self) -> str:
@@ -108,11 +108,3 @@ class BaseGroup:
     def topics(self) -> str:
         return self._topics
 
-
-class AssignedGroup:
-    """Represents the assigment result"""
-
-    def __init__(self, id, tutor_email, topic) -> None:
-        self.id = id
-        self.tutor_email = tutor_email
-        self.topic = topic

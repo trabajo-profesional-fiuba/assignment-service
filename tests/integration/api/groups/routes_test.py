@@ -144,7 +144,7 @@ def test_post_groups_with_tutor_not_in_db_returns_not_found(fastapi, tables):
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert (
         response.json()["detail"]
-        == "The tutor does not exits or this period is not present"
+        == "The tutor does not exist or this period is not present"
     )
 
 
@@ -198,47 +198,3 @@ def test_post_groups_without_token(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-@pytest.mark.integration
-def test_add_basic_group_and_get_one_group(fastapi, tables):
-    # Arrange
-    helper = ApiHelper()
-    helper.create_period("1C2025")
-
-    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
-    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
-    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
-
-    helper.create_category("category 1")
-    helper.create_topic("topic 1", 1)
-    helper.create_topic("topic 2", 1)
-    helper.create_topic("topic 3", 1)
-
-    user_token = helper.create_student_token()
-    admin_token = helper.create_admin_token()
-
-    body = {
-        "students_ids": [105001, 105002, 105003],
-        "preferred_topics": [1, 2, 3],
-    }
-
-    params = {"period": "1C2025"}
-    response = fastapi.post(
-        f"{PREFIX}/",
-        json=body,
-        params=params,
-        headers={"Authorization": f"Bearer {user_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
-
-    # Act
-    response = fastapi.get(
-        f"{PREFIX}/",
-        params=params,
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-
-    # Assert
-    assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 1

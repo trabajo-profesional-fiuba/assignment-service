@@ -9,3 +9,12 @@ class AssignmentResult:
 
     def get_substitutes(self):
         return self._substitutes
+
+
+class GroupTutorAssigmentResult:
+    """Represents the assigment result"""
+
+    def __init__(self, id, tutor_email, topic) -> None:
+        self.id = id
+        self.tutor_email = tutor_email
+        self.topic = topic
