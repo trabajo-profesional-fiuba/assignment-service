@@ -6,6 +6,7 @@ from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
     GroupAnswerList,
+    GroupAnswerResponse,
     UserAnswerList,
 )
 from src.api.forms.repository import FormRepository
@@ -88,7 +89,17 @@ async def get_answers(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
-        return service.get_answers(TopicRepository(session), for_controller=True)
+        answers = service.get_answers(TopicRepository(session))
+        response = list()
+        for answer in answers:
+                response.append(
+                    GroupAnswerResponse(
+                        id=answer.id,
+                        students=answer.students,
+                        topics=answer.get_topic_names(),
+                    )
+                )
+        return GroupAnswerList.model_validate(response)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
