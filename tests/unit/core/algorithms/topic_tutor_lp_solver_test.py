@@ -1,9 +1,9 @@
 import pytest
 
 from src.core.algorithms.topic_tutor.group_tutor_lp_solver import GroupTutorLPSolver
-from src.core.group_form_answer import GroupFormAnswer
+from src.core.group import UnassignedGroup
 from src.core.topic import Topic
-from src.core.tutor import Tutor
+from src.core.tutor import SinglePeriodTutor
 
 
 class TestGroupTutorLPSolver:
@@ -19,27 +19,24 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupFormAnswer(
+            UnassignedGroup(
                 1,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 1", "Student 2", "Student 3", "Student 4"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 2,
                 topics=[topics[1], topics[2], topics[3]],
                 students=["Student 5", "Student 6", "Student 7", "Student 8"],
             ),
         ]
 
-        tutor1 = Tutor(1, "Email", "Name", "Lastname")
-        tutor1.add_topic(topics[0])
-        tutor1.add_topic(topics[1])
-        tutor1.set_capacity(2)
-
-        tutor2 = Tutor(2, "Email", "Name", "Lastname")
-        tutor2.add_topic(topics[2])
-        tutor2.add_topic(topics[3])
-        tutor2.set_capacity(2)
+        tutor1 = SinglePeriodTutor(
+            1, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0], topics[1]]
+        )
+        tutor2 = SinglePeriodTutor(
+            2, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[2], topics[3]]
+        )
 
         tutors = [tutor1, tutor2]
 
@@ -49,10 +46,10 @@ class TestGroupTutorLPSolver:
         assert len(result) == 2
 
         assert result[0].id == 1
-        assert result[0].assigned_topic == topics[0]
+        assert result[0].topic == topics[0].name
 
         assert result[1].id == 2
-        assert result[1].assigned_topic == topics[1]
+        assert result[1].topic == topics[1].name
 
     @pytest.mark.unit
     def test_more_groups_than_tutors_without_enough_capacity(self):
@@ -68,34 +65,35 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupFormAnswer(
+            UnassignedGroup(
                 1,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 1", "Student 2"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 2,
                 topics=[topics[3], topics[4], topics[5]],
                 students=["Student 3", "Student 4"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 3,
                 topics=[topics[0], topics[4], topics[2]],
                 students=["Student 5", "Student 6"],
             ),
         ]
 
-        tutor1 = Tutor(1, "tutor1@example.com", "Tutor 1 name", "Tutor 1 lastname")
-        tutor1.add_topic(topics[0])
-        tutor1.add_topic(topics[1])
-        tutor1.set_capacity(1)
-
-        tutor2 = Tutor(2, "tutor2@example.com", "Tutor 2 name", "Tutor 2 lastname")
-        tutor2.add_topic(topics[2])
-        tutor2.add_topic(topics[3])
-        tutor2.add_topic(topics[4])
-        tutor2.add_topic(topics[5])
-        tutor2.set_capacity(1)
+        tutor1 = SinglePeriodTutor(
+            1, 1, "Email", "Name", "Lastname", capacity=1, topics=[topics[0], topics[1]]
+        )
+        tutor2 = SinglePeriodTutor(
+            2,
+            1,
+            "Email",
+            "Name",
+            "Lastname",
+            capacity=1,
+            topics=[topics[2], topics[3], topics[4], topics[5]],
+        )
 
         tutors = [tutor1, tutor2]
 
@@ -105,13 +103,13 @@ class TestGroupTutorLPSolver:
         assert len(result) == 3
 
         assert result[0].id == 1
-        assert result[0].assigned_topic == topics[0]
+        assert result[0].topic == topics[0].name
 
         assert result[1].id == 2
-        assert result[1].assigned_topic == topics[3]
+        assert result[1].topic == topics[3].name
 
         assert result[2].id == 3
-        assert result[2].assigned_topic == topics[4]
+        assert result[2].topic == topics[4].name
 
     @pytest.mark.unit
     def test_tutor_group_assignment_balance(self):
@@ -129,39 +127,40 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupFormAnswer(
+            UnassignedGroup(
                 1,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 1", "Student 2"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 2,
                 topics=[topics[3], topics[4], topics[5]],
                 students=["Student 3", "Student 4"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 3,
                 topics=[topics[4], topics[0], topics[2]],
                 students=["Student 5", "Student 6"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 4,
                 topics=[topics[2], topics[1], topics[3]],
                 students=["Student 7", "Student 8"],
             ),
         ]
 
-        tutor1 = Tutor(1, "tutor1@example.com", "Tutor 1 name", "Tutor 1 lastname")
-        tutor1.add_topic(topics[0])
-        tutor1.add_topic(topics[1])
-        tutor1.set_capacity(3)
-
-        tutor2 = Tutor(2, "tutor2@example.com", "Tutor 2 name", "Tutor 2 lastname")
-        tutor2.add_topic(topics[2])
-        tutor2.add_topic(topics[3])
-        tutor2.add_topic(topics[4])
-        tutor2.add_topic(topics[5])
-        tutor2.set_capacity(3)
+        tutor1 = SinglePeriodTutor(
+            1, 1, "Email", "Name", "Lastname", capacity=3, topics=[topics[0], topics[1]]
+        )
+        tutor2 = SinglePeriodTutor(
+            2,
+            1,
+            "Email",
+            "Name",
+            "Lastname",
+            capacity=3,
+            topics=[topics[2], topics[3], topics[4], topics[5]],
+        )
 
         tutors = [tutor1, tutor2]
 
@@ -171,10 +170,18 @@ class TestGroupTutorLPSolver:
         # Verificar que la diferencia en el número de grupos asignados a los tutores
         # no sea mayor a 1
         tutor1_groups = len(
-            [assignment for assignment in result if assignment.tutor.id == tutor1.id]
+            [
+                assignment
+                for assignment in result
+                if assignment.tutor_email == tutor1.email
+            ]
         )
         tutor2_groups = len(
-            [assignment for assignment in result if assignment.tutor.id == tutor2.id]
+            [
+                assignment
+                for assignment in result
+                if assignment.tutor_email == tutor2.email
+            ]
         )
 
         assert abs(tutor1_groups - tutor2_groups) <= 1
@@ -183,16 +190,16 @@ class TestGroupTutorLPSolver:
         assert len(result) == len(groups)
 
         assert result[0].id == 1
-        assert result[0].assigned_topic == topics[0]
+        assert result[0].topic == topics[0].name
 
         assert result[1].id == 2
-        assert result[1].assigned_topic == topics[3]
+        assert result[1].topic == topics[3].name
 
         assert result[2].id == 3
-        assert result[2].assigned_topic == topics[4]
+        assert result[2].topic == topics[4].name
 
         assert result[3].id == 4
-        assert result[3].assigned_topic == topics[1]
+        assert result[3].topic == topics[1].name
 
     @pytest.mark.unit
     def test_tutor_without_capacity(self):
@@ -207,28 +214,32 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupFormAnswer(
+            UnassignedGroup(
                 1,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 1", "Student 2"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 2,
                 topics=[topics[1], topics[0], topics[2]],
                 students=["Student 3", "Student 4"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 3,
                 topics=[topics[0], topics[2], topics[1]],
                 students=["Student 5", "Student 6"],
             ),
         ]
 
-        tutor1 = Tutor(1, "Email", "Name", "Lastname")
-        tutor1.add_topic(topics[0])
-        tutor1.add_topic(topics[1])
-        tutor1.add_topic(topics[2])
-        tutor1.set_capacity(2)
+        tutor1 = SinglePeriodTutor(
+            1,
+            1,
+            "Email",
+            "Name",
+            "Lastname",
+            capacity=2,
+            topics=[topics[0], topics[1], topics[2]],
+        )
 
         tutors = [tutor1]
 
@@ -253,44 +264,42 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupFormAnswer(
+            UnassignedGroup(
                 1,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 1", "Student 2"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 2,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 3", "Student 4"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 3,
                 topics=[topics[0], topics[2], topics[1]],
                 students=["Student 5", "Student 6"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 4,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 7", "Student 8"],
             ),
         ]
 
-        tutor1 = Tutor(1, "Email", "Name", "Lastname")
-        tutor1.add_topic(topics[0])
-        tutor1.set_capacity(2)
-
-        tutor2 = Tutor(2, "Email", "Name", "Lastname")
-        tutor2.add_topic(topics[1])
-        tutor2.set_capacity(2)
-
+        tutor1 = SinglePeriodTutor(
+            1, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0]]
+        )
+        tutor2 = SinglePeriodTutor(
+            2, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[1]]
+        )
         tutors = [tutor1, tutor2]
 
         solver = GroupTutorLPSolver(groups, topics, tutors, balance_limit=1)
         result = solver.solve()
 
         # Verificar que la diferencia entre grupos asignados a tutor1 y tutor2 sea <= 1
-        tutor1_groups = len([res for res in result if res.tutor.id == tutor1.id])
-        tutor2_groups = len([res for res in result if res.tutor.id == tutor2.id])
+        tutor1_groups = len([res for res in result if res.tutor_email == tutor1.email])
+        tutor2_groups = len([res for res in result if res.tutor_email == tutor2.email])
         assert abs(tutor1_groups - tutor2_groups) <= 1
 
     @pytest.mark.unit
@@ -306,27 +315,25 @@ class TestGroupTutorLPSolver:
         ]
 
         groups = [
-            GroupFormAnswer(
+            UnassignedGroup(
                 1,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 1", "Student 2"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 2,
                 topics=[topics[0], topics[1], topics[2]],
                 students=["Student 3", "Student 4"],
             ),
-            GroupFormAnswer(
+            UnassignedGroup(
                 3,
                 topics=[topics[1], topics[2], topics[0]],
                 students=["Student 5", "Student 6"],
             ),
         ]
-
-        tutor1 = Tutor(1, "Email", "Name", "Lastname")
-        tutor1.add_topic(topics[0])
-        tutor1.add_topic(topics[1])
-        tutor1.set_capacity(3)
+        tutor1 = SinglePeriodTutor(
+            1, 1, "Email", "Name", "Lastname", capacity=3, topics=[topics[0], topics[1]]
+        )
 
         tutors = [tutor1]
 
@@ -335,12 +342,12 @@ class TestGroupTutorLPSolver:
 
         # Verificar que solo un grupo haya sido asignado al Topic 1 (capacidad = 1)
         topic1_assignments = len(
-            [res for res in result if res.assigned_topic.id == topics[0].id]
+            [res for res in result if res.topic == topics[0].name]
         )
         assert topic1_assignments == 1
 
         # Verificar que los otros grupos se asignen al Topic 2
         topic2_assignments = len(
-            [res for res in result if res.assigned_topic.id == topics[1].id]
+            [res for res in result if res.topic == topics[1].name]
         )
         assert topic2_assignments == 2
