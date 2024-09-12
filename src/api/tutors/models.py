@@ -18,6 +18,9 @@ class Period(Base):
     id = Column(String, primary_key=True)
     created_at = Column(DateTime(), server_default=func.now())
     form_active = Column(Boolean, default=True)
+    initial_project_active = Column(Boolean, default=False)
+    intermediate_project_active = Column(Boolean, default=False)
+    final_project_active = Column(Boolean, default=False)
 
     periods = relationship("TutorPeriod", back_populates="period")
     groups = relationship("Group", back_populates="period")
