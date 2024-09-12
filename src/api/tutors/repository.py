@@ -102,7 +102,9 @@ class TutorRepository:
             )
 
             if tutor_period is None:
-                raise TutorNotFound("The tutor does not exist or this period is not present")
+                raise TutorNotFound(
+                    "The tutor does not exist or this period is not present"
+                )
 
             session.expunge(tutor_period)
 

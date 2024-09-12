@@ -10,10 +10,11 @@ class GroupMapper:
             UnassignedGroup(
                 id=db_group.id,
                 students=[student.id for student in db_group.students],
-                topics=[topics_mapped[topic_id] for topic_id in db_group.preferred_topics]
+                topics=[
+                    topics_mapped[topic_id] for topic_id in db_group.preferred_topics
+                ],
             )
             for db_group in db_groups
         ]
 
         return groups
-

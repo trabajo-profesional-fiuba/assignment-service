@@ -170,11 +170,11 @@ class SinglePeriodTutor:
     @property
     def id(self) -> str:
         return self._id
-    
+
     @property
     def period_id(self) -> str:
         return self._period_id
-    
+
     @property
     def topics(self) -> str:
         return self._topics

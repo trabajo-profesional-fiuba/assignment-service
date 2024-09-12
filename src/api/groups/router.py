@@ -68,7 +68,7 @@ async def add_group(
         tutor_service = TutorService(TutorRepository(session))
         topic_service = TopicService(TopicRepository(session))
         group_service = GroupService(GroupRepository(session))
-        
+
         tutor_period = tutor_service.get_tutor_period_by_tutor_email(
             period, group.tutor_email
         )
