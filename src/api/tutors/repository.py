@@ -104,12 +104,11 @@ class TutorRepository:
             session.expunge(tutor_period)
 
         return tutor_period
-    
+
     def get_tutor_periods_by_periods_id(self, period_id) -> list[TutorPeriod]:
         with self.Session() as session:
             tutor_periods = (
-                session.query(TutorPeriod)
-                .filter(TutorPeriod.period_id == period_id)
+                session.query(TutorPeriod).filter(TutorPeriod.period_id == period_id)
             ).all()
 
             session.expunge_all()

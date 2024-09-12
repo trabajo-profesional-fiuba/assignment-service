@@ -198,7 +198,9 @@ async def add_period_to_tutor(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return TutorResponse.model_validate(service.add_period_to_tutor(tutor_id, period_id))
+        return TutorResponse.model_validate(
+            service.add_period_to_tutor(tutor_id, period_id)
+        )
     except (Duplicated, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -262,8 +264,10 @@ async def get_period_by_id(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        
-        return TutorWithTopicsList.model_validate(service.get_tutors_by_period_id(period_id))
+
+        return TutorWithTopicsList.model_validate(
+            service.get_tutors_by_period_id(period_id)
+        )
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:

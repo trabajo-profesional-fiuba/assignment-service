@@ -81,5 +81,5 @@ class GroupRepository:
                 .all()
             )
             session.expunge_all()
-        
+
         return groups

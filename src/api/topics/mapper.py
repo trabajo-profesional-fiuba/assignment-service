@@ -1,5 +1,3 @@
-
-
 from src.core.topic import Topic
 
 
@@ -9,7 +7,12 @@ class TopicMapper:
         topics = list()
 
         for db_topic in db_topics:
-            topic = Topic(id=db_topic.id, title=db_topic.name, category=db_topic.category.name, capacity=1)
+            topic = Topic(
+                id=db_topic.id,
+                title=db_topic.name,
+                category=db_topic.category.name,
+                capacity=1,
+            )
             topics.append(topic)
-        
+
         return topics

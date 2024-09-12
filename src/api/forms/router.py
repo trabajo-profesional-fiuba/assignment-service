@@ -92,13 +92,13 @@ async def get_answers(
         answers = service.get_answers(TopicRepository(session))
         response = list()
         for answer in answers:
-                response.append(
-                    GroupAnswerResponse(
-                        id=answer.id,
-                        students=answer.students,
-                        topics=answer.get_topic_names(),
-                    )
+            response.append(
+                GroupAnswerResponse(
+                    id=answer.id,
+                    students=answer.students,
+                    topics=answer.get_topic_names(),
                 )
+            )
         return GroupAnswerList.model_validate(response)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")

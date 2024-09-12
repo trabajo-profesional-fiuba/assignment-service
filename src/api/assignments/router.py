@@ -138,14 +138,16 @@ async def assign_incomplete_groups(
             groups, topics, tutors, balance_limit
         )
 
-        assignment_response = AssignedGroupList.model_validate([
-            AssignedGroupResponse(
-                id=assigned_group.id,
-                tutor_email=assigned_group.tutor_email,
-                topic=assigned_group.topic,
-            )
-            for assigned_group in assignment_result
-        ])
+        assignment_response = AssignedGroupList.model_validate(
+            [
+                AssignedGroupResponse(
+                    id=assigned_group.id,
+                    tutor_email=assigned_group.tutor_email,
+                    topic=assigned_group.topic,
+                )
+                for assigned_group in assignment_result
+            ]
+        )
 
         return JSONResponse(
             status_code=status.HTTP_200_OK,

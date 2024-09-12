@@ -19,12 +19,14 @@ class GroupWithTutorTopicRequest(GroupRequest):
     tutor_email: str
     topic: str
 
+
 class AssignedGroupResponse(BaseModel):
     id: int
     tutor_email: str
     topic: str
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class GroupWithPreferredTopicsRequest(GroupRequest):
     preferred_topics: List[int]

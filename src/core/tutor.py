@@ -142,7 +142,7 @@ class Tutor:
 
 
 class SinglePeriodTutor:
-    
+
     def __init__(
         self,
         id: int,
@@ -153,7 +153,7 @@ class SinglePeriodTutor:
         topics=None,
     ):
         self._id = id
-        self._name =name
+        self._name = name
         self._last_name = last_name
         self._is_evaluator = False
         self._capacity = capacity
@@ -167,15 +167,14 @@ class SinglePeriodTutor:
     @property
     def topics(self) -> str:
         return self._topics
-    
+
     @property
     def capacity(self):
         return self._capacity
-    
+
     @property
     def email(self) -> str:
         return self._email
-
 
     def topics_ids(self):
         return [topic.id for topic in self._topics]

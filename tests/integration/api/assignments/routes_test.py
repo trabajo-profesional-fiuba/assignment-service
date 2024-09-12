@@ -178,15 +178,29 @@ def test_resolve_assigment_of_topics_groups_tutors(fastapi, tables):
         ]
     )
     helper.add_tutor_to_topic(
-        "2C2024", "email@fi.uba.ar", ["Introduction to Python", "Data Structures and Algorithms", "Web Development with Django"], [1, 1, 1]
+        "2C2024",
+        "email@fi.uba.ar",
+        [
+            "Introduction to Python",
+            "Data Structures and Algorithms",
+            "Web Development with Django",
+        ],
+        [1, 1, 1],
     )
     helper.add_tutor_to_topic(
-        "2C2024", "email2@fi.uba.ar", ["Machine Learning Basics", "Database Management Systems", "Version Control with Git"], [1, 1, 1]
+        "2C2024",
+        "email2@fi.uba.ar",
+        [
+            "Machine Learning Basics",
+            "Database Management Systems",
+            "Version Control with Git",
+        ],
+        [1, 1, 1],
     )
     helper.create_basic_group([100001], [3, 2, 4])
     helper.create_basic_group([100002], [1, 2, 3])
-    helper.create_basic_group([100003,100004], [5, 4, 6])
-    helper.create_basic_group([100005,100006,100007], [1, 4, 6])
+    helper.create_basic_group([100003, 100004], [5, 4, 6])
+    helper.create_basic_group([100005, 100006, 100007], [1, 4, 6])
     admin_token = helper.create_admin_token()
 
     response = fastapi.post(

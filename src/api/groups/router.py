@@ -68,9 +68,11 @@ async def add_group(
 
         group_service = GroupService(GroupRepository(session))
 
-        return GroupResponse.model_validate(group_service.create_basic_group(
+        return GroupResponse.model_validate(
+            group_service.create_basic_group(
                 group.students_ids, group.preferred_topics, period
-            ))
+            )
+        )
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:

@@ -1,5 +1,3 @@
-
-
 from src.core.group import BaseGroup
 
 
@@ -9,7 +7,6 @@ class GroupMapper:
         topics_mapped = {}
         for topic in topics:
             topics_mapped[topic.id] = topic
-            
 
         groups = list()
         for db_group in db_groups:
@@ -21,6 +18,3 @@ class GroupMapper:
             groups.append(group)
 
         return groups
-
-
-

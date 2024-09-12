@@ -93,7 +93,8 @@ class Group:
 
 
 class BaseGroup:
-    """ The base group only contains the id, Students and the Topics"""
+    """The base group only contains the id, Students and the Topics"""
+
     def __init__(self, id, students, topics) -> None:
         self._id = id
         self._students = students
@@ -107,8 +108,10 @@ class BaseGroup:
     def topics(self) -> str:
         return self._topics
 
+
 class AssignedGroup:
-    """ Represents the assigment result """
+    """Represents the assigment result"""
+
     def __init__(self, id, tutor_email, topic) -> None:
         self.id = id
         self.tutor_email = tutor_email

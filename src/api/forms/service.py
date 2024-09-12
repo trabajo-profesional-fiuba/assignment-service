@@ -133,7 +133,7 @@ class FormService:
                 group = answers[id]
                 group.add_student(db_answer.email)
                 group.add_topics([topic_1, topic_2, topic_3])
-            
+
             response = list(answers.values())
 
         return response

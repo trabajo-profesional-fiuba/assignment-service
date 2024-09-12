@@ -71,14 +71,13 @@ class GroupService:
     def get_groups(self, period: str):
         logger.info("Fetching all groups")
         groups = self._repository.get_groups(period)
-        return  groups
+        return groups
 
     def create_basic_groups(self, group_result, period_id):
         for group in group_result:
             topics = group.get_topic_ids()
             emails = group.students
             self.create_basic_group_with_email(emails, topics, period_id)
-
 
     def get_goups_without_tutor_and_topic(self):
         db_groups = self._repository.get_groups_without_tutor_and_period()
