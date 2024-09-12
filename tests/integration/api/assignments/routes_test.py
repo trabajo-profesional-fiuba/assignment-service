@@ -165,8 +165,8 @@ def test_resolve_assigment_of_topics_groups_tutors(fastapi, tables):
     helper.create_student("Elena", "Rodriguez", "100007", "elenarodriguez@example.com")
     helper.create_tutor("Tutor1", "Apellido", "1010", "email@fi.uba.ar")
     helper.create_tutor("Tutor2", "Apellido", "2222", "email2@fi.uba.ar")
-    helper.create_tutor_period(1010, "2C2024", 1)
-    helper.create_tutor_period(2222, "2C2024", 2)
+    helper.create_tutor_period(1010, "2C2024", 5)
+    helper.create_tutor_period(2222, "2C2024", 5)
     helper.create_default_topics(
         [
             "Introduction to Python",
@@ -194,4 +194,4 @@ def test_resolve_assigment_of_topics_groups_tutors(fastapi, tables):
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
 
-    assert response.status_code == status.HTTP_202_ACCEPTED
+    assert response.status_code == status.HTTP_200_OK

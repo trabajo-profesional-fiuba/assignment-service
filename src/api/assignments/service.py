@@ -12,7 +12,7 @@ class AssignmentService:
         results = assigment_model.solve()
         return results
     
-    def assigment_group_topic_tutor(self,groups, topics, tutors, balance_limit):
+    def assignment_group_topic_tutor(self,groups, topics, tutors, balance_limit):
         assigment_model = GroupTutorLPSolver(groups, topics, tutors, balance_limit)
         results = assigment_model.solve()
         return results

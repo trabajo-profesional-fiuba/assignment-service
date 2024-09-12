@@ -139,3 +139,43 @@ class Tutor:
                 mutual_dates.append(available_date_label)
 
         return mutual_dates
+
+
+class SinglePeriodTutor:
+    
+    def __init__(
+        self,
+        id: int,
+        name: str,
+        last_name: str,
+        email: str,
+        capacity: int = 0,
+        topics=None,
+    ):
+        self._id = id
+        self._name =name
+        self._last_name = last_name
+        self._is_evaluator = False
+        self._capacity = capacity
+        self._topics = topics
+        self._email = email
+
+    @property
+    def id(self) -> str:
+        return self._id
+
+    @property
+    def topics(self) -> str:
+        return self._topics
+    
+    @property
+    def capacity(self):
+        return self._capacity
+    
+    @property
+    def email(self) -> str:
+        return self._email
+
+
+    def topics_ids(self):
+        return [topic.id for topic in self._topics]

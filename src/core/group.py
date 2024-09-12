@@ -90,3 +90,26 @@ class Group:
         )
         cost = DAY_SLOTS - availability
         return cost
+
+
+class BaseGroup:
+    """ The base group only contains the id, Students and the Topics"""
+    def __init__(self, id, students, topics) -> None:
+        self._id = id
+        self._students = students
+        self._topics = topics
+
+    @property
+    def id(self) -> str:
+        return self._id
+
+    @property
+    def topics(self) -> str:
+        return self._topics
+
+class AssignedGroup:
+    """ Represents the assigment result """
+    def __init__(self, id, tutor_email, topic) -> None:
+        self.id = id
+        self.tutor_email = tutor_email
+        self.topic = topic

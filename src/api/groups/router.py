@@ -56,7 +56,7 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
     status_code=status.HTTP_201_CREATED,
 )
 async def add_group(
-    group: Union[GroupWithTutorTopicRequest, GroupWithPreferredTopicsRequest],
+    group: GroupWithPreferredTopicsRequest,
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
@@ -66,21 +66,9 @@ async def add_group(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
 
-        tutor_service = TutorService(TutorRepository(session))
-        topic_service = TopicService(TopicRepository(session))
         group_service = GroupService(GroupRepository(session))
 
-        if isinstance(group, GroupWithTutorTopicRequest):
-            tutor_period = tutor_service.get_tutor_period_by_tutor_email(
-                period, group.tutor_email
-            )
-            topic = topic_service.get_or_add_topic(group.topic)
-
-            return GroupResponse.model_validate(group_service.create_assigned_group(
-                group.students_ids, tutor_period.id, topic.id, period_id=period
-            ))
-        else:
-            return GroupResponse.model_validate(group_service.create_basic_group(
+        return GroupResponse.model_validate(group_service.create_basic_group(
                 group.students_ids, group.preferred_topics, period
             ))
     except (EntityNotInserted, EntityNotFound) as e:

@@ -19,6 +19,12 @@ class GroupWithTutorTopicRequest(GroupRequest):
     tutor_email: str
     topic: str
 
+class AssignedGroupResponse(BaseModel):
+    id: int
+    tutor_email: str
+    topic: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 class GroupWithPreferredTopicsRequest(GroupRequest):
     preferred_topics: List[int]
@@ -54,3 +60,7 @@ class GroupList(RootModel):
 
 class CompleteGroupList(RootModel):
     root: List[CompleteGroupResponse] = Field(default=[])
+
+
+class AssignedGroupList(RootModel):
+    root: List[AssignedGroupResponse] = Field(default=[])

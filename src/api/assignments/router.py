@@ -1,5 +1,6 @@
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, status, Query, Response
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.api.assignments.service import AssignmentService
@@ -10,11 +11,15 @@ from src.api.exceptions import ServerError
 
 from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService
+from src.api.groups.mapper import GroupMapper
 from src.api.groups.repository import GroupRepository
+from src.api.groups.schemas import AssignedGroupList, AssignedGroupResponse
 from src.api.groups.service import GroupService
 
+from src.api.topics.mapper import TopicMapper
 from src.api.topics.repository import TopicRepository
 from src.api.topics.service import TopicService
+from src.api.tutors.mapper import TutorMapper
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
@@ -55,7 +60,7 @@ async def assign_incomplete_groups(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
-):  
+):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -73,13 +78,13 @@ async def assign_incomplete_groups(
     except Exception as e:
         logger.error(str(e))
         raise ServerError("Unexpected error happend")
-    
+
 
 @router.post(
     "/group-topic-tutor",
     summary="Runs the assigment of tutor and topic for grpi",
     responses={
-        status.HTTP_202_ACCEPTED: {"description": "Successfully assigned groups"},
+        status.HTTP_200_OK: {"description": "Successfully assigned groups"},
         status.HTTP_400_BAD_REQUEST: {
             "description": "Bad Request due unkown operation"
         },
@@ -96,30 +101,55 @@ async def assign_incomplete_groups(
             "description": "Internal Server Error - Something happend inside the backend"
         },
     },
-    status_code=status.HTTP_202_ACCEPTED,
+    status_code=status.HTTP_200_OK,
 )
-async def assign_incomplete_groups(    
+async def assign_incomplete_groups(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
-    balance_limit:int =Query(gt=0, default=5)):
+    balance_limit: int = Query(gt=0, default=5),
+):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
-        
 
         group_service = GroupService(GroupRepository(session))
         topic_service = TopicService(TopicRepository(session))
         tutors_service = TutorService(TutorRepository(session))
 
-        tutors = tutors_service.get_tutors_by_period_id(period_id)
-        topics = topic_service.get_topics()
-        groups = group_service.get_goups_without_tutor_and_topic()
+        group_mapper = GroupMapper()
+        topic_mapper = TopicMapper()
+        tutors_mapper = TutorMapper()
+
+        tutors = tutors_mapper.convert_from_periods_to_single_period_tutors(
+            tutors_service.get_tutor_periods_by_period_id(period_id)
+        )
+        topics = topic_mapper.convert_from_models_to_topic(
+            topic_service.get_topics_by_period(period_id)
+        )
+        groups = group_mapper.convert_from_models_to_base_groups(
+            group_service.get_goups_without_tutor_and_topic(), topics
+        )
 
         service = AssignmentService()
-        
-        assigment_result = service.assigment_group_topic_tutor(groups,topics,tutors,balance_limit)
-        return Response(status_code=status.HTTP_202_ACCEPTED,content='Created')
+
+        assignment_result = service.assignment_group_topic_tutor(
+            groups, topics, tutors, balance_limit
+        )
+
+        assignment_response = AssignedGroupList.model_validate([
+            AssignedGroupResponse(
+                id=assigned_group.id,
+                tutor_email=assigned_group.tutor_email,
+                topic=assigned_group.topic,
+            )
+            for assigned_group in assignment_result
+        ])
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=assignment_response.model_dump(),
+        )
     except Exception as e:
         raise ServerError("error")

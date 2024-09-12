@@ -132,3 +132,7 @@ class TopicService:
             )
             db_topic = self._repository.add_topic(Topic(name=topic_name, category_id=1))
         return TopicResponse.model_validate(db_topic)
+
+    def get_topics_by_period(self, period_id):
+        db_topics = self._repository.get_topics_by_period_id(period_id)
+        return db_topics

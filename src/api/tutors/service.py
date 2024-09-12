@@ -174,16 +174,6 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(str(e))
 
-    def get_tutor_period_by_tutor_email(self, period, tutor_email):
-        """
-        Looks up for a tutor based on its email
-        """
-        try:
-            return TutorPeriodResponse.model_validate(
-                self._repository.get_tutor_period_by_tutor_email(period, tutor_email)
-            )
-        except TutorNotFound as e:
-            raise EntityNotFound(message=str(e))
 
     def delete_tutor(self, tutor_id):
         """
@@ -209,3 +199,21 @@ class TutorService:
                 )
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
+    
+    def get_tutor_period_by_tutor_email(self, period, tutor_email):
+        """
+        Looks up for a tutor based on its email
+        """
+        try:
+            return TutorPeriodResponse.model_validate(
+                self._repository.get_tutor_period_by_tutor_email(period, tutor_email)
+            )
+        except TutorNotFound as e:
+            raise EntityNotFound(message=str(e))
+
+    def get_tutor_periods_by_period_id(self, period_id):
+        try:
+            return self._repository.get_tutor_periods_by_periods_id(period_id)
+
+        except TutorNotFound as e:
+            raise EntityNotFound(message=str(e))
