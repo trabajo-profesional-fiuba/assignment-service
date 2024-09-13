@@ -362,8 +362,9 @@ def test_add_basic_group_without_period_using_service(tables):
     with pytest.raises(EntityNotInserted):
         service.create_basic_group(uids, [1, 2, 3], period_id="1C2025")
 
+
 @pytest.mark.integration
-def test_get_incomplete_groups(tables):
+def test_get_groups_leaning_path(tables):
     repository = GroupRepository(Session)
     u_repository = UserRepository(Session)
     student1 = User(
@@ -387,11 +388,11 @@ def test_get_incomplete_groups(tables):
     tutor_repository = TutorRepository(Session)
     period_id = "1C2024"
     tutor_repository.add_period(Period(id=period_id))
-    
+
     uids = [23000, 24000]
     repository.add_group(ids=uids, preferred_topics=[1, 2, 3], period_id=period_id)
 
-    result = repository.get_incomplete_groups(period_id)
+    result = repository.get_groups_learning_path(period_id)
     for group in result:
         assert group.pre_report_date == None
         assert group.pre_report_approved == False

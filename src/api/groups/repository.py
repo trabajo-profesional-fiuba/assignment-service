@@ -88,24 +88,9 @@ class GroupRepository:
             session.expunge_all()
 
         return groups
-    
-    def get_incomplete_groups(self, period):
+
+    def get_groups_learning_path(self, period):
         """Returns all groups learning path information for a given period"""
         with self.Session() as session:
-            groups = (
-                session.query(Group)
-                .filter(Group.period_id == period)
-                # .options(
-                #     load_only( 
-                #         Group.id,
-                #         Group.pre_report_date,
-                #         Group.pre_report_approved,
-                #         Group.intermediate_assigment_date,
-                #         Group.intermediate_assigment_approved,
-                #         Group.final_report_approved,
-                #         Group.exhibition_date,
-                #     )
-                # )
-                .all()
-            )
+            groups = session.query(Group).filter(Group.period_id == period).all()
         return groups
