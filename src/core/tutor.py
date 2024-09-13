@@ -144,7 +144,8 @@ class Tutor:
 class SinglePeriodTutor:
     """
     This class represents a tutor as a single period,
-    meaning we abstract away the other periods of the tutor and consider them as a tutor per period.
+    meaning we abstract away the other periods of the tutor and consider them as a tutor
+    per period.
     This way, the algorithms do not have knowledge of the other periods of that tutor.
     """
 

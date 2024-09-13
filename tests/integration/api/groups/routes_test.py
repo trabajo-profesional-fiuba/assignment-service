@@ -44,7 +44,6 @@ def test_add_assigned_group_and_get_one_group(fastapi, tables):
     helper.create_student("Tomas", "C", "105003", "c@gmail.com")
 
     user_token = helper.create_student_token()
-    admin_token = helper.create_admin_token()
 
     body = {
         "students_ids": [105001, 105002, 105003],

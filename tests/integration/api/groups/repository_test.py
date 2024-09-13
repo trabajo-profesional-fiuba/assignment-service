@@ -68,9 +68,14 @@ def test_add_new_group_with_tutor_and_topic(tables):
     uids = [10000, 2000]
     tutor_period_id = 1
     topic_id = 1
-    period_id = '1C2025'
-    
-    group = repository.add_group(ids=uids, tutor_period_id=tutor_period_id, topic_id=topic_id, period_id=period_id)
+    period_id = "1C2025"
+
+    group = repository.add_group(
+        ids=uids,
+        tutor_period_id=tutor_period_id,
+        topic_id=topic_id,
+        period_id=period_id,
+    )
     ids = [user.id for user in group.students]
 
     assert ids == uids

@@ -265,9 +265,7 @@ class TestFormRepository:
             ),
         ]
 
-        response = repository.add_answers(
-            answers, ["topic 2", "topic 3", "topic 1"], [101010]
-        )
+        repository.add_answers(answers, ["topic 2", "topic 3", "topic 1"], [101010])
         today = dt.datetime.today().isoformat()
         answers = [
             FormPreferences(

@@ -297,7 +297,8 @@
 #        clean_results = self._clean_evaluators_results(max_flow_min_cost_evaluator)
 #
 #        if self._valid_evaluator_results(clean_results) is False:
-#            raise AssigmentIsNotPossible("There are groups without avaliable evaluator")
+#            raise
+#            AssigmentIsNotPossible("There are groups without avaliable evaluator")
 #
 #        groups_edges = self._create_group_date_edges(clean_results)
 #        g_graph = nx.DiGraph()
