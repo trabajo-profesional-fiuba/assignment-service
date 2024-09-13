@@ -66,15 +66,17 @@ def test_add_new_group_with_tutor_and_topic(tables):
     tutor_repository.add_tutor_period(5, "1C2025")
 
     uids = [10000, 2000]
-    period_id = 1
+    tutor_period_id = 1
     topic_id = 1
-
-    group = repository.add_group(uids, period_id, topic_id)
+    period_id = '1C2025'
+    
+    group = repository.add_group(ids=uids, tutor_period_id=tutor_period_id, topic_id=topic_id, period_id=period_id)
     ids = [user.id for user in group.students]
 
     assert ids == uids
-    assert group.tutor_period.id == period_id
+    assert group.tutor_period.id == tutor_period_id
     assert group.topic.id == topic_id
+    assert group.period_id == period_id
 
 
 @pytest.mark.integration

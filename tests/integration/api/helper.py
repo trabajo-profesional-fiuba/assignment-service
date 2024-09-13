@@ -105,7 +105,7 @@ class ApiHelper:
             period_id, tutor_email, topics_db, capacities
         )
 
-    def get_groups(self, period_id=None):
+    def get_groups(self, period_id):
         return self._groups_repository.get_groups(period=period_id)
 
     def register_answer(self, ids, topics):

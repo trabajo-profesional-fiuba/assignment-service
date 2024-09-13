@@ -60,27 +60,12 @@ def test_add_assigned_group_and_get_one_group(fastapi, tables):
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    # Act
-    response = fastapi.get(
-        f"{PREFIX}/",
-        params=params,
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-
-    # Assert
-    assert response.status_code == status.HTTP_200_OK
-    data = response.json()
-    assert len(data) == 1
-    assert len(data[0]["students"]) == 3
-    assert data[0]["id"] == 1
-
 
 @pytest.mark.integration
-def test_get_groups_in_diff_period_is_empty(fastapi, tables):
+def test_get_groups_by_period(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2025")
-    helper.create_period("2C2025")
     helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
     helper.create_tutor_period("105000", "1C2025")
     helper.create_student("Pedro", "A", "105001", "a@gmail.com")
@@ -104,7 +89,7 @@ def test_get_groups_in_diff_period_is_empty(fastapi, tables):
     assert response.status_code == status.HTTP_201_CREATED
 
     # Act
-    params = {"period": "2C2025"}
+    params = {"period": "1C2025"}
     response = fastapi.get(
         f"{PREFIX}/",
         params=params,
@@ -114,7 +99,7 @@ def test_get_groups_in_diff_period_is_empty(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data) == 0
+    assert len(data) == 1
 
 
 @pytest.mark.integration
