@@ -71,3 +71,15 @@ class GroupRepository:
             session.expunge_all()
 
         return groups
+
+    def get_groups_without_tutor_and_period(self):
+        with self.Session() as session:
+            groups = (
+                session.query(Group)
+                .filter(Group.assigned_topic_id.is_(None))
+                .filter(Group.tutor_period_id.is_(None))
+                .all()
+            )
+            session.expunge_all()
+
+        return groups

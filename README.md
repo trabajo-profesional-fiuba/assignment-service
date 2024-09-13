@@ -48,10 +48,10 @@ Poetry creates a virtual enviroment where it handles all the dependencies, this 
 Because we are using a virtual enviroment, the python interpreter has to be changed in order to execute poetry commands without invoking poetry.
 
 If you are using vscode as you editor you can add the interpreter doing
-![interpreter](docs\image.png)
+![interpreter](docs/image.png)
 
 Then select the one that is from poetry 
-![alt text](docs\image-1.png)
+![alt text](docs/image-1.png)
 
 Well done! Now you can run commands like `pytest` instead of `poetry run pytest`
 

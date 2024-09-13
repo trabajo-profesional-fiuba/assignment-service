@@ -12,17 +12,16 @@ from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import (
     GroupList,
     GroupResponse,
-    GroupWithTutorTopicRequest,
     GroupWithPreferredTopicsRequest,
+    GroupWithTutorTopicRequest,
 )
 from src.api.groups.service import GroupService
 
+
 from src.api.topics.repository import TopicRepository
 from src.api.topics.service import TopicService
-
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
-
 from src.api.users.exceptions import InvalidCredentials
 
 from src.config.database.database import get_db
@@ -56,7 +55,7 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
     status_code=status.HTTP_201_CREATED,
 )
 async def add_group(
-    group: Union[GroupWithTutorTopicRequest, GroupWithPreferredTopicsRequest],
+    group: GroupWithTutorTopicRequest,
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
@@ -70,19 +69,16 @@ async def add_group(
         topic_service = TopicService(TopicRepository(session))
         group_service = GroupService(GroupRepository(session))
 
-        if isinstance(group, GroupWithTutorTopicRequest):
-            tutor_period = tutor_service.get_tutor_period_by_tutor_email(
-                period, group.tutor_email
-            )
-            topic = topic_service.get_or_add_topic(group.topic)
+        tutor_period = tutor_service.get_tutor_period_by_tutor_email(
+            period, group.tutor_email
+        )
+        topic = topic_service.get_or_add_topic(group.topic)
 
-            return group_service.create_assigned_group(
+        return GroupResponse.model_validate(
+            group_service.create_assigned_group(
                 group.students_ids, tutor_period.id, topic.id, period_id=period
             )
-        else:
-            return group_service.create_basic_group(
-                group.students_ids, group.preferred_topics, period
-            )
+        )
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -119,9 +115,10 @@ async def get_groups(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
+
         group_service = GroupService(GroupRepository(session))
 
-        return group_service.get_groups(period)
+        return GroupList.model_validate(group_service.get_groups(period))
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

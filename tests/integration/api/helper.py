@@ -126,3 +126,6 @@ class ApiHelper:
             )
             answers.append(answer)
         self._form_repository.add_answers(answers, topics, ids)
+
+    def create_basic_group(self, ids, topics):
+        self._groups_repository.add_group(ids=ids, preferred_topics=topics)

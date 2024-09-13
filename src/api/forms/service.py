@@ -106,9 +106,7 @@ class FormService:
 
         return topcis_as_dict
 
-    def get_answers(
-        self, topic_repository: TopicRepository, for_controller: bool = False
-    ):
+    def get_answers(self, topic_repository: TopicRepository):
         """
         Retrieves answers from the repository, processes the data to group students
         by their answers, and returns a formatted response.
@@ -136,18 +134,7 @@ class FormService:
                 group.add_student(db_answer.email)
                 group.add_topics([topic_1, topic_2, topic_3])
 
-            if for_controller:
-                for answer_id, data in answers.items():
-                    response.append(
-                        GroupAnswerResponse(
-                            id=answer_id,
-                            students=data.students,
-                            topics=data.get_topic_names(),
-                        )
-                    )
-            else:
-
-                response = list(answers.values())
+            response = list(answers.values())
 
         return response
 

@@ -33,6 +33,6 @@ class User(Base):
         "TutorPeriod",
         back_populates="tutor",
         uselist=True,
-        lazy="subquery",
+        lazy="noload",
         cascade="all, delete-orphan",
     )

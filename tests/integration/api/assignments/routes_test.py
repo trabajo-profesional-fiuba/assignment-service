@@ -150,3 +150,62 @@ def test_resolve_assignment_of_incomplete_groups_more_answers(fastapi, tables):
     groups = helper.get_groups()
     assert response.status_code == status.HTTP_202_ACCEPTED
     assert len(groups) == 3
+
+
+@pytest.mark.integration
+def test_resolve_assigment_of_topics_groups_tutors(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    helper.create_student("Ana", "Gomez", "100001", "anagomez@example.com")
+    helper.create_student("Luis", "Martinez", "100002", "luismartinez@example.com")
+    helper.create_student("Maria", "Lopez", "100003", "marialopez@example.com")
+    helper.create_student("Juan", "Fernandez", "100004", "juanfernandez@example.com")
+    helper.create_student("Laura", "Castro", "100005", "lauracastro@example.com")
+    helper.create_student("Carlos", "Sanchez", "100006", "carlossanchez@example.com")
+    helper.create_student("Elena", "Rodriguez", "100007", "elenarodriguez@example.com")
+    helper.create_tutor("Tutor1", "Apellido", "1010", "email@fi.uba.ar")
+    helper.create_tutor("Tutor2", "Apellido", "2222", "email2@fi.uba.ar")
+    helper.create_tutor_period(1010, "2C2024", 5)
+    helper.create_tutor_period(2222, "2C2024", 5)
+    helper.create_default_topics(
+        [
+            "Introduction to Python",
+            "Data Structures and Algorithms",
+            "Web Development with Django",
+            "Machine Learning Basics",
+            "Database Management Systems",
+            "Version Control with Git",
+        ]
+    )
+    helper.add_tutor_to_topic(
+        "2C2024",
+        "email@fi.uba.ar",
+        [
+            "Introduction to Python",
+            "Data Structures and Algorithms",
+            "Web Development with Django",
+        ],
+        [1, 1, 1],
+    )
+    helper.add_tutor_to_topic(
+        "2C2024",
+        "email2@fi.uba.ar",
+        [
+            "Machine Learning Basics",
+            "Database Management Systems",
+            "Version Control with Git",
+        ],
+        [1, 1, 1],
+    )
+    helper.create_basic_group([100001], [3, 2, 4])
+    helper.create_basic_group([100002], [1, 2, 3])
+    helper.create_basic_group([100003, 100004], [5, 4, 6])
+    helper.create_basic_group([100005, 100006, 100007], [1, 4, 6])
+    admin_token = helper.create_admin_token()
+
+    response = fastapi.post(
+        f"{PREFIX}/group-topic-tutor?period_id=2C2024&balance_limit=5",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK

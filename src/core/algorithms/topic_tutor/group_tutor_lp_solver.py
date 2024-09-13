@@ -1,18 +1,18 @@
 from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CMD
 
 from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
-from src.core.group import Group
-from src.core.group_form_answer import GroupFormAnswer
+from src.core.group import UnassignedGroup
+from src.core.result import GroupTutorAssigmentResult
 from src.core.topic import Topic
-from src.core.tutor import Tutor
+from src.core.tutor import SinglePeriodTutor, Tutor
 
 
 class GroupTutorLPSolver:
     def __init__(
         self,
-        groups: list[GroupFormAnswer],
+        groups: list[UnassignedGroup],
         topics: list[Topic],
-        tutors: list[Tutor],
+        tutors: list[SinglePeriodTutor],
         balance_limit,
     ):
         """
@@ -236,22 +236,19 @@ class GroupTutorLPSolver:
         for var in prob.variables():
             print(var.name, var.varValue)
             if var.varValue == 1:
-                print(var)
                 result_variables.append(var)
 
                 # Extraer el id del grupo, tutor y topic del nombre de la variable
                 group_id, tutor_id, topic_id = self._parse_variable_name(var.name)
 
-                # Crear el grupo con el id correspondiente
-                group = Group(id=group_id)
-
                 # Asignar el tutor al grupo
                 tutor = self._get_tutor_by_id(tutor_id)
-                group.assign_tutor(tutor)
 
                 # Asignar el topic al grupo
                 topic = self._get_topic_by_id(topic_id)
-                group.assign_topic(topic)
+                group = GroupTutorAssigmentResult(
+                    id=group_id, tutor_email=tutor.email, topic=topic.name
+                )
 
                 groups_result.append(group)
 

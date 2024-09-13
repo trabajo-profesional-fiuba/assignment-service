@@ -69,7 +69,7 @@ async def upload_csv_file(
             content, period, hasher, UserRepository(session)
         )
 
-        return res
+        return TutorList.model_validate(res)
     except (InvalidCsv, EntityNotFound, Duplicated, InvalidFileType) as e:
         raise e
     except InvalidJwt as e:
@@ -134,7 +134,7 @@ async def add_period(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return service.add_period(period)
+        return PeriodResponse.model_validate(service.add_period(period))
     except (InvalidPeriod, Duplicated) as e:
         raise e
     except InvalidJwt as e:
@@ -165,8 +165,8 @@ async def get_periods(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        periods = service.get_all_periods(order)
-        return periods
+
+        return PeriodList.model_validate(service.get_all_periods(order))
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -198,7 +198,9 @@ async def add_period_to_tutor(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return service.add_period_to_tutor(tutor_id, period_id)
+        return TutorResponse.model_validate(
+            service.add_period_to_tutor(tutor_id, period_id)
+        )
     except (Duplicated, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -230,7 +232,7 @@ async def get_tutor_periods(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return service.get_periods_by_tutor_id(tutor_id)
+        return TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -262,7 +264,10 @@ async def get_period_by_id(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return service.get_tutors_by_period_id(period_id)
+
+        return TutorWithTopicsList.model_validate(
+            service.get_tutors_by_period_id(period_id)
+        )
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
