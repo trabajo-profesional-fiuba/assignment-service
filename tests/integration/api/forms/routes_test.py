@@ -571,6 +571,7 @@ def test_get_answers_by_group(fastapi, tables, topics, students, tutors):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
 
+
 @pytest.mark.integration
 def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
@@ -650,7 +651,6 @@ def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     assert len(response.json()) == 2
 
 
-
 @pytest.mark.integration
 def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
@@ -724,7 +724,7 @@ def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
 def test_delete_answers_not_found(fastapi, tables, topics, students):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
-    user_token = helper.create_student_token()
+
     today = dt.datetime.today().isoformat()
     response = fastapi.delete(
         f"{PREFIX}/answers/{today}",
@@ -737,7 +737,7 @@ def test_delete_answers_not_found(fastapi, tables, topics, students):
 def test_get_empty_answers_with_success(fastapi, tables, topics):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
-    user_token = helper.create_student_token()
+
     response = fastapi.get(
         f"{PREFIX}/answers",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},

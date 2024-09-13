@@ -1,23 +1,26 @@
 from src.core.delivery_date import DeliveryDate
 from src.core.topic import Topic
-import src.exceptions as e
 
 
 class Tutor:
     """
-    This class represents a Tutor during a specific Period. 
-    Although a tutor may be active in multiple periods, this abstraction considers each tutor within the context of a single period.
-    Thus, each period has its tutors as a subset of objects that exist only within that period. 
+    This class represents a Tutor during a specific Period.
+    Although a tutor may be active in multiple periods, this abstraction considers each
+    tutor within the context of a single period.
+    Thus, each period has its tutors as a subset of objects that exist only within that
+    period.
     """
 
-    def __init__(self, id: int,
-                 email: str,
-                 name: str,
-                 last_name: str,
-                 capacity: int = 0,
-                 groups=None,
-                 topics=None
-                 ):
+    def __init__(
+        self,
+        id: int,
+        email: str,
+        name: str,
+        last_name: str,
+        capacity: int = 0,
+        groups=None,
+        topics=None,
+    ):
         self._id = id
         self._name = name
         self._last_name = last_name
@@ -46,7 +49,7 @@ class Tutor:
     @property
     def email(self) -> str:
         return self._email
-    
+
     @property
     def available_dates(self):
         return self._available_dates
@@ -66,15 +69,15 @@ class Tutor:
     @property
     def groups(self):
         return self._groups
-    
+
     # @property
     # def groups(self) -> int:
     #     return self._groups
-    
+
     @property
     def topics(self):
         return self._topics
-    
+
     @property
     def capacity(self):
         return self._capacity
@@ -84,7 +87,7 @@ class Tutor:
 
     # def add_groups(self, groups: list["group.Group"]):
     #     self._groups = groups
-        
+
     def add_groups(self, groups):
         if self._groups is None:
             self._groups = []
@@ -94,13 +97,13 @@ class Tutor:
 
     def is_evaluator(self):
         return self._is_evaluator
-    
+
     def groups_ids(self):
         return [g.id for g in self._groups]
-    
+
     def topics_ids(self):
         return [t.id for t in self._topics]
-    
+
     def make_evaluator(self):
         self._is_evaluator = True
 
@@ -124,7 +127,7 @@ class Tutor:
     def add_topic(self, topic: Topic):
         if self._topics is None:
             self._topics = []
-        self._topics.append(topic)   
+        self._topics.append(topic)
 
     def find_mutual_dates(self, dates: list[DeliveryDate]):
         labels = [d.label() for d in dates]
@@ -136,6 +139,53 @@ class Tutor:
                 mutual_dates.append(available_date_label)
 
         return mutual_dates
-    
-   
 
+
+class SinglePeriodTutor:
+    """
+    This class represents a tutor as a single period,
+    meaning we abstract away the other periods of the tutor and consider them as a tutor per period.
+    This way, the algorithms do not have knowledge of the other periods of that tutor.
+    """
+
+    def __init__(
+        self,
+        id: int,
+        period_id: int,
+        name: str,
+        last_name: str,
+        email: str,
+        capacity: int = 0,
+        topics=None,
+    ):
+        self._id = id
+        self._name = name
+        self._last_name = last_name
+        self._is_evaluator = False
+        self._capacity = capacity
+        self._topics = topics
+        self._email = email
+        self._period_id = period_id
+
+    @property
+    def id(self) -> str:
+        return self._id
+
+    @property
+    def period_id(self) -> str:
+        return self._period_id
+
+    @property
+    def topics(self) -> str:
+        return self._topics
+
+    @property
+    def capacity(self):
+        return self._capacity
+
+    @property
+    def email(self) -> str:
+        return self._email
+
+    def topics_ids(self):
+        return [topic.id for topic in self._topics]

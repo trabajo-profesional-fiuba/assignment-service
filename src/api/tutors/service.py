@@ -18,7 +18,7 @@ from src.api.tutors.exceptions import (
     PeriodDuplicated,
     TutorDuplicated,
     TutorNotFound,
-    TutorPeriodNotInserted
+    TutorPeriodNotInserted,
 )
 from src.api.tutors.models import Period, TutorPeriod
 
@@ -57,7 +57,9 @@ class TutorService:
                 existing_tutors_id.append(tutor.id)
         return existing_tutors_id
 
-    def create_tutors_from_csv(self, csv: str, period: str, hasher: ShaHasher, user_repository):
+    def create_tutors_from_csv(
+        self, csv: str, period: str, hasher: ShaHasher, user_repository
+    ):
         try:
             """
             With a csv file as string, it
@@ -69,7 +71,8 @@ class TutorService:
             existing_tutors_id = self._get_existing_ids(tutors_ids)
 
             remaining_ids = list(
-                filter(lambda x: x not in existing_tutors_id, tutors_ids))
+                filter(lambda x: x not in existing_tutors_id, tutors_ids)
+            )
 
             tutor_periods = []
             tutors = []
@@ -87,21 +90,27 @@ class TutorService:
 
             for id in tutors_ids:
                 tutor_dto = tutors_dtos[id]
-                tutor_periods.append(TutorPeriod(
-                    period_id=period, tutor_id=tutor_dto.id, capacity=tutor_dto.capacity))
+                tutor_periods.append(
+                    TutorPeriod(
+                        period_id=period,
+                        tutor_id=tutor_dto.id,
+                        capacity=tutor_dto.capacity,
+                    )
+                )
 
             user_repository.add_tutors(tutors)
 
             # Clean if the tutor already contains a period asociated
             if len(existing_tutors_id) > 0:
                 self._repository.remove_tutor_periods_by_tutor_ids(
-                    period, existing_tutors_id)
+                    period, existing_tutors_id
+                )
 
             # Add new periods
             self._repository.add_tutor_periods(tutor_periods)
             tutors = self._repository.get_tutors_by_period_id(period)
 
-            return TutorList.model_validate(tutors)
+            return tutors
         except TutorDuplicated as e:
             raise Duplicated(str(e))
         except (TutorNotFound, TutorPeriodNotInserted) as e:
@@ -128,9 +137,7 @@ class TutorService:
             valid = self._validate_period(period.id)
             if valid:
                 period_db = Period(id=period.id)
-                return PeriodResponse.model_validate(
-                    self._repository.add_period(period_db)
-                )
+                return self._repository.add_period(period_db)
             else:
                 raise InvalidPeriod(
                     message="Period id should follow patter nC20year, ie. 1C2024"
@@ -145,7 +152,7 @@ class TutorService:
         try:
             if self._repository.is_tutor(tutor_id):
                 tutor = self._repository.add_tutor_period(tutor_id, period_id)
-                return TutorResponse.model_validate(tutor)
+                return tutor
             else:
                 raise EntityNotFound(f"{tutor_id} was not found as TUTOR")
         except PeriodDuplicated as e:
@@ -163,22 +170,9 @@ class TutorService:
         of a tutor based on its id
         """
         try:
-            return TutorResponse.model_validate(
-                self._repository.get_tutor_by_tutor_id(tutor_id)
-            )
+            return self._repository.get_tutor_by_tutor_id(tutor_id)
         except TutorNotFound as e:
             raise EntityNotFound(str(e))
-
-    def get_tutor_period_by_tutor_email(self, period, tutor_email):
-        """
-        Looks up for a tutor based on its email
-        """
-        try:
-            return TutorPeriodResponse.model_validate(
-                self._repository.get_tutor_period_by_tutor_email(period, tutor_email)
-            )
-        except TutorNotFound as e:
-            raise EntityNotFound(message=str(e))
 
     def delete_tutor(self, tutor_id):
         """
@@ -197,10 +191,27 @@ class TutorService:
             valid = self._validate_period(period_id)
             if valid:
                 tutors = self._repository.get_tutors_by_period_id(period_id)
-                return TutorWithTopicsList.model_validate(tutors)
+                return tutors
             else:
                 raise InvalidPeriod(
                     message="Period id should follow patter nC20year, ie. 1C2024"
                 )
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
+
+    def get_tutor_period_by_tutor_email(self, period, tutor_email):
+        """
+        Looks up for a tutor based on its email
+        """
+        try:
+            return TutorPeriodResponse.model_validate(
+                self._repository.get_tutor_period_by_tutor_email(period, tutor_email)
+            )
+        except TutorNotFound as e:
+            raise EntityNotFound(message=str(e))
+
+    def get_tutor_periods_by_period_id(self, period_id):
+        try:
+            return self._repository.get_tutor_periods_by_periods_id(period_id)
+        except TutorNotFound as e:
+            raise EntityNotFound(message=str(e))

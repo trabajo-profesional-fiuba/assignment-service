@@ -14,7 +14,12 @@ Alembic can be though as git, with this tool you can think revisions as git comm
 ```
 alembic revision -m "Add new table"
 ```
-This command upgrades the database to the latest revision, applying all pending migrations.
+This command generates a new database migration. You can also use ```alembic revision --autogenerate -m "Add new table"``` after modifying models file to autogenerate a default revision by alembic, which can be customized.
+
+```
+alembic upgrate head
+```
+This command executes the latest database revision.
 
 ```
 alembic downgrade -1.

@@ -17,7 +17,12 @@ class StudentRepository:
 
     def get_students_by_ids(self, ids: list[int]):
         with self.Session() as session:
-            students = session.query(User).filter(User.id.in_(ids)).filter(User.role == Role.STUDENT).all()
+            students = (
+                session.query(User)
+                .filter(User.id.in_(ids))
+                .filter(User.role == Role.STUDENT)
+                .all()
+            )
             for student in students:
                 session.expunge(student)
 

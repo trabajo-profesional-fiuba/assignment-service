@@ -100,7 +100,6 @@ class TestStudentRepository:
 
         assert len(response) == 4
 
-
     @pytest.mark.integration
     def test_upsert_students(self, tables):
         student1 = User(
@@ -139,7 +138,7 @@ class TestStudentRepository:
             email="141414@fi.uba.ar",
             password="password1",
             role=Role.STUDENT,
-        ) 
+        )
         students = u_repository.upsert_students([student3, student4])
         repository = StudentRepository(self.Session)
         response = repository.get_students()

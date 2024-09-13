@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from src.api.topics.exceptions import CategoryNotFound
-from src.api.topics.models import Category, Topic
+from src.api.topics.models import Category, Topic, TopicTutorPeriod
+from src.api.tutors.models import TutorPeriod
 
 
 class TopicRepository:
@@ -110,3 +111,19 @@ class TopicRepository:
             session.query(Category).filter(Category.name != "default").delete()
             session.query(Topic).delete()
             session.commit()
+
+    def get_topics_by_period_id(self, period_id):
+        with self.Session() as session:
+            topics = (
+                session.query(Topic)
+                .join(TopicTutorPeriod)
+                .join(TutorPeriod)
+                .filter(TutorPeriod.period_id == period_id)
+                .all()
+            )
+
+            for topic in topics:
+                topic.category
+                session.expunge(topic)
+
+        return topics

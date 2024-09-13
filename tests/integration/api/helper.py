@@ -4,7 +4,7 @@ from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
 from src.api.topics.models import Category, Topic
 from src.api.topics.repository import TopicRepository
-from src.config.database.database import create_tables, drop_tables, engine
+from src.config.database.database import engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from src.api.tutors.repository import TutorRepository
@@ -85,7 +85,11 @@ class ApiHelper:
         token = jwt.create_token(sub, "student")
         return token
 
-    def create_category(self, name):
+    def create_topic(self, name: str, category_id: int):
+        topic = Topic(name=name, category_id=category_id)
+        self._topic_repository.add_topic(topic)
+
+    def create_category(self, name: str):
         category = Category(name=name)
         self._topic_repository.add_category(category)
 
@@ -101,7 +105,7 @@ class ApiHelper:
             period_id, tutor_email, topics_db, capacities
         )
 
-    def get_groups(self, period_id = None):
+    def get_groups(self, period_id=None):
         return self._groups_repository.get_groups(period=period_id)
 
     def register_answer(self, ids, topics):
@@ -122,3 +126,6 @@ class ApiHelper:
             )
             answers.append(answer)
         self._form_repository.add_answers(answers, topics, ids)
+
+    def create_basic_group(self, ids, topics):
+        self._groups_repository.add_group(ids=ids, preferred_topics=topics)

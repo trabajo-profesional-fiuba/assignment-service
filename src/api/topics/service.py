@@ -10,8 +10,6 @@ from src.api.tutors.repository import TutorRepository
 
 from src.config.logging import logger
 
-from src.core.topic import Topic as TopicDto
-
 
 class TopicService:
 
@@ -92,7 +90,9 @@ class TopicService:
 
         return topics
 
-    def create_topics_from_string(self, period_id: str, csv: str, tutor_repository: TutorRepository):
+    def create_topics_from_string(
+        self, period_id: str, csv: str, tutor_repository: TutorRepository
+    ):
         """
         Processes a CSV string to create topics, categories, and tutor-topic
         assignments. Deletes existing topics if applies and returns the list
@@ -132,3 +132,7 @@ class TopicService:
             )
             db_topic = self._repository.add_topic(Topic(name=topic_name, category_id=1))
         return TopicResponse.model_validate(db_topic)
+
+    def get_topics_by_period(self, period_id):
+        db_topics = self._repository.get_topics_by_period_id(period_id)
+        return db_topics

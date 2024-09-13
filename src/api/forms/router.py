@@ -6,7 +6,8 @@ from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
     GroupAnswerList,
-    UserAnswerList
+    GroupAnswerResponse,
+    UserAnswerList,
 )
 from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService
@@ -37,10 +38,12 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
             "description": "Successfully added topic preferences answers."
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
-            "description": "Input validation has failed, typically resulting in a client-facing error response."
+            "description": "Input validation has failed, typically resulting in a \
+            client-facing error response."
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happend inside the backend"
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
         },
     },
     status_code=status.HTTP_201_CREATED,
@@ -86,12 +89,23 @@ async def get_answers(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
-        return service.get_answers(TopicRepository(session),for_controller=True)
+        answers = service.get_answers(TopicRepository(session))
+        response = list()
+        for answer in answers:
+            response.append(
+                GroupAnswerResponse(
+                    id=answer.id,
+                    students=answer.students,
+                    topics=answer.get_topic_names(),
+                )
+            )
+        return GroupAnswerList.model_validate(response)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
         raise ServerError(message=str(e))
+
 
 @router.get(
     "/answers/{user_id}",
@@ -107,22 +121,23 @@ async def get_answers(
     },
     status_code=status.HTTP_200_OK,
 )
-async def get_answers(
+async def get_answers_by_user_id(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    user_id:int
+    user_id: int,
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
         service = FormService(FormRepository(session))
-        return service.get_answers_by_user_id(user_id,TopicRepository(session))
+        return service.get_answers_by_user_id(user_id, TopicRepository(session))
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
         raise ServerError(message=str(e))
+
 
 @router.delete(
     "/answers/{answer_id}",

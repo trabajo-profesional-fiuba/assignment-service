@@ -1,13 +1,13 @@
-#import pytest
-#from src.core.algorithms.adapters.exceptions import ResultFormatNotFound
-#from src.core.algorithms.adapters.result_adapter import ResultAdapter
-#from src.core.algorithms.adapters.flow_adapter import FlowAdapter
-#from src.core.algorithms.adapters.lp_adapter import LPAdapter
-#from src.core.algorithms.adapters.result_context import ResultContext
-#from src.core.result import AssignmentResult
+# import pytest
+# from src.core.algorithms.adapters.exceptions import ResultFormatNotFound
+# from src.core.algorithms.adapters.result_adapter import ResultAdapter
+# from src.core.algorithms.adapters.flow_adapter import FlowAdapter
+# from src.core.algorithms.adapters.lp_adapter import LPAdapter
+# from src.core.algorithms.adapters.result_context import ResultContext
+# from src.core.result import AssignmentResult
 #
 #
-#class TestResultAdapter:
+# class TestResultAdapter:
 #
 #    @pytest.mark.unit
 #    def test_initialization(self):

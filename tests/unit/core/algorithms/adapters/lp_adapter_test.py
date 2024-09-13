@@ -1,10 +1,10 @@
-#import pytest
-#from src.core.algorithms.adapters.lp_adapter import LPAdapter
-#from tests.integration.core.algorithms.helper import TestLPHelper
-#from src.core.algorithms.adapters.result_context import ResultContext
+# import pytest
+# from src.core.algorithms.adapters.lp_adapter import LPAdapter
+# from tests.integration.core.algorithms.helper import TestLPHelper
+# from src.core.algorithms.adapters.result_context import ResultContext
 #
 #
-#class TestLPAdapter:
+# class TestLPAdapter:
 #
 #    helper = TestLPHelper()
 #
