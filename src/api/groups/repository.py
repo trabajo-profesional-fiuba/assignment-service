@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, load_only
 from src.api.groups.models import Group
 from src.api.students.exceptions import StudentNotFound
 from src.api.users.models import User
@@ -87,4 +87,25 @@ class GroupRepository:
             )
             session.expunge_all()
 
+        return groups
+    
+    def get_incomplete_groups(self, period):
+        """Returns all groups learning path information for a given period"""
+        with self.Session() as session:
+            groups = (
+                session.query(Group)
+                .filter(Group.period_id == period)
+                # .options(
+                #     load_only( 
+                #         Group.id,
+                #         Group.pre_report_date,
+                #         Group.pre_report_approved,
+                #         Group.intermediate_assigment_date,
+                #         Group.intermediate_assigment_approved,
+                #         Group.final_report_approved,
+                #         Group.exhibition_date,
+                #     )
+                # )
+                .all()
+            )
         return groups
