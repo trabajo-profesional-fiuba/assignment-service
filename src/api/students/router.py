@@ -51,7 +51,7 @@ async def upload_csv_file(
 
         logger.info("csv contains the correct content-type")
         content = (await file.read()).decode("utf-8")
-        service = StudentService(UserRepository(session), FormRepository(session))
+        service = StudentService(UserRepository(session))
         res = service.create_students_from_string(content, hasher)
 
         return res
@@ -87,7 +87,7 @@ async def get_students_by_ids(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
 
-        service = StudentService(StudentRepository(session), FormRepository(session))
+        service = StudentService(StudentRepository(session))
         res = service.get_students_by_ids(user_ids)
         logger.info("Retrieve all students by ids.")
 
@@ -122,8 +122,8 @@ async def get_student_info(
         auth_service.assert_student_role(token)
         id = auth_service.get_user_id(token)
 
-        service = StudentService(StudentRepository(session), FormRepository(session))
-        res = service.get_students_info_by_id(id)
+        service = StudentService(StudentRepository(session))
+        res = service.get_personal_info_by_id(id, FormRepository(session))
         logger.info("Retrieve student info by id.")
 
         response = JSONResponse(content = res.model_dump())

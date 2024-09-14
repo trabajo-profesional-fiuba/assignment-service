@@ -1,4 +1,5 @@
 from src.api.auth.hasher import ShaHasher
+from src.api.forms.repository import FormRepository
 from src.api.students.utils import StudentCsvFile
 from src.api.students.exceptions import (
     StudentDuplicated,
@@ -14,9 +15,8 @@ from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, In
 
 class StudentService:
 
-    def __init__(self, user_repository, form_repository) -> None:
+    def __init__(self, user_repository) -> None:
         self._user_repository = user_repository
-        self._form_repository = form_repository
 
     def _get_csv_rows(self, csv: str):
         csv_file = StudentCsvFile(csv=csv)
@@ -72,52 +72,36 @@ class StudentService:
         except StudentDuplicated as e:
             raise Duplicated(str(e))
 
-    def get_students_info_by_id(self, id: int):
+    def get_personal_info_by_id(self, id: int, form_repository: FormRepository):
         
-        form_answers = self._form_repository.get_answers_by_user_id(id)
+        form_answers = form_repository.get_answers_by_user_id(id)
 
         form_answered = (len(form_answers) > 0)
 
-        if (not form_answered):
-            return PersonalInformation(
+        personal_information = PersonalInformation(
                 id=id,
                 form_answered=form_answered,
                 group_id=0,
                 tutor= "",
                 topic="",
                 teammates=[]
-            ) 
+            )
+
+        if (not form_answered):
+            return personal_information
         
         student_info_db = self._user_repository.get_student_info(id)
         
         if student_info_db == None:
-            return PersonalInformation(
-                id=id,
-                form_answered=form_answered,
-                group_id=0,
-                tutor= "",
-                topic="",
-                teammates=[]
-            ) 
+            return personal_information
         
         tutor = self._user_repository.get_tutor_info(student_info_db.tutor_id)
 
         teammates = self._user_repository.get_teammates(id, student_info_db.group_id)
-
-        teammates_emails = []
-
-        for teammate in teammates:
-            teammates_emails.append(teammate.email)
         
-        student_info = (
-            PersonalInformation(
-                id=student_info_db.user_id,
-                form_answered=form_answered,
-                group_id=student_info_db.group_id,
-                tutor= f"{tutor.name} {tutor.last_name}",
-                topic=student_info_db.topic_name,
-                teammates=teammates_emails
-            )
-        )
-                                
-        return student_info
+        personal_information.group_id = student_info_db.group_id
+        personal_information.tutor = f"{tutor.name} {tutor.last_name}"
+        personal_information.topic = student_info_db.topic_name
+        personal_information.teammates = list(map(lambda x: x.email,teammates))
+                               
+        return personal_information

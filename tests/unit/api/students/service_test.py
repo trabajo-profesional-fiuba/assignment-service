@@ -21,10 +21,10 @@ class TestStudentService:
     @pytest.mark.unit
     def tests_bad_csv_raise_exception(self, mocker):
         repo = UserRepository(None)
-        form_repo = FormRepository(None)
+
         mocker.patch.object(repo, "add_students", return_value=None)
         hash = ShaHasher()
-        service = StudentService(repo, form_repo)
+        service = StudentService(repo)
 
         with pytest.raises(InvalidCsv):
             _ = service.create_students_from_string("bla,bla,bla", hash)
@@ -55,9 +55,9 @@ class TestStudentService:
         students = [student1, student2, student3]
 
         repo = StudentRepository(None)
-        form_repo = FormRepository(None)
+
         mocker.patch.object(repo, "get_students_by_ids", return_value=students)
-        service = StudentService(repo, form_repo)
+        service = StudentService(repo)
         response = service.get_students_by_ids([12345, 54321, 11111])
 
         assert all(e in response for e in students)
@@ -80,9 +80,9 @@ class TestStudentService:
         )
         students = [student1, student2]
         repo = StudentRepository(None)
-        form_repo = FormRepository(None)
+
         mocker.patch.object(repo, "get_students_by_ids", return_value=students)
-        service = StudentService(repo, form_repo)
+        service = StudentService(repo)
 
         with pytest.raises(EntityNotFound) as e:
             _ = service.get_students_by_ids([12345, 54321, 11111])
@@ -91,9 +91,9 @@ class TestStudentService:
     @pytest.mark.unit
     def tests_empty_students_raise_student_not_found(self, mocker):
         repo = StudentRepository(None)
-        form_repo = FormRepository(None)
+
         mocker.patch.object(repo, "get_students_by_ids", return_value=[])
-        service = StudentService(repo, form_repo)
+        service = StudentService(repo)
 
         with pytest.raises(EntityNotFound) as e:
             _ = service.get_students_by_ids([1, 2, 3])
