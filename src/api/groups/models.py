@@ -54,6 +54,6 @@ class Group(Base):
     students: Mapped[List[User]] = relationship(
         secondary=association_table, lazy="subquery"
     )
-    topic = relationship("Topic", back_populates="groups", lazy="joined")
-    tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="joined")
-    period = relationship("Period", back_populates="groups", lazy="joined")
+    topic = relationship("Topic", back_populates="groups", lazy="noload")
+    tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="noload")
+    period = relationship("Period", back_populates="groups", lazy="noload")

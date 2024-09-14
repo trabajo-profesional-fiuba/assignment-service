@@ -341,13 +341,9 @@ class TestGroupTutorLPSolver:
         result = solver.solve()
 
         # Verificar que solo un grupo haya sido asignado al Topic 1 (capacidad = 1)
-        topic1_assignments = len(
-            [res for res in result if res.topic == topics[0].name]
-        )
+        topic1_assignments = len([res for res in result if res.topic == topics[0].name])
         assert topic1_assignments == 1
 
         # Verificar que los otros grupos se asignen al Topic 2
-        topic2_assignments = len(
-            [res for res in result if res.topic == topics[1].name]
-        )
+        topic2_assignments = len([res for res in result if res.topic == topics[1].name])
         assert topic2_assignments == 2

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, load_only
 from src.api.groups.models import Group
 from src.api.students.exceptions import StudentNotFound
 from src.api.users.models import User
@@ -32,7 +32,6 @@ class GroupRepository:
             session.commit()
             session.refresh(group)
             session.expunge(group)
-
         return group
 
     def add_group_having_emails(
@@ -61,15 +60,21 @@ class GroupRepository:
 
         return group
 
-    def get_groups(self, period=None):
-        """Returns all groups for a specific period"""
+    def get_groups(self, period):
+        """Returns all groups for a given period"""
         with self.Session() as session:
-            if period:
-                groups = session.query(Group).filter(Group.period_id == period).all()
-            else:
-                groups = session.query(Group).all()
+            groups = (
+                session.query(Group)
+                .options(
+                    joinedload(Group.topic),
+                    joinedload(Group.tutor_period),
+                    joinedload(Group.period),
+                    joinedload(Group.students),
+                )
+                .filter(Group.period_id == period)
+                .all()
+            )
             session.expunge_all()
-
         return groups
 
     def get_groups_without_tutor_and_period(self):
@@ -82,4 +87,10 @@ class GroupRepository:
             )
             session.expunge_all()
 
+        return groups
+
+    def get_groups_learning_path(self, period):
+        """Returns all groups learning path information for a given period"""
+        with self.Session() as session:
+            groups = session.query(Group).filter(Group.period_id == period).all()
         return groups

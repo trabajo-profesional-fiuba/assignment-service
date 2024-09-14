@@ -52,7 +52,7 @@ def test_resolve_assignment_of_incomplete_groups(fastapi, tables):
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
 
-    groups = helper.get_groups()
+    groups = helper.get_groups("2C2024")
     assert response.status_code == status.HTTP_202_ACCEPTED
     assert len(groups) == 1
 
@@ -147,7 +147,7 @@ def test_resolve_assignment_of_incomplete_groups_more_answers(fastapi, tables):
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
 
-    groups = helper.get_groups()
+    groups = helper.get_groups("2C2024")
     assert response.status_code == status.HTTP_202_ACCEPTED
     assert len(groups) == 3
 

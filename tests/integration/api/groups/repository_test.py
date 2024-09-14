@@ -66,15 +66,22 @@ def test_add_new_group_with_tutor_and_topic(tables):
     tutor_repository.add_tutor_period(5, "1C2025")
 
     uids = [10000, 2000]
-    period_id = 1
+    tutor_period_id = 1
     topic_id = 1
+    period_id = "1C2025"
 
-    group = repository.add_group(uids, period_id, topic_id)
+    group = repository.add_group(
+        ids=uids,
+        tutor_period_id=tutor_period_id,
+        topic_id=topic_id,
+        period_id=period_id,
+    )
     ids = [user.id for user in group.students]
 
     assert ids == uids
-    assert group.tutor_period.id == period_id
-    assert group.topic.id == topic_id
+    assert group.tutor_period_id == tutor_period_id
+    assert group.assigned_topic_id == topic_id
+    assert group.period_id == period_id
 
 
 @pytest.mark.integration
@@ -149,7 +156,7 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
     ids = [user.id for user in group.students]
 
     assert ids == uids
-    assert group.tutor_period.id == period_id
+    assert group.tutor_period_id == period_id
     assert group.topic is None
 
 
@@ -267,7 +274,7 @@ def test_add_new_group_with_three_topics_using_service(tables):
 
 
 @pytest.mark.integration
-def test_add_student_cannot_be_with_one_that_is_not_a_user(tables):
+def test_add_student_cannot_be_with_one_that_is_not_a_user_using_service(tables):
     repository = GroupRepository(Session)
     u_repository = UserRepository(Session)
     student1 = User(
@@ -296,7 +303,7 @@ def test_add_student_cannot_be_with_one_that_is_not_a_user(tables):
 
 
 @pytest.mark.integration
-def test_add_student_cannot_be_in_two_groups(tables):
+def test_add_student_cannot_be_in_two_groups_using_service(tables):
     repository = GroupRepository(Session)
     u_repository = UserRepository(Session)
     student1 = User(
@@ -333,7 +340,7 @@ def test_add_student_cannot_be_in_two_groups(tables):
 
 
 @pytest.mark.integration
-def test_add_assigned_group_without_period(tables):
+def test_add_assigned_group_without_period_using_service(tables):
     uids = [160000, 17000]
     tutor_period_id = 2
     topic_id = 1
@@ -346,7 +353,7 @@ def test_add_assigned_group_without_period(tables):
 
 
 @pytest.mark.integration
-def test_add_basic_group_without_period(tables):
+def test_add_basic_group_without_period_using_service(tables):
     uids = [160000, 17000]
 
     repository = GroupRepository(Session)
@@ -354,3 +361,45 @@ def test_add_basic_group_without_period(tables):
 
     with pytest.raises(EntityNotInserted):
         service.create_basic_group(uids, [1, 2, 3], period_id="1C2025")
+
+
+@pytest.mark.integration
+def test_get_groups_leaning_path(tables):
+    repository = GroupRepository(Session)
+    u_repository = UserRepository(Session)
+    student1 = User(
+        id=23000,
+        name="Juan",
+        last_name="Perez",
+        email="23000@fi.uba.ar",
+        password="password",
+        role=Role.STUDENT,
+    )
+    student2 = User(
+        id=24000,
+        name="Pedro",
+        last_name="Pipo",
+        email="24000@fi.uba.ar",
+        password="password1",
+        role=Role.STUDENT,
+    )
+    u_repository.add_students([student1, student2])
+
+    tutor_repository = TutorRepository(Session)
+    period_id = "1C2024"
+    tutor_repository.add_period(Period(id=period_id))
+
+    uids = [23000, 24000]
+    repository.add_group(ids=uids, preferred_topics=[1, 2, 3], period_id=period_id)
+
+    result = repository.get_groups_learning_path(period_id)
+    for group in result:
+        assert group.topic == None
+        assert group.tutor_period == None
+        assert group.period == None
+        assert group.pre_report_date == None
+        assert group.pre_report_approved == False
+        assert group.intermediate_assigment_date == None
+        assert group.intermediate_assigment_approved == False
+        assert group.final_report_approved == False
+        assert group.exhibition_date == None
