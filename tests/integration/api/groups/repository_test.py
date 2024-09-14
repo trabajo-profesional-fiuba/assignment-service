@@ -79,8 +79,8 @@ def test_add_new_group_with_tutor_and_topic(tables):
     ids = [user.id for user in group.students]
 
     assert ids == uids
-    assert group.tutor_period.id == tutor_period_id
-    assert group.topic.id == topic_id
+    assert group.tutor_period_id == tutor_period_id
+    assert group.assigned_topic_id == topic_id
     assert group.period_id == period_id
 
 
@@ -156,7 +156,7 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
     ids = [user.id for user in group.students]
 
     assert ids == uids
-    assert group.tutor_period.id == period_id
+    assert group.tutor_period_id == period_id
     assert group.topic is None
 
 
@@ -394,6 +394,9 @@ def test_get_groups_leaning_path(tables):
 
     result = repository.get_groups_learning_path(period_id)
     for group in result:
+        assert group.topic == None
+        assert group.tutor_period == None
+        assert group.period == None
         assert group.pre_report_date == None
         assert group.pre_report_approved == False
         assert group.intermediate_assigment_date == None
