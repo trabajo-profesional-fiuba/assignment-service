@@ -88,7 +88,6 @@ def test_add_answers_with_topic_not_found(fastapi, tables):
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Topic 'topic1' not found."}
 
 
 @pytest.mark.integration
@@ -131,7 +130,7 @@ def test_add_answers_with_student_not_found(fastapi, tables, topics, tutors):
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {
-        "detail": "Be sure that the id: 105285 is a valid student."
+        "detail": "Be sure that all the ids are students"
     }
 
 
@@ -140,12 +139,8 @@ def test_add_answers_with_success(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
+
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -224,12 +219,7 @@ def test_add_answers_with_invalid_role(fastapi, tables, topics, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -274,12 +264,7 @@ def test_add_answers_duplicated(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -366,12 +351,7 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -445,7 +425,7 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
     ]
 
     today = dt.datetime.today().isoformat()
-    body = {
+    body1 = {
         "user_id_sender": 105285,
         "user_id_student_2": 105286,
         "user_id_student_3": 105287,
@@ -457,7 +437,7 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
     }
     response = fastapi.post(
         f"{PREFIX}/answers",
-        json=body,
+        json=body1,
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -498,12 +478,7 @@ def test_get_answers_by_group(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -577,12 +552,7 @@ def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",

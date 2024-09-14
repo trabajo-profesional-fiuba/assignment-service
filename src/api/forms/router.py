@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
+    FormPreferencesResponse,
     GroupAnswerList,
     GroupAnswerResponse,
     UserAnswerList,
@@ -57,8 +58,22 @@ async def add_answers(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
+
         service = FormService(FormRepository(session))
-        return service.add_answers(answers)
+        answers_saved = service.add_answers(answers)
+
+        return FormPreferencesList.model_validate(
+            [
+                FormPreferencesResponse(
+                    user_id=answer.id,
+                    answer_id=answer.answer_id,
+                    topic_1=answer.topics[0],
+                    topic_2=answer.topics[1],
+                    topic_3=answer.topics[2] 
+                )
+                for answer in answers_saved
+            ]
+        )
     except (Duplicated, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
