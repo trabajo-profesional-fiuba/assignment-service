@@ -55,8 +55,9 @@ class TestStudentService:
         students = [student1, student2, student3]
 
         repo = StudentRepository(None)
+        form_repo = FormRepository(None)
         mocker.patch.object(repo, "get_students_by_ids", return_value=students)
-        service = StudentService(repo)
+        service = StudentService(repo, form_repo)
         response = service.get_students_by_ids([12345, 54321, 11111])
 
         assert all(e in response for e in students)
