@@ -50,20 +50,7 @@ class StudentRepository:
             )            
             
         return student_info
-    
-    def get_tutor_info(self, tutor_id: int):
-        with self.Session() as session:
-            tutor = (
-                session.query(
-                    User
-                )
-                .select_from(User)
-                .where(User.id == tutor_id)
-                .one_or_none()
-            )
 
-        return tutor
-    
     def get_teammates(self, id: int, group_id: int):
         with self.Session() as session:
             teammates = (

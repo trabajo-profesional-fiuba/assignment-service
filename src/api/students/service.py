@@ -8,6 +8,7 @@ from src.api.students.exceptions import (
 )
 
 from src.api.users.models import User, Role
+from src.api.users.repository import UserRepository
 from src.api.users.schemas import PersonalInformation, UserList
 
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
@@ -72,7 +73,7 @@ class StudentService:
         except StudentDuplicated as e:
             raise Duplicated(str(e))
 
-    def get_personal_info_by_id(self, id: int, form_repository: FormRepository):
+    def get_personal_info_by_id(self, id: int, form_repository: FormRepository, user_repository: UserRepository):
         
         form_answers = form_repository.get_answers_by_user_id(id)
 
@@ -95,7 +96,7 @@ class StudentService:
         if student_info_db == None:
             return personal_information
         
-        tutor = self._user_repository.get_tutor_info(student_info_db.tutor_id)
+        tutor = user_repository.get_tutor_by_id(student_info_db.tutor_id)
 
         teammates = self._user_repository.get_teammates(id, student_info_db.group_id)
         

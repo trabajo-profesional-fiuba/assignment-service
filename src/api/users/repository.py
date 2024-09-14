@@ -91,3 +91,16 @@ class UserRepository:
             tutors = session.query(User).filter(User.role == Role.TUTOR).all()
             session.expunge_all()
         return tutors
+
+    def get_tutor_by_id(self, tutor_id: int):
+        with self.Session() as session:
+            tutor = (
+                session.query(
+                    User
+                )
+                .select_from(User)
+                .where(User.id == tutor_id)
+                .one_or_none()
+            )
+
+        return tutor
