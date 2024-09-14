@@ -7,15 +7,16 @@ from src.api.students.exceptions import (
 )
 
 from src.api.users.models import User, Role
-from src.api.users.schemas import UserList
+from src.api.users.schemas import PersonalInformation, UserList
 
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 
 
 class StudentService:
 
-    def __init__(self, repository) -> None:
-        self._repository = repository
+    def __init__(self, user_repository, form_repository) -> None:
+        self._user_repository = user_repository
+        self._form_repository = form_repository
 
     def _get_csv_rows(self, csv: str):
         csv_file = StudentCsvFile(csv=csv)
@@ -40,7 +41,7 @@ class StudentService:
         try:
             rows = self._get_csv_rows(csv)
             students = self._get_students(rows, hasher)
-            students_saved = self._repository.upsert_students(students)
+            students_saved = self._user_repository.upsert_students(students)
             return UserList.model_validate(students_saved)
         except InvalidCsv as e:
             raise e
@@ -55,9 +56,9 @@ class StudentService:
                 raise StudentDuplicated("Query params udis contain duplicates")
 
             if len(ids) > 0:
-                students_db = self._repository.get_students_by_ids(ids)
+                students_db = self._user_repository.get_students_by_ids(ids)
             else:
-                students_db = self._repository.get_students()
+                students_db = self._user_repository.get_students()
 
             students = UserList.model_validate(students_db)
             udis_from_db = [student.id for student in students]
@@ -70,3 +71,53 @@ class StudentService:
             raise EntityNotFound(str(e))
         except StudentDuplicated as e:
             raise Duplicated(str(e))
+
+    def get_students_info_by_id(self, id: int):
+        
+        form_answers = self._form_repository.get_answers_by_user_id(id)
+
+        form_answered = (len(form_answers) > 0)
+
+        if (not form_answered):
+            return PersonalInformation(
+                id=id,
+                form_answered=form_answered,
+                group_id=0,
+                tutor= "",
+                topic="",
+                teammates=[]
+            ) 
+        
+        student_info_db = self._user_repository.get_student_info(id)
+        
+        if student_info_db == None:
+            return PersonalInformation(
+                id=id,
+                form_answered=form_answered,
+                group_id=0,
+                tutor= "",
+                topic="",
+                teammates=[]
+            ) 
+        
+        tutor = self._user_repository.get_tutor_info(student_info_db.tutor_id)
+
+        teammates = self._user_repository.get_teammates(id, student_info_db.group_id)
+
+        teammates_emails = []
+
+        for teammate in teammates:
+            teammates_emails.append(teammate.email)
+        
+        student_info = (
+            PersonalInformation(
+                id=student_info_db.user_id,
+                form_answered=form_answered,
+                group_id=student_info_db.group_id,
+                tutor= f"{tutor.name} {tutor.last_name}",
+                topic=student_info_db.topic_name,
+                teammates=teammates_emails
+            )
+        )
+                                
+        return student_info
