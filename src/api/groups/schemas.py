@@ -19,6 +19,11 @@ class GroupWithTutorTopicRequest(GroupRequest):
     tutor_email: str
     topic: str
 
+class AssignedGroupConfirmationRequest(BaseModel):
+    id:int
+    tutor_period_id: int
+    topic_id: int
+
 
 class AssignedGroupResponse(BaseModel):
     id: int
