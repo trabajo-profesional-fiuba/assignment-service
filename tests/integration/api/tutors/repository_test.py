@@ -10,6 +10,7 @@ from src.api.users.models import User, Role
 from src.api.topics.repository import TopicRepository
 from src.api.topics.models import Topic, Category
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
+from tests.integration.api.helper import ApiHelper
 
 
 class TestTutorRepository:
@@ -143,3 +144,16 @@ class TestTutorRepository:
         with self.Session() as sess:
             tutor_periods = sess.query(TutorPeriod).all()
             assert len(tutor_periods) == 0
+
+    @pytest.mark.integration
+    def test_get_tutor_by_id(self, tables):
+        helper = ApiHelper()
+        helper.create_tutor("Carlos", "Fontela", "100", "cfontela@fi.uba.ar")
+        u_repository = UserRepository(self.Session)
+
+        tutor = u_repository.get_tutor_by_id(100)
+
+        assert tutor.id == 100
+        assert tutor.name == "Carlos"
+        assert tutor.last_name == "Fontela"
+        assert tutor.email == "cfontela@fi.uba.ar"

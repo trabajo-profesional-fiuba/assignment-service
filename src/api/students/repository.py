@@ -2,8 +2,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from src.api.groups.models import Group
 from src.api.topics.models import Topic
-from src.api.tutors.models import TutorPeriod
+from src.api.tutors.models import TutorPeriod, StudentPeriod
 from src.api.users.models import User, Role
+from src.api.tutors.exceptions import PeriodDuplicated
 
 
 class StudentRepository:
@@ -62,3 +63,21 @@ class StudentRepository:
             )
 
         return teammates
+
+    def add_student_period(self, student_period: StudentPeriod) -> StudentPeriod:
+        try:
+            with self.Session() as session:
+                session.add(student_period)
+                session.commit()
+
+            return student_period
+        except exc.IntegrityError:
+            raise PeriodDuplicated(message="Period can't be assigned to student")
+
+    def get_student_periods(self) -> list[StudentPeriod]:
+        with self.Session() as session:
+            periods = session.query(StudentPeriod).all()
+            for period in periods:
+                session.expunge(period)
+
+        return periods
