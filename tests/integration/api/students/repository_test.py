@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 from tests.integration.api.helper import ApiHelper
 from src.api.tutors.models import StudentPeriod
+from src.api.students.exceptions import StudentNotFound
 
 
 @pytest.fixture(scope="module")
@@ -156,13 +157,18 @@ class TestStudentRepository:
     def test_add_student_period_with_success(self, tables):
         helper = ApiHelper()
         helper.create_period("2C2024")
-        helper.create_student("test", "test", "101", "test@com")
+        helper.create_student("test101", "test101", "101", "test101@com")
         s_repository = StudentRepository(self.Session)
 
         s_repository.add_student_period(
             StudentPeriod(student_id=101, period_id="2C2024")
         )
-        response = s_repository.get_student_periods()
-        assert len(response) == 1
-        assert response[0].period_id == "2C2024"
-        assert response[0].student_id == 101
+        response = s_repository.get_period_by_student_id(101)
+        assert response == "2C2024"
+
+    @pytest.mark.integration
+    def test_get_period_by_student_id_not_found(self, tables):
+        s_repository = StudentRepository(self.Session)
+
+        with pytest.raises(StudentNotFound):
+            s_repository.get_period_by_student_id(102)

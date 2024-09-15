@@ -2,9 +2,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from src.api.groups.models import Group
 from src.api.topics.models import Topic
-from src.api.tutors.models import TutorPeriod, StudentPeriod
+from src.api.tutors.models import TutorPeriod, StudentPeriod, Period
 from src.api.users.models import User, Role
 from src.api.tutors.exceptions import PeriodDuplicated
+from src.api.students.exceptions import StudentNotFound
 
 
 class StudentRepository:
@@ -74,10 +75,14 @@ class StudentRepository:
         except exc.IntegrityError:
             raise PeriodDuplicated(message="Period can't be assigned to student")
 
-    def get_student_periods(self) -> list[StudentPeriod]:
+    def get_period_by_student_id(self, student_id: int) -> Period:
         with self.Session() as session:
-            periods = session.query(StudentPeriod).all()
-            for period in periods:
-                session.expunge(period)
-
-        return periods
+            student_period = (
+                session.query(StudentPeriod)
+                .filter(StudentPeriod.student_id == student_id)
+                .first()
+            )
+            if student_period:
+                return student_period.period_id
+            else:
+                raise StudentNotFound("The student id is not registered in the db")
