@@ -10,12 +10,13 @@ from src.api.auth.service import AuthenticationService
 
 from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
 
+from src.api.forms.repository import FormRepository
 from src.api.students.repository import StudentRepository
 from src.api.students.service import StudentService
 
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
-from src.api.users.schemas import UserList
+from src.api.users.schemas import PersonalInformation, UserList
 
 from src.config.database.database import get_db
 from src.config.logging import logger
@@ -93,6 +94,41 @@ async def get_students_by_ids(
         response = JSONResponse(content=res.model_dump())
         response.headers["Cache-Control"] = "private, max-age=7200"
 
+        return response
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise e
+
+@router.get(
+    "/info/me",
+    response_model=PersonalInformation,
+    description="Returns students info based on token",
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Id is not present inside the database"
+        },
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_student_info(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_role(token)
+        id = auth_service.get_user_id(token)
+
+        service = StudentService(StudentRepository(session))
+        res = service.get_personal_info_by_id(id, FormRepository(session), UserRepository(session))
+        logger.info("Retrieve student info by id.")
+
+        response = JSONResponse(content = res.model_dump())
+        response.headers["Cache-Control"] = "private, max-age=7200"
+    
         return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")

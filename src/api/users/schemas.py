@@ -27,3 +27,11 @@ class UserList(RootModel):
 
     def __iter__(self):
         return iter(self.root)
+
+class PersonalInformation(BaseModel):
+    id: int
+    form_answered: bool
+    group_id: int
+    tutor: str
+    topic: str
+    teammates: List[str]

@@ -184,3 +184,38 @@ def test_update_student_file_with_success(fastapi, tables):
     )
     assert response.status_code == 201
     assert len(response.json()) == 30
+
+@pytest.mark.integration
+def test_get_personal_info_without_form_answers(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_student_token()
+
+    response = fastapi.get(
+        f"{PREFIX}/info/me", headers={"Authorization": f"Bearer {token.access_token}"}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["id"] == 1
+    assert not response.json()["form_answered"]
+
+@pytest.mark.integration
+def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_student_token_with_id(100)
+    helper.create_period("2C2024")
+    helper.create_student("Juan", "Perez", "100", "juanperez@fi.uba.ar")
+    helper.create_tutor("Tutor1", "Apellido", "1010", "email@fi.uba.ar")
+    helper.create_tutor_period(1010, "2C2024", 1)
+    helper.create_default_topics(["t1", "t2", "t3", "t4"])
+    helper.add_tutor_to_topic(
+        "2C2024", "email@fi.uba.ar", ["t1", "t2", "t3", "t4"], [1, 1, 1, 1]
+    )
+    helper.register_answer([100], ["t1", "t2", "t3"])
+
+    response = fastapi.get(
+        f"{PREFIX}/info/me", headers={"Authorization": f"Bearer {token.access_token}"}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["id"] == 100
+    assert response.json()["form_answered"]

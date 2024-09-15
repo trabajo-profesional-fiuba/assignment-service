@@ -7,6 +7,8 @@ from src.api.users.models import User, Role
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
+from tests.integration.api.helper import ApiHelper
+
 
 @pytest.fixture(scope="module")
 def tables():
@@ -148,3 +150,17 @@ class TestStudentRepository:
         assert len(response) == 7
         assert student_changed.name == "Alejo"
         assert student_changed.last_name == "Buenisimo"
+
+    @pytest.mark.integration
+    def test_get_tutor_by_id(self, tables):
+        helper = ApiHelper()
+        helper.create_tutor("Carlos", "Fontela", "100", "cfontela@fi.uba.ar")
+        u_repository = UserRepository(self.Session)
+
+        tutor = u_repository.get_tutor_by_id(100)
+
+        assert tutor.id == 100
+        assert tutor.name == "Carlos"
+        assert tutor.last_name == "Fontela"
+        assert tutor.email == "cfontela@fi.uba.ar"
+    

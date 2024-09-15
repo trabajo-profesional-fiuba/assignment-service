@@ -87,6 +87,17 @@ class ApiHelper:
         token = jwt.create_token(sub, "student")
         return token
 
+    def create_student_token_with_id(self, id: int):
+        sub = {
+            "id": id,
+            "name": "student",
+            "last_name": "student",
+            "role": "student",
+        }
+        jwt = JwtResolver()
+        token = jwt.create_token(sub, "student")
+        return token
+
     def create_topic(self, name: str, category_id: int):
         topic = Topic(name=name, category_id=category_id)
         self._topic_repository.add_topic(topic)
