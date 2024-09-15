@@ -98,7 +98,7 @@ class ApiHelper:
         token = jwt.create_token(sub, "student")
         return token
 
-    def create_topic(self, name: str, category_id: int):
+    def create_topic(self, name: str, category_id: int = 1):
         topic = Topic(name=name, category_id=category_id)
         self._topic_repository.add_topic(topic)
 
@@ -138,5 +138,5 @@ class ApiHelper:
             answers.append(answer)
         self._form_repository.add_answers(answers, topics, ids)
 
-    def create_basic_group(self, ids, topics):
-        self._groups_repository.add_group(ids=ids, preferred_topics=topics)
+    def create_basic_group(self, ids:list[int], topics:list[int]):
+        return self._groups_repository.add_group(ids=ids, preferred_topics=topics)

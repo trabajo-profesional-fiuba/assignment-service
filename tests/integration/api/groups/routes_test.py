@@ -182,3 +182,29 @@ def test_post_groups_without_token(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+#@pytest.mark.integration
+@pytest.mark.skip
+def test_put_confirmed_groups(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    helper.create_topic("Basic topic")
+    group = helper.create_basic_group([105001,105002,105003])
+
+    body = [{
+        "id": group.id,
+        "tutor_email": "perez@gmail.com",
+        "topic_id": 1,
+    }]
+    params = {"period": "1C2025"}
+    response = fastapi.put(f"{PREFIX}/", json=body, params=params)
+
+    # Assert
+    assert response.status_code == status.HTTP_204_NO_CONTENT
