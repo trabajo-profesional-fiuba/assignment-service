@@ -185,6 +185,7 @@ def test_update_student_file_with_success(fastapi, tables):
     assert response.status_code == 201
     assert len(response.json()) == 30
 
+
 @pytest.mark.integration
 def test_get_personal_info_without_form_answers(fastapi, tables):
     helper = ApiHelper()
@@ -197,6 +198,7 @@ def test_get_personal_info_without_form_answers(fastapi, tables):
     assert response.status_code == 200
     assert response.json()["id"] == 1
     assert not response.json()["form_answered"]
+
 
 @pytest.mark.integration
 def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables):

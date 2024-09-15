@@ -73,36 +73,38 @@ class StudentService:
         except StudentDuplicated as e:
             raise Duplicated(str(e))
 
-    def get_personal_info_by_id(self, id: int, form_repository: FormRepository, user_repository: UserRepository):
-        
+    def get_personal_info_by_id(
+        self, id: int, form_repository: FormRepository, user_repository: UserRepository
+    ):
+
         form_answers = form_repository.get_answers_by_user_id(id)
 
-        form_answered = (len(form_answers) > 0)
+        form_answered = len(form_answers) > 0
 
         personal_information = PersonalInformation(
-                id=id,
-                form_answered=form_answered,
-                group_id=0,
-                tutor= "",
-                topic="",
-                teammates=[]
-            )
+            id=id,
+            form_answered=form_answered,
+            group_id=0,
+            tutor="",
+            topic="",
+            teammates=[],
+        )
 
-        if (not form_answered):
+        if not form_answered:
             return personal_information
-        
+
         student_info_db = self._user_repository.get_student_info(id)
-        
-        if student_info_db == None:
+
+        if student_info_db is None:
             return personal_information
-        
+
         tutor = user_repository.get_tutor_by_id(student_info_db.tutor_id)
 
         teammates = self._user_repository.get_teammates(id, student_info_db.group_id)
-        
+
         personal_information.group_id = student_info_db.group_id
         personal_information.tutor = f"{tutor.name} {tutor.last_name}"
         personal_information.topic = student_info_db.topic_name
-        personal_information.teammates = list(map(lambda x: x.email,teammates))
-                               
+        personal_information.teammates = list(map(lambda x: x.email, teammates))
+
         return personal_information

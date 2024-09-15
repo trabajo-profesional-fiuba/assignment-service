@@ -46,13 +46,13 @@ class TutorPeriodWithTopicsResponse(TutorPeriodResponse):
 class TutorResponse(UserResponse):
     """Tutor representation with the periods inside"""
 
-    periods: List[TutorPeriodResponse] = Field(default=[])
+    tutor_periods: List[TutorPeriodResponse] = Field(default=[])
 
 
 class TutorResponseWithTopics(UserResponse):
     """Tutor representation with the periods inside"""
 
-    periods: List[TutorPeriodWithTopicsResponse] = Field(default=[])
+    tutor_periods: List[TutorPeriodWithTopicsResponse] = Field(default=[])
 
 
 class TutorList(RootModel):

@@ -5,7 +5,6 @@ from src.core.algorithms.topic_tutor.group_tutor_lp_solver import GroupTutorLPSo
 from src.core.algorithms.topic_tutor.incomplete_groups_lp_solver import (
     IncompleteGroupsLPSolver,
 )
-from src.core.group_form_answer import GroupFormAnswer
 
 
 class AssignmentService:

@@ -394,12 +394,12 @@ def test_get_groups_leaning_path(tables):
 
     result = repository.get_groups_learning_path(period_id)
     for group in result:
-        assert group.topic == None
-        assert group.tutor_period == None
-        assert group.period == None
-        assert group.pre_report_date == None
-        assert group.pre_report_approved == False
-        assert group.intermediate_assigment_date == None
-        assert group.intermediate_assigment_approved == False
-        assert group.final_report_approved == False
-        assert group.exhibition_date == None
+        assert group.topic is None
+        assert group.tutor_period is None
+        assert group.period is None
+        assert group.pre_report_date is None
+        assert group.pre_report_approved is False
+        assert group.intermediate_assigment_date is None
+        assert group.intermediate_assigment_approved is False
+        assert group.final_report_approved is False
+        assert group.exhibition_date is None

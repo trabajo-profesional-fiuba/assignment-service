@@ -5,12 +5,9 @@ from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import (
     PeriodRequest,
-    PeriodResponse,
-    TutorList,
     TutorPeriodResponse,
     TutorResponse,
     PeriodList,
-    TutorWithTopicsList,
 )
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import (

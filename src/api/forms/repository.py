@@ -34,7 +34,7 @@ class FormRepository:
         users = session.query(User).filter(User.id.in_(user_ids)).all()
 
         if len(users) != len(user_ids):
-            raise StudentNotFound(message=f"Be sure that all the ids are students")
+            raise StudentNotFound(message="Be sure that all the ids are students")
 
         for user in users:
             if not user or user.id not in user_ids or user.role != Role.STUDENT:
@@ -56,7 +56,7 @@ class FormRepository:
             .all()
         )
         if len(answers) == len(user_ids):
-            logger.error(f"Answer duplicated")
+            logger.error("Answer duplicated")
             raise Duplicated(message="The answer already exists.")
 
     def add_answers(

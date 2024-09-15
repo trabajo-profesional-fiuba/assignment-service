@@ -1,5 +1,4 @@
 from src.api.auth.jwt import JwtResolver
-from src.api.forms.models import FormPreferences
 from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
 from src.api.topics.models import Category, Topic

@@ -83,7 +83,7 @@ class TutorRepository:
             tutor = (
                 session.query(User)
                 .filter(User.id == tutor_id)
-                .options(joinedload(User.periods))
+                .options(joinedload(User.tutor_periods))
                 .first()
             )
             if tutor is None:
@@ -230,14 +230,16 @@ class TutorRepository:
                 session.query(User)
                 .join(TutorPeriod)
                 .filter(TutorPeriod.period_id == period_id)
-                .options(joinedload(User.periods))
+                .options(joinedload(User.tutor_periods))
                 .all()
             )
             session.expunge_all()
 
         for tutor in tutors:
-            tutor.periods = [
-                period for period in tutor.periods if period.period_id == period_id
+            tutor.tutor_periods = [
+                period
+                for period in tutor.tutor_periods
+                if period.period_id == period_id
             ]
 
         return tutors

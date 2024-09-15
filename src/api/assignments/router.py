@@ -1,6 +1,5 @@
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, status, Query, Response
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.api.assignments.service import AssignmentService
@@ -95,10 +94,12 @@ async def assign_incomplete_groups(
             "description": "Some information provided is not in db"
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
-            "description": "Input validation has failed, typically resulting in a client-facing error response."
+            "description": "Input validation has failed, typically resulting\
+            in a client-facing error response."
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happend inside the backend"
+            "description": "Internal Server Error - Something happened\
+            inside the backend"
         },
     },
     status_code=status.HTTP_200_OK,

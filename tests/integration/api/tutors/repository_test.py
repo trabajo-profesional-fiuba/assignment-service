@@ -55,7 +55,7 @@ class TestTutorRepository:
         t_repository = TutorRepository(self.Session)
         response = t_repository.get_tutor_by_tutor_id(12345)
         assert response.id == 12345
-        assert response.periods == []
+        assert response.tutor_periods == []
 
     @pytest.mark.integration
     def test_add_topic_tutor_period_with_tutor_period_not_found(self, tables):
@@ -94,10 +94,10 @@ class TestTutorRepository:
 
         response = t_repository.get_all_periods("DESC")
         assert len(response) == 1
-        assert response[0].form_active == True
-        assert response[0].initial_project_active == False
-        assert response[0].intermediate_project_active == False
-        assert response[0].final_project_active == False
+        assert response[0].form_active is True
+        assert response[0].initial_project_active is False
+        assert response[0].intermediate_project_active is False
+        assert response[0].final_project_active is False
 
     @pytest.mark.integration
     def test_delete_tutors_with_success(self, tables):

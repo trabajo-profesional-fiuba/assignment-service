@@ -442,7 +442,7 @@ def test_new_upload_override_tutor_periods(fastapi, tables):
     admin_token = helper.create_admin_token()
 
     tutor = helper.get_tutor_by_tutor_id(12345678)
-    assert tutor.periods[0].capacity == 5
+    assert tutor.tutor_periods[0].capacity == 5
 
     with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
         content = file.read()
@@ -465,7 +465,7 @@ def test_new_upload_override_tutor_periods(fastapi, tables):
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["periods"][0]["capacity"] == 1
+    assert response.json()["tutor_periods"][0]["capacity"] == 1
 
 
 @pytest.mark.integration
@@ -481,7 +481,7 @@ def test_delete_tutor_no_affects_global_periods(fastapi, tables):
         helper.create_tutor_period("105600", p)
 
     tutor = helper.get_tutor_by_tutor_id(105600)
-    assert len(tutor.periods) == 3
+    assert len(tutor.tutor_periods) == 3
 
     # Act
     response = fastapi.delete(
@@ -513,7 +513,7 @@ def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
         helper.create_tutor_period("105600", p)
 
     tutor = helper.get_tutor_by_tutor_id(105600)
-    assert len(tutor.periods) == 3
+    assert len(tutor.tutor_periods) == 3
 
     # Act
     response = fastapi.delete(
@@ -548,4 +548,4 @@ def test_all_topics_from_tutors_in_specific_period(fastapi, tables):
     )
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data[0]["periods"]) == 1
+    assert len(data[0]["tutor_periods"]) == 1

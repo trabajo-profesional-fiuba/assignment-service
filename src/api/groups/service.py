@@ -1,10 +1,8 @@
 from src.api.exceptions import EntityNotInserted, EntityNotFound
-from src.api.groups.schemas import GroupList, GroupResponse
 from src.api.students.exceptions import StudentNotFound
 
 
 from src.config.logging import logger
-from src.core.group import Group
 
 
 class GroupService:
@@ -24,7 +22,7 @@ class GroupService:
             logger.info(f"New group with id {group.id} created")
             return group
         except StudentNotFound as e:
-            logger.error(f"Could not insert a group because some ids are not valid")
+            logger.error("Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
         except Exception as err:
             logger.error(

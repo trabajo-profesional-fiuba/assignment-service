@@ -129,9 +129,7 @@ def test_add_answers_with_student_not_found(fastapi, tables, topics, tutors):
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {
-        "detail": "Be sure that all the ids are students"
-    }
+    assert response.json() == {"detail": "Be sure that all the ids are students"}
 
 
 @pytest.mark.integration
@@ -140,7 +138,6 @@ def test_add_answers_with_success(fastapi, tables, topics, students, tutors):
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
     helper.create_period("1C2024")
-
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
