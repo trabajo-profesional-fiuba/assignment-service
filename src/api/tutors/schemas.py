@@ -11,6 +11,10 @@ class PeriodRequest(BaseModel):
 
 class PeriodResponse(PeriodRequest):
     created_at: datetime
+    form_active: bool
+    initial_project_active: bool
+    intermediate_project_active: bool
+    final_project_active: bool
 
     model_config = ConfigDict(from_attributes=True)
 

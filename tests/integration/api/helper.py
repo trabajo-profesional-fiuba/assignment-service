@@ -16,6 +16,8 @@ from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
 import datetime as dt
 
+from src.core.student_form_answer import StudentFormAnswer
+
 
 class ApiHelper:
     SessionFactory = sessionmaker(bind=engine)
@@ -128,12 +130,10 @@ class ApiHelper:
 
         answers = []
         for id in ids:
-            answer = FormPreferences(
-                user_id=id,
+            answer = StudentFormAnswer(
+                id=id,
                 answer_id=today,
-                topic_1=all_topics_dict[topics[0]],
-                topic_2=all_topics_dict[topics[1]],
-                topic_3=all_topics_dict[topics[2]],
+                topics=topics,
             )
             answers.append(answer)
         self._form_repository.add_answers(answers, topics, ids)

@@ -17,6 +17,7 @@ from src.api.topics.repository import TopicRepository
 from src.config.logging import logger
 
 from src.core.group_form_answer import GroupFormAnswer
+from src.core.student_form_answer import StudentFormAnswer
 from src.core.topic import Topic
 
 
@@ -25,30 +26,21 @@ class FormService:
     def __init__(self, form_repository: FormRepository):
         self._repository = form_repository
 
-    def _filter_user_ids(self, user_ids: list[int]):
-        """
-        Filters out 'None' values from a list of university IDs.
-
-        Returns a list of university IDs with 'None' values removed.
-        """
-        filtered_user_ids = []
-        for user_id in user_ids:
-            if user_id is not None:
-                filtered_user_ids.append(user_id)
-        return filtered_user_ids
-
     def add_answers(self, form_preference: FormPreferencesRequest):
         try:
             """
             Adds a new set of answers to the repository.
             """
-            cleaned_user_ids = self._filter_user_ids(
-                [
-                    form_preference.user_id_sender,
-                    form_preference.user_id_student_2,
-                    form_preference.user_id_student_3,
-                    form_preference.user_id_student_4,
-                ]
+            cleaned_user_ids = list(
+                filter(
+                    lambda x: x is not None,
+                    [
+                        form_preference.user_id_sender,
+                        form_preference.user_id_student_2,
+                        form_preference.user_id_student_3,
+                        form_preference.user_id_student_4,
+                    ]
+                )
             )
             topics = [
                 form_preference.topic_1,
@@ -58,19 +50,17 @@ class FormService:
 
             answers = []
             for user_id in cleaned_user_ids:
-                answer = FormPreferences(
-                    user_id=user_id,
+                answer = StudentFormAnswer(
+                    id=user_id,
                     answer_id=form_preference.answer_id,
-                    topic_1=form_preference.topic_1,
-                    topic_2=form_preference.topic_2,
-                    topic_3=form_preference.topic_3,
+                    topics=topics,
                 )
                 answers.append(answer)
 
             answers_saved = self._repository.add_answers(
                 answers, topics, cleaned_user_ids
             )
-            return FormPreferencesList.model_validate(answers_saved)
+            return answers_saved
         except (StudentNotFound, TopicNotFound, AnswerNotFound) as e:
             message = str(e)
             logger.error(f"Entity not found: {message}")
