@@ -89,6 +89,17 @@ class TestTutorRepository:
         assert response[0].capacity == 2
 
     @pytest.mark.integration
+    def test_get_all_periods_with_success(self, tables):
+        t_repository = TutorRepository(self.Session)
+
+        response = t_repository.get_all_periods("DESC")
+        assert len(response) == 1
+        assert response[0].form_active == True
+        assert response[0].initial_project_active == False
+        assert response[0].intermediate_project_active == False
+        assert response[0].final_project_active == False
+
+    @pytest.mark.integration
     def test_delete_tutors_with_success(self, tables):
         u_repository = UserRepository(self.Session)
         t_repository = TutorRepository(self.Session)
