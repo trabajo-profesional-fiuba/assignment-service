@@ -142,8 +142,8 @@ async def assign_incomplete_groups(
             [
                 AssignedGroupResponse(
                     id=assigned_group.id,
-                    tutor_email=assigned_group.tutor_email,
-                    topic=assigned_group.topic,
+                    tutor=assigned_group.tutor_as_dict(),
+                    topic=assigned_group.topic_as_dict(),
                 )
                 for assigned_group in assignment_result
             ]

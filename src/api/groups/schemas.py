@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator
 from src.api.users.schemas import UserResponse
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 
 class GroupRequest(BaseModel):
@@ -27,8 +27,8 @@ class AssignedGroupConfirmationRequest(BaseModel):
 
 class AssignedGroupResponse(BaseModel):
     id: int
-    tutor_email: str
-    topic: str
+    tutor: Dict[str, Any] 
+    topic: Dict[str, Any] 
 
     model_config = ConfigDict(from_attributes=True)
 
