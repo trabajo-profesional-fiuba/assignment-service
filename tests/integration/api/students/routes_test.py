@@ -1,13 +1,15 @@
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
-from src.api.students.router import router
-from fastapi import status
+
+from src.api.students.router import router as student_router
+from src.api.periods.router import router as period_router
 from src.config.database.database import create_tables, drop_tables
 
 from tests.integration.api.helper import ApiHelper
 
 PREFIX = "/students"
+PERIOD_PREFIX = "/periods"
 
 
 @pytest.fixture(scope="module")
@@ -23,7 +25,8 @@ def tables():
 @pytest.fixture(scope="session")
 def fastapi():
     app = FastAPI()
-    app.include_router(router)
+    app.include_router(student_router)
+    app.include_router(period_router)
     client = TestClient(app)
     yield client
 
@@ -234,7 +237,7 @@ def test_get_existing_period_by_id(fastapi, tables):
     student_token = helper.create_student_token_with_id(100)
 
     response = fastapi.get(
-        f"{PREFIX}/periods/1C2024",
+        f"{PERIOD_PREFIX}/periods/1C2024",
         headers={"Authorization": f"Bearer {student_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
