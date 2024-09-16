@@ -13,6 +13,7 @@ from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, Serv
 from src.api.forms.repository import FormRepository
 from src.api.students.repository import StudentRepository
 from src.api.students.service import StudentService
+from src.api.tutors.repository import TutorRepository
 
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
@@ -165,11 +166,10 @@ async def get_period_by_id(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
-        service = StudentService(StudentRepository(session))
 
-        return PeriodResponse.model_validate(
-            service.get_period_by_student_id(period_id)
-        )
+        service = StudentService(TutorRepository(session))
+
+        return PeriodResponse.model_validate(service.get_period_by_id(period_id))
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:

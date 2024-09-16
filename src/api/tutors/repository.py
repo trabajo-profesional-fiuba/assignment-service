@@ -6,6 +6,7 @@ from src.api.tutors.exceptions import (
     TutorNotFound,
     PeriodDuplicated,
     TutorPeriodNotFound,
+    PeriodNotFound,
 )
 from src.api.topics.exceptions import TopicNotFound
 from src.api.topics.models import Topic, TopicTutorPeriod
@@ -77,6 +78,14 @@ class TutorRepository:
             results = session.query(Period).order_by(order_clause).all()
             session.expunge_all()
         return results
+
+    def get_period_by_id(self, period_id: str) -> Period:
+        with self.Session() as session:
+            period = session.query(Period).filter(Period.id == period_id).first()
+            if period is None:
+                raise PeriodNotFound("The period does not exist")
+            session.expunge_all()
+        return period
 
     def get_tutor_by_tutor_id(self, tutor_id) -> User:
         with self.Session() as session:

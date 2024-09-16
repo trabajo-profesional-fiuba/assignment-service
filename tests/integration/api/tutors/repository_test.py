@@ -11,6 +11,7 @@ from src.api.topics.repository import TopicRepository
 from src.api.topics.models import Topic, Category
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from tests.integration.api.helper import ApiHelper
+from src.api.tutors.exceptions import PeriodNotFound
 
 
 class TestTutorRepository:
@@ -157,3 +158,19 @@ class TestTutorRepository:
         assert tutor.name == "Carlos"
         assert tutor.last_name == "Fontela"
         assert tutor.email == "cfontela@fi.uba.ar"
+
+    @pytest.mark.integration
+    def test_get_existing_period_by_id(self, tables):
+        helper = ApiHelper()
+        helper.create_period("2C2024")
+        t_repository = TutorRepository(self.Session)
+
+        response = t_repository.get_period_by_id("2C2024")
+        assert response.id == "2C2024"
+
+    @pytest.mark.integration
+    def test_get_period_not_found_by_id(self, tables):
+        t_repository = TutorRepository(self.Session)
+
+        with pytest.raises(PeriodNotFound):
+            t_repository.get_period_by_id("3C2024")

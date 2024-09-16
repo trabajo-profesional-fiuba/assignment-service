@@ -32,6 +32,11 @@ class TutorPeriodNotInserted(Exception):
         super().__init__(message)
 
 
+class PeriodNotFound(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 # External
 class InvalidPeriod(HTTPException):
     def __init__(self, message: str):
