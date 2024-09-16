@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import exc, select, update
 
+from src.api.exceptions import Duplicated
 from src.api.students.exceptions import StudentDuplicated, StudentNotInserted
 from src.api.tutors.exceptions import TutorDuplicated, TutorNotInserted
 from src.api.users.exceptions import UserNotFound
@@ -31,13 +32,24 @@ class UserRepository:
 
         return new_users
 
+    def add_user(self, new_user: User):
+        try:
+            with self.Session() as session:
+                session.add(new_user)
+                session.commit()
+                session.refresh(new_user)
+                session.expunge(new_user)
+            return new_user
+        except exc.IntegrityError:
+            raise Duplicated("User duplicated")
+
     def add_tutors(self, tutors: list[User]):
         try:
             return self._add_users(tutors)
         except exc.IntegrityError as e:
             raise TutorDuplicated("Duplicated tutor")
         except Exception:
-            raise TutorNotInserted("Could not insert a student in the database")
+            raise TutorNotInserted("Could not insert a tutor in the database")
 
     def add_students(self, students: list[User]):
         try:

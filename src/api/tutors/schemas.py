@@ -71,3 +71,17 @@ class TutorWithTopicsList(RootModel):
 
     def __iter__(self):
         return iter(self.root)
+
+class TutorRequest(BaseModel):
+    id: int
+    name: str
+    last_name: str
+    email: str
+    
+class TutorCreationResponse(TutorRequest):
+    id: int
+    name: str
+    last_name: str
+    email: str
+
+    model_config = ConfigDict(from_attributes=True)

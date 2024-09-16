@@ -18,6 +18,8 @@ from src.api.users.repository import UserRepository
 from src.api.tutors.schemas import (
     PeriodResponse,
     PeriodRequest,
+    TutorCreationResponse,
+    TutorRequest,
     TutorResponse,
     TutorList,
     PeriodList,
@@ -71,6 +73,39 @@ async def upload_csv_file(
 
         return TutorList.model_validate(res)
     except (InvalidCsv, EntityNotFound, Duplicated, InvalidFileType) as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+@router.post(
+    "",
+    response_model=TutorCreationResponse,
+    description="Creates a new tutor",
+    summary="Add a new tutor",
+    tags=["Tutors"],
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Tutor schema is not correct"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_409_CONFLICT: {"description": "Duplicated tutor"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+    status_code=status.HTTP_201_CREATED,
+)
+async def add_tutor(
+    hasher: Annotated[ShaHasher, Depends(get_hasher)],
+    session: Annotated[Session, Depends(get_db)],
+    tutor: TutorRequest,
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+        service = TutorService(TutorRepository(session))
+        return TutorCreationResponse.model_validate(service.add_tutor(tutor, hasher, UserRepository(session)))
+    except Duplicated as e:
         raise e
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
