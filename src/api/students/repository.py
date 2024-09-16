@@ -84,5 +84,4 @@ class StudentRepository:
             )
             if student_period:
                 return student_period.period_id
-            else:
-                raise StudentNotFound("The student id is not registered in the db")
+            raise StudentNotFound("The student id is not registered")

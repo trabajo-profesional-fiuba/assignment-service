@@ -12,6 +12,7 @@ from src.api.users.repository import UserRepository
 from src.api.users.schemas import PersonalInformation, UserList
 
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
+from src.api.students.repository import StudentRepository
 
 
 class StudentService:
@@ -74,7 +75,11 @@ class StudentService:
             raise Duplicated(str(e))
 
     def get_personal_info_by_id(
-        self, id: int, form_repository: FormRepository, user_repository: UserRepository
+        self,
+        id: int,
+        form_repository: FormRepository,
+        user_repository: UserRepository,
+        student_repository: StudentRepository,
     ):
 
         form_answers = form_repository.get_answers_by_user_id(id)
@@ -88,6 +93,7 @@ class StudentService:
             tutor="",
             topic="",
             teammates=[],
+            period_id=student_repository.get_period_by_student_id(id),
         )
 
         if not form_answered:

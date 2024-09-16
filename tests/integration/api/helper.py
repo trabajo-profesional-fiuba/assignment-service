@@ -16,6 +16,8 @@ from src.api.auth.hasher import ShaHasher
 import datetime as dt
 
 from src.core.student_form_answer import StudentFormAnswer
+from src.api.tutors.models import StudentPeriod
+from src.api.students.repository import StudentRepository
 
 
 class ApiHelper:
@@ -29,6 +31,7 @@ class ApiHelper:
         self._topic_repository = TopicRepository(self.Session)
         self._groups_repository = GroupRepository(self.Session)
         self._form_repository = FormRepository(self.Session)
+        self._student_repository = StudentRepository(self.Session)
 
     def create_period(self, period: str):
         self._tutor_repository.add_period(Period(id=period))
@@ -139,3 +142,7 @@ class ApiHelper:
 
     def create_basic_group(self, ids, topics):
         self._groups_repository.add_group(ids=ids, preferred_topics=topics)
+
+    def create_student_period(self, period_id: str, student_id: int):
+        period = StudentPeriod(period_id=period_id, student_id=student_id)
+        self._student_repository.add_student_period(period)
