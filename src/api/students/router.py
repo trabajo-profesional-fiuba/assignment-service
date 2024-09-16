@@ -17,7 +17,7 @@ from src.api.students.service import StudentService
 
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
-from src.api.users.schemas import PersonalInformation, UserList
+from src.api.users.schemas import PersonalInformation, StudentRequest, UserList, UserResponse
 
 from src.config.database.database import get_db
 from src.config.logging import logger
@@ -142,3 +142,35 @@ async def get_student_info(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise e
+
+@router.post(
+    "",
+    response_model=UserResponse,
+    description="Creates a new student",
+    summary="Add a new student",
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Student schema is not correct"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_409_CONFLICT: {"description": "Duplicated student"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+    status_code=status.HTTP_201_CREATED,
+)
+async def add_student(
+    hasher: Annotated[ShaHasher, Depends(get_hasher)],
+    session: Annotated[Session, Depends(get_db)],
+    student: StudentRequest,
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+        service = StudentService(StudentRepository(session))
+        return UserResponse.model_validate(service.add_student(student, hasher, UserRepository(session)))
+    except Duplicated as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))

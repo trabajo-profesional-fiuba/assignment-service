@@ -37,3 +37,9 @@ class PersonalInformation(BaseModel):
     topic: str
     teammates: List[str]
     period_id: str
+
+class StudentRequest(UserResponse):
+    id: int
+    name: str
+    last_name: str
+    email: str

@@ -3,16 +3,27 @@ import re
 from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
-from src.api.tutors.schemas import TutorPeriodResponse, TutorResponse
+from src.api.tutors.schemas import (
+    PeriodRequest,
+    PeriodResponse,
+    TutorList,
+    TutorPeriodResponse,
+    TutorRequest,
+    TutorResponse,
+    PeriodList,
+    TutorWithTopicsList,
+)
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import (
     InvalidPeriod,
     PeriodDuplicated,
     TutorDuplicated,
     TutorNotFound,
+    TutorNotInserted,
     TutorPeriodNotInserted,
 )
-from src.api.tutors.models import TutorPeriod
+from src.api.tutors.models import Period, TutorPeriod
+from src.api.users.repository import UserRepository
 
 
 class TutorService:
@@ -107,6 +118,23 @@ class TutorService:
             raise Duplicated(str(e))
         except (TutorNotFound, TutorPeriodNotInserted) as e:
             EntityNotFound(str(e))
+
+    def add_tutor(self, tutor: TutorRequest, hasher: ShaHasher, userRepository: UserRepository):
+        try:
+            return userRepository.add_user(
+                User(
+                        id = tutor.id,
+                        name = tutor.name,
+                        last_name = tutor.last_name,
+                        email = tutor.email,
+                        password=hasher.hash(str(tutor.id)),
+                        role=Role.TUTOR,
+                )
+            )
+        except Duplicated:
+            raise Duplicated("Duplicated tutor")
+        except Exception:
+            raise TutorNotInserted("Could not insert a tutor in the database")
 
     def _validate_period(self, period_id):
         """Validates that the period id
