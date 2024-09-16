@@ -164,7 +164,7 @@ class TestStudentRepository:
             StudentPeriod(student_id=101, period_id="2C2024")
         )
         response = s_repository.get_period_by_student_id(101)
-        assert response == "2C2024"
+        assert response.period_id == "2C2024"
 
     @pytest.mark.integration
     def test_get_period_by_student_id_not_found(self, tables):

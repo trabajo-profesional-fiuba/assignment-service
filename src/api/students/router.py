@@ -1,6 +1,6 @@
 from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
-from fastapi import APIRouter, UploadFile, Depends, status, Query
+from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
 from sqlalchemy.orm import Session
 
 from src.api.auth.hasher import get_hasher, ShaHasher
@@ -21,6 +21,7 @@ from src.api.users.schemas import PersonalInformation, UserList
 from src.config.database.database import get_db
 from src.config.logging import logger
 
+from src.api.tutors.schemas import PeriodResponse
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -140,3 +141,38 @@ async def get_student_info(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise e
+
+
+@router.get(
+    "/periods/{period_id}",
+    response_model=PeriodResponse,
+    description="Returns a given period information",
+    summary="Get a given period information",
+    tags=["Periods"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_period_by_id(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_role(token)
+        service = StudentService(StudentRepository(session))
+
+        return PeriodResponse.model_validate(
+            service.get_period_by_student_id(period_id)
+        )
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))

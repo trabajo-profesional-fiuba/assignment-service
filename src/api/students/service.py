@@ -93,7 +93,7 @@ class StudentService:
             tutor="",
             topic="",
             teammates=[],
-            period_id=student_repository.get_period_by_student_id(id),
+            period_id=student_repository.get_period_by_student_id(id).period_id,
         )
 
         if not form_answered:
@@ -114,3 +114,6 @@ class StudentService:
         personal_information.teammates = list(map(lambda x: x.email, teammates))
 
         return personal_information
+
+    def get_period_by_student_id(self, student_id: str) -> StudentRepository:
+        return self._user_repository.get_period_by_student_id(student_id)

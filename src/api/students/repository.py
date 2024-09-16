@@ -83,5 +83,5 @@ class StudentRepository:
                 .first()
             )
             if student_period:
-                return student_period.period_id
+                return student_period
             raise StudentNotFound("The student id is not registered")
