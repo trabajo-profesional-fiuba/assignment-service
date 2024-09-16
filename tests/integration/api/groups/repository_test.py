@@ -12,6 +12,7 @@ from src.api.users.models import User, Role
 
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from src.api.periods.repository import PeriodRepository
 
 
 @pytest.fixture(scope="module")
@@ -36,7 +37,9 @@ def test_add_new_group_with_tutor_and_topic(tables):
 
     topic_repository.add_categories([Category(name="cat1")])
     topic_repository.add_topics([Topic(name="nombre", category_id=1)])
-    tutor_repository.add_period(Period(id="1C2025"))
+
+    p_repository = PeriodRepository(Session)
+    p_repository.add_period(Period(id="1C2025"))
     tutor = User(
         id=5,
         name="Pedro",
@@ -387,7 +390,8 @@ def test_get_groups_leaning_path(tables):
 
     tutor_repository = TutorRepository(Session)
     period_id = "1C2024"
-    tutor_repository.add_period(Period(id=period_id))
+    p_repository = PeriodRepository(Session)
+    p_repository.add_period(Period(id=period_id))
 
     uids = [23000, 24000]
     repository.add_group(ids=uids, preferred_topics=[1, 2, 3], period_id=period_id)

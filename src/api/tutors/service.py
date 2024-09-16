@@ -3,12 +3,8 @@ import re
 from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
-from src.api.tutors.schemas import (
-    PeriodRequest,
-    TutorPeriodResponse,
-    TutorResponse,
-    PeriodList,
-)
+from src.api.periods.schemas import PeriodResponse, PeriodRequest, PeriodList
+from src.api.tutors.schemas import TutorPeriodResponse, TutorResponse
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import (
     InvalidPeriod,

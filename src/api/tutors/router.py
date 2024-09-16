@@ -15,19 +15,14 @@ from src.api.exceptions import (
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
-from src.api.tutors.schemas import (
-    PeriodResponse,
-    PeriodRequest,
-    TutorResponse,
-    TutorList,
-    PeriodList,
-    TutorWithTopicsList,
-)
+from src.api.periods.schemas import PeriodResponse, PeriodRequest, PeriodList
+from src.api.tutors.schemas import TutorResponse, TutorList, TutorWithTopicsList
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.exceptions import InvalidPeriod
 from src.api.tutors.repository import TutorRepository
 from src.config.database.database import get_db
+from src.api.periods.repository import PeriodRepository
 
 router = APIRouter(prefix="/tutors")
 
@@ -111,69 +106,6 @@ async def delete_tutor(
 
 
 @router.post(
-    "/periods",
-    response_model=PeriodResponse,
-    description="Creates a new period",
-    summary="Add a new period",
-    tags=["Periods"],
-    responses={
-        status.HTTP_400_BAD_REQUEST: {"description": "Period schema is not correct"},
-        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
-        status.HTTP_409_CONFLICT: {"description": "Duplicated period"},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
-    },
-    status_code=status.HTTP_201_CREATED,
-)
-async def add_period(
-    session: Annotated[Session, Depends(get_db)],
-    period: PeriodRequest,
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-):
-    try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
-        service = TutorService(TutorRepository(session))
-        return PeriodResponse.model_validate(service.add_period(period))
-    except (InvalidPeriod, Duplicated) as e:
-        raise e
-    except InvalidJwt as e:
-        raise InvalidCredentials("Invalid Authorization")
-    except Exception as e:
-        raise ServerError(str(e))
-
-
-@router.get(
-    "/periods",
-    response_model=PeriodList,
-    description="Returns all the periods",
-    summary="Get all periods",
-    tags=["Periods"],
-    status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
-    },
-)
-async def get_periods(
-    session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    order: str = Query(pattern="^(ASC|DESC)$", default="DESC"),
-):
-    try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
-        service = TutorService(TutorRepository(session))
-
-        return PeriodList.model_validate(service.get_all_periods(order))
-    except InvalidJwt as e:
-        raise InvalidCredentials("Invalid Authorization")
-    except Exception as e:
-        raise ServerError(str(e))
-
-
-@router.post(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
     description="Add new period for a tutor",
@@ -235,6 +167,69 @@ async def get_tutor_periods(
         return TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
     except EntityNotFound as e:
         raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.post(
+    "/periods",
+    response_model=PeriodResponse,
+    description="Creates a new period",
+    summary="Add a new period",
+    tags=["Periods"],
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Period schema is not correct"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_409_CONFLICT: {"description": "Duplicated period"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+    status_code=status.HTTP_201_CREATED,
+)
+async def add_period(
+    session: Annotated[Session, Depends(get_db)],
+    period: PeriodRequest,
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+        service = TutorService(PeriodRepository(session))
+        return PeriodResponse.model_validate(service.add_period(period))
+    except (InvalidPeriod, Duplicated) as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.get(
+    "/periods",
+    response_model=PeriodList,
+    description="Returns all the periods",
+    summary="Get all periods",
+    tags=["Periods"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_periods(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    order: str = Query(pattern="^(ASC|DESC)$", default="DESC"),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+        service = TutorService(PeriodRepository(session))
+
+        return PeriodList.model_validate(service.get_all_periods(order))
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

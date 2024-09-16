@@ -18,26 +18,6 @@ class TutorRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def _order_clause(self, order):
-        if order == "ASC":
-            return asc(Period.created_at)
-        elif order == "DESC":
-            return desc(Period.created_at)
-        else:
-            raise ValueError("Invalid order direction. Use 'ASC' or 'DESC'.")
-
-    def add_period(self, period: Period) -> Period:
-        try:
-            with self.Session() as session:
-                session.add(period)
-                session.commit()
-                session.refresh(period)
-                session.expunge(period)
-
-            return period
-        except exc.IntegrityError:
-            raise PeriodDuplicated(message="Period already exist")
-
     def is_tutor(self, tutor_id) -> bool:
         with self.Session() as session:
             exists = (
@@ -47,19 +27,6 @@ class TutorRepository:
                 .first()
             )
             return True if exists else False
-
-    def add_tutor_period(self, tutor_id, period_id) -> TutorPeriod:
-        try:
-            with self.Session() as session:
-                period_obj = TutorPeriod(period_id=period_id, tutor_id=tutor_id)
-                session.add(period_obj)
-                session.commit()
-                tutor = session.get(User, tutor_id)
-                session.expunge_all()
-
-            return tutor
-        except exc.IntegrityError:
-            raise PeriodDuplicated(message="Period can't be assigned to tutor")
 
     def add_tutor_periods(self, tutor_periods: list[TutorPeriod]):
         try:
@@ -71,20 +38,6 @@ class TutorRepository:
             return tutor_periods
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message=f"{e}")
-
-    def get_all_periods(self, order: str) -> list[Period]:
-        with self.Session() as session:
-            order_clause = self._order_clause(order)
-            results = session.query(Period).order_by(order_clause).all()
-            session.expunge_all()
-        return results
-
-    def get_period_by_id(self, period_id: str) -> Period:
-        with self.Session() as session:
-            period = session.query(Period).filter(Period.id == period_id).first()
-            if period is None:
-                raise PeriodNotFound("The period does not exist")
-        return period
 
     def get_tutor_by_tutor_id(self, tutor_id) -> User:
         with self.Session() as session:
@@ -258,3 +211,16 @@ class TutorRepository:
                 TutorPeriod.period_id == period_id
             ).filter(TutorPeriod.tutor_id.in_(tutors_ids)).delete()
             session.commit()
+
+    def add_tutor_period(self, tutor_id, period_id) -> TutorPeriod:
+        try:
+            with self.Session() as session:
+                period_obj = TutorPeriod(period_id=period_id, tutor_id=tutor_id)
+                session.add(period_obj)
+                session.commit()
+                tutor = session.get(User, tutor_id)
+                session.expunge_all()
+
+            return tutor
+        except exc.IntegrityError:
+            raise PeriodDuplicated(message="Period can't be assigned to tutor")

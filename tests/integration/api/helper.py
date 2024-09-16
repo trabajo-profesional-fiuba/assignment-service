@@ -18,6 +18,7 @@ import datetime as dt
 from src.core.student_form_answer import StudentFormAnswer
 from src.api.tutors.models import StudentPeriod
 from src.api.students.repository import StudentRepository
+from src.api.periods.repository import PeriodRepository
 
 
 class ApiHelper:
@@ -32,9 +33,10 @@ class ApiHelper:
         self._groups_repository = GroupRepository(self.Session)
         self._form_repository = FormRepository(self.Session)
         self._student_repository = StudentRepository(self.Session)
+        self._period_repository = PeriodRepository(self.Session)
 
     def create_period(self, period: str):
-        self._tutor_repository.add_period(Period(id=period))
+        self._period_repository.add_period(Period(id=period))
 
     def create_tutor(self, name: str, last_name: str, id: str, email: str):
         tutor = User(
