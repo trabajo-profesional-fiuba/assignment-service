@@ -36,10 +36,10 @@ class StudentRepository:
         with self.Session() as session:
             student_info = (
                 session.query(
-                    User.id.label('user_id'),
-                    Group.id.label('group_id'),
-                    Topic.name.label('topic_name'),
-                    TutorPeriod.tutor_id.label('tutor_id')
+                    User.id.label("user_id"),
+                    Group.id.label("group_id"),
+                    Topic.name.label("topic_name"),
+                    TutorPeriod.tutor_id.label("tutor_id"),
                 )
                 .select_from(User)
                 .join(Group.students)
@@ -47,16 +47,14 @@ class StudentRepository:
                 .join(Group.tutor_period)
                 .where(User.id == id)
                 .one_or_none()
-            )            
-            
+            )
+
         return student_info
 
     def get_teammates(self, id: int, group_id: int):
         with self.Session() as session:
             teammates = (
-                session.query(
-                    User
-                )
+                session.query(User)
                 .select_from(User)
                 .join(Group.students)
                 .where(User.id != id)

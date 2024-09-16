@@ -188,5 +188,13 @@ class SinglePeriodTutor:
     def email(self) -> str:
         return self._email
 
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def last_name(self) -> str:
+        return self._last_name
+
     def topics_ids(self):
         return [topic.id for topic in self._topics]

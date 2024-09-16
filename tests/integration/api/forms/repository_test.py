@@ -33,28 +33,12 @@ class TestFormRepository:
 
     @pytest.fixture
     def answers(self, today):
-        topics = ["topic 1","topic 2","topic 3"]
+        topics = ["topic 1", "topic 2", "topic 3"]
         answers = [
-            StudentFormAnswer(
-                id=105001,
-                answer_id=today,
-                topics=topics
-            ),
-            StudentFormAnswer(
-                id=105002,
-                answer_id=today,
-                topics=topics
-            ),
-            StudentFormAnswer(
-                id=105003,
-                answer_id=today,
-                topics=topics
-            ),
-            StudentFormAnswer(
-                id=105004,
-                answer_id=today,
-                topics=topics
-            ),
+            StudentFormAnswer(id=105001, answer_id=today, topics=topics),
+            StudentFormAnswer(id=105002, answer_id=today, topics=topics),
+            StudentFormAnswer(id=105003, answer_id=today, topics=topics),
+            StudentFormAnswer(id=105004, answer_id=today, topics=topics),
         ]
         return answers
 
@@ -152,19 +136,13 @@ class TestFormRepository:
         user_repository.add_students([student_5])
         answers = [
             StudentFormAnswer(
-                id=105001,
-                answer_id=today,
-                topics=["topic 1", "topic 2", "topic 3"]
+                id=105001, answer_id=today, topics=["topic 1", "topic 2", "topic 3"]
             ),
             StudentFormAnswer(
-                id=105002,
-                answer_id=today,
-                topics=["topic 1", "topic 2", "topic 3"]
+                id=105002, answer_id=today, topics=["topic 1", "topic 2", "topic 3"]
             ),
             StudentFormAnswer(
-                id=105005,
-                answer_id=today,
-                topics=["topic 1", "topic 2", "topic 3"]
+                id=105005, answer_id=today, topics=["topic 1", "topic 2", "topic 3"]
             ),
         ]
 
@@ -178,24 +156,16 @@ class TestFormRepository:
     def test_add_answers_with_same_groups_but_diff_topics(self, tables, today):
         answers = [
             StudentFormAnswer(
-                id=105001,
-                answer_id=today,
-                topics=["topic 2", "topic 3", "topic 1"]
+                id=105001, answer_id=today, topics=["topic 2", "topic 3", "topic 1"]
             ),
             StudentFormAnswer(
-                id=105002,
-                answer_id=today,
-                topics=["topic 2", "topic 3", "topic 1"]
+                id=105002, answer_id=today, topics=["topic 2", "topic 3", "topic 1"]
             ),
             StudentFormAnswer(
-                id=105003,
-                answer_id=today,
-                topics=["topic 2", "topic 3", "topic 1"]
+                id=105003, answer_id=today, topics=["topic 2", "topic 3", "topic 1"]
             ),
             StudentFormAnswer(
-                id=105004,
-                answer_id=today,
-                topics=["topic 2", "topic 3", "topic 1"]
+                id=105004, answer_id=today, topics=["topic 2", "topic 3", "topic 1"]
             ),
         ]
 
@@ -236,9 +206,7 @@ class TestFormRepository:
         today = dt.datetime.today().isoformat()
         answers = [
             StudentFormAnswer(
-                id=101010,
-                answer_id=today,
-                topics= ["topic 2", "topic 3", "topic 1"]
+                id=101010, answer_id=today, topics=["topic 2", "topic 3", "topic 1"]
             ),
         ]
 
@@ -246,18 +214,14 @@ class TestFormRepository:
         today = dt.datetime.today().isoformat()
         answers = [
             StudentFormAnswer(
-                id=101010,
-                answer_id=today,
-                topics= ["topic 2", "topic 3", "topic 1"]
+                id=101010, answer_id=today, topics=["topic 2", "topic 3", "topic 1"]
             )
         ]
         repository.add_answers(answers, ["topic 4", "topic 5", "topic 6"], [101010])
         today = dt.datetime.today().isoformat()
         answers = [
             StudentFormAnswer(
-                id=101010,
-                answer_id=today,
-                topics=["topic 1", "topic 2", "topic 4"]
+                id=101010, answer_id=today, topics=["topic 1", "topic 2", "topic 4"]
             ),
         ]
         repository.add_answers(answers, ["topic 1", "topic 2", "topic 4"], [101010])

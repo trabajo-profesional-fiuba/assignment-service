@@ -46,10 +46,10 @@ class TestGroupTutorLPSolver:
         assert len(result) == 2
 
         assert result[0].id == 1
-        assert result[0].topic == topics[0].name
+        assert result[0].topic.name == topics[0].name
 
         assert result[1].id == 2
-        assert result[1].topic == topics[1].name
+        assert result[1].topic.name == topics[1].name
 
     @pytest.mark.unit
     def test_more_groups_than_tutors_without_enough_capacity(self):
@@ -103,13 +103,13 @@ class TestGroupTutorLPSolver:
         assert len(result) == 3
 
         assert result[0].id == 1
-        assert result[0].topic == topics[0].name
+        assert result[0].topic.name == topics[0].name
 
         assert result[1].id == 2
-        assert result[1].topic == topics[3].name
+        assert result[1].topic.name == topics[3].name
 
         assert result[2].id == 3
-        assert result[2].topic == topics[4].name
+        assert result[2].topic.name == topics[4].name
 
     @pytest.mark.unit
     def test_tutor_group_assignment_balance(self):
@@ -170,18 +170,10 @@ class TestGroupTutorLPSolver:
         # Verificar que la diferencia en el número de grupos asignados a los tutores
         # no sea mayor a 1
         tutor1_groups = len(
-            [
-                assignment
-                for assignment in result
-                if assignment.tutor_email == tutor1.email
-            ]
+            [assignment for assignment in result if assignment.tutor == tutor1.email]
         )
         tutor2_groups = len(
-            [
-                assignment
-                for assignment in result
-                if assignment.tutor_email == tutor2.email
-            ]
+            [assignment for assignment in result if assignment.tutor == tutor2.email]
         )
 
         assert abs(tutor1_groups - tutor2_groups) <= 1
@@ -190,16 +182,16 @@ class TestGroupTutorLPSolver:
         assert len(result) == len(groups)
 
         assert result[0].id == 1
-        assert result[0].topic == topics[0].name
+        assert result[0].topic.name == topics[0].name
 
         assert result[1].id == 2
-        assert result[1].topic == topics[3].name
+        assert result[1].topic.name == topics[3].name
 
         assert result[2].id == 3
-        assert result[2].topic == topics[4].name
+        assert result[2].topic.name == topics[4].name
 
         assert result[3].id == 4
-        assert result[3].topic == topics[1].name
+        assert result[3].topic.name == topics[1].name
 
     @pytest.mark.unit
     def test_tutor_without_capacity(self):
@@ -298,8 +290,8 @@ class TestGroupTutorLPSolver:
         result = solver.solve()
 
         # Verificar que la diferencia entre grupos asignados a tutor1 y tutor2 sea <= 1
-        tutor1_groups = len([res for res in result if res.tutor_email == tutor1.email])
-        tutor2_groups = len([res for res in result if res.tutor_email == tutor2.email])
+        tutor1_groups = len([res for res in result if res.tutor.email == tutor1.email])
+        tutor2_groups = len([res for res in result if res.tutor.email == tutor2.email])
         assert abs(tutor1_groups - tutor2_groups) <= 1
 
     @pytest.mark.unit
@@ -341,9 +333,13 @@ class TestGroupTutorLPSolver:
         result = solver.solve()
 
         # Verificar que solo un grupo haya sido asignado al Topic 1 (capacidad = 1)
-        topic1_assignments = len([res for res in result if res.topic == topics[0].name])
+        topic1_assignments = len(
+            [res for res in result if res.topic.name == topics[0].name]
+        )
         assert topic1_assignments == 1
 
         # Verificar que los otros grupos se asignen al Topic 2
-        topic2_assignments = len([res for res in result if res.topic == topics[1].name])
+        topic2_assignments = len(
+            [res for res in result if res.topic.name == topics[1].name]
+        )
         assert topic2_assignments == 2

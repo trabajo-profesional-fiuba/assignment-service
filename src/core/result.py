@@ -14,7 +14,23 @@ class AssignmentResult:
 class GroupTutorAssigmentResult:
     """Represents the assigment result"""
 
-    def __init__(self, id, tutor_email, topic) -> None:
+    def __init__(self, id, tutor, topic) -> None:
         self.id = id
-        self.tutor_email = tutor_email
+        self.tutor = tutor
         self.topic = topic
+
+    def tutor_as_dict(self):
+        return {
+            "id": self.tutor.id,
+            "period_id": self.tutor.period_id,
+            "name": self.tutor.name,
+            "last_name": self.tutor.last_name,
+            "email": self.tutor.email,
+        }
+
+    def topic_as_dict(self):
+        return {
+            "id": self.topic.id,
+            "name": self.topic.name,
+            "category": self.topic.category,
+        }

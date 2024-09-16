@@ -163,4 +163,3 @@ class TestStudentRepository:
         assert tutor.name == "Carlos"
         assert tutor.last_name == "Fontela"
         assert tutor.email == "cfontela@fi.uba.ar"
-    

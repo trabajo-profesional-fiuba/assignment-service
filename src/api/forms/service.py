@@ -39,7 +39,7 @@ class FormService:
                         form_preference.user_id_student_2,
                         form_preference.user_id_student_3,
                         form_preference.user_id_student_4,
-                    ]
+                    ],
                 )
             )
             topics = [

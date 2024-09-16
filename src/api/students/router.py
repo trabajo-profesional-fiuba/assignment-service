@@ -101,6 +101,7 @@ async def get_students_by_ids(
     except Exception as e:
         raise e
 
+
 @router.get(
     "/info/me",
     response_model=PersonalInformation,
@@ -124,13 +125,18 @@ async def get_student_info(
         id = auth_service.get_user_id(token)
 
         service = StudentService(StudentRepository(session))
-        res = service.get_personal_info_by_id(id, FormRepository(session), UserRepository(session), GroupRepository(session))
+        res = service.get_personal_info_by_id(
+            id,
+            FormRepository(session),
+            UserRepository(session),
+            GroupRepository(session),
+        )
 
         logger.info("Retrieve student info by id.")
 
-        response = JSONResponse(content = res.model_dump())
+        response = JSONResponse(content=res.model_dump())
         response.headers["Cache-Control"] = "private, max-age=7200"
-    
+
         return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")

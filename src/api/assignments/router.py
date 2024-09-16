@@ -82,6 +82,7 @@ async def assign_incomplete_groups(
 
 @router.post(
     "/group-topic-tutor",
+    response_model=AssignedGroupList,
     summary="Runs the assigment of tutor and topic for grpi",
     responses={
         status.HTTP_200_OK: {"description": "Successfully assigned groups"},
@@ -142,8 +143,8 @@ async def assign_incomplete_groups(
             [
                 AssignedGroupResponse(
                     id=assigned_group.id,
-                    tutor_email=assigned_group.tutor_email,
-                    topic=assigned_group.topic,
+                    tutor=assigned_group.tutor_as_dict(),
+                    topic=assigned_group.topic_as_dict(),
                 )
                 for assigned_group in assignment_result
             ]

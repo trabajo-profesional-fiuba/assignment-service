@@ -69,7 +69,7 @@ async def add_answers(
                     answer_id=answer.answer_id,
                     topic_1=answer.topics[0],
                     topic_2=answer.topics[1],
-                    topic_3=answer.topics[2] 
+                    topic_3=answer.topics[2],
                 )
                 for answer in answers_saved
             ]
