@@ -129,9 +129,9 @@ async def get_groups(
 @router.put(
     "/",
     response_model=GroupList,
-    summary="Creates a new group",
-    description="""This endpoint creates a new group. The group can already have \
-    tutor and topic or just preferred topics.""",
+    summary="Update a list of groups",
+    description="""This endpoint updates the associated tutor period and topic to a \
+                    list of groups """,
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully updated group"},
         status.HTTP_400_BAD_REQUEST: {

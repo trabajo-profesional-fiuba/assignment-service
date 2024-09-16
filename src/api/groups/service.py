@@ -95,8 +95,8 @@ class GroupService:
                         "b_tutor_period_id": group.tutor_period_id,
                     }
                 )
-
-            return self._repository.bulk_update(groups_to_update, period)
+            self._repository.bulk_update(groups_to_update, period)
+            return self._repository.get_groups(period)
         except Exception as e:
             logger.error(f"Could not update groups because of: {str(e)}")
             raise EntityNotInserted(

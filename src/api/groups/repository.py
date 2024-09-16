@@ -124,16 +124,3 @@ class GroupRepository:
             )
             session.commit()
 
-            groups = (
-                session.query(Group)
-                .options(
-                    joinedload(Group.topic),
-                    joinedload(Group.tutor_period),
-                    joinedload(Group.period),
-                    joinedload(Group.students),
-                )
-                .filter(Group.period_id == period)
-                .all()
-            )
-            session.expunge_all()
-        return groups

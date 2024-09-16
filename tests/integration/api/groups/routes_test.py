@@ -218,7 +218,7 @@ def test_put_confirmed_groups(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_put_confirmed_groups_period_id_not_exist(fastapi, tables):
+def test_put_confirmed_groups_tutor_period_id_not_exist(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2025")
