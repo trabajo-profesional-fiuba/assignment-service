@@ -15,15 +15,11 @@ from src.api.exceptions import (
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
-from src.api.periods.schemas import PeriodResponse, PeriodRequest, PeriodList
 from src.api.tutors.schemas import TutorResponse, TutorList, TutorWithTopicsList
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
-from src.api.tutors.exceptions import InvalidPeriod
 from src.api.tutors.repository import TutorRepository
 from src.config.database.database import get_db
-from src.api.periods.repository import PeriodRepository
-from src.api.periods.service import PeriodService
 
 router = APIRouter(prefix="/tutors")
 

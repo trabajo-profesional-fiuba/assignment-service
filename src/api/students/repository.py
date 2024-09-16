@@ -1,4 +1,4 @@
-from sqlalchemy import select, exc
+from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from src.api.groups.models import Group
 from src.api.topics.models import Topic

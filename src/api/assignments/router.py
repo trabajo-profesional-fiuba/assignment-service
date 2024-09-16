@@ -105,7 +105,7 @@ async def assign_incomplete_groups(
     },
     status_code=status.HTTP_200_OK,
 )
-async def assign_incomplete_groups(
+async def assign_group_topic_tutor(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],

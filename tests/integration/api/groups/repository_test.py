@@ -388,7 +388,6 @@ def test_get_groups_leaning_path(tables):
     )
     u_repository.add_students([student1, student2])
 
-    tutor_repository = TutorRepository(Session)
     period_id = "1C2024"
     p_repository = PeriodRepository(Session)
     p_repository.add_period(Period(id=period_id))

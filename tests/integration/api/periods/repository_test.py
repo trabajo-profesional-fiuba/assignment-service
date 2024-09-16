@@ -3,13 +3,6 @@ import pytest
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from src.api.tutors.repository import TutorRepository
-from src.api.tutors.models import Period, TutorPeriod
-from src.api.users.repository import UserRepository
-from src.api.users.models import User, Role
-from src.api.topics.repository import TopicRepository
-from src.api.topics.models import Topic, Category
-from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from tests.integration.api.helper import ApiHelper
 from src.api.tutors.exceptions import PeriodNotFound
 from src.api.periods.repository import PeriodRepository

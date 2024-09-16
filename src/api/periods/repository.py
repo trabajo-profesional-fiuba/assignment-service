@@ -1,10 +1,9 @@
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import asc, desc, exc, exists
+from sqlalchemy.orm import Session
+from sqlalchemy import asc, desc, exc
 
-from src.api.tutors.models import Period, TutorPeriod
+from src.api.tutors.models import Period
 from src.api.tutors.exceptions import (
     PeriodDuplicated,
-    TutorPeriodNotFound,
     PeriodNotFound,
 )
 

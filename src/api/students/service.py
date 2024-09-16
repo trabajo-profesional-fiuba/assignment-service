@@ -14,7 +14,6 @@ from src.api.users.schemas import PersonalInformation, UserList
 
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 from src.api.students.repository import StudentRepository
-from src.api.tutors.models import Period
 
 
 class StudentService:

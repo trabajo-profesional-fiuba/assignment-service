@@ -98,5 +98,6 @@ class GroupService:
         except Exception as e:
             logger.error(f"Could not update groups because of: {str(e)}")
             raise EntityNotInserted(
-                message="Group could't be updated due a database problem. Check if the id provided are correct."
+                message="Group could't be updated due a database problem. Check if the\
+                id provided are correct."
             )

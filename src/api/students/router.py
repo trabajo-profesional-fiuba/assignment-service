@@ -1,6 +1,6 @@
 from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
-from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
+from fastapi import APIRouter, UploadFile, Depends, status, Query
 from sqlalchemy.orm import Session
 
 from src.api.auth.hasher import get_hasher, ShaHasher
@@ -14,7 +14,6 @@ from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
 from src.api.students.repository import StudentRepository
 from src.api.students.service import StudentService
-from src.api.tutors.repository import TutorRepository
 
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
@@ -130,7 +129,7 @@ async def get_student_info(
             FormRepository(session),
             UserRepository(session),
             GroupRepository(session),
-            StudentRepository(session)
+            StudentRepository(session),
         )
 
         logger.info("Retrieve student info by id.")

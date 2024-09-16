@@ -11,7 +11,6 @@ from src.api.topics.repository import TopicRepository
 from src.api.topics.models import Topic, Category
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from tests.integration.api.helper import ApiHelper
-from src.api.tutors.exceptions import PeriodNotFound
 from src.api.periods.repository import PeriodRepository
 
 
@@ -141,7 +140,7 @@ class TestTutorRepository:
             assert len(tutor_periods) == 0
 
     @pytest.mark.integration
-    def test_get_tutor_by_id(self, tables):
+    def test_get_full_tutor_by_id(self, tables):
         helper = ApiHelper()
         helper.create_tutor("Carlos", "Fontela", "100", "cfontela@fi.uba.ar")
         u_repository = UserRepository(self.Session)

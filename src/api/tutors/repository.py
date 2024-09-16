@@ -1,12 +1,11 @@
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import asc, desc, exc, exists
+from sqlalchemy import exc, exists
 
-from src.api.tutors.models import Period, TutorPeriod
+from src.api.tutors.models import TutorPeriod
 from src.api.tutors.exceptions import (
     TutorNotFound,
     PeriodDuplicated,
     TutorPeriodNotFound,
-    PeriodNotFound,
 )
 from src.api.topics.exceptions import TopicNotFound
 from src.api.topics.models import Topic, TopicTutorPeriod

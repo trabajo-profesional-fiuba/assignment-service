@@ -1,4 +1,3 @@
-from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 from typing import List
 from src.api.topics.schemas import SimpleTopic

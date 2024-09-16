@@ -1,5 +1,5 @@
 from sqlalchemy import func, bindparam, update
-from sqlalchemy.orm import Session, joinedload, load_only
+from sqlalchemy.orm import Session, joinedload
 
 from src.api.groups.models import Group
 from src.api.students.exceptions import StudentNotFound
