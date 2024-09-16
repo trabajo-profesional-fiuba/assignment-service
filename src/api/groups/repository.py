@@ -1,5 +1,6 @@
-from sqlalchemy import func
+from sqlalchemy import func, bindparam, update
 from sqlalchemy.orm import Session, joinedload, load_only
+
 from src.api.groups.models import Group
 from src.api.students.exceptions import StudentNotFound
 from src.api.users.models import User
@@ -106,3 +107,19 @@ class GroupRepository:
         with self.Session() as session:
             groups = session.query(Group).filter(Group.period_id == period).all()
         return groups
+
+    def bulk_update(self, groups_to_update: list[dict], period: str):
+        stmt = (
+            update(Group)
+            .where(Group.id == bindparam("b_id"))
+            .values(
+                assigned_topic_id=bindparam("b_assigned_topic_id"),
+                tutor_period_id=bindparam("b_tutor_period_id"),
+            )
+        )
+        with self.Session() as session:
+            session.connection().execute(
+                stmt,
+                groups_to_update,
+            )
+            session.commit()

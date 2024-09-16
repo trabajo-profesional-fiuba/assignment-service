@@ -80,3 +80,23 @@ class GroupService:
     def get_goups_without_tutor_and_topic(self):
         db_groups = self._repository.get_groups_without_tutor_and_period()
         return db_groups
+
+    def update(self, groups, period):
+        try:
+            groups_to_update = list()
+            for group in groups:
+                # b_* comes from binding params
+                groups_to_update.append(
+                    {
+                        "b_id": group.id,
+                        "b_assigned_topic_id": group.topic_id,
+                        "b_tutor_period_id": group.tutor_period_id,
+                    }
+                )
+            self._repository.bulk_update(groups_to_update, period)
+            return self._repository.get_groups(period)
+        except Exception as e:
+            logger.error(f"Could not update groups because of: {str(e)}")
+            raise EntityNotInserted(
+                message="Group could't be updated due a database problem. Check if the id provided are correct."
+            )

@@ -130,8 +130,9 @@ async def get_student_info(
             FormRepository(session),
             UserRepository(session),
             GroupRepository(session),
-            StudentRepository(session),
+            StudentRepository(session)
         )
+
         logger.info("Retrieve student info by id.")
 
         response = JSONResponse(content=res.model_dump())

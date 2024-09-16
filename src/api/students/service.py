@@ -84,6 +84,7 @@ class StudentService:
         group_repository: GroupRepository,
         student_repository: StudentRepository,
     ):
+
         form_answers = form_repository.get_answers_by_user_id(id)
 
         form_answered = len(form_answers) > 0
@@ -108,7 +109,7 @@ class StudentService:
             period_id=student_repository.get_period_by_student_id(id).period_id,
         )
 
-        if not form_answered:
+        if (not student_in_groups_without_preferred_topics) and (not form_answered):
             return personal_information
 
         student_info_db = self._user_repository.get_student_info(id)
