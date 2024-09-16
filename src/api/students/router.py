@@ -11,6 +11,7 @@ from src.api.auth.service import AuthenticationService
 from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
 
 from src.api.forms.repository import FormRepository
+from src.api.groups.repository import GroupRepository
 from src.api.students.repository import StudentRepository
 from src.api.students.service import StudentService
 from src.api.tutors.repository import TutorRepository
@@ -130,6 +131,7 @@ async def get_student_info(
             id,
             FormRepository(session),
             UserRepository(session),
+            GroupRepository(session),
             StudentRepository(session),
         )
         logger.info("Retrieve student info by id.")

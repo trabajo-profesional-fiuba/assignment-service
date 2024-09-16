@@ -1,5 +1,6 @@
 from src.api.auth.hasher import ShaHasher
 from src.api.forms.repository import FormRepository
+from src.api.groups.repository import GroupRepository
 from src.api.students.utils import StudentCsvFile
 from src.api.students.exceptions import (
     StudentDuplicated,
@@ -80,12 +81,22 @@ class StudentService:
         id: int,
         form_repository: FormRepository,
         user_repository: UserRepository,
+        group_repository: GroupRepository,
         student_repository: StudentRepository,
     ):
-
         form_answers = form_repository.get_answers_by_user_id(id)
 
         form_answered = len(form_answers) > 0
+
+        groups_without_preferred_topics = (
+            group_repository.get_groups_without_preferred_topics()
+        )
+        student_in_groups_without_preferred_topics = False
+
+        for group in groups_without_preferred_topics:
+            student_ids = [student.id for student in group.students]
+            if id in student_ids:
+                student_in_groups_without_preferred_topics = True
 
         personal_information = PersonalInformation(
             id=id,
