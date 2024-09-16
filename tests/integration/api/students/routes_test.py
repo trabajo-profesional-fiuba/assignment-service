@@ -237,7 +237,7 @@ def test_get_existing_period_by_id(fastapi, tables):
     student_token = helper.create_student_token_with_id(100)
 
     response = fastapi.get(
-        f"{PERIOD_PREFIX}/periods/1C2024",
+        f"{PERIOD_PREFIX}/1C2024",
         headers={"Authorization": f"Bearer {student_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK

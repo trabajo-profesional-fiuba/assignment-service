@@ -37,38 +37,14 @@ def upgrade() -> None:
 
     # ---------- init student_periods table ----------
     connection = op.get_bind()
-
-    # verify if period exist
-    period_id = "2C2024"
-    result = connection.execute(
-        sa.text("SELECT COUNT(*) FROM periods WHERE id = :period_id"),
-        {"period_id": period_id},
+    connection.execute(
+        sa.text(
+            "INSERT INTO student_periods (period_id, student_id) "
+            "SELECT :period_id, id FROM users WHERE role = 'STUDENT' "
+            "ON CONFLICT (period_id, student_id) DO NOTHING"
+        ),
+        {"period_id": "2C2024"},
     )
-    period_exists = result.scalar() > 0
-
-    # add period if does not exist
-    if not period_exists:
-        connection.execute(
-            sa.text(
-                "INSERT INTO periods (id, created_at, form_active, initial_project_active, intermediate_project_active, final_project_active) VALUES (:period_id, NOW(), TRUE, FALSE, FALSE, FALSE)"
-            ),
-            {"period_id": period_id},
-        )
-
-    # get students
-    students = connection.execute(
-        sa.text("SELECT id FROM users WHERE role = 'STUDENT'")
-    ).fetchall()
-
-    # add student - period rows
-    if students:
-        for student in students:
-            connection.execute(
-                sa.text(
-                    "INSERT INTO student_periods (period_id, student_id) VALUES (:period_id, :student_id)"
-                ),
-                {"period_id": "2C2024", "student_id": student.id},
-            )
     # ### end Alembic commands ###
 
 
