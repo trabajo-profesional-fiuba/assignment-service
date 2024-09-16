@@ -74,44 +74,52 @@ class StudentService:
         except StudentDuplicated as e:
             raise Duplicated(str(e))
 
-    def get_personal_info_by_id(self, id: int, form_repository: FormRepository, user_repository: UserRepository, group_repository: GroupRepository):
-        
+    def get_personal_info_by_id(
+        self,
+        id: int,
+        form_repository: FormRepository,
+        user_repository: UserRepository,
+        group_repository: GroupRepository,
+    ):
+
         form_answers = form_repository.get_answers_by_user_id(id)
 
-        form_answered = (len(form_answers) > 0)
+        form_answered = len(form_answers) > 0
 
-        groups_without_preferred_topics = group_repository.get_groups_without_preferred_topics()
+        groups_without_preferred_topics = (
+            group_repository.get_groups_without_preferred_topics()
+        )
         student_in_groups_without_preferred_topics = False
 
         for group in groups_without_preferred_topics:
             student_ids = [student.id for student in group.students]
-            if (id in student_ids):
+            if id in student_ids:
                 student_in_groups_without_preferred_topics = True
 
         personal_information = PersonalInformation(
-                id=id,
-                form_answered=form_answered,
-                group_id=0,
-                tutor= "",
-                topic="",
-                teammates=[]
-            )
-        
-        if ((not student_in_groups_without_preferred_topics) and (not form_answered)):
+            id=id,
+            form_answered=form_answered,
+            group_id=0,
+            tutor="",
+            topic="",
+            teammates=[],
+        )
+
+        if (not student_in_groups_without_preferred_topics) and (not form_answered):
             return personal_information
 
         student_info_db = self._user_repository.get_student_info(id)
-        
+
         if student_info_db == None:
             return personal_information
-        
+
         tutor = user_repository.get_tutor_by_id(student_info_db.tutor_id)
 
         teammates = self._user_repository.get_teammates(id, student_info_db.group_id)
-        
+
         personal_information.group_id = student_info_db.group_id
         personal_information.tutor = f"{tutor.name} {tutor.last_name}"
         personal_information.topic = student_info_db.topic_name
-        personal_information.teammates = list(map(lambda x: x.email,teammates))
-                               
+        personal_information.teammates = list(map(lambda x: x.email, teammates))
+
         return personal_information

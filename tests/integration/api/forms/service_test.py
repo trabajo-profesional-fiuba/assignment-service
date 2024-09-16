@@ -54,7 +54,7 @@ def test_filter_user_ids_without_none_user_ids(service):
 @pytest.mark.integration
 def test_filter_user_ids_with_some_none_user_ids(service):
     user_ids = [111111, 111112, None, None]
-    result = list(filter(lambda x: x is not None,user_ids))
+    result = list(filter(lambda x: x is not None, user_ids))
 
     assert len(result) == 2
     assert result == [111111, 111112]
@@ -63,7 +63,7 @@ def test_filter_user_ids_with_some_none_user_ids(service):
 @pytest.mark.integration
 def test_filter_user_ids_with_all_none_user_ids(service):
     user_ids = [None, None, None, None]
-    result = list(filter(lambda x: x is not None,user_ids))
+    result = list(filter(lambda x: x is not None, user_ids))
 
     assert len(result) == 0
     assert result == []

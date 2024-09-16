@@ -246,9 +246,7 @@ class GroupTutorLPSolver:
 
                 # Asignar el topic al grupo
                 topic = self._get_topic_by_id(topic_id)
-                group = GroupTutorAssigmentResult(
-                    id=group_id, tutor=tutor, topic=topic
-                )
+                group = GroupTutorAssigmentResult(id=group_id, tutor=tutor, topic=topic)
 
                 groups_result.append(group)
 

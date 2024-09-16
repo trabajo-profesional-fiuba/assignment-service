@@ -28,6 +28,7 @@ class UserList(RootModel):
     def __iter__(self):
         return iter(self.root)
 
+
 class PersonalInformation(BaseModel):
     id: int
     form_answered: bool

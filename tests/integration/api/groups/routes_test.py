@@ -195,7 +195,7 @@ def test_put_confirmed_groups(fastapi, tables):
     helper.create_student("Alejo", "B", "105002", "b@gmail.com")
     helper.create_student("Tomas", "C", "105003", "c@gmail.com")
     helper.create_topic("Basic topic")
-    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3],"1C2025" )
+    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
     body = [{"id": group.id, "tutor_period_id": 1, "topic_id": 1}]
@@ -228,7 +228,7 @@ def test_put_confirmed_groups_period_id_not_exist(fastapi, tables):
     helper.create_student("Alejo", "B", "105002", "b@gmail.com")
     helper.create_student("Tomas", "C", "105003", "c@gmail.com")
     helper.create_topic("Basic topic")
-    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3],"1C2025" )
+    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
     body = [{"id": group.id, "tutor_period_id": 10, "topic_id": 1}]
@@ -243,6 +243,7 @@ def test_put_confirmed_groups_period_id_not_exist(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+
 @pytest.mark.integration
 def test_put_confirmed_groups_topic_id_not_exist(fastapi, tables):
     # Arrange
@@ -254,7 +255,7 @@ def test_put_confirmed_groups_topic_id_not_exist(fastapi, tables):
     helper.create_student("Alejo", "B", "105002", "b@gmail.com")
     helper.create_student("Tomas", "C", "105003", "c@gmail.com")
     helper.create_topic("Basic topic")
-    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3],"1C2025" )
+    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
     body = [{"id": group.id, "tutor_period_id": 1, "topic_id": 3}]

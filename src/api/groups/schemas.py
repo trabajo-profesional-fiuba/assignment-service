@@ -19,16 +19,17 @@ class GroupWithTutorTopicRequest(GroupRequest):
     tutor_email: str
     topic: str
 
+
 class AssignedGroupConfirmationRequest(BaseModel):
-    id:int
+    id: int
     tutor_period_id: int
     topic_id: int
 
 
 class AssignedGroupResponse(BaseModel):
     id: int
-    tutor: Dict[str, Any] 
-    topic: Dict[str, Any] 
+    tutor: Dict[str, Any]
+    topic: Dict[str, Any]
 
     model_config = ConfigDict(from_attributes=True)
 

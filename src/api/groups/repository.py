@@ -124,7 +124,6 @@ class GroupRepository:
             )
             session.commit()
 
-
             groups = (
                 session.query(Group)
                 .options(
