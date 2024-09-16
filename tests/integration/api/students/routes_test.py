@@ -193,7 +193,7 @@ def test_get_personal_info_without_form_answers(fastapi, tables):
 
     helper.create_period("2C2024")
     helper.create_student("Juan", "Perez", "100", "juanperez@fi.uba.ar")
-    helper.create_student_period("2C2024", 100)
+    helper.create_student_period(100, "2C2024")
 
     response = fastapi.get(
         f"{PREFIX}/info/me", headers={"Authorization": f"Bearer {token.access_token}"}
@@ -223,3 +223,24 @@ def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables)
     assert response.status_code == 200
     assert response.json()["id"] == 100
     assert response.json()["form_answered"]
+
+
+@pytest.mark.integration
+def test_get_existing_period_by_id(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_student_period(100, "1C2024")
+    student_token = helper.create_student_token_with_id(100)
+
+    response = fastapi.get(
+        f"{PREFIX}/periods/1C2024",
+        headers={"Authorization": f"Bearer {student_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    period = response.json()
+    assert period["id"] == "1C2024"
+    assert period["form_active"] is True
+    assert period["initial_project_active"] is False
+    assert period["intermediate_project_active"] is False
+    assert period["final_project_active"] is False

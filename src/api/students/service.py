@@ -13,6 +13,7 @@ from src.api.users.schemas import PersonalInformation, UserList
 
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 from src.api.students.repository import StudentRepository
+from src.api.tutors.models import Period
 
 
 class StudentService:
@@ -115,5 +116,5 @@ class StudentService:
 
         return personal_information
 
-    def get_period_by_student_id(self, student_id: str) -> StudentRepository:
-        return self._user_repository.get_period_by_student_id(student_id)
+    def get_period_by_id(self, period_id: str) -> Period:
+        return self._user_repository.get_period_by_id(period_id)

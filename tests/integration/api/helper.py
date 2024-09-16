@@ -143,6 +143,6 @@ class ApiHelper:
     def create_basic_group(self, ids, topics):
         self._groups_repository.add_group(ids=ids, preferred_topics=topics)
 
-    def create_student_period(self, period_id: str, student_id: int):
+    def create_student_period(self, student_id: int, period_id: str):
         period = StudentPeriod(period_id=period_id, student_id=student_id)
         self._student_repository.add_student_period(period)

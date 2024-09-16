@@ -84,7 +84,6 @@ class TutorRepository:
             period = session.query(Period).filter(Period.id == period_id).first()
             if period is None:
                 raise PeriodNotFound("The period does not exist")
-            session.expunge_all()
         return period
 
     def get_tutor_by_tutor_id(self, tutor_id) -> User:
