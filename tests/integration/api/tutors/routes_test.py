@@ -549,3 +549,59 @@ def test_all_topics_from_tutors_in_specific_period(fastapi, tables):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert len(data[0]["periods"]) == 1
+
+@pytest.mark.integration
+def test_create_tutor(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_admin_token()
+    tutor = {"id": 110000, "name": "Juan", "last_name": "Perez", "email": "juanperez123@fi.uba.ar"}
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=tutor,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["id"] == 110000
+    assert response.json()["name"] == "Juan"
+    assert response.json()["last_name"] == "Perez"
+    assert response.json()["email"] == "juanperez123@fi.uba.ar"
+
+@pytest.mark.integration
+def test_create_duplicated_tutor(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_admin_token()
+    tutor = {"id": 110001, "name": "Jose", "last_name": "Perez", "email": "joseperez@fi.uba.ar"}
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=tutor,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["id"] == 110001
+    assert response.json()["name"] == "Jose"
+    assert response.json()["last_name"] == "Perez"
+    assert response.json()["email"] == "joseperez@fi.uba.ar"
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=tutor,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Duplicated tutor"
+
+@pytest.mark.integration
+def test_create_tutor_with_invalid_token(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_student_token()
+    tutor = {"id": 110002, "name": "Josefa", "last_name": "Perez", "email": "josefaperez@fi.uba.ar"}
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=tutor,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid Authorization"
