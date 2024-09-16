@@ -22,7 +22,6 @@ from src.api.users.schemas import PersonalInformation, UserList
 from src.config.database.database import get_db
 from src.config.logging import logger
 
-
 router = APIRouter(prefix="/students", tags=["Students"])
 
 
@@ -130,6 +129,7 @@ async def get_student_info(
             FormRepository(session),
             UserRepository(session),
             GroupRepository(session),
+            StudentRepository(session),
         )
 
         logger.info("Retrieve student info by id.")

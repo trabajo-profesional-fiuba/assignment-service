@@ -1,5 +1,4 @@
 from src.api.auth.jwt import JwtResolver
-from src.api.forms.models import FormPreferences
 from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
 from src.api.topics.models import Category, Topic
@@ -17,6 +16,9 @@ from src.api.auth.hasher import ShaHasher
 import datetime as dt
 
 from src.core.student_form_answer import StudentFormAnswer
+from src.api.tutors.models import StudentPeriod
+from src.api.students.repository import StudentRepository
+from src.api.periods.repository import PeriodRepository
 
 
 class ApiHelper:
@@ -30,9 +32,11 @@ class ApiHelper:
         self._topic_repository = TopicRepository(self.Session)
         self._groups_repository = GroupRepository(self.Session)
         self._form_repository = FormRepository(self.Session)
+        self._student_repository = StudentRepository(self.Session)
+        self._period_repository = PeriodRepository(self.Session)
 
     def create_period(self, period: str):
-        self._tutor_repository.add_period(Period(id=period))
+        self._period_repository.add_period(Period(id=period))
 
     def create_tutor(self, name: str, last_name: str, id: str, email: str):
         tutor = User(
@@ -137,6 +141,10 @@ class ApiHelper:
             )
             answers.append(answer)
         self._form_repository.add_answers(answers, topics, ids)
+
+    def create_student_period(self, student_id: int, period_id: str):
+        period = StudentPeriod(period_id=period_id, student_id=student_id)
+        self._student_repository.add_student_period(period)
 
     def create_basic_group(
         self, ids: list[int], topics: list[int], period_id: str = None

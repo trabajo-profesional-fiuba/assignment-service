@@ -8,6 +8,7 @@ from src.api.groups.router import router as group_router
 from src.api.students.router import router as student_router
 from src.api.topics.router import router as topic_router
 from src.api.tutors.router import router as tutor_router
+from src.api.periods.router import router as period_router
 from src.api.assignments.router import router as assignment_router
 
 from src.config.config import api_config
@@ -36,6 +37,7 @@ slots, ensuring effective project organization and execution.
 - Tutors
 - Topics
 - Categories
+- Period
 
 Interact with these entities through a series of dedicated API endpoints tailored to
 facilitate smooth and effective assignments.
@@ -60,6 +62,8 @@ app = FastAPI(
 )
 logger.info("Adding authentication router")
 app.include_router(auth_router)
+logger.info("Adding period router")
+app.include_router(period_router)
 logger.info("Adding student router")
 app.include_router(student_router)
 logger.info("Adding tutors router")

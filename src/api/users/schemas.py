@@ -36,3 +36,4 @@ class PersonalInformation(BaseModel):
     tutor: str
     topic: str
     teammates: List[str]
+    period_id: str

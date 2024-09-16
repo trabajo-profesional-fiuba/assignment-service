@@ -13,6 +13,7 @@ from src.api.users.repository import UserRepository
 from src.api.users.schemas import PersonalInformation, UserList
 
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
+from src.api.students.repository import StudentRepository
 
 
 class StudentService:
@@ -80,6 +81,7 @@ class StudentService:
         form_repository: FormRepository,
         user_repository: UserRepository,
         group_repository: GroupRepository,
+        student_repository: StudentRepository,
     ):
 
         form_answers = form_repository.get_answers_by_user_id(id)
@@ -103,6 +105,7 @@ class StudentService:
             tutor="",
             topic="",
             teammates=[],
+            period_id=student_repository.get_period_by_student_id(id).period_id,
         )
 
         if (not student_in_groups_without_preferred_topics) and (not form_answered):
@@ -110,7 +113,7 @@ class StudentService:
 
         student_info_db = self._user_repository.get_student_info(id)
 
-        if student_info_db == None:
+        if student_info_db is None:
             return personal_information
 
         tutor = user_repository.get_tutor_by_id(student_info_db.tutor_id)

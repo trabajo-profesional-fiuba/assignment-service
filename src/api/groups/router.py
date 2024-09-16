@@ -1,7 +1,6 @@
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
-from typing import Union
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
@@ -13,7 +12,6 @@ from src.api.groups.schemas import (
     AssignedGroupConfirmationRequest,
     GroupList,
     GroupResponse,
-    GroupWithPreferredTopicsRequest,
     GroupWithTutorTopicRequest,
 )
 from src.api.groups.service import GroupService

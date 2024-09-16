@@ -3,11 +3,8 @@ from datetime import datetime
 from src.api.forms.repository import FormRepository
 from src.api.exceptions import EntityNotFound
 from src.api.forms.exceptions import AnswerNotFound
-from src.api.forms.models import FormPreferences
 from src.api.forms.schemas import (
     FormPreferencesRequest,
-    FormPreferencesList,
-    GroupAnswerResponse,
     UserAnswerResponse,
 )
 from src.api.students.exceptions import StudentNotFound

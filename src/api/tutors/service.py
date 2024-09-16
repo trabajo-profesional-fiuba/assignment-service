@@ -3,15 +3,7 @@ import re
 from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
-from src.api.tutors.schemas import (
-    PeriodRequest,
-    PeriodResponse,
-    TutorList,
-    TutorPeriodResponse,
-    TutorResponse,
-    PeriodList,
-    TutorWithTopicsList,
-)
+from src.api.tutors.schemas import TutorPeriodResponse, TutorResponse
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import (
     InvalidPeriod,
@@ -20,7 +12,7 @@ from src.api.tutors.exceptions import (
     TutorNotFound,
     TutorPeriodNotInserted,
 )
-from src.api.tutors.models import Period, TutorPeriod
+from src.api.tutors.models import TutorPeriod
 
 
 class TutorService:
@@ -129,22 +121,6 @@ class TutorService:
         else:
             return False
 
-    def add_period(self, period: PeriodRequest):
-        """
-        Creates a nw global period
-        """
-        try:
-            valid = self._validate_period(period.id)
-            if valid:
-                period_db = Period(id=period.id)
-                return self._repository.add_period(period_db)
-            else:
-                raise InvalidPeriod(
-                    message="Period id should follow patter nC20year, ie. 1C2024"
-                )
-        except PeriodDuplicated as e:
-            raise Duplicated(str(e))
-
     def add_period_to_tutor(self, tutor_id, period_id):
         """
         Assigns an existing period to a tutor.
@@ -157,12 +133,6 @@ class TutorService:
                 raise EntityNotFound(f"{tutor_id} was not found as TUTOR")
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
-
-    def get_all_periods(self, order):
-        """
-        Returns the list of periods
-        """
-        return PeriodList.model_validate(self._repository.get_all_periods(order))
 
     def get_periods_by_tutor_id(self, tutor_id):
         """

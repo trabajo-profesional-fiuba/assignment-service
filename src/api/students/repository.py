@@ -1,9 +1,11 @@
-from sqlalchemy import select
+from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from src.api.groups.models import Group
 from src.api.topics.models import Topic
-from src.api.tutors.models import TutorPeriod
+from src.api.tutors.models import TutorPeriod, StudentPeriod, Period
 from src.api.users.models import User, Role
+from src.api.tutors.exceptions import PeriodDuplicated
+from src.api.students.exceptions import StudentNotFound
 
 
 class StudentRepository:
@@ -62,3 +64,24 @@ class StudentRepository:
             )
 
         return teammates
+
+    def add_student_period(self, student_period: StudentPeriod) -> StudentPeriod:
+        try:
+            with self.Session() as session:
+                session.add(student_period)
+                session.commit()
+
+            return student_period
+        except exc.IntegrityError:
+            raise PeriodDuplicated(message="Period can't be assigned to student")
+
+    def get_period_by_student_id(self, student_id: int) -> Period:
+        with self.Session() as session:
+            student_period = (
+                session.query(StudentPeriod)
+                .filter(StudentPeriod.student_id == student_id)
+                .first()
+            )
+            if student_period:
+                return student_period
+            raise StudentNotFound("The student id is not registered")
