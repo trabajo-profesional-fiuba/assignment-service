@@ -122,22 +122,6 @@ class TutorService:
         else:
             return False
 
-    def add_period(self, period: PeriodRequest):
-        """
-        Creates a nw global period
-        """
-        try:
-            valid = self._validate_period(period.id)
-            if valid:
-                period_db = Period(id=period.id)
-                return self._repository.add_period(period_db)
-            else:
-                raise InvalidPeriod(
-                    message="Period id should follow patter nC20year, ie. 1C2024"
-                )
-        except PeriodDuplicated as e:
-            raise Duplicated(str(e))
-
     def add_period_to_tutor(self, tutor_id, period_id):
         """
         Assigns an existing period to a tutor.
@@ -150,12 +134,6 @@ class TutorService:
                 raise EntityNotFound(f"{tutor_id} was not found as TUTOR")
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
-
-    def get_all_periods(self, order):
-        """
-        Returns the list of periods
-        """
-        return PeriodList.model_validate(self._repository.get_all_periods(order))
 
     def get_periods_by_tutor_id(self, tutor_id):
         """
@@ -208,6 +186,3 @@ class TutorService:
             return self._repository.get_tutor_periods_by_periods_id(period_id)
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
-
-    def get_period_by_id(self, period_id: str) -> Period:
-        return self._repository.get_period_by_id(period_id)

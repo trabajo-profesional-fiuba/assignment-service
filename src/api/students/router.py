@@ -25,6 +25,7 @@ from src.config.logging import logger
 
 from src.api.periods.schemas import PeriodResponse
 from src.api.periods.repository import PeriodRepository
+from src.api.periods.service import PeriodService
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -170,7 +171,7 @@ async def get_period_by_id(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
 
-        service = StudentService(PeriodRepository(session))
+        service = PeriodService(PeriodRepository(session))
 
         return PeriodResponse.model_validate(service.get_period_by_id(period_id))
     except EntityNotFound as e:

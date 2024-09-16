@@ -23,6 +23,7 @@ from src.api.tutors.exceptions import InvalidPeriod
 from src.api.tutors.repository import TutorRepository
 from src.config.database.database import get_db
 from src.api.periods.repository import PeriodRepository
+from src.api.periods.service import PeriodService
 
 router = APIRouter(prefix="/tutors")
 
@@ -196,7 +197,7 @@ async def add_period(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
-        service = TutorService(PeriodRepository(session))
+        service = PeriodService(PeriodRepository(session))
         return PeriodResponse.model_validate(service.add_period(period))
     except (InvalidPeriod, Duplicated) as e:
         raise e
@@ -227,7 +228,7 @@ async def get_periods(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
-        service = TutorService(PeriodRepository(session))
+        service = PeriodService(PeriodRepository(session))
 
         return PeriodList.model_validate(service.get_all_periods(order))
     except InvalidJwt as e:

@@ -126,6 +126,3 @@ class StudentService:
         personal_information.teammates = list(map(lambda x: x.email, teammates))
 
         return personal_information
-
-    def get_period_by_id(self, period_id: str) -> Period:
-        return self._user_repository.get_period_by_id(period_id)
