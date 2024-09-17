@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from src.api.students.router import router as student_router
 from src.api.periods.router import router as period_router
+from fastapi import status
 from src.config.database.database import create_tables, drop_tables
 
 from tests.integration.api.helper import ApiHelper
@@ -247,3 +248,59 @@ def test_get_existing_period_by_id(fastapi, tables):
     assert period["initial_project_active"] is False
     assert period["intermediate_project_active"] is False
     assert period["final_project_active"] is False
+    
+@pytest.mark.integration
+def test_create_student(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_admin_token()
+    student = {"id": 110000, "name": "Juan", "last_name": "Perez", "email": "juanperez123@fi.uba.ar"}
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=student,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["id"] == 110000
+    assert response.json()["name"] == "Juan"
+    assert response.json()["last_name"] == "Perez"
+    assert response.json()["email"] == "juanperez123@fi.uba.ar"
+
+@pytest.mark.integration
+def test_create_duplicated_student(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_admin_token()
+    student = {"id": 110001, "name": "Jose", "last_name": "Perez", "email": "joseperez@fi.uba.ar"}
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=student,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["id"] == 110001
+    assert response.json()["name"] == "Jose"
+    assert response.json()["last_name"] == "Perez"
+    assert response.json()["email"] == "joseperez@fi.uba.ar"
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=student,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Duplicated student"
+
+@pytest.mark.integration
+def test_create_student_with_invalid_token(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_student_token()
+    student = {"id": 110002, "name": "Josefa", "last_name": "Perez", "email": "josefaperez@fi.uba.ar"}
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=student,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid Authorization"
