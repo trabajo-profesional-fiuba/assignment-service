@@ -56,11 +56,5 @@ class TutorRequest(BaseModel):
     name: str
     last_name: str
     email: str
-    
-class TutorCreationResponse(TutorRequest):
-    id: int
-    name: str
-    last_name: str
-    email: str
-
-    model_config = ConfigDict(from_attributes=True)
+    period: str
+    capacity: int

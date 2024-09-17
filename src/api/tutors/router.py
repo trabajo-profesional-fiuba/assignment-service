@@ -16,13 +16,9 @@ from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
 from src.api.tutors.schemas import (
-    PeriodResponse,
-    PeriodRequest,
-    TutorCreationResponse,
     TutorRequest,
     TutorResponse,
     TutorList,
-    PeriodList,
     TutorWithTopicsList,
 )
 from src.api.auth.hasher import get_hasher, ShaHasher
@@ -80,7 +76,7 @@ async def upload_csv_file(
 
 @router.post(
     "",
-    response_model=TutorCreationResponse,
+    response_model=TutorResponse,
     description="Creates a new tutor",
     summary="Add a new tutor",
     tags=["Tutors"],
@@ -103,7 +99,7 @@ async def add_tutor(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return TutorCreationResponse.model_validate(service.add_tutor(tutor, hasher, UserRepository(session)))
+        return TutorResponse.model_validate(service.add_tutor(tutor, hasher, UserRepository(session)))
     except Duplicated as e:
         raise e
     except InvalidJwt as e:

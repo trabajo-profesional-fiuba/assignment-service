@@ -13,11 +13,12 @@ from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, Serv
 from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
 from src.api.students.repository import StudentRepository
+from src.api.students.schemas import PersonalInformation, StudentRequest
 from src.api.students.service import StudentService
 
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
-from src.api.users.schemas import PersonalInformation, StudentRequest, UserList, UserResponse
+from src.api.users.schemas import UserList, UserResponse
 
 from src.config.database.database import get_db
 from src.config.logging import logger
