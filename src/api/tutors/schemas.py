@@ -50,3 +50,11 @@ class TutorWithTopicsList(RootModel):
 
     def __iter__(self):
         return iter(self.root)
+
+class TutorRequest(BaseModel):
+    id: int
+    name: str
+    last_name: str
+    email: str
+    period: str
+    capacity: int

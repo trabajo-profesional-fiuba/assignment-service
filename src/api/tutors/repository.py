@@ -36,7 +36,18 @@ class TutorRepository:
 
             return tutor_periods
         except exc.IntegrityError as e:
-            raise PeriodDuplicated(message=f"{e}")
+            raise PeriodDuplicated(message=f"{e}")   
+        
+    def add_tutor_period_with_capacity(self, tutor_period: TutorPeriod):
+        try:
+            with self.Session() as session:
+                session.add(tutor_period)
+                session.commit()
+                session.expunge(tutor_period)
+
+            return tutor_period
+        except exc.IntegrityError as e:
+            raise PeriodDuplicated(message=f"{e}")   
 
     def get_tutor_by_tutor_id(self, tutor_id) -> User:
         with self.Session() as session:

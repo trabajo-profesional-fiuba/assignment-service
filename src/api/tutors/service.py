@@ -3,16 +3,22 @@ import re
 from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
-from src.api.tutors.schemas import TutorPeriodResponse, TutorResponse
+from src.api.tutors.schemas import (
+    TutorPeriodResponse,
+    TutorRequest,
+    TutorResponse
+)
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import (
     InvalidPeriod,
     PeriodDuplicated,
     TutorDuplicated,
     TutorNotFound,
+    TutorNotInserted,
     TutorPeriodNotInserted,
 )
 from src.api.tutors.models import TutorPeriod
+from src.api.users.repository import UserRepository
 
 
 class TutorService:
@@ -107,6 +113,34 @@ class TutorService:
             raise Duplicated(str(e))
         except (TutorNotFound, TutorPeriodNotInserted) as e:
             EntityNotFound(str(e))
+
+    def add_tutor(self, tutor: TutorRequest, hasher: ShaHasher, userRepository: UserRepository):
+        try:
+            new_tutor = User(
+                        id = tutor.id,
+                        name = tutor.name,
+                        last_name = tutor.last_name,
+                        email = tutor.email,
+                        password=hasher.hash(str(tutor.id)),
+                        role=Role.TUTOR,
+            )          
+
+            tutor_period = TutorPeriod(
+                period_id=tutor.period,
+                tutor_id=tutor.id,
+                capacity=tutor.capacity,
+            )
+            tutor_response = userRepository.add_user(new_tutor)
+            self._repository.add_tutor_period_with_capacity(tutor_period)
+
+            return tutor_response
+        except PeriodDuplicated as e:
+            raise Duplicated(str(e))            
+        except Duplicated:
+            raise Duplicated("Duplicated tutor")
+        except Exception as e:
+            print(str(e))
+            raise TutorNotInserted("Could not insert a tutor in the database")
 
     def _validate_period(self, period_id):
         """Validates that the period id

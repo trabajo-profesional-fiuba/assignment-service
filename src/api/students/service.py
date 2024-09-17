@@ -1,6 +1,7 @@
 from src.api.auth.hasher import ShaHasher
 from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
+from src.api.students.schemas import PersonalInformation
 from src.api.students.utils import StudentCsvFile
 from src.api.students.exceptions import (
     StudentDuplicated,
@@ -10,7 +11,7 @@ from src.api.students.exceptions import (
 
 from src.api.users.models import User, Role
 from src.api.users.repository import UserRepository
-from src.api.users.schemas import PersonalInformation, UserList
+from src.api.users.schemas import UserList, UserResponse
 
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 from src.api.students.repository import StudentRepository
@@ -126,3 +127,20 @@ class StudentService:
         personal_information.teammates = list(map(lambda x: x.email, teammates))
 
         return personal_information
+
+    def add_student(self, student: UserResponse, hasher: ShaHasher, userRepository: UserRepository):
+        try:
+            return userRepository.add_user(
+                User(
+                        id = student.id,
+                        name = student.name,
+                        last_name = student.last_name,
+                        email = student.email,
+                        password=hasher.hash(str(student.id)),
+                        role=Role.STUDENT,
+                )
+            )
+        except Duplicated:
+            raise Duplicated("Duplicated student")
+        except Exception:
+            raise StudentNotInserted("Could not insert a student in the database")
