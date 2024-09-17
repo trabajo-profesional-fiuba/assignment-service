@@ -1,6 +1,7 @@
 from src.api.auth.hasher import ShaHasher
 from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
+from src.api.students.schemas import PersonalInformation
 from src.api.students.utils import StudentCsvFile
 from src.api.students.exceptions import (
     StudentDuplicated,
@@ -10,7 +11,7 @@ from src.api.students.exceptions import (
 
 from src.api.users.models import User, Role
 from src.api.users.repository import UserRepository
-from src.api.users.schemas import PersonalInformation, UserList, UserResponse
+from src.api.users.schemas import UserList, UserResponse
 
 from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 from src.api.students.repository import StudentRepository
