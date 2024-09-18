@@ -212,8 +212,22 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
 
+    def get_tutor_period_by_tutor_id(self, period, tutor_id) -> TutorPeriod:
+        """
+        Looks up for a tutor based on its email
+        """
+        try:
+            return self._repository.get_tutor_period_by_tutor_id(period, tutor_id)
+        except TutorNotFound as e:
+            raise EntityNotFound(message=str(e))
+
     def get_tutor_periods_by_period_id(self, period_id):
         try:
             return self._repository.get_tutor_periods_by_periods_id(period_id)
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
+
+    def get_groups_from_tutor_id(self, tutor_id, period_id, group_repository):
+        period = self.get_tutor_period_by_tutor_id(period_id, tutor_id)
+        groups = group_repository.get_groups_by_period_id(period.id)
+        return groups

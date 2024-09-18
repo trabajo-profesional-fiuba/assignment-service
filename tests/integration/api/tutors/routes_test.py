@@ -488,3 +488,28 @@ def test_create_tutor_with_invalid_token(fastapi, tables):
     )
     assert response.status_code == 401
     assert response.json()["detail"] == "Invalid Authorization"
+
+
+@pytest.mark.integration
+def test_get_groups_assigned_to_tutor(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_tutor("pepe", "tutor", "12345678", "pepe@fi.uba.ar")
+    period = helper.create_tutor_period(12345678, "1C2024")
+    helper.create_default_topics(["topic1", "topic2"])
+    helper.add_tutor_to_topic("1C2024", "pepe@fi.uba.ar", ["topic1", "topic2"], [1, 1])
+    helper.create_student("john", "Student", "105285", "student@fi.uba.ar")
+    helper.create_student("juan", "Student2", "105286", "student2@fi.uba.ar")
+    helper.create_group([105285], period.id, 1, "1C2024")
+    helper.create_group([105286], period.id, 2, "1C2024")
+    token = helper.create_tutor_token_with_id(12345678)
+
+    params = {"period_id": "1C2024"}
+    response = fastapi.get(
+        f"{PREFIX}/my-groups",
+        params=params,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+
+    assert response.status_code == 200
+    assert len(response.json()) == 2

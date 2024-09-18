@@ -64,7 +64,8 @@ class ApiHelper:
 
     def create_tutor_period(self, tutor_id: int, period_id: str, capacity: int = 1):
         period = TutorPeriod(tutor_id=tutor_id, period_id=period_id, capacity=capacity)
-        self._tutor_repository.add_tutor_periods([period])
+        periods = self._tutor_repository.add_tutor_periods([period])
+        return periods[0]
 
     def get_tutor_by_tutor_id(self, tutor_id):
         return self._tutor_repository.get_tutor_by_tutor_id(tutor_id)
@@ -102,6 +103,17 @@ class ApiHelper:
         token = jwt.create_token(sub, "student")
         return token
 
+    def create_tutor_token_with_id(self, id: int):
+        sub = {
+            "id": id,
+            "name": "tutor",
+            "last_name": "tutor",
+            "role": "tutor",
+        }
+        jwt = JwtResolver()
+        token = jwt.create_token(sub, "tutor")
+        return token
+
     def create_topic(self, name: str, category_id: int = 1):
         topic = Topic(name=name, category_id=category_id)
         self._topic_repository.add_topic(topic)
@@ -115,7 +127,9 @@ class ApiHelper:
             topic = Topic(name=name, category_id=1)
             self._topic_repository.add_topic(topic)
 
-    def add_tutor_to_topic(self, period_id, tutor_email, topics, capacities):
+    def add_tutor_to_topic(
+        self, period_id: str, tutor_email: str, topics: list[str], capacities: list[int]
+    ):
         topics_db = [Topic(name=t, category_id=1) for t in topics]
 
         self._tutor_repository.add_topic_tutor_period(
@@ -151,4 +165,18 @@ class ApiHelper:
     ):
         return self._groups_repository.add_group(
             ids=ids, preferred_topics=topics, period_id=period_id
+        )
+
+    def create_group(
+        self,
+        ids: list[int],
+        tutor_period_id: int,
+        topic_id,
+        period_id: str = None,
+    ):
+        return self._groups_repository.add_group(
+            ids=ids,
+            tutor_period_id=tutor_period_id,
+            period_id=period_id,
+            topic_id=topic_id,
         )
