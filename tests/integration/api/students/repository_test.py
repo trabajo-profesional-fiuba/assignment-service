@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 from tests.integration.api.helper import ApiHelper
 from src.api.students.models import StudentPeriod
-from src.api.students.exceptions import StudentNotFound
+from src.api.students.exceptions import StudentNotFound, StudentPeriodNotInserted
 
 
 @pytest.fixture(scope="module")
@@ -185,3 +185,23 @@ class TestStudentRepository:
         result = s_repository.get_period_by_student_id(101)
         assert result.period_id == "2C2025"
         assert result.student_id == 101
+
+    @pytest.mark.integration
+    def test_upsert_student_periods_when_period_not_found(self, tables):
+        helper = ApiHelper()
+
+        s_repository = StudentRepository(self.Session)
+        periods = [StudentPeriod(period_id="3C2025", student_id=101)]
+
+        with pytest.raises(StudentPeriodNotInserted):
+            s_repository.upsert_student_periods(periods)
+
+    @pytest.mark.integration
+    def test_upsert_student_periods_when_student_not_found(self, tables):
+        helper = ApiHelper()
+
+        s_repository = StudentRepository(self.Session)
+        periods = [StudentPeriod(period_id="3C2025", student_id=102)]
+
+        with pytest.raises(StudentPeriodNotInserted):
+            s_repository.upsert_student_periods(periods)
