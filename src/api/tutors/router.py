@@ -12,6 +12,8 @@ from src.api.exceptions import (
     InvalidFileType,
     ServerError,
 )
+from src.api.groups.repository import GroupRepository
+from src.api.groups.schemas import GroupList
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
@@ -74,6 +76,7 @@ async def upload_csv_file(
     except Exception as e:
         raise ServerError(str(e))
 
+
 @router.post(
     "",
     response_model=TutorResponse,
@@ -99,7 +102,9 @@ async def add_tutor(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return TutorResponse.model_validate(service.add_tutor(tutor, hasher, UserRepository(session)))
+        return TutorResponse.model_validate(
+            service.add_tutor(tutor, hasher, UserRepository(session))
+        )
     except Duplicated as e:
         raise e
     except InvalidJwt as e:
@@ -235,6 +240,44 @@ async def get_tutors_by_period_id(
         return TutorWithTopicsList.model_validate(
             service.get_tutors_by_period_id(period_id)
         )
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.get(
+    "/my-groups",
+    response_model=GroupList,
+    description="Returns the groups of a tutor",
+    summary="Get all the groups of a tutor based on a period",
+    tags=["Tutors"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_groups_by_tutor(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+        tutor_id = auth_service.get_user_id(token)
+
+        service = TutorService(TutorRepository(session))
+        group_repository = GroupRepository(session)
+
+        groups = service.get_groups_from_tutor_id(tutor_id, period_id, group_repository)
+
+        return GroupList.model_validate(groups)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:

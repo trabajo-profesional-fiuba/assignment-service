@@ -144,6 +144,7 @@ async def get_student_info(
     except Exception as e:
         raise e
 
+
 @router.post(
     "",
     response_model=UserResponse,
@@ -168,7 +169,9 @@ async def add_student(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = StudentService(StudentRepository(session))
-        return UserResponse.model_validate(service.add_student(student, hasher, UserRepository(session)))
+        return UserResponse.model_validate(
+            service.add_student(student, hasher, UserRepository(session))
+        )
     except Duplicated as e:
         raise e
     except InvalidJwt as e:
