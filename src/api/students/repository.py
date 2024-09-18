@@ -101,11 +101,6 @@ class StudentRepository:
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message=f"{e}")
 
-    def delete_all_student_periods(self):
-        with self.Session() as session:
-            session.query(StudentPeriod).delete()
-            session.commit()
-
     def upsert_student_periods(
         self, student_periods: list[StudentPeriod]
     ) -> list[StudentPeriod]:
