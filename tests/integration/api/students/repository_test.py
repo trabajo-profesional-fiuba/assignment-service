@@ -172,3 +172,15 @@ class TestStudentRepository:
 
         with pytest.raises(StudentNotFound):
             s_repository.get_period_by_student_id(102)
+
+    @pytest.mark.integration
+    def test_add_student_periods(self, tables):
+        helper = ApiHelper()
+        helper.create_student("test102", "test102", "102", "test102@com")
+        s_repository = StudentRepository(self.Session)
+        periods = [StudentPeriod(period_id="2C2024", student_id=102)]
+
+        s_repository.add_student_periods(periods)
+        result = s_repository.get_period_by_student_id(102)
+        assert result.period_id == "2C2024"
+        assert result.student_id == 102

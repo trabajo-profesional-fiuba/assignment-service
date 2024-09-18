@@ -53,9 +53,8 @@ async def upload_csv_file(
         logger.info("csv contains the correct content-type")
         content = (await file.read()).decode("utf-8")
         service = StudentService(UserRepository(session))
-        res = service.create_students_from_string(content, hasher)
 
-        return res
+        return service.create_students_from_string(content, hasher)
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
@@ -144,6 +143,7 @@ async def get_student_info(
     except Exception as e:
         raise e
 
+
 @router.post(
     "",
     response_model=UserResponse,
@@ -168,7 +168,9 @@ async def add_student(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = StudentService(StudentRepository(session))
-        return UserResponse.model_validate(service.add_student(student, hasher, UserRepository(session)))
+        return UserResponse.model_validate(
+            service.add_student(student, hasher, UserRepository(session))
+        )
     except Duplicated as e:
         raise e
     except InvalidJwt as e:

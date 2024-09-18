@@ -3,11 +3,7 @@ import re
 from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
-from src.api.tutors.schemas import (
-    TutorPeriodResponse,
-    TutorRequest,
-    TutorResponse
-)
+from src.api.tutors.schemas import TutorPeriodResponse, TutorRequest, TutorResponse
 from src.api.tutors.utils import TutorCsvFile
 from src.api.tutors.exceptions import (
     InvalidPeriod,
@@ -114,16 +110,18 @@ class TutorService:
         except (TutorNotFound, TutorPeriodNotInserted) as e:
             EntityNotFound(str(e))
 
-    def add_tutor(self, tutor: TutorRequest, hasher: ShaHasher, userRepository: UserRepository):
+    def add_tutor(
+        self, tutor: TutorRequest, hasher: ShaHasher, userRepository: UserRepository
+    ):
         try:
             new_tutor = User(
-                        id = tutor.id,
-                        name = tutor.name,
-                        last_name = tutor.last_name,
-                        email = tutor.email,
-                        password=hasher.hash(str(tutor.id)),
-                        role=Role.TUTOR,
-            )          
+                id=tutor.id,
+                name=tutor.name,
+                last_name=tutor.last_name,
+                email=tutor.email,
+                password=hasher.hash(str(tutor.id)),
+                role=Role.TUTOR,
+            )
 
             tutor_period = TutorPeriod(
                 period_id=tutor.period,
@@ -135,7 +133,7 @@ class TutorService:
 
             return tutor_response
         except PeriodDuplicated as e:
-            raise Duplicated(str(e))            
+            raise Duplicated(str(e))
         except Duplicated:
             raise Duplicated("Duplicated tutor")
         except Exception as e:

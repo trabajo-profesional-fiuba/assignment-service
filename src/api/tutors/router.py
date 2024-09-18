@@ -74,6 +74,7 @@ async def upload_csv_file(
     except Exception as e:
         raise ServerError(str(e))
 
+
 @router.post(
     "",
     response_model=TutorResponse,
@@ -99,7 +100,9 @@ async def add_tutor(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return TutorResponse.model_validate(service.add_tutor(tutor, hasher, UserRepository(session)))
+        return TutorResponse.model_validate(
+            service.add_tutor(tutor, hasher, UserRepository(session))
+        )
     except Duplicated as e:
         raise e
     except InvalidJwt as e:

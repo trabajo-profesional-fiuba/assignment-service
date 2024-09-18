@@ -85,3 +85,16 @@ class StudentRepository:
             if student_period:
                 return student_period
             raise StudentNotFound("The student id is not registered")
+
+    def add_student_periods(
+        self, student_periods: list[StudentPeriod]
+    ) -> list[StudentPeriod]:
+        try:
+            with self.Session() as session:
+                session.add_all(student_periods)
+                session.commit()
+                session.expunge_all()
+
+            return student_periods
+        except exc.IntegrityError as e:
+            raise PeriodDuplicated(message=f"{e}")

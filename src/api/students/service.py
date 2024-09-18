@@ -128,16 +128,18 @@ class StudentService:
 
         return personal_information
 
-    def add_student(self, student: UserResponse, hasher: ShaHasher, userRepository: UserRepository):
+    def add_student(
+        self, student: UserResponse, hasher: ShaHasher, userRepository: UserRepository
+    ):
         try:
             return userRepository.add_user(
                 User(
-                        id = student.id,
-                        name = student.name,
-                        last_name = student.last_name,
-                        email = student.email,
-                        password=hasher.hash(str(student.id)),
-                        role=Role.STUDENT,
+                    id=student.id,
+                    name=student.name,
+                    last_name=student.last_name,
+                    email=student.email,
+                    password=hasher.hash(str(student.id)),
+                    role=Role.STUDENT,
                 )
             )
         except Duplicated:
