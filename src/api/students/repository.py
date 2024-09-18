@@ -1,4 +1,4 @@
-from sqlalchemy import exc
+from sqlalchemy import exc, select, update
 from sqlalchemy.orm import Session
 from src.api.groups.models import Group
 from src.api.topics.models import Topic
@@ -6,7 +6,7 @@ from src.api.tutors.models import TutorPeriod
 from src.api.periods.models import Period
 from src.api.users.models import User, Role
 from src.api.tutors.exceptions import PeriodDuplicated
-from src.api.students.exceptions import StudentNotFound
+from src.api.students.exceptions import StudentNotFound, StudentPeriodNotInserted
 from src.api.students.models import StudentPeriod
 
 
@@ -105,3 +105,34 @@ class StudentRepository:
         with self.Session() as session:
             session.query(StudentPeriod).delete()
             session.commit()
+
+    def upsert_student_periods(
+        self, student_periods: list[StudentPeriod]
+    ) -> list[StudentPeriod]:
+        try:
+            with self.Session() as session:
+                for period in student_periods:
+                    stmt = select(StudentPeriod).where(
+                        StudentPeriod.student_id == period.student_id
+                    )
+                    period_db = session.execute(stmt).scalars().first()
+                    if period_db is None:
+                        session.add(period)
+                        session.commit()
+                        session.refresh(period)
+                        session.expunge(period)
+
+                    else:
+                        update_stmt = (
+                            update(StudentPeriod)
+                            .where(StudentPeriod.student_id == period.student_id)
+                            .values(period_id=period.period_id)
+                        )
+                        session.execute(update_stmt)
+                        session.commit()
+
+            return student_periods
+        except Exception as e:
+            raise StudentPeriodNotInserted(
+                "Could not insert a student period in the database"
+            )

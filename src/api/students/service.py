@@ -54,8 +54,7 @@ class StudentService:
                 rows, hasher, period
             )
             students_saved = repository.upsert_students(students)
-            self._repository.delete_all_student_periods()
-            self._repository.add_student_periods(student_periods)
+            self._repository.upsert_student_periods(student_periods)
             return UserList.model_validate(students_saved)
         except InvalidCsv as e:
             raise e
