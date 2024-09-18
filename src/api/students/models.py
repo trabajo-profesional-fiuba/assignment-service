@@ -1,16 +1,6 @@
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    ForeignKey,
-    Boolean,
-    DateTime,
-    UniqueConstraint,
-)
+from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 from src.config.database.base import Base
-from src.api.periods.models import Period
 
 
 class StudentPeriod(Base):

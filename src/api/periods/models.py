@@ -1,12 +1,4 @@
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    ForeignKey,
-    Boolean,
-    DateTime,
-    UniqueConstraint,
-)
+from sqlalchemy import Column, String, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from src.config.database.base import Base

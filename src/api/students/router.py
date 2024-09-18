@@ -1,6 +1,6 @@
 from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
-from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
+from fastapi import APIRouter, UploadFile, Depends, status, Query
 from sqlalchemy.orm import Session
 
 from src.api.auth.hasher import get_hasher, ShaHasher

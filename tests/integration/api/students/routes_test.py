@@ -4,7 +4,6 @@ from fastapi.testclient import TestClient
 
 from src.api.students.router import router as student_router
 from src.api.periods.router import router as period_router
-from fastapi import status
 from src.config.database.database import create_tables, drop_tables
 
 from tests.integration.api.helper import ApiHelper

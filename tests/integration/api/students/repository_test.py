@@ -188,8 +188,6 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_upsert_student_periods_when_period_not_found(self, tables):
-        helper = ApiHelper()
-
         s_repository = StudentRepository(self.Session)
         periods = [StudentPeriod(period_id="3C2025", student_id=101)]
 
@@ -198,8 +196,6 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_upsert_student_periods_when_student_not_found(self, tables):
-        helper = ApiHelper()
-
         s_repository = StudentRepository(self.Session)
         periods = [StudentPeriod(period_id="3C2025", student_id=102)]
 

@@ -4,13 +4,10 @@ from sqlalchemy import (
     Integer,
     ForeignKey,
     Boolean,
-    DateTime,
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 from src.config.database.base import Base
-from src.api.periods.models import Period
 
 
 class TutorPeriod(Base):
