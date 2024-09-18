@@ -30,14 +30,18 @@ class TutorRepository:
     def add_tutor_periods(self, tutor_periods: list[TutorPeriod]):
         try:
             with self.Session() as session:
-                session.add_all(tutor_periods)
+                for period in tutor_periods:
+                    session.add(period)
                 session.commit()
-                session.expunge_all()
+
+                for period in tutor_periods:
+                    session.refresh(period)
+                    session.expunge(period)
 
             return tutor_periods
         except exc.IntegrityError as e:
-            raise PeriodDuplicated(message=f"{e}")   
-        
+            raise PeriodDuplicated(message=f"{e}")
+
     def add_tutor_period_with_capacity(self, tutor_period: TutorPeriod):
         try:
             with self.Session() as session:
@@ -47,7 +51,7 @@ class TutorRepository:
 
             return tutor_period
         except exc.IntegrityError as e:
-            raise PeriodDuplicated(message=f"{e}")   
+            raise PeriodDuplicated(message=f"{e}")
 
     def get_tutor_by_tutor_id(self, tutor_id) -> User:
         with self.Session() as session:
@@ -69,6 +73,24 @@ class TutorRepository:
                 session.query(TutorPeriod)
                 .join(User)
                 .filter(User.email == tutor_email, TutorPeriod.period_id == period)
+                .one_or_none()
+            )
+
+            if tutor_period is None:
+                raise TutorNotFound(
+                    "The tutor does not exist or this period is not present"
+                )
+
+            session.expunge(tutor_period)
+
+        return tutor_period
+
+    def get_tutor_period_by_tutor_id(self, period, tutor_id) -> TutorPeriod:
+        with self.Session() as session:
+            tutor_period = (
+                session.query(TutorPeriod)
+                .join(User)
+                .filter(User.id == tutor_id, TutorPeriod.period_id == period)
                 .one_or_none()
             )
 

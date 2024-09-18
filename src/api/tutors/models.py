@@ -38,7 +38,7 @@ class TutorPeriod(Base):
     is_evaluator = Column(Boolean, default=False)
 
     tutor = relationship("User", back_populates="tutor_periods", lazy="subquery")
-    period = relationship("Period", back_populates="tutor_periods")
+    period = relationship("Period", back_populates="tutor_periods", lazy="subquery")
     topics = relationship("Topic", secondary="topics_tutor_periods", lazy="subquery")
     groups = relationship(
         "Group", back_populates="tutor_period", uselist=True, lazy="noload"

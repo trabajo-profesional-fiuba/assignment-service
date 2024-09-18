@@ -123,3 +123,20 @@ class GroupRepository:
                 groups_to_update,
             )
             session.commit()
+
+    def get_groups_by_period_id(self, tutor_period_id):
+        """Returns all groups for a given assigned_tutor_period"""
+        with self.Session() as session:
+            groups = (
+                session.query(Group)
+                .options(
+                    joinedload(Group.topic),
+                    joinedload(Group.tutor_period),
+                    joinedload(Group.period),
+                    joinedload(Group.students),
+                )
+                .filter(Group.tutor_period_id == tutor_period_id)
+                .all()
+            )
+            session.expunge_all()
+        return groups
