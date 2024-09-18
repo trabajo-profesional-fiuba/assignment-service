@@ -8,7 +8,7 @@ from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from tests.integration.api.helper import ApiHelper
-from src.api.tutors.models import StudentPeriod
+from src.api.students.models import StudentPeriod
 from src.api.students.exceptions import StudentNotFound
 
 
@@ -184,3 +184,11 @@ class TestStudentRepository:
         result = s_repository.get_period_by_student_id(102)
         assert result.period_id == "2C2024"
         assert result.student_id == 102
+
+    @pytest.mark.integration
+    def test_delete_all_student_periods(self, tables):
+        s_repository = StudentRepository(self.Session)
+
+        s_repository.delete_all_student_periods()
+        with pytest.raises(StudentNotFound):
+            s_repository.get_period_by_student_id(102)

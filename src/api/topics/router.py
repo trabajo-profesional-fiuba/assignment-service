@@ -47,7 +47,7 @@ async def upload_csv_file(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+    period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -57,7 +57,7 @@ async def upload_csv_file(
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
         return service.create_topics_from_string(
-            period_id, content, TutorRepository(session)
+            period, content, TutorRepository(session)
         )
     except (
         EntityNotFound,

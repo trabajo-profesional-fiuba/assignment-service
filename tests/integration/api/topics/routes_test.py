@@ -59,7 +59,7 @@ def test_add_topics_with_tutor_not_found(fastapi, tables, topics):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -85,7 +85,7 @@ def test_add_topics_with_diff_categories_success(fastapi, tables, tutors, topics
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -113,7 +113,7 @@ def test_add_topics_with_same_category_success(fastapi, tables, tutors, topics):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -143,7 +143,7 @@ def test_add_existing_topic_with_success(fastapi, tables, tutors, topics):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -162,7 +162,7 @@ def test_upload_wrong_type_file(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=files,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
@@ -177,7 +177,7 @@ def test_upload_wrong_format_file(fastapi, tables, topics):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -202,7 +202,7 @@ def test_get_topics_with_success(fastapi, tables, tutors, topics):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -238,7 +238,7 @@ def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -247,7 +247,7 @@ def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED

@@ -10,21 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from src.config.database.base import Base
-
-
-class Period(Base):
-    __tablename__ = "periods"
-
-    id = Column(String, primary_key=True)
-    created_at = Column(DateTime(), server_default=func.now())
-    form_active = Column(Boolean, default=True)
-    initial_project_active = Column(Boolean, default=False)
-    intermediate_project_active = Column(Boolean, default=False)
-    final_project_active = Column(Boolean, default=False)
-
-    tutor_periods = relationship("TutorPeriod", back_populates="period")
-    groups = relationship("Group", back_populates="period")
-    student_periods = relationship("StudentPeriod", back_populates="period")
+from src.api.periods.models import Period
 
 
 class TutorPeriod(Base):
@@ -47,13 +33,3 @@ class TutorPeriod(Base):
     __table_args__ = (
         UniqueConstraint("period_id", "tutor_id", name="tutor_period_const"),
     )
-
-
-class StudentPeriod(Base):
-    __tablename__ = "student_periods"
-
-    period_id = Column(String, ForeignKey("periods.id"), primary_key=True)
-    student_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
-
-    period = relationship("Period", back_populates="student_periods", lazy="noload")
-    student = relationship("User", back_populates="student_periods", lazy="noload")

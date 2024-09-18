@@ -1,6 +1,6 @@
 from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
-from fastapi import APIRouter, UploadFile, Depends, status, Query
+from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
 from sqlalchemy.orm import Session
 
 from src.api.auth.hasher import get_hasher, ShaHasher
@@ -42,6 +42,7 @@ async def upload_csv_file(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -52,9 +53,11 @@ async def upload_csv_file(
 
         logger.info("csv contains the correct content-type")
         content = (await file.read()).decode("utf-8")
-        service = StudentService(UserRepository(session))
+        service = StudentService(StudentRepository(session))
 
-        return service.create_students_from_string(content, hasher)
+        return service.create_students_from_string(
+            content, hasher, UserRepository(session), period
+        )
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e

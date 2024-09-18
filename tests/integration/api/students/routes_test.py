@@ -36,6 +36,8 @@ def fastapi():
 def test_upload_file_and_create_students(fastapi, tables):
     # Arrange
     helper = ApiHelper()
+    helper.create_period("2C2024")
+
     token = helper.create_admin_token()
     with open("tests/integration/api/students/test_data.csv", "rb") as file:
         content = file.read()
@@ -48,6 +50,7 @@ def test_upload_file_and_create_students(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=files,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
@@ -70,6 +73,7 @@ def test_upload_file_raise_exception_if_type_is_not_csv(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=files,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
@@ -90,6 +94,7 @@ def test_get_student_by_ids(fastapi, tables):
     _ = fastapi.post(
         f"{PREFIX}/upload",
         files=files,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
@@ -165,6 +170,7 @@ def test_get_all_students(fastapi, tables):
 @pytest.mark.integration
 def test_update_student_file_with_success(fastapi, tables):
     helper = ApiHelper()
+
     token = helper.create_admin_token()
     with open("tests/integration/api/students/test_data.csv", "rb") as file:
         content = file.read()
@@ -176,6 +182,7 @@ def test_update_student_file_with_success(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=files,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == 201
@@ -184,6 +191,7 @@ def test_update_student_file_with_success(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}/upload",
         files=files,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == 201
@@ -195,7 +203,6 @@ def test_get_personal_info_without_form_answers(fastapi, tables):
     helper = ApiHelper()
     token = helper.create_student_token_with_id(100)
 
-    helper.create_period("2C2024")
     helper.create_student("Juan", "Perez", "100", "juanperez@fi.uba.ar")
     helper.create_student_period(100, "2C2024")
 
@@ -233,17 +240,15 @@ def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables)
 def test_get_existing_period_by_id(fastapi, tables):
     # Arrange
     helper = ApiHelper()
-    helper.create_period("1C2024")
-    helper.create_student_period(100, "1C2024")
     student_token = helper.create_student_token_with_id(100)
 
     response = fastapi.get(
-        f"{PERIOD_PREFIX}/1C2024",
+        f"{PERIOD_PREFIX}/2C2024",
         headers={"Authorization": f"Bearer {student_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
     period = response.json()
-    assert period["id"] == "1C2024"
+    assert period["id"] == "2C2024"
     assert period["form_active"] is True
     assert period["initial_project_active"] is False
     assert period["intermediate_project_active"] is False

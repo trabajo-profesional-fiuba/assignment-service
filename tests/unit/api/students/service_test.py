@@ -26,7 +26,7 @@ class TestStudentService:
         service = StudentService(repo)
 
         with pytest.raises(InvalidCsv):
-            _ = service.create_students_from_string("bla,bla,bla", hash)
+            _ = service.create_students_from_string("bla,bla,bla", hash, repo, "1C2024")
 
     @pytest.mark.unit
     def test_get_student_by_ids(self, mocker):

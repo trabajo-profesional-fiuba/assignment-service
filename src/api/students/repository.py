@@ -2,10 +2,12 @@ from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from src.api.groups.models import Group
 from src.api.topics.models import Topic
-from src.api.tutors.models import TutorPeriod, StudentPeriod, Period
+from src.api.tutors.models import TutorPeriod
+from src.api.periods.models import Period
 from src.api.users.models import User, Role
 from src.api.tutors.exceptions import PeriodDuplicated
 from src.api.students.exceptions import StudentNotFound
+from src.api.students.models import StudentPeriod
 
 
 class StudentRepository:
@@ -98,3 +100,8 @@ class StudentRepository:
             return student_periods
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message=f"{e}")
+
+    def delete_all_student_periods(self):
+        with self.Session() as session:
+            session.query(StudentPeriod).delete()
+            session.commit()
