@@ -22,8 +22,8 @@ class TestAzureContainerClient:
     def test_upload_test_file_to_azure(self):
 
         # Arrange
-        filename = "test_data.txt"
-        file_path = "tests/unit/core/test_data.txt"
+        filename = "upload.txt"
+        file_path = "tests/unit/core/upload.txt"
         container_name = api_config.container
         access_key = api_config.storage_access_key
         az_client = AzureContainerClient(
@@ -41,7 +41,7 @@ class TestAzureContainerClient:
     def test_download_test_file_to_azure(self):
 
         # Arrange
-        filename = "test_data.txt"
+        filename = "test_data.txt" # test_data is already in the storage
         outputfilename = "C:/dev/uba/assignment-service/tests/unit/core/download.txt"
 
         expected_content = (
