@@ -1,4 +1,5 @@
 from sqlalchemy import exc, select, update
+from sqlalchemy.dialects.postgresql import insert
 
 from sqlalchemy.orm import Session
 from src.api.groups.models import Group
@@ -102,33 +103,39 @@ class StudentRepository:
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message=f"{e}")
 
-    def upsert_student_periods(
-        self, student_periods: list[StudentPeriod]
-    ) -> list[StudentPeriod]:
+    def upsert_student_periods(self, student_periods: list[StudentPeriod]):
         try:
             with self.Session() as session:
-                for period in student_periods:
-                    stmt = select(StudentPeriod).where(
-                        StudentPeriod.student_id == period.student_id
-                    )
-                    period_db = session.execute(stmt).scalars().first()
-                    if period_db is None:
-                        session.add(period)
-                        session.commit()
-                        session.refresh(period)
-                        session.expunge(period)
+                student_ids = {sp.student_id for sp in student_periods}
 
-                    else:
-                        update_stmt = (
-                            update(StudentPeriod)
-                            .where(StudentPeriod.student_id == period.student_id)
-                            .values(period_id=period.period_id)
-                        )
-                        session.execute(update_stmt)
-                        session.commit()
+                # Select existing student periods
+                stmt = select(StudentPeriod).where(
+                    StudentPeriod.student_id.in_(student_ids)
+                )
+                existing_student_periods = session.execute(stmt).scalars().all()
+                existing_keys = {sp.student_id for sp in existing_student_periods}
 
-            return student_periods
+                # Classify into new and existing student periods
+                new_student_periods = [
+                    sp for sp in student_periods if sp.student_id not in existing_keys
+                ]
+                update_student_periods = [
+                    sp for sp in student_periods if sp.student_id in existing_keys
+                ]
+
+                # Bulk insert new student periods
+                if new_student_periods:
+                    session.bulk_save_objects(new_student_periods)
+                    session.commit()
+
+                # Bulk update existing student periods
+                if update_student_periods:
+                    for sp in update_student_periods:
+                        session.merge(sp)
+                    session.commit()
+
+                return student_periods
         except Exception as e:
             raise StudentPeriodNotInserted(
-                "Could not insert a student period in the database"
+                "Could not insert student periods in the database"
             )
