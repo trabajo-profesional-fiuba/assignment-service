@@ -28,4 +28,6 @@ jobs:
       uses: ./.github/workflows/integration.yml
       secrets:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        AZURE_STORAGE_CONTAINER_NAME: ${{ secrets.AZURE_STORAGE_CONTAINER_NAME }}
+        AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
 
