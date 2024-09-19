@@ -45,7 +45,7 @@ class TestAzureContainerClient:
         # Arrange
         filename = "test_data.txt"  # test_data is already in the storage
         outputfilename = (
-            "C:/dev/uba/assignment-service/tests/integration/core/download.txt"
+            "tests/integration/core/download.txt"
         )
 
         if os.path.exists(outputfilename):
