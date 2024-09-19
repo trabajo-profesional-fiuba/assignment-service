@@ -1,15 +1,17 @@
 import pytest
 
-from src.api.students.repository import StudentRepository
+from sqlalchemy.orm import sessionmaker, scoped_session
+
 from src.api.users.repository import UserRepository
 from src.api.users.models import User, Role
 
 from src.config.database.database import create_tables, drop_tables, engine
-from sqlalchemy.orm import sessionmaker, scoped_session
 
-from tests.integration.api.helper import ApiHelper
+from src.api.students.repository import StudentRepository
 from src.api.students.models import StudentPeriod
 from src.api.students.exceptions import StudentNotFound, StudentPeriodNotInserted
+
+from tests.integration.api.helper import ApiHelper
 
 
 @pytest.fixture(scope="module")

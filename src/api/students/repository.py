@@ -1,4 +1,5 @@
 from sqlalchemy import exc, select, update
+
 from sqlalchemy.orm import Session
 from src.api.groups.models import Group
 from src.api.topics.models import Topic
@@ -100,48 +101,6 @@ class StudentRepository:
             return student_periods
         except exc.IntegrityError as e:
             raise PeriodDuplicated(message=f"{e}")
-
-    def upsert_student_periods(
-        self, student_periods: list[StudentPeriod]
-    ) -> list[StudentPeriod]:
-        try:
-            with self.Session() as session:
-                # Select all existing student periods from the database
-                student_ids = [period.student_id for period in student_periods]
-                stmt = select(StudentPeriod).where(
-                    StudentPeriod.student_id.in_(student_ids)
-                )
-                existing_periods = session.execute(stmt).scalars().all()
-                existing_ids = {period.student_id for period in existing_periods}
-
-                # Split the provided periods into new and existing ones
-                new_periods = [
-                    period
-                    for period in student_periods
-                    if period.student_id not in existing_ids
-                ]
-                update_periods = [
-                    period
-                    for period in student_periods
-                    if period.student_id in existing_ids
-                ]
-
-                # Insert new student periods in bulk
-                if new_periods:
-                    session.bulk_save_objects(new_periods)
-                    session.commit()
-
-                # Update existing student periods in bulk
-                if update_periods:
-                    session.bulk_update_mappings(StudentPeriod, update_periods)
-                    session.commit()
-
-                return student_periods
-
-        except SQLAlchemyError as e:
-            raise StudentPeriodNotInserted(
-                "Could not insert or update student periods in the database"
-            )
 
     def upsert_student_periods(
         self, student_periods: list[StudentPeriod]
