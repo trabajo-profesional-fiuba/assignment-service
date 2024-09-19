@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from src.config.config import api_config
@@ -6,7 +7,7 @@ from src.core.azure_container_client import AzureContainerClient
 
 class TestAzureContainerClient:
 
-    @pytest.mark.unit
+    @pytest.mark.integration
     def test_azure_container_client_exists(self):
         # Arrange
         container_name = api_config.container
@@ -23,7 +24,7 @@ class TestAzureContainerClient:
 
         # Arrange
         filename = "upload.txt"
-        file_path = "tests/unit/core/upload.txt"
+        file_path = "tests/integration/core/upload.txt"
         container_name = api_config.container
         access_key = api_config.storage_access_key
         az_client = AzureContainerClient(
@@ -34,7 +35,7 @@ class TestAzureContainerClient:
             content = file.read()
         # Act
         blob = az_client.upload(content, filename, True)
-        
+
         # Assert
         assert blob.blob_name == filename
 
@@ -43,7 +44,12 @@ class TestAzureContainerClient:
 
         # Arrange
         filename = "test_data.txt"  # test_data is already in the storage
-        outputfilename = "C:/dev/uba/assignment-service/tests/unit/core/download.txt"
+        outputfilename = (
+            "C:/dev/uba/assignment-service/tests/integration/core/download.txt"
+        )
+
+        if os.path.exists(outputfilename):
+            os.remove(outputfilename)
 
         expected_content = (
             "This is a txt file just for uploading and downloading for azure storage"
@@ -64,3 +70,23 @@ class TestAzureContainerClient:
         assert (
             file_content == expected_content
         ), f"Content does not match. Expected: '{expected_content}', Found: '{file_content}'"
+
+    @pytest.mark.integration
+    def test_try_to_download_file_not_exists(self):
+
+        # Arrange
+        filename = "not_exists.txt"  # test_data is already in the storage
+        outputfilename = (
+            "C:/dev/uba/assignment-service/tests/integration/core/not_exists.txt"
+        )
+
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+
+        with pytest.raises(Exception):
+            az_client.download(filename, outputfilename)
+
+        # Assert that the content matches the expected content
