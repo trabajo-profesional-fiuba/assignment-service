@@ -14,6 +14,8 @@ class Period(Base):
     intermediate_project_active = Column(Boolean, default=False)
     final_project_active = Column(Boolean, default=False)
 
-    tutor_periods = relationship("TutorPeriod", back_populates="period")
-    groups = relationship("Group", back_populates="period")
-    student_periods = relationship("StudentPeriod", back_populates="period")
+    tutor_periods = relationship("TutorPeriod", back_populates="period", lazy="noload")
+    groups = relationship("Group", back_populates="period", lazy="noload")
+    student_periods = relationship(
+        "StudentPeriod", back_populates="period", lazy="noload"
+    )
