@@ -88,5 +88,3 @@ class TestAzureContainerClient:
 
         with pytest.raises(Exception):
             az_client.download(filename, outputfilename)
-
-        # Assert that the content matches the expected content

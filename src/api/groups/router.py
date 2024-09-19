@@ -90,7 +90,7 @@ async def add_group(
 
 @router.post(
     "/{group_id}/initial_project",
-    description="Creates list of students based on a csv file",
+    description="Uploads a file into storage",
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_200_OK: {"description": "Students were created"},
@@ -117,12 +117,12 @@ async def post_initial_project(
         )
         content_as_bytes = await file.read()
         group_service = GroupService(GroupRepository(session))
-        group_service.upload_initial_project(
-            group_id, content_as_bytes, file.filename, az_client
-        )
-
+        group_service.upload_initial_project(group_id, content_as_bytes, az_client)
+        return "File uploaded successfully"
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
+    except EntityNotFound as e:
+        raise e
     except Exception as e:
         raise ServerError(message=str(e))
 

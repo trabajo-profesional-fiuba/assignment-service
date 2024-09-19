@@ -1,7 +1,8 @@
+import datetime
+
 from src.api.exceptions import EntityNotInserted, EntityNotFound
 from src.api.groups.exceptions import GroupNotFound
 from src.api.students.exceptions import StudentNotFound
-
 
 from src.config.logging import logger
 
@@ -103,13 +104,14 @@ class GroupService:
                 id provided are correct."
             )
 
-    def upload_initial_project(
-        self, group_id: int, data: bytes, filename, storage_client
-    ):
+    def upload_initial_project(self, group_id: int, data: bytes, storage_client):
         try:
             group = self._repository.get_group_by_id(group_id)
-            path = f"{group.period_id}/{group.id}/{filename}"
+            path = f"{group.period_id}/{group.id}/initial-project.pdf"
             blob = storage_client.upload(data=data, filename=path, overwrite=True)
+            self._repository.update(
+                group_id, {"pre_report_date": datetime.datetime.now()}
+            )
 
             return blob
         except GroupNotFound as e:
