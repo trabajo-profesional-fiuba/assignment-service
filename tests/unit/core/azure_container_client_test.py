@@ -33,7 +33,7 @@ class TestAzureContainerClient:
         with open(file_path, "rb") as file:
             content = file.read()
 
-        blob = az_client.upload(content, filename)
+        blob = az_client.upload(content, filename, True)
 
         assert blob.blob_name == filename
 
@@ -41,7 +41,7 @@ class TestAzureContainerClient:
     def test_download_test_file_to_azure(self):
 
         # Arrange
-        filename = "test_data.txt" # test_data is already in the storage
+        filename = "test_data.txt"  # test_data is already in the storage
         outputfilename = "C:/dev/uba/assignment-service/tests/unit/core/download.txt"
 
         expected_content = (

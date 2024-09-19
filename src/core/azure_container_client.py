@@ -1,5 +1,5 @@
 from typing import IO, Iterable
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from azure.storage.blob import BlobClient, ContainerClient
 
 
 class AzureContainerClient:
@@ -21,9 +21,13 @@ class AzureContainerClient:
         container_client = self._get_container_client()
         return container_client.exists()
 
-    def upload(self, data: bytes | str | Iterable | IO, filename: str) -> BlobClient:
+    def upload(
+        self, data: bytes | str | Iterable | IO, filename: str, overwrite: bool
+    ) -> BlobClient:
         container_client = self._get_container_client()
-        blob = container_client.upload_blob(data=data, name=filename)
+        blob = container_client.upload_blob(
+            data=data, name=filename, overwrite=overwrite
+        )
 
         return blob
 
@@ -31,6 +35,6 @@ class AzureContainerClient:
         container_client = self._get_container_client()
         stream_downloader = container_client.download_blob(blob=blob_name)
 
-        with open(outputfilename, "xb") as file:
+        with open(outputfilename, "wb") as file:
             bytes = stream_downloader.readall()
             file.write(bytes)
