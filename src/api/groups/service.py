@@ -1,4 +1,5 @@
 from src.api.exceptions import EntityNotInserted, EntityNotFound
+from src.api.groups.exceptions import GroupNotFound
 from src.api.students.exceptions import StudentNotFound
 
 
@@ -101,3 +102,16 @@ class GroupService:
                 message="Group could't be updated due a database problem. Check if the\
                 id provided are correct."
             )
+
+    def upload_initial_project(
+        self, group_id: int, data: bytes, filename, storage_client
+    ):
+        try:
+            group = self._repository.get_group_by_id(group_id)
+            path = f"{group.period_id}/{group.id}/{filename}"
+            blob = storage_client.upload(data=data, filename=path, overwrite=True)
+
+            return blob
+        except GroupNotFound as e:
+            logger.error(f"Could not found group because of: {str(e)}")
+            raise EntityNotFound(message=str(e))

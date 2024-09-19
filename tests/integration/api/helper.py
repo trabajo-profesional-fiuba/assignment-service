@@ -116,7 +116,7 @@ class ApiHelper:
 
     def create_topic(self, name: str, category_id: int = 1):
         topic = Topic(name=name, category_id=category_id)
-        self._topic_repository.add_topic(topic)
+        return self._topic_repository.add_topic(topic)
 
     def create_category(self, name: str):
         category = Category(name=name)

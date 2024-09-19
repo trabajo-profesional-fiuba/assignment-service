@@ -32,9 +32,10 @@ class TestAzureContainerClient:
 
         with open(file_path, "rb") as file:
             content = file.read()
-
+        # Act
         blob = az_client.upload(content, filename, True)
-
+        
+        # Assert
         assert blob.blob_name == filename
 
     @pytest.mark.integration

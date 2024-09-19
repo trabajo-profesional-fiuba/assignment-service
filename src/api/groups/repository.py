@@ -1,6 +1,7 @@
 from sqlalchemy import func, bindparam, update
 from sqlalchemy.orm import Session, joinedload
 
+from src.api.groups.exceptions import GroupNotFound
 from src.api.groups.models import Group
 from src.api.students.exceptions import StudentNotFound
 from src.api.users.models import User
@@ -140,3 +141,16 @@ class GroupRepository:
             )
             session.expunge_all()
         return groups
+
+    def get_group_by_id(self, group_id):
+        with self.Session() as session:
+            group = (
+                session.query(Group)
+                .filter(Group.id == group_id)
+                .one_or_none()
+            )
+            if group is None:
+                raise GroupNotFound(message=f"{group_id} not found in db")
+            
+            session.expunge(group)
+        return group
