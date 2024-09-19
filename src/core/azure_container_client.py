@@ -38,4 +38,3 @@ class AzureContainerClient:
         with open(outputfilename, "wb") as file:
             bytes = stream_downloader.readall()
             file.write(bytes)
-

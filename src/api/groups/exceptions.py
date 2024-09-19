@@ -15,4 +15,3 @@ class GroupNotFound(Exception):
 
     def message(self):
         return self._message
-    

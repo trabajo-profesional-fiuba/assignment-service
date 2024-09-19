@@ -67,7 +67,7 @@ class ApiConfiguration:
     @property
     def storage_access_key(self) -> str:
         return self.config("AZURE_STORAGE_CONNECTION_STRING", cast=str)
-    
+
     @property
     def container(self) -> str:
         return self.config("AZURE_STORAGE_CONTAINER_NAME", cast=str)

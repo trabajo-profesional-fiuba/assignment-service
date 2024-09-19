@@ -125,7 +125,7 @@ class GroupRepository:
             )
             session.commit()
 
-    def update(self,group_id, attributes: dict):
+    def update(self, group_id, attributes: dict):
         stmt = update(Group).where(Group.id == group_id).values(**attributes)
         with self.Session() as session:
             session.execute(stmt)
