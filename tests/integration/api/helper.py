@@ -7,8 +7,8 @@ from src.config.database.database import engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.models import Period, TutorPeriod
-
+from src.api.periods.models import Period
+from src.api.tutors.models import TutorPeriod
 from src.api.users.repository import UserRepository
 from src.api.users.models import User, Role
 
@@ -16,7 +16,7 @@ from src.api.auth.hasher import ShaHasher
 import datetime as dt
 
 from src.core.student_form_answer import StudentFormAnswer
-from src.api.tutors.models import StudentPeriod
+from src.api.students.models import StudentPeriod
 from src.api.students.repository import StudentRepository
 from src.api.periods.repository import PeriodRepository
 

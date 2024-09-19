@@ -6,7 +6,7 @@ from src.api.tutors.exceptions import (
     InvalidPeriod,
     PeriodDuplicated,
 )
-from src.api.tutors.models import Period
+from src.api.periods.models import Period
 
 
 class PeriodService:
