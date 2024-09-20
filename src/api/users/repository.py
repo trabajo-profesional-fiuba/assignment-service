@@ -62,29 +62,45 @@ class UserRepository:
     def upsert_students(self, students: list[User]):
         try:
             with self.Session() as session:
-                for student in students:
-                    stmt = (
-                        select(User)
-                        .filter_by(role=Role.STUDENT)
-                        .where(User.id == student.id)
-                    )
-                    student_db = session.execute(stmt).scalars().first()
-                    if student_db is None:
-                        session.add(student)
-                        session.commit()
-                        session.refresh(student)
-                        session.expunge(student)
+                student_ids = [student.id for student in students]
+                # Select all existing students with matching IDs
+                stmt = (
+                    select(User)
+                    .filter_by(role=Role.STUDENT)
+                    .where(User.id.in_(student_ids))
+                )
+                existing_students = session.execute(stmt).scalars().all()
+                existing_ids = {student.id for student in existing_students}
 
-                    else:
-                        update_stmt = (
-                            update(User)
-                            .where(User.id == student.id)
-                            .values(name=student.name, last_name=student.last_name)
-                        )
-                        session.execute(update_stmt)
-                        session.commit()
+                # Split into new and existing students
+                new_students = [
+                    student for student in students if student.id not in existing_ids
+                ]
+                update_students = [
+                    student for student in students if student.id in existing_ids
+                ]
 
-            return students
+                # Bulk insert new students
+                if new_students:
+                    session.bulk_save_objects(new_students)
+                    session.commit()
+
+                # Bulk update existing students
+                if update_students:
+                    # Add relevant fields
+                    update_mappings = [
+                        {
+                            "id": student.id,
+                            "name": student.name,
+                            "last_name": student.last_name,
+                            "email": student.email,
+                        }
+                        for student in update_students
+                    ]
+                    session.bulk_update_mappings(User, update_mappings)
+                    session.commit()
+
+                return students
         except Exception as e:
             raise StudentNotInserted("Could not insert a student in the database")
 

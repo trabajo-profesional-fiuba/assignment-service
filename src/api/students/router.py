@@ -43,6 +43,7 @@ async def upload_csv_file(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -53,10 +54,11 @@ async def upload_csv_file(
 
         logger.info("csv contains the correct content-type")
         content = (await file.read()).decode("utf-8")
-        service = StudentService(UserRepository(session))
-        res = service.create_students_from_string(content, hasher)
+        service = StudentService(StudentRepository(session))
 
-        return res
+        return service.create_students_from_string(
+            content, hasher, UserRepository(session), period
+        )
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e

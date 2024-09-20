@@ -5,7 +5,7 @@ from src.api.groups.service import GroupService
 from src.api.groups.repository import GroupRepository
 from src.api.topics.models import Category, Topic
 from src.api.topics.repository import TopicRepository
-from src.api.tutors.models import Period
+from src.api.periods.models import Period
 from src.api.tutors.repository import TutorRepository
 from src.api.users.repository import UserRepository
 from src.api.users.models import User, Role
