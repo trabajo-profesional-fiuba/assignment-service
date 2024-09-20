@@ -34,6 +34,7 @@ router = APIRouter(prefix="/students", tags=["Students"])
     responses={
         status.HTTP_201_CREATED: {"description": "Students were created"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"description": "Invalid file type"},
     },
 )
 async def upload_csv_file(

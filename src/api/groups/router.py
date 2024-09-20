@@ -1,5 +1,5 @@
 from typing_extensions import Annotated
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, UploadFile, status, Query
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
@@ -23,6 +23,8 @@ from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 
+from src.core.azure_container_client import AzureContainerClient
+from src.config.config import api_config
 from src.config.database.database import get_db
 
 router = APIRouter(prefix="/groups", tags=["Groups"])
@@ -82,6 +84,45 @@ async def add_group(
         raise e
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.post(
+    "/{group_id}/initial_project",
+    description="Uploads a file into storage",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {"description": "Students were created"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"description": "Invalid file type"},
+    },
+)
+async def post_initial_project(
+    group_id: int,
+    file: UploadFile,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_role(token)
+
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+        content_as_bytes = await file.read()
+        group_service = GroupService(GroupRepository(session))
+        group_service.upload_initial_project(group_id, content_as_bytes, az_client)
+        return "File uploaded successfully"
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except EntityNotFound as e:
+        raise e
     except Exception as e:
         raise ServerError(message=str(e))
 

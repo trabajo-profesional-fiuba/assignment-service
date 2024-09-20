@@ -1,6 +1,7 @@
 from sqlalchemy import func, bindparam, update
 from sqlalchemy.orm import Session, joinedload
 
+from src.api.groups.exceptions import GroupNotFound
 from src.api.groups.models import Group
 from src.api.students.exceptions import StudentNotFound
 from src.api.users.models import User
@@ -124,6 +125,12 @@ class GroupRepository:
             )
             session.commit()
 
+    def update(self, group_id, attributes: dict):
+        stmt = update(Group).where(Group.id == group_id).values(**attributes)
+        with self.Session() as session:
+            session.execute(stmt)
+            session.commit()
+
     def get_groups_by_period_id(self, tutor_period_id):
         """Returns all groups for a given assigned_tutor_period"""
         with self.Session() as session:
@@ -140,3 +147,12 @@ class GroupRepository:
             )
             session.expunge_all()
         return groups
+
+    def get_group_by_id(self, group_id):
+        with self.Session() as session:
+            group = session.query(Group).filter(Group.id == group_id).one_or_none()
+            if group is None:
+                raise GroupNotFound(message=f"{group_id} not found in db")
+
+            session.expunge(group)
+        return group
