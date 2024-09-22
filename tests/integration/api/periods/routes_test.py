@@ -184,7 +184,16 @@ def test_update_existing_period(fastapi, tables):
     helper.create_period("1C2025")
     admin_token = helper.create_admin_token()
 
-    body = {"id": "1C2025", "form_active": False}
+    body = {
+        "id": "1C2025",
+        "form_active": False,
+        "initial_project_active": True,
+        "intermediate_project_active": True,
+        "final_project_active": True,
+        "groups_assignment_completed": True,
+        "topics_tutors_assignment_completed": True,
+        "presentation_dates_assignment_completed": True,
+    }
     response = fastapi.put(
         f"{PREFIX}/",
         json=body,
