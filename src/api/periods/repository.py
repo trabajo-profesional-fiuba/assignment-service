@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import asc, desc, exc
+from sqlalchemy import asc, desc, exc, update
 
 from src.api.periods.models import Period
 from src.api.tutors.exceptions import (
@@ -46,3 +46,9 @@ class PeriodRepository:
             if period is None:
                 raise PeriodNotFound("The period does not exist")
         return period
+
+    def update(self, period_id: str, attributes: dict):
+        stmt = update(Period).where(Period.id == period_id).values(**attributes)
+        with self.Session() as session:
+            session.execute(stmt)
+            session.commit()

@@ -46,3 +46,22 @@ class TestPeriodRepository:
 
         with pytest.raises(PeriodNotFound):
             p_repository.get_period_by_id("3C2024")
+
+    @pytest.mark.integration
+    def test_put_existing_period(self, tables):
+        p_repository = PeriodRepository(self.Session)
+
+        p_repository.update(
+            "2C2024",
+            {
+                "form_active": False,
+                "initial_project_active": True,
+                "intermediate_project_active": True,
+                "final_project_active": True,
+            },
+        )
+        result = p_repository.get_period_by_id("2C2024")
+        assert result.form_active is False
+        assert result.initial_project_active is True
+        assert result.intermediate_project_active is True
+        assert result.final_project_active is True
