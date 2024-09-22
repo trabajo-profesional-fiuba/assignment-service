@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, RootModel
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 
@@ -8,11 +8,11 @@ class PeriodRequest(BaseModel):
 
 
 class PeriodResponse(PeriodRequest):
-    created_at: datetime
-    form_active: bool
-    initial_project_active: bool
-    intermediate_project_active: bool
-    final_project_active: bool
+    created_at: Optional[datetime] = None
+    form_active: Optional[bool] = None
+    initial_project_active: Optional[bool] = None
+    intermediate_project_active: Optional[bool] = None
+    final_project_active: Optional[bool] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -21,3 +21,10 @@ class PeriodList(RootModel):
     """List of Period"""
 
     root: List[PeriodResponse]
+
+
+class UpdatePeriodRequest(PeriodRequest):
+    form_active: Optional[bool] = None
+    initial_project_active: Optional[bool] = None
+    intermediate_project_active: Optional[bool] = None
+    final_project_active: Optional[bool] = None

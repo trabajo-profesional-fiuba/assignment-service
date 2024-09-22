@@ -9,11 +9,17 @@ from src.api.exceptions import (
     Duplicated,
     EntityNotFound,
     ServerError,
+    EntityNotInserted,
 )
 from src.api.users.exceptions import InvalidCredentials
-from src.api.periods.schemas import PeriodResponse, PeriodRequest, PeriodList
+from src.api.periods.schemas import (
+    PeriodResponse,
+    PeriodRequest,
+    PeriodList,
+    UpdatePeriodRequest,
+)
 from src.api.auth.schemas import oauth2_scheme
-from src.api.tutors.exceptions import InvalidPeriod
+from src.api.periods.exceptions import InvalidPeriod
 from src.config.database.database import get_db
 from src.api.periods.repository import PeriodRepository
 from src.api.periods.service import PeriodService
@@ -116,3 +122,47 @@ async def get_period_by_id(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
+
+
+@router.put(
+    "/",
+    response_model=PeriodResponse,
+    summary="Update a period",
+    description="""This endpoint updates a period """,
+    responses={
+        status.HTTP_201_CREATED: {"description": "Successfully updated period"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unknown operation"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a \
+            client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_201_CREATED,
+)
+async def update_period(
+    period: UpdatePeriodRequest,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        period_service = PeriodService(PeriodRepository(session))
+        return period_service.update(period)
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))

@@ -1,1 +1,0 @@
-This is a txt file just for uploading and downloading for azure storage
