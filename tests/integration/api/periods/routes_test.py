@@ -207,3 +207,18 @@ def test_update_period_not_found(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.integration
+def test_student_cant_update_existing_period(fastapi, tables):
+    helper = ApiHelper()
+    student_token = helper.create_student_token()
+
+    body = {"id": "1C2025", "form_active": False}
+    response = fastapi.put(
+        f"{PREFIX}/",
+        json=body,
+        headers={"Authorization": f"Bearer {student_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
