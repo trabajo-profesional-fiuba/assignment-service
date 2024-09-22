@@ -175,3 +175,18 @@ def test_get_all_periods_is_empty(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_200_OK
     assert len(data) == 0
+
+
+@pytest.mark.integration
+def test_update_existing_period(fastapi, tables):
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
+
+    body = {"id": "1C2025", "form_active": False}
+    response = fastapi.put(
+        f"{PREFIX}/",
+        json=body,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED

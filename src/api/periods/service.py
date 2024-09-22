@@ -1,7 +1,12 @@
 import re
 
 from src.api.exceptions import Duplicated
-from src.api.periods.schemas import PeriodRequest, PeriodList
+from src.api.periods.schemas import (
+    PeriodRequest,
+    PeriodList,
+    UpdatePeriodRequest,
+    PeriodResponse,
+)
 from src.api.tutors.exceptions import (
     InvalidPeriod,
     PeriodDuplicated,
@@ -51,3 +56,16 @@ class PeriodService:
 
     def get_period_by_id(self, period_id: str) -> Period:
         return self._repository.get_period_by_id(period_id)
+
+    def update(self, period: UpdatePeriodRequest):
+        try:
+            attributes = period.dict(exclude_unset=True)
+            attributes.pop("id", None)
+            self._repository.update(period.id, attributes)
+            return PeriodResponse.model_validate(period)
+        except Exception as e:
+            logger.error(f"Could not update period because of: {str(e)}")
+            raise EntityNotInserted(
+                message="Period could't be updated due a database problem. Check if the\
+                id provided are correct."
+            )
