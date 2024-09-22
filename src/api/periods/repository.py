@@ -48,7 +48,10 @@ class PeriodRepository:
         return period
 
     def update(self, period_id: str, attributes: dict):
-        stmt = update(Period).where(Period.id == period_id).values(**attributes)
-        with self.Session() as session:
-            session.execute(stmt)
-            session.commit()
+        try:
+            stmt = update(Period).where(Period.id == period_id).values(**attributes)
+            with self.Session() as session:
+                session.execute(stmt)
+                session.commit()
+        except exc.IntegrityError:
+            raise PeriodNotFound(message="The period does not exist")
