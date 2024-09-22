@@ -5,13 +5,12 @@ from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import TutorPeriodResponse, TutorRequest, TutorResponse
 from src.api.tutors.utils import TutorCsvFile
+from src.api.periods.exceptions import InvalidPeriod, PeriodDuplicated
 from src.api.tutors.exceptions import (
-    InvalidPeriod,
-    PeriodDuplicated,
-    TutorDuplicated,
     TutorNotFound,
     TutorNotInserted,
     TutorPeriodNotInserted,
+    TutorDuplicated,
 )
 from src.api.tutors.models import TutorPeriod
 from src.api.users.repository import UserRepository

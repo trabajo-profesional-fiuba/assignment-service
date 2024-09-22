@@ -4,7 +4,7 @@ from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from tests.integration.api.helper import ApiHelper
-from src.api.tutors.exceptions import PeriodNotFound
+from src.api.periods.exceptions import PeriodNotFound
 from src.api.periods.repository import PeriodRepository
 
 

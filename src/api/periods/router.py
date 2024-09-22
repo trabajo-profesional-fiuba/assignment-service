@@ -19,7 +19,7 @@ from src.api.periods.schemas import (
     UpdatePeriodRequest,
 )
 from src.api.auth.schemas import oauth2_scheme
-from src.api.tutors.exceptions import InvalidPeriod
+from src.api.periods.exceptions import InvalidPeriod
 from src.config.database.database import get_db
 from src.api.periods.repository import PeriodRepository
 from src.api.periods.service import PeriodService
@@ -160,7 +160,7 @@ async def update_period(
 
         period_service = PeriodService(PeriodRepository(session))
         return period_service.update(period)
-    except (EntityNotInserted, EntityNotFound) as e:
+    except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")

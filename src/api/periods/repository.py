@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc, exc, update
 
 from src.api.periods.models import Period
-from src.api.tutors.exceptions import (
+from src.api.periods.exceptions import (
     PeriodDuplicated,
     PeriodNotFound,
 )
@@ -48,10 +48,15 @@ class PeriodRepository:
         return period
 
     def update(self, period_id: str, attributes: dict):
-        try:
-            stmt = update(Period).where(Period.id == period_id).values(**attributes)
-            with self.Session() as session:
-                session.execute(stmt)
-                session.commit()
-        except exc.IntegrityError:
-            raise PeriodNotFound(message="The period does not exist")
+        stmt = (
+            update(Period)
+            .where(Period.id == period_id)
+            .values(**attributes)
+            .returning(Period.id)
+        )
+
+        with self.Session() as session:
+            result = session.execute(stmt).fetchone()
+            if result is None:
+                raise PeriodNotFound("The period does not exist")
+            session.commit()

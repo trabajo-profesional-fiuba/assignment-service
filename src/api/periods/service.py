@@ -7,11 +7,10 @@ from src.api.periods.schemas import (
     UpdatePeriodRequest,
     PeriodResponse,
 )
-from src.api.tutors.exceptions import (
-    InvalidPeriod,
-    PeriodDuplicated,
-)
+from src.api.periods.exceptions import InvalidPeriod, PeriodDuplicated, PeriodNotFound
 from src.api.periods.models import Period
+from src.api.exceptions import EntityNotFound
+from src.config.logging import logger
 
 
 class PeriodService:
@@ -46,6 +45,7 @@ class PeriodService:
                     message="Period id should follow patter nC20year, ie. 1C2024"
                 )
         except PeriodDuplicated as e:
+            logger.error(f"Could not add period because of: {str(e)}")
             raise Duplicated(str(e))
 
     def get_all_periods(self, order) -> PeriodList:
@@ -63,9 +63,6 @@ class PeriodService:
             attributes.pop("id", None)
             self._repository.update(period.id, attributes)
             return PeriodResponse.model_validate(period)
-        except Exception as e:
+        except PeriodNotFound as e:
             logger.error(f"Could not update period because of: {str(e)}")
-            raise EntityNotInserted(
-                message="Period could't be updated due a database problem. Check if the\
-                id provided are correct."
-            )
+            raise EntityNotFound(str(e))

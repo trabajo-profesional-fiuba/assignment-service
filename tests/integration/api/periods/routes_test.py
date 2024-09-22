@@ -165,6 +165,7 @@ def test_get_all_periods_order_by_default_desc(fastapi, tables):
 def test_get_all_periods_is_empty(fastapi, tables):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
+
     # Act
     response = fastapi.get(
         f"{PREFIX}",
@@ -180,6 +181,7 @@ def test_get_all_periods_is_empty(fastapi, tables):
 @pytest.mark.integration
 def test_update_existing_period(fastapi, tables):
     helper = ApiHelper()
+    helper.create_period("1C2025")
     admin_token = helper.create_admin_token()
 
     body = {"id": "1C2025", "form_active": False}
@@ -190,3 +192,18 @@ def test_update_existing_period(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_201_CREATED
+
+
+@pytest.mark.integration
+def test_update_period_not_found(fastapi, tables):
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
+
+    body = {"id": "3C2025", "form_active": False}
+    response = fastapi.put(
+        f"{PREFIX}/",
+        json=body,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND

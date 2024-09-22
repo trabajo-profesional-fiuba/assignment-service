@@ -7,7 +7,7 @@ from src.api.topics.models import Topic
 from src.api.tutors.models import TutorPeriod
 from src.api.periods.models import Period
 from src.api.users.models import User, Role
-from src.api.tutors.exceptions import PeriodDuplicated
+from src.api.periods.exceptions import PeriodDuplicated
 from src.api.students.exceptions import StudentNotFound, StudentPeriodNotInserted
 from src.api.students.models import StudentPeriod
 
