@@ -58,6 +58,9 @@ class TestPeriodRepository:
                 "initial_project_active": True,
                 "intermediate_project_active": True,
                 "final_project_active": True,
+                "groups_assignment_completed": True,
+                "topics_tutors_assignment_completed": True,
+                "presentation_dates_assignment_completed": True,
             },
         )
         result = p_repository.get_period_by_id("2C2024")
@@ -65,6 +68,9 @@ class TestPeriodRepository:
         assert result.initial_project_active is True
         assert result.intermediate_project_active is True
         assert result.final_project_active is True
+        assert result.groups_assignment_completed is True
+        assert result.topics_tutors_assignment_completed is True
+        assert result.presentation_dates_assignment_completed is True
 
     @pytest.mark.integration
     def test_put_just_one_param_of_existing_period(self, tables):
@@ -73,6 +79,12 @@ class TestPeriodRepository:
         p_repository.update("2C2024", {"form_active": True})
         result = p_repository.get_period_by_id("2C2024")
         assert result.form_active is True
+        assert result.initial_project_active is True
+        assert result.intermediate_project_active is True
+        assert result.final_project_active is True
+        assert result.groups_assignment_completed is True
+        assert result.topics_tutors_assignment_completed is True
+        assert result.presentation_dates_assignment_completed is True
 
     @pytest.mark.integration
     def test_put_period_not_found(self, tables):
