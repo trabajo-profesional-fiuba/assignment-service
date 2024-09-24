@@ -1,3 +1,4 @@
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, Response, UploadFile, status, Query
 from sqlalchemy.orm import Session
@@ -23,6 +24,7 @@ from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.core.azure_container_client import AzureContainerClient
 from src.config.config import api_config
 from src.config.database.database import get_db
@@ -75,11 +77,13 @@ async def add_group(
         )
         topic = topic_service.get_or_add_topic(group.topic)
 
-        return GroupResponse.model_validate(
+        res = GroupResponse.model_validate(
             group_service.create_assigned_group(
                 group.students_ids, tutor_period.id, topic.id, period_id=period
             )
         )
+        
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -158,7 +162,9 @@ async def get_groups(
 
         group_service = GroupService(GroupRepository(session))
 
-        return GroupList.model_validate(group_service.get_groups(period))
+        res = GroupList.model_validate(group_service.get_groups(period))
+
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -248,7 +254,9 @@ async def update_groups(
         group_service = GroupService(GroupRepository(session))
         groups_updated = group_service.update(groups, period)
 
-        return GroupList.model_validate(groups_updated)
+        res = GroupList.model_validate(groups_updated)
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
