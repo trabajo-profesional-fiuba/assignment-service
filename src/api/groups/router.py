@@ -173,10 +173,11 @@ async def get_groups(
     responses={
         status.HTTP_200_OK: {"description": "Success"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
-        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"description": "Invalid file type"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
+
     },
 )
-async def post_initial_project(
+async def list_initial_projects(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
@@ -200,8 +201,6 @@ async def post_initial_project(
 
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
-    except EntityNotFound as e:
-        raise e
     except Exception as e:
         raise ServerError(message=str(e))
 
