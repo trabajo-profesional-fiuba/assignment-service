@@ -8,7 +8,7 @@ class ResponseBuilder:
         response.headers["Clear-Site-Data"] = '"cache"'
         response.status_code = status_code
 
-        return response 
+        return response
 
     def build_private_cache_response(content):
         response = JSONResponse(content=jsonable_encoder(content))

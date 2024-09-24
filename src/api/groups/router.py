@@ -82,7 +82,7 @@ async def add_group(
                 group.students_ids, tutor_period.id, topic.id, period_id=period
             )
         )
-        
+
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e

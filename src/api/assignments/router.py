@@ -152,7 +152,9 @@ async def assign_group_topic_tutor(
             ]
         )
 
-        return ResponseBuilder.build_clear_cache_response(assignment_response, status.HTTP_200_OK)
+        return ResponseBuilder.build_clear_cache_response(
+            assignment_response, status.HTTP_200_OK
+        )
     except InvalidJwt as e:
         raise InvalidCredentials(str(e))
     except Exception as e:

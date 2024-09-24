@@ -77,7 +77,7 @@ async def add_answers(
                 for answer in answers_saved
             ]
         )
-    
+
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
@@ -120,7 +120,7 @@ async def get_answers(
                 )
             )
         res = GroupAnswerList.model_validate(response)
-    
+
         return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
@@ -185,7 +185,7 @@ async def delete_answer(
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
         res = service.delete_answers_by_answer_id(answer_id)
-    
+
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
     except EntityNotFound as e:
         raise e
