@@ -3,24 +3,17 @@ import re
 from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
-from src.api.tutors.schemas import (
-    PeriodRequest,
-    PeriodResponse,
-    TutorList,
-    TutorPeriodResponse,
-    TutorResponse,
-    PeriodList,
-    TutorWithTopicsList,
-)
+from src.api.tutors.schemas import TutorPeriodResponse, TutorRequest, TutorResponse
 from src.api.tutors.utils import TutorCsvFile
+from src.api.periods.exceptions import InvalidPeriod, PeriodDuplicated
 from src.api.tutors.exceptions import (
-    InvalidPeriod,
-    PeriodDuplicated,
-    TutorDuplicated,
     TutorNotFound,
+    TutorNotInserted,
     TutorPeriodNotInserted,
+    TutorDuplicated,
 )
-from src.api.tutors.models import Period, TutorPeriod
+from src.api.tutors.models import TutorPeriod
+from src.api.users.repository import UserRepository
 
 
 class TutorService:
@@ -116,6 +109,36 @@ class TutorService:
         except (TutorNotFound, TutorPeriodNotInserted) as e:
             EntityNotFound(str(e))
 
+    def add_tutor(
+        self, tutor: TutorRequest, hasher: ShaHasher, userRepository: UserRepository
+    ):
+        try:
+            new_tutor = User(
+                id=tutor.id,
+                name=tutor.name,
+                last_name=tutor.last_name,
+                email=tutor.email,
+                password=hasher.hash(str(tutor.id)),
+                role=Role.TUTOR,
+            )
+
+            tutor_period = TutorPeriod(
+                period_id=tutor.period,
+                tutor_id=tutor.id,
+                capacity=tutor.capacity,
+            )
+            tutor_response = userRepository.add_user(new_tutor)
+            self._repository.add_tutor_period_with_capacity(tutor_period)
+
+            return tutor_response
+        except PeriodDuplicated as e:
+            raise Duplicated(str(e))
+        except Duplicated:
+            raise Duplicated("Duplicated tutor")
+        except Exception as e:
+            print(str(e))
+            raise TutorNotInserted("Could not insert a tutor in the database")
+
     def _validate_period(self, period_id):
         """Validates that the period id
         follows the expected pattern
@@ -129,22 +152,6 @@ class TutorService:
         else:
             return False
 
-    def add_period(self, period: PeriodRequest):
-        """
-        Creates a nw global period
-        """
-        try:
-            valid = self._validate_period(period.id)
-            if valid:
-                period_db = Period(id=period.id)
-                return self._repository.add_period(period_db)
-            else:
-                raise InvalidPeriod(
-                    message="Period id should follow patter nC20year, ie. 1C2024"
-                )
-        except PeriodDuplicated as e:
-            raise Duplicated(str(e))
-
     def add_period_to_tutor(self, tutor_id, period_id):
         """
         Assigns an existing period to a tutor.
@@ -157,12 +164,6 @@ class TutorService:
                 raise EntityNotFound(f"{tutor_id} was not found as TUTOR")
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
-
-    def get_all_periods(self, order):
-        """
-        Returns the list of periods
-        """
-        return PeriodList.model_validate(self._repository.get_all_periods(order))
 
     def get_periods_by_tutor_id(self, tutor_id):
         """
@@ -210,8 +211,22 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
 
+    def get_tutor_period_by_tutor_id(self, period, tutor_id) -> TutorPeriod:
+        """
+        Looks up for a tutor based on its email
+        """
+        try:
+            return self._repository.get_tutor_period_by_tutor_id(period, tutor_id)
+        except TutorNotFound as e:
+            raise EntityNotFound(message=str(e))
+
     def get_tutor_periods_by_period_id(self, period_id):
         try:
             return self._repository.get_tutor_periods_by_periods_id(period_id)
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
+
+    def get_groups_from_tutor_id(self, tutor_id, period_id, group_repository):
+        period = self.get_tutor_period_by_tutor_id(period_id, tutor_id)
+        groups = group_repository.get_groups_by_period_id(period.id)
+        return groups

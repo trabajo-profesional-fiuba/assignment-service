@@ -2,7 +2,9 @@ import pytest
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
-from src.api.tutors.router import router
+from src.api.tutors.router import router as tutor_router
+from src.api.periods.router import router as period_router
+
 from src.config.database.database import create_tables, drop_tables
 
 from tests.integration.api.helper import ApiHelper
@@ -22,7 +24,8 @@ def tables():
 @pytest.fixture(scope="session")
 def fastapi():
     app = FastAPI()
-    app.include_router(router)
+    app.include_router(tutor_router)
+    app.include_router(period_router)
     client = TestClient(app)
     yield client
 
@@ -160,156 +163,6 @@ def test_upload_file_with_existing_tutors(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_add_new_global_period(fastapi, tables):
-    # Arrange
-    helper = ApiHelper()
-    admin_token = helper.create_admin_token()
-    body = {"id": "1C2024"}
-
-    # Act
-    response = fastapi.post(
-        f"{PREFIX}/periods",
-        json=body,
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-
-    # Assert
-    assert response.status_code == status.HTTP_201_CREATED
-
-
-@pytest.mark.integration
-def test_duplicates_global_periods_raise_exception(fastapi, tables):
-    # Arrange
-    helper = ApiHelper()
-    helper.create_period("1C2024")
-    admin_token = helper.create_admin_token()
-    body = {"id": "1C2024"}
-
-    # Act
-    response = fastapi.post(
-        f"{PREFIX}/periods",
-        json=body,
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-
-    # Assert
-    assert response.status_code == status.HTTP_409_CONFLICT
-    assert response.json()["detail"] == "Period already exist"
-
-
-@pytest.mark.integration
-def test_period_with_invalid_pattern_raise_exception(fastapi, tables):
-    # Arrange
-    helper = ApiHelper()
-    admin_token = helper.create_admin_token()
-    body = {"id": "1c25"}
-
-    # Act
-    response = fastapi.post(
-        f"{PREFIX}/periods",
-        json=body,
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-
-    # Assert
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert (
-        response.json()["detail"]
-        == "Period id should follow patter nC20year, ie. 1C2024"
-    )
-
-
-@pytest.mark.integration
-def test_get_all_periods_order_by_asc(fastapi, tables):
-    # Arrange
-    helper = ApiHelper()
-    helper.create_period("1C2024")
-    helper.create_period("2C2024")
-    helper.create_period("1C2025")
-    admin_token = helper.create_admin_token()
-
-    # Act
-    response = fastapi.get(
-        f"{PREFIX}/periods",
-        params={"order": "ASC"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    data = response.json()
-
-    # Assert
-    assert response.status_code == status.HTTP_200_OK
-    assert len(data) == 3
-    assert data[0]["id"] == "1C2024"
-    assert data[1]["id"] == "2C2024"
-    assert data[2]["id"] == "1C2025"
-
-
-@pytest.mark.integration
-def test_get_all_periods_order_by_desc(fastapi, tables):
-    # Arrange
-    helper = ApiHelper()
-    helper.create_period("1C2024")
-    helper.create_period("2C2024")
-    helper.create_period("1C2025")
-    admin_token = helper.create_admin_token()
-
-    # Act
-    response = fastapi.get(
-        f"{PREFIX}/periods",
-        params={"order": "DESC"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    data = response.json()
-
-    # Assert
-    assert response.status_code == status.HTTP_200_OK
-    assert len(data) == 3
-    assert data[2]["id"] == "1C2024"
-    assert data[1]["id"] == "2C2024"
-    assert data[0]["id"] == "1C2025"
-
-
-@pytest.mark.integration
-def test_get_all_periods_order_by_default_desc(fastapi, tables):
-    # Arrange
-    helper = ApiHelper()
-    helper.create_period("1C2024")
-    helper.create_period("2C2024")
-    helper.create_period("1C2025")
-    admin_token = helper.create_admin_token()
-
-    # Act
-    response = fastapi.get(
-        f"{PREFIX}/periods",
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    data = response.json()
-
-    # Assert
-    assert response.status_code == status.HTTP_200_OK
-    assert len(data) == 3
-    assert data[2]["id"] == "1C2024"
-    assert data[1]["id"] == "2C2024"
-    assert data[0]["id"] == "1C2025"
-
-
-@pytest.mark.integration
-def test_get_all_periods_is_empty(fastapi, tables):
-    helper = ApiHelper()
-    admin_token = helper.create_admin_token()
-    # Act
-    response = fastapi.get(
-        f"{PREFIX}/periods",
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    data = response.json()
-
-    # Assert
-    assert response.status_code == status.HTTP_200_OK
-    assert len(data) == 0
-
-
-@pytest.mark.integration
 def test_add_new_tutor_period_with_success(fastapi, tables):
     # Arrange
     helper = ApiHelper()
@@ -442,7 +295,7 @@ def test_new_upload_override_tutor_periods(fastapi, tables):
     admin_token = helper.create_admin_token()
 
     tutor = helper.get_tutor_by_tutor_id(12345678)
-    assert tutor.periods[0].capacity == 5
+    assert tutor.tutor_periods[0].capacity == 5
 
     with open("tests/integration/api/tutors/data/test_data.csv", "rb") as file:
         content = file.read()
@@ -465,7 +318,7 @@ def test_new_upload_override_tutor_periods(fastapi, tables):
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["periods"][0]["capacity"] == 1
+    assert response.json()["tutor_periods"][0]["capacity"] == 1
 
 
 @pytest.mark.integration
@@ -481,7 +334,7 @@ def test_delete_tutor_no_affects_global_periods(fastapi, tables):
         helper.create_tutor_period("105600", p)
 
     tutor = helper.get_tutor_by_tutor_id(105600)
-    assert len(tutor.periods) == 3
+    assert len(tutor.tutor_periods) == 3
 
     # Act
     response = fastapi.delete(
@@ -493,7 +346,7 @@ def test_delete_tutor_no_affects_global_periods(fastapi, tables):
     assert response.status_code == status.HTTP_202_ACCEPTED
 
     response = fastapi.get(
-        f"{PREFIX}/periods",
+        "periods",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -513,7 +366,7 @@ def test_delete_tutor_by_id_deletes_its_related_periods_also(fastapi, tables):
         helper.create_tutor_period("105600", p)
 
     tutor = helper.get_tutor_by_tutor_id(105600)
-    assert len(tutor.periods) == 3
+    assert len(tutor.tutor_periods) == 3
 
     # Act
     response = fastapi.delete(
@@ -548,4 +401,115 @@ def test_all_topics_from_tutors_in_specific_period(fastapi, tables):
     )
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert len(data[0]["periods"]) == 1
+    assert len(data[0]["tutor_periods"]) == 1
+
+
+@pytest.mark.integration
+def test_create_tutor(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_admin_token()
+    helper.create_period("1C2024")
+
+    tutor = {
+        "id": 110000,
+        "name": "Juan",
+        "last_name": "Perez",
+        "email": "juanperez123@fi.uba.ar",
+        "period": "1C2024",
+        "capacity": 4,
+    }
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=tutor,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["id"] == 110000
+    assert response.json()["name"] == "Juan"
+    assert response.json()["last_name"] == "Perez"
+    assert response.json()["email"] == "juanperez123@fi.uba.ar"
+
+
+@pytest.mark.integration
+def test_create_duplicated_tutor(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_admin_token()
+    helper.create_period("1C2024")
+
+    tutor = {
+        "id": 110001,
+        "name": "Jose",
+        "last_name": "Perez",
+        "email": "joseperez@fi.uba.ar",
+        "period": "1C2024",
+        "capacity": 4,
+    }
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=tutor,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["id"] == 110001
+    assert response.json()["name"] == "Jose"
+    assert response.json()["last_name"] == "Perez"
+    assert response.json()["email"] == "joseperez@fi.uba.ar"
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=tutor,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Duplicated tutor"
+
+
+@pytest.mark.integration
+def test_create_tutor_with_invalid_token(fastapi, tables):
+    helper = ApiHelper()
+    token = helper.create_student_token()
+    helper.create_period("1C2024")
+
+    tutor = {
+        "id": 110002,
+        "name": "Josefa",
+        "last_name": "Perez",
+        "email": "josefaperez@fi.uba.ar",
+        "period": "1C2024",
+        "capacity": 4,
+    }
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=tutor,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid Authorization"
+
+
+@pytest.mark.integration
+def test_get_groups_assigned_to_tutor(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_tutor("pepe", "tutor", "12345678", "pepe@fi.uba.ar")
+    period = helper.create_tutor_period(12345678, "1C2024")
+    helper.create_default_topics(["topic1", "topic2"])
+    helper.add_tutor_to_topic("1C2024", "pepe@fi.uba.ar", ["topic1", "topic2"], [1, 1])
+    helper.create_student("john", "Student", "105285", "student@fi.uba.ar")
+    helper.create_student("juan", "Student2", "105286", "student2@fi.uba.ar")
+    helper.create_group([105285], period.id, 1, "1C2024")
+    helper.create_group([105286], period.id, 2, "1C2024")
+    token = helper.create_tutor_token_with_id(12345678)
+
+    params = {"period_id": "1C2024"}
+    response = fastapi.get(
+        f"{PREFIX}/my-groups",
+        params=params,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+
+    assert response.status_code == 200
+    assert len(response.json()) == 2

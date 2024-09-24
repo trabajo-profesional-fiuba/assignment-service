@@ -1,11 +1,17 @@
 import pytest
 
-from src.api.students.repository import StudentRepository
+from sqlalchemy.orm import sessionmaker, scoped_session
+
 from src.api.users.repository import UserRepository
 from src.api.users.models import User, Role
 
 from src.config.database.database import create_tables, drop_tables, engine
-from sqlalchemy.orm import sessionmaker, scoped_session
+
+from src.api.students.repository import StudentRepository
+from src.api.students.models import StudentPeriod
+from src.api.students.exceptions import StudentNotFound, StudentPeriodNotInserted
+
+from tests.integration.api.helper import ApiHelper
 
 
 @pytest.fixture(scope="module")
@@ -148,3 +154,52 @@ class TestStudentRepository:
         assert len(response) == 7
         assert student_changed.name == "Alejo"
         assert student_changed.last_name == "Buenisimo"
+
+    @pytest.mark.integration
+    def test_add_student_period_with_success(self, tables):
+        helper = ApiHelper()
+        helper.create_period("2C2024")
+        helper.create_student("test101", "test101", "101", "test101@com")
+        s_repository = StudentRepository(self.Session)
+
+        s_repository.add_student_period(
+            StudentPeriod(student_id=101, period_id="2C2024")
+        )
+        response = s_repository.get_period_by_student_id(101)
+        assert response.period_id == "2C2024"
+
+    @pytest.mark.integration
+    def test_get_period_by_student_id_not_found(self, tables):
+        s_repository = StudentRepository(self.Session)
+
+        with pytest.raises(StudentNotFound):
+            s_repository.get_period_by_student_id(102)
+
+    @pytest.mark.integration
+    def test_upsert_student_periods(self, tables):
+        helper = ApiHelper()
+        helper.create_period("2C2025")
+
+        s_repository = StudentRepository(self.Session)
+        periods = [StudentPeriod(period_id="2C2025", student_id=101)]
+        s_repository.upsert_student_periods(periods)
+
+        result = s_repository.get_period_by_student_id(101)
+        assert result.period_id == "2C2025"
+        assert result.student_id == 101
+
+    @pytest.mark.integration
+    def test_upsert_student_periods_when_period_not_found(self, tables):
+        s_repository = StudentRepository(self.Session)
+        periods = [StudentPeriod(period_id="3C2025", student_id=101)]
+
+        with pytest.raises(StudentPeriodNotInserted):
+            s_repository.upsert_student_periods(periods)
+
+    @pytest.mark.integration
+    def test_upsert_student_periods_when_student_not_found(self, tables):
+        s_repository = StudentRepository(self.Session)
+        periods = [StudentPeriod(period_id="3C2025", student_id=102)]
+
+        with pytest.raises(StudentPeriodNotInserted):
+            s_repository.upsert_student_periods(periods)

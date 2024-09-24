@@ -18,6 +18,7 @@ from src.api.tutors.repository import TutorRepository
 
 from src.api.users.exceptions import InvalidCredentials
 
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 
 
@@ -47,7 +48,7 @@ async def upload_csv_file(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+    period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -56,9 +57,12 @@ async def upload_csv_file(
             raise InvalidFileType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
-        return service.create_topics_from_string(
-            period_id, content, TutorRepository(session)
+
+        res = service.create_topics_from_string(
+            period, content, TutorRepository(session)
         )
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (
         EntityNotFound,
         InvalidFileType,
@@ -95,10 +99,7 @@ async def get_topics(
         service = TopicService(TopicRepository(session))
         topics = service.get_topics()
 
-        response = JSONResponse(content=topics.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=7200"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(topics)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

@@ -7,7 +7,7 @@ from src.config.logging import logger
 from src.config.database.models import Base
 
 # In Fast API the best thing to do is to have only one engine
-# in charged of creating transaccional sessions.
+# in charged of creating transactional sessions.
 
 # Database Configurations
 database_url = api_config.database_url

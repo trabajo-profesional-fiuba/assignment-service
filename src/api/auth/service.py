@@ -29,3 +29,8 @@ class AuthenticationService:
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
         self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.TUTOR.value])
+
+    def get_user_id(self, token: str):
+        token_decoded = self._jwt_resolver.decode_token(token)
+        user = token_decoded.sub
+        return user["id"]

@@ -1,10 +1,13 @@
 from datetime import datetime
 from fastapi import APIRouter, status, Depends
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
+    FormPreferencesResponse,
     GroupAnswerList,
     GroupAnswerResponse,
     UserAnswerList,
@@ -22,6 +25,7 @@ from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
 from src.api.users.exceptions import InvalidCredentials
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -57,8 +61,24 @@ async def add_answers(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
+
         service = FormService(FormRepository(session))
-        return service.add_answers(answers)
+        answers_saved = service.add_answers(answers)
+
+        res = FormPreferencesList.model_validate(
+            [
+                FormPreferencesResponse(
+                    user_id=answer.id,
+                    answer_id=answer.answer_id,
+                    topic_1=answer.topics[0],
+                    topic_2=answer.topics[1],
+                    topic_3=answer.topics[2],
+                )
+                for answer in answers_saved
+            ]
+        )
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -99,7 +119,9 @@ async def get_answers(
                     topics=answer.get_topic_names(),
                 )
             )
-        return GroupAnswerList.model_validate(response)
+        res = GroupAnswerList.model_validate(response)
+
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -131,7 +153,9 @@ async def get_answers_by_user_id(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
         service = FormService(FormRepository(session))
-        return service.get_answers_by_user_id(user_id, TopicRepository(session))
+        res = service.get_answers_by_user_id(user_id, TopicRepository(session))
+
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -160,7 +184,9 @@ async def delete_answer(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
-        return service.delete_answers_by_answer_id(answer_id)
+        res = service.delete_answers_by_answer_id(answer_id)
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:

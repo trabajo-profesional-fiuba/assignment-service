@@ -1,4 +1,7 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import func, bindparam, update
+from sqlalchemy.orm import Session, joinedload
+
+from src.api.groups.exceptions import GroupNotFound
 from src.api.groups.models import Group
 from src.api.students.exceptions import StudentNotFound
 from src.api.users.models import User
@@ -32,7 +35,6 @@ class GroupRepository:
             session.commit()
             session.refresh(group)
             session.expunge(group)
-
         return group
 
     def add_group_having_emails(
@@ -61,15 +63,21 @@ class GroupRepository:
 
         return group
 
-    def get_groups(self, period=None):
-        """Returns all groups for a specific period"""
+    def get_groups(self, period):
+        """Returns all groups for a given period"""
         with self.Session() as session:
-            if period:
-                groups = session.query(Group).filter(Group.period_id == period).all()
-            else:
-                groups = session.query(Group).all()
+            groups = (
+                session.query(Group)
+                .options(
+                    joinedload(Group.topic),
+                    joinedload(Group.tutor_period),
+                    joinedload(Group.period),
+                    joinedload(Group.students),
+                )
+                .filter(Group.period_id == period)
+                .all()
+            )
             session.expunge_all()
-
         return groups
 
     def get_groups_without_tutor_and_period(self):
@@ -83,3 +91,68 @@ class GroupRepository:
             session.expunge_all()
 
         return groups
+
+    def get_groups_without_preferred_topics(self):
+        with self.Session() as session:
+            groups = (
+                session.query(Group)
+                .filter(func.cardinality(Group.preferred_topics) == 0)
+                .all()
+            )
+            session.expunge_all()
+
+        return groups
+
+    def get_groups_learning_path(self, period):
+        """Returns all groups learning path information for a given period"""
+        with self.Session() as session:
+            groups = session.query(Group).filter(Group.period_id == period).all()
+        return groups
+
+    def bulk_update(self, groups_to_update: list[dict], period: str):
+        stmt = (
+            update(Group)
+            .where(Group.id == bindparam("b_id"))
+            .values(
+                assigned_topic_id=bindparam("b_assigned_topic_id"),
+                tutor_period_id=bindparam("b_tutor_period_id"),
+            )
+        )
+        with self.Session() as session:
+            session.connection().execute(
+                stmt,
+                groups_to_update,
+            )
+            session.commit()
+
+    def update(self, group_id, attributes: dict):
+        stmt = update(Group).where(Group.id == group_id).values(**attributes)
+        with self.Session() as session:
+            session.execute(stmt)
+            session.commit()
+
+    def get_groups_by_period_id(self, tutor_period_id):
+        """Returns all groups for a given assigned_tutor_period"""
+        with self.Session() as session:
+            groups = (
+                session.query(Group)
+                .options(
+                    joinedload(Group.topic),
+                    joinedload(Group.tutor_period),
+                    joinedload(Group.period),
+                    joinedload(Group.students),
+                )
+                .filter(Group.tutor_period_id == tutor_period_id)
+                .all()
+            )
+            session.expunge_all()
+        return groups
+
+    def get_group_by_id(self, group_id):
+        with self.Session() as session:
+            group = session.query(Group).filter(Group.id == group_id).one_or_none()
+            if group is None:
+                raise GroupNotFound(message=f"{group_id} not found in db")
+
+            session.expunge(group)
+        return group

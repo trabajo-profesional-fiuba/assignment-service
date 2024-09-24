@@ -1,6 +1,5 @@
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, status, Query, Response
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.api.assignments.service import AssignmentService
@@ -24,6 +23,7 @@ from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -82,6 +82,7 @@ async def assign_incomplete_groups(
 
 @router.post(
     "/group-topic-tutor",
+    response_model=AssignedGroupList,
     summary="Runs the assigment of tutor and topic for grpi",
     responses={
         status.HTTP_200_OK: {"description": "Successfully assigned groups"},
@@ -95,15 +96,17 @@ async def assign_incomplete_groups(
             "description": "Some information provided is not in db"
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
-            "description": "Input validation has failed, typically resulting in a client-facing error response."
+            "description": "Input validation has failed, typically resulting\
+            in a client-facing error response."
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happend inside the backend"
+            "description": "Internal Server Error - Something happened\
+            inside the backend"
         },
     },
     status_code=status.HTTP_200_OK,
 )
-async def assign_incomplete_groups(
+async def assign_group_topic_tutor(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
@@ -142,14 +145,16 @@ async def assign_incomplete_groups(
             [
                 AssignedGroupResponse(
                     id=assigned_group.id,
-                    tutor_email=assigned_group.tutor_email,
-                    topic=assigned_group.topic,
+                    tutor=assigned_group.tutor_as_dict(),
+                    topic=assigned_group.topic_as_dict(),
                 )
                 for assigned_group in assignment_result
             ]
         )
 
-        return assignment_response
+        return ResponseBuilder.build_clear_cache_response(
+            assignment_response, status.HTTP_200_OK
+        )
     except InvalidJwt as e:
         raise InvalidCredentials(str(e))
     except Exception as e:

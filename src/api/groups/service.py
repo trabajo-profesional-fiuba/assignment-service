@@ -1,10 +1,10 @@
+import datetime
+
 from src.api.exceptions import EntityNotInserted, EntityNotFound
-from src.api.groups.schemas import GroupList, GroupResponse
+from src.api.groups.exceptions import GroupNotFound
 from src.api.students.exceptions import StudentNotFound
 
-
 from src.config.logging import logger
-from src.core.group import Group
 
 
 class GroupService:
@@ -24,7 +24,7 @@ class GroupService:
             logger.info(f"New group with id {group.id} created")
             return group
         except StudentNotFound as e:
-            logger.error(f"Could not insert a group because some ids are not valid")
+            logger.error("Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
         except Exception as err:
             logger.error(
@@ -82,3 +82,38 @@ class GroupService:
     def get_goups_without_tutor_and_topic(self):
         db_groups = self._repository.get_groups_without_tutor_and_period()
         return db_groups
+
+    def update(self, groups, period):
+        try:
+            groups_to_update = list()
+            for group in groups:
+                # b_* comes from binding params
+                groups_to_update.append(
+                    {
+                        "b_id": group.id,
+                        "b_assigned_topic_id": group.topic_id,
+                        "b_tutor_period_id": group.tutor_period_id,
+                    }
+                )
+            self._repository.bulk_update(groups_to_update, period)
+            return self._repository.get_groups(period)
+        except Exception as e:
+            logger.error(f"Could not update groups because of: {str(e)}")
+            raise EntityNotInserted(
+                message="Group could't be updated due a database problem. Check if the\
+                id provided are correct."
+            )
+
+    def upload_initial_project(self, group_id: int, data: bytes, storage_client):
+        try:
+            group = self._repository.get_group_by_id(group_id)
+            path = f"{group.period_id}/{group.id}/initial-project.pdf"
+            blob = storage_client.upload(data=data, filename=path, overwrite=True)
+            self._repository.update(
+                group_id, {"pre_report_date": datetime.datetime.now()}
+            )
+
+            return blob
+        except GroupNotFound as e:
+            logger.error(f"Could not found group because of: {str(e)}")
+            raise EntityNotFound(message=str(e))

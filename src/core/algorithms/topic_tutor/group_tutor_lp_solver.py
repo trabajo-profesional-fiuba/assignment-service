@@ -4,7 +4,7 @@ from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.core.group import UnassignedGroup
 from src.core.result import GroupTutorAssigmentResult
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor, Tutor
+from src.core.tutor import SinglePeriodTutor
 
 
 class GroupTutorLPSolver:
@@ -83,7 +83,8 @@ class GroupTutorLPSolver:
                 )
             most_common_category = max(category_counts, key=category_counts.get)
 
-            # Asignar un peso intermedio a los temas de la categoría más común (excluyendo los ya preferidos)
+            # Asignar un peso intermedio a los temas de la categoría más común
+            # (excluyendo los ya preferidos)
             for topic in self._topics:
                 if topic.category == most_common_category and topic.id not in [
                     t.id for t in group.topics
@@ -101,7 +102,8 @@ class GroupTutorLPSolver:
                         10  # Peso menor para los demás temas
                     )
 
-        # Función objetivo que maximiza la asignación de temas con los pesos establecidos
+        # Función objetivo que maximiza la asignación de temas con los pesos
+        # establecidos
         prob += lpSum(
             topic_scores[(group.id, topic.id)]
             * assignment_vars[(group.id, tutor.id, topic.id)]
@@ -188,7 +190,8 @@ class GroupTutorLPSolver:
         Args:
             - prob: Instance of the optimization problem.
             - assignment_vars: Assignment variables.
-            - max_difference: The maximum allowed difference in the number of groups assigned to any two tutors.
+            - max_difference: The maximum allowed difference in the number of groups
+            assigned to any two tutors.
         """
         for tutor_1 in self._tutors:
             for tutor_2 in self._tutors:
@@ -246,9 +249,7 @@ class GroupTutorLPSolver:
 
                 # Asignar el topic al grupo
                 topic = self._get_topic_by_id(topic_id)
-                group = GroupTutorAssigmentResult(
-                    id=group_id, tutor_email=tutor.email, topic=topic.name
-                )
+                group = GroupTutorAssigmentResult(id=group_id, tutor=tutor, topic=topic)
 
                 groups_result.append(group)
 
