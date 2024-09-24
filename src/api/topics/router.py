@@ -18,6 +18,7 @@ from src.api.tutors.repository import TutorRepository
 
 from src.api.users.exceptions import InvalidCredentials
 
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 
 
@@ -61,11 +62,7 @@ async def upload_csv_file(
             period, content, TutorRepository(session)
         )
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (
         EntityNotFound,
         InvalidFileType,
@@ -102,10 +99,7 @@ async def get_topics(
         service = TopicService(TopicRepository(session))
         topics = service.get_topics()
 
-        response = JSONResponse(content=topics.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(topics)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

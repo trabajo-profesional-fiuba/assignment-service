@@ -24,6 +24,7 @@ from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.core.azure_container_client import AzureContainerClient
 from src.config.config import api_config
 from src.config.database.database import get_db
@@ -82,11 +83,7 @@ async def add_group(
             )
         )
         
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -167,10 +164,7 @@ async def get_groups(
 
         res = GroupList.model_validate(group_service.get_groups(period))
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -217,12 +211,8 @@ async def update_groups(
         groups_updated = group_service.update(groups, period)
 
         res = GroupList.model_validate(groups_updated)
-    
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
 
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:

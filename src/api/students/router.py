@@ -20,6 +20,7 @@ from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
 from src.api.users.schemas import UserList, UserResponse
 
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -60,11 +61,7 @@ async def upload_csv_file(
             content, hasher, UserRepository(session), period
         )   
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
@@ -101,10 +98,7 @@ async def get_students_by_ids(
         res = service.get_students_by_ids(user_ids)
         logger.info("Retrieve all students by ids.")
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -144,10 +138,7 @@ async def get_student_info(
 
         logger.info("Retrieve student info by id.")
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -183,11 +174,7 @@ async def add_student(
             service.add_student(student, hasher, UserRepository(session))
         )
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
     except InvalidJwt as e:

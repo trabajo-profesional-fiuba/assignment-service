@@ -27,6 +27,7 @@ from src.api.tutors.schemas import (
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 
 router = APIRouter(prefix="/tutors")
@@ -71,11 +72,7 @@ async def upload_csv_file(
             )
         )
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidCsv, EntityNotFound, Duplicated, InvalidFileType) as e:
         raise e
     except InvalidJwt as e:
@@ -113,11 +110,7 @@ async def add_tutor(
             service.add_tutor(tutor, hasher, UserRepository(session))
         )
     
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
     except InvalidJwt as e:
@@ -151,11 +144,7 @@ async def delete_tutor(
         service = TutorService(TutorRepository(session))
         res = service.delete_tutor(tutor_id)
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 202
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_202_ACCEPTED)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -193,11 +182,7 @@ async def add_period_to_tutor(
             service.add_period_to_tutor(tutor_id, period_id)
         )
     
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -231,10 +216,7 @@ async def get_tutor_periods(
         service = TutorService(TutorRepository(session))
         res = TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
     
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_clear_cache_response(res)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -271,10 +253,7 @@ async def get_tutors_by_period_id(
             service.get_tutors_by_period_id(period_id)
         )
     
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -314,10 +293,7 @@ async def get_groups_by_tutor(
             service.get_groups_from_tutor_id(tutor_id, period_id, group_repository)
         )
 
-        response = JSONResponse(content=groups.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(groups)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:

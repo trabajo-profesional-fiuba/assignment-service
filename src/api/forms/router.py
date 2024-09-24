@@ -25,6 +25,7 @@ from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
 from src.api.users.exceptions import InvalidCredentials
+from src.api.utils import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -77,11 +78,7 @@ async def add_answers(
             ]
         )
     
-        response = JSONResponse(content=jsonable_encoder(res))
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -124,10 +121,7 @@ async def get_answers(
             )
         res = GroupAnswerList.model_validate(response)
     
-        response = JSONResponse(content=jsonable_encoder(res))
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -160,11 +154,8 @@ async def get_answers_by_user_id(
         auth_service.assert_student_role(token)
         service = FormService(FormRepository(session))
         res = service.get_answers_by_user_id(user_id, TopicRepository(session))
-        
-        response = JSONResponse(content=jsonable_encoder(res))
-        response.headers["Cache-Control"] = "private, max-age=300"
 
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -195,10 +186,7 @@ async def delete_answer(
         service = FormService(FormRepository(session))
         res = service.delete_answers_by_answer_id(answer_id)
     
-        response = JSONResponse(content=jsonable_encoder(res))
-        response.headers["Clear-Site-Data"] = '"cache"'
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:

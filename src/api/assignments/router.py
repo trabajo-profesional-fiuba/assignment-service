@@ -1,5 +1,3 @@
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, status, Query, Response
 from sqlalchemy.orm import Session
@@ -25,6 +23,7 @@ from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 
+from src.api.utils import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -153,10 +152,7 @@ async def assign_group_topic_tutor(
             ]
         )
 
-        response = JSONResponse(content=jsonable_encoder(assignment_response))
-        response.headers["Clear-Site-Data"] = '"cache"'
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(assignment_response, status.HTTP_200_OK)
     except InvalidJwt as e:
         raise InvalidCredentials(str(e))
     except Exception as e:

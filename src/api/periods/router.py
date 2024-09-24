@@ -22,6 +22,7 @@ from src.api.periods.schemas import (
 )
 from src.api.auth.schemas import oauth2_scheme
 from src.api.periods.exceptions import InvalidPeriod
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 from src.api.periods.repository import PeriodRepository
 from src.api.periods.service import PeriodService
@@ -55,11 +56,7 @@ async def add_period(
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.add_period(period))
     
-        response = JSONResponse(content=jsonable_encoder(res))
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidPeriod, Duplicated) as e:
         raise e
     except InvalidJwt as e:
@@ -93,11 +90,7 @@ async def get_periods(
 
         res = PeriodList.model_validate(service.get_all_periods(order))
     
-    
-        response = JSONResponse(content=jsonable_encoder(res))
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -131,10 +124,7 @@ async def get_period_by_id(
 
         res = PeriodResponse.model_validate(service.get_period_by_id(period_id))
         
-        response = JSONResponse(content=jsonable_encoder(res))
-        response.headers["Cache-Control"] = "private, max-age=300"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -181,11 +171,7 @@ async def update_period(
         period_service = PeriodService(PeriodRepository(session))
         res = period_service.update(period)
 
-        response = JSONResponse(content=jsonable_encoder(res))
-        response.headers["Clear-Site-Data"] = '"cache"'
-        response.status_code = 201
-
-        return response 
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
