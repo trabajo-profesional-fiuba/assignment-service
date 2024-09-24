@@ -59,7 +59,7 @@ async def upload_csv_file(
 
         res = service.create_students_from_string(
             content, hasher, UserRepository(session), period
-        )   
+        )
 
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, InvalidFileType, EntityNotFound) as e:

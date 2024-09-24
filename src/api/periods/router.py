@@ -55,7 +55,7 @@ async def add_period(
         auth_service.assert_only_admin(token)
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.add_period(period))
-    
+
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidPeriod, Duplicated) as e:
         raise e
@@ -89,7 +89,7 @@ async def get_periods(
         service = PeriodService(PeriodRepository(session))
 
         res = PeriodList.model_validate(service.get_all_periods(order))
-    
+
         return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
@@ -123,7 +123,7 @@ async def get_period_by_id(
         service = PeriodService(PeriodRepository(session))
 
         res = PeriodResponse.model_validate(service.get_period_by_id(period_id))
-        
+
         return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
@@ -137,7 +137,6 @@ async def get_period_by_id(
     "/",
     response_model=PeriodResponse,
     summary="Update a period",
-    tags=["Periods"],
     description="""This endpoint updates a period """,
     tags=["Periods"],
     responses={
