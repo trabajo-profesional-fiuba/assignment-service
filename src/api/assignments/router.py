@@ -23,6 +23,7 @@ from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -151,7 +152,7 @@ async def assign_group_topic_tutor(
             ]
         )
 
-        return assignment_response
+        return ResponseBuilder.build_clear_cache_response(assignment_response, status.HTTP_200_OK)
     except InvalidJwt as e:
         raise InvalidCredentials(str(e))
     except Exception as e:
