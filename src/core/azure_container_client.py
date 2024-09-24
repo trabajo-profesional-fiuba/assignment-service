@@ -31,10 +31,9 @@ class AzureContainerClient:
 
         return blob
 
-    def download(self, blob_name: str, outputfilename: str):
+    def download(self, blob_name: str)-> bytes:
         container_client = self._get_container_client()
         stream_downloader = container_client.download_blob(blob=blob_name)
+        content = stream_downloader.readall()
 
-        with open(outputfilename, "wb") as file:
-            bytes = stream_downloader.readall()
-            file.write(bytes)
+        return content

@@ -1,5 +1,5 @@
 from typing_extensions import Annotated
-from fastapi import APIRouter, Depends, UploadFile, status, Query
+from fastapi import APIRouter, Depends, Response, UploadFile, status, Query
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
@@ -89,7 +89,7 @@ async def add_group(
 
 
 @router.post(
-    "/{group_id}/initial_project",
+    "/{group_id}/initial-project",
     description="Uploads a file into storage",
     status_code=status.HTTP_200_OK,
     responses={
@@ -159,6 +159,50 @@ async def get_groups(
         group_service = GroupService(GroupRepository(session))
 
         return GroupList.model_validate(group_service.get_groups(period))
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.get(
+    "/{group_id}/initial-project",
+    description="Gets all the initial projects metadata from a period",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
+    },
+)
+async def download_group_initial_project(
+    group_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+
+        group_service = GroupService(GroupRepository(session))
+        bytes = group_service.download_initial_project(period, group_id, az_client)
+
+        response = Response(
+            content=bytes, status_code=status.HTTP_200_OK, media_type="application/pdf"
+        )
+        response.headers["Content-Disposition"] = (
+            "attachment; filename=initial_project.pdf"
+        )
+        return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
