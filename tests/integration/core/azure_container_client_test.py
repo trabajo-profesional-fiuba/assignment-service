@@ -3,6 +3,7 @@ import pytest
 from src.config.config import api_config
 from src.core.azure_container_client import AzureContainerClient
 
+
 class TestAzureContainerClient:
     @pytest.mark.integration
     def test_azure_container_client_exists(self):
@@ -89,12 +90,11 @@ class TestAzureContainerClient:
         )
 
         # Act
-        blobs =  az_client.list_blobs(prefix="test_data")
+        blobs = az_client.list_blobs(prefix="test_data")
 
         # Assert
         assert len(blobs) == 1
 
-    
     @pytest.mark.integration
     def test_list_blob_with_prefix_and_pattern(self):
         # Arrange
@@ -103,10 +103,37 @@ class TestAzureContainerClient:
         az_client = AzureContainerClient(
             container=container_name, access_key=access_key
         )
-        pattern = "^1C2025\/[1-9]+\/initial-project\.pdf$"
+        pattern = "^1C2025\/[0-9]+\/initial-project\.pdf$"
 
         # Act
-        blobs =  az_client.list_blobs(prefix="1C2025",pattern=pattern)
+        blobs = az_client.list_blobs(prefix="1C2025", pattern=pattern)
 
         # Assert
         assert len(blobs) == 1
+
+    @pytest.mark.integration
+    @pytest.mark.parametrize(
+        "blobname, expected",
+        [
+            ("1C2025/1/initial-project.pdf", True),
+            ("1C2025/2/initial-project.pdf", True),
+            ("1C2025/123/initial-project.pdf", True),
+            ("1C2025//1/initial-project.pdf", False),
+            ("1C2025/initial-project.pdf", False),
+            ("1C2025//1/initial-project.pdf", False),
+        ],
+    )
+    def test_matches_pattern(self, blobname, expected):
+        # Arrange
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+        pattern = "^1C2025\\/[0-9]+\\/initial-project\\.pdf$"
+
+        # Act
+        result = az_client._matches_pattern(blobname=blobname, pattern=pattern)
+
+        # Assert
+        assert result is expected
