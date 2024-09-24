@@ -128,6 +128,7 @@ async def get_period_by_id(
     "/",
     response_model=PeriodResponse,
     summary="Update a period",
+    tags=["Periods"],
     description="""This endpoint updates a period """,
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully updated period"},
