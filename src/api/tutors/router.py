@@ -215,8 +215,8 @@ async def get_tutor_periods(
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
         res = TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
-    
-        return ResponseBuilder.build_clear_cache_response(res)
+        
+        return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
