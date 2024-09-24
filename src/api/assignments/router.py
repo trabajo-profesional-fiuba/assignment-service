@@ -23,7 +23,7 @@ from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 
-from src.api.utils import ResponseBuilder
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
