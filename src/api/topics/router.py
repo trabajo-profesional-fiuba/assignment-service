@@ -56,9 +56,16 @@ async def upload_csv_file(
             raise InvalidFileType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
         service = TopicService(TopicRepository(session))
-        return service.create_topics_from_string(
+
+        res = service.create_topics_from_string(
             period, content, TutorRepository(session)
         )
+
+        response = JSONResponse(content=res.model_dump())
+        response.headers["Clear-Site-Data"] = '"cache"'
+        response.status_code = 201
+
+        return response 
     except (
         EntityNotFound,
         InvalidFileType,
@@ -96,7 +103,7 @@ async def get_topics(
         topics = service.get_topics()
 
         response = JSONResponse(content=topics.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=7200"
+        response.headers["Cache-Control"] = "private, max-age=300"
 
         return response
     except InvalidJwt as e:

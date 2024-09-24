@@ -56,9 +56,15 @@ async def upload_csv_file(
         content = (await file.read()).decode("utf-8")
         service = StudentService(StudentRepository(session))
 
-        return service.create_students_from_string(
+        res = service.create_students_from_string(
             content, hasher, UserRepository(session), period
-        )
+        )   
+
+        response = JSONResponse(content=res.model_dump())
+        response.headers["Clear-Site-Data"] = '"cache"'
+        response.status_code = 201
+
+        return response 
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
@@ -96,7 +102,7 @@ async def get_students_by_ids(
         logger.info("Retrieve all students by ids.")
 
         response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=7200"
+        response.headers["Cache-Control"] = "private, max-age=300"
 
         return response
     except InvalidJwt as e:
@@ -139,7 +145,7 @@ async def get_student_info(
         logger.info("Retrieve student info by id.")
 
         response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=7200"
+        response.headers["Cache-Control"] = "private, max-age=300"
 
         return response
     except InvalidJwt as e:
@@ -172,9 +178,16 @@ async def add_student(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = StudentService(StudentRepository(session))
-        return UserResponse.model_validate(
+
+        res = UserResponse.model_validate(
             service.add_student(student, hasher, UserRepository(session))
         )
+
+        response = JSONResponse(content=res.model_dump())
+        response.headers["Clear-Site-Data"] = '"cache"'
+        response.status_code = 201
+
+        return response 
     except Duplicated as e:
         raise e
     except InvalidJwt as e:

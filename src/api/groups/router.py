@@ -1,3 +1,4 @@
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, UploadFile, status, Query
 from sqlalchemy.orm import Session
@@ -75,11 +76,17 @@ async def add_group(
         )
         topic = topic_service.get_or_add_topic(group.topic)
 
-        return GroupResponse.model_validate(
+        res = GroupResponse.model_validate(
             group_service.create_assigned_group(
                 group.students_ids, tutor_period.id, topic.id, period_id=period
             )
         )
+        
+        response = JSONResponse(content=res.model_dump())
+        response.headers["Clear-Site-Data"] = '"cache"'
+        response.status_code = 201
+
+        return response 
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -158,7 +165,12 @@ async def get_groups(
 
         group_service = GroupService(GroupRepository(session))
 
-        return GroupList.model_validate(group_service.get_groups(period))
+        res = GroupList.model_validate(group_service.get_groups(period))
+
+        response = JSONResponse(content=res.model_dump())
+        response.headers["Cache-Control"] = "private, max-age=300"
+
+        return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -204,7 +216,13 @@ async def update_groups(
         group_service = GroupService(GroupRepository(session))
         groups_updated = group_service.update(groups, period)
 
-        return GroupList.model_validate(groups_updated)
+        res = GroupList.model_validate(groups_updated)
+    
+        response = JSONResponse(content=res.model_dump())
+        response.headers["Clear-Site-Data"] = '"cache"'
+        response.status_code = 201
+
+        return response 
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:

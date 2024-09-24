@@ -1,5 +1,7 @@
 from datetime import datetime
 from fastapi import APIRouter, status, Depends
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 from src.api.forms.schemas import (
@@ -62,7 +64,7 @@ async def add_answers(
         service = FormService(FormRepository(session))
         answers_saved = service.add_answers(answers)
 
-        return FormPreferencesList.model_validate(
+        res = FormPreferencesList.model_validate(
             [
                 FormPreferencesResponse(
                     user_id=answer.id,
@@ -74,6 +76,12 @@ async def add_answers(
                 for answer in answers_saved
             ]
         )
+    
+        response = JSONResponse(content=jsonable_encoder(res))
+        response.headers["Clear-Site-Data"] = '"cache"'
+        response.status_code = 201
+
+        return response 
     except (Duplicated, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -114,7 +122,12 @@ async def get_answers(
                     topics=answer.get_topic_names(),
                 )
             )
-        return GroupAnswerList.model_validate(response)
+        res = GroupAnswerList.model_validate(response)
+    
+        response = JSONResponse(content=jsonable_encoder(res))
+        response.headers["Cache-Control"] = "private, max-age=300"
+
+        return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -146,7 +159,12 @@ async def get_answers_by_user_id(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
         service = FormService(FormRepository(session))
-        return service.get_answers_by_user_id(user_id, TopicRepository(session))
+        res = service.get_answers_by_user_id(user_id, TopicRepository(session))
+        
+        response = JSONResponse(content=jsonable_encoder(res))
+        response.headers["Cache-Control"] = "private, max-age=300"
+
+        return response
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -175,7 +193,12 @@ async def delete_answer(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
-        return service.delete_answers_by_answer_id(answer_id)
+        res = service.delete_answers_by_answer_id(answer_id)
+    
+        response = JSONResponse(content=jsonable_encoder(res))
+        response.headers["Clear-Site-Data"] = '"cache"'
+
+        return response 
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
