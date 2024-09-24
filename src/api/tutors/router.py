@@ -1,3 +1,4 @@
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
@@ -26,6 +27,7 @@ from src.api.tutors.schemas import (
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
+from src.api.utils.ResponseBuilder import ResponseBuilder
 from src.config.database.database import get_db
 
 router = APIRouter(prefix="/tutors")
@@ -64,11 +66,13 @@ async def upload_csv_file(
             raise InvalidFileType("CSV file must be provided")
         content = (await file.read()).decode("utf-8")
         service = TutorService(TutorRepository(session))
-        res = service.create_tutors_from_csv(
-            content, period, hasher, UserRepository(session)
+        res = TutorList.model_validate(
+            service.create_tutors_from_csv(
+                content, period, hasher, UserRepository(session)
+            )
         )
 
-        return TutorList.model_validate(res)
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidCsv, EntityNotFound, Duplicated, InvalidFileType) as e:
         raise e
     except InvalidJwt as e:
@@ -102,9 +106,11 @@ async def add_tutor(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return TutorResponse.model_validate(
+        res = TutorResponse.model_validate(
             service.add_tutor(tutor, hasher, UserRepository(session))
         )
+    
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
     except InvalidJwt as e:
@@ -136,7 +142,9 @@ async def delete_tutor(
         auth_service.assert_only_admin(token)
 
         service = TutorService(TutorRepository(session))
-        return service.delete_tutor(tutor_id)
+        res = service.delete_tutor(tutor_id)
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_202_ACCEPTED)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -170,9 +178,11 @@ async def add_period_to_tutor(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return TutorResponse.model_validate(
+        res = TutorResponse.model_validate(
             service.add_period_to_tutor(tutor_id, period_id)
         )
+    
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
     except InvalidJwt as e:
@@ -204,7 +214,9 @@ async def get_tutor_periods(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
-        return TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
+        res = TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
+        
+        return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -237,9 +249,11 @@ async def get_tutors_by_period_id(
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
 
-        return TutorWithTopicsList.model_validate(
+        res = TutorWithTopicsList.model_validate(
             service.get_tutors_by_period_id(period_id)
         )
+    
+        return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -275,9 +289,11 @@ async def get_groups_by_tutor(
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
 
-        groups = service.get_groups_from_tutor_id(tutor_id, period_id, group_repository)
+        groups =  GroupList.model_validate(
+            service.get_groups_from_tutor_id(tutor_id, period_id, group_repository)
+        )
 
-        return GroupList.model_validate(groups)
+        return ResponseBuilder.build_private_cache_response(groups)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
