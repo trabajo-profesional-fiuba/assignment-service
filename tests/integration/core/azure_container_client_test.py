@@ -41,12 +41,14 @@ class TestAzureContainerClient:
         # Arrange
         filename = "test_data.txt"  # test_data is already in the storage
         outputfilename = "tests/integration/core/download.txt"
+        #Remove the file if exits
         if os.path.exists(outputfilename):
             os.remove(outputfilename)
+        
         expected_content = (
             "This is a txt file just for uploading and downloading for azure storage"
         )
-        container_name = api_config.containers
+        container_name = api_config.container
         access_key = api_config.storage_access_key
         az_client = AzureContainerClient(
             container=container_name, access_key=access_key
@@ -62,6 +64,10 @@ class TestAzureContainerClient:
         assert (
             file_content == expected_content
         ), f"Content does not match. Expected: '{expected_content}', Found: '{file_content}'"
+        
+        #Remove unnecesary file
+        if os.path.exists(outputfilename):
+            os.remove(outputfilename)
 
     @pytest.mark.integration
     def test_try_to_download_file_not_exists(self):
