@@ -20,7 +20,7 @@ from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
 from src.api.users.schemas import UserList, UserResponse
 
-from src.api.utils.ResponseBuilder import ResponseBuilder
+from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 

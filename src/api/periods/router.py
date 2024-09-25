@@ -22,7 +22,7 @@ from src.api.periods.schemas import (
 )
 from src.api.auth.schemas import oauth2_scheme
 from src.api.periods.exceptions import InvalidPeriod
-from src.api.utils.ResponseBuilder import ResponseBuilder
+from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.api.periods.repository import PeriodRepository
 from src.api.periods.service import PeriodService

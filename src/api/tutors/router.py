@@ -27,7 +27,7 @@ from src.api.tutors.schemas import (
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
-from src.api.utils.ResponseBuilder import ResponseBuilder
+from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 
 router = APIRouter(prefix="/tutors")

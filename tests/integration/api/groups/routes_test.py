@@ -1,3 +1,5 @@
+import tempfile
+import os
 import pytest
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
@@ -291,15 +293,55 @@ def test_post_groups_initial_project(fastapi, tables):
     user_token = helper.create_student_token()
 
     with open("tests/test.pdf", "rb") as file:
-        content = file.read()
+                content = file.read()
 
     filename = "test"
     content_type = "application/pdf"
     files = {"file": (filename, content, content_type)}
     response = fastapi.post(
-        f"{PREFIX}/{group.id}/initial_project",
+        f"{PREFIX}/{group.id}/initial-project",
         files=files,
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
 
     assert response.status_code == status.HTTP_200_OK
+
+@pytest.mark.integration
+def test_download_group_initial_project(fastapi):
+    # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
+    params = {"period": "1C2025"}
+
+    response = fastapi.get(
+        f"{PREFIX}/1/initial-project",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    with open('tests/test.pdf', 'rb') as file:
+        expected_file = file.read()
+    assert expected_file == response.content
+
+
+
+@pytest.mark.integration
+def test_all_groups_initial_project_details(fastapi):
+    # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
+    params = {"period": "1C2025"}
+
+    response = fastapi.get(
+        f"{PREFIX}/initial-project",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    blob = response.json()[0]
+    blob['name'] = '1C2025/1/initial-project.pdf'
+    blob['container'] = 'dev'
+    
+

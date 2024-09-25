@@ -72,3 +72,13 @@ class CompleteGroupList(RootModel):
 
 class AssignedGroupList(RootModel):
     root: List[AssignedGroupResponse] = Field(default=[])
+
+
+class BlobDetails(BaseModel):
+    name: str
+    created_on: datetime
+    last_modified: datetime
+    container: str
+
+class BlobDetailsList(RootModel):
+    root: List[BlobDetails] = Field(default=[])
