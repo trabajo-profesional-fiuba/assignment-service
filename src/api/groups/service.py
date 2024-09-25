@@ -119,6 +119,14 @@ class GroupService:
             logger.error(f"Could not found group because of: {str(e)}")
             raise EntityNotFound(message=str(e))
 
+    def download_initial_project(self, period: str, group_id: int, storage_client):
+        try:
+            path = f"{period}/{group_id}/initial-project.pdf"
+            file_as_bytes = storage_client.download(path)
+            return file_as_bytes
+        except Exception as e:
+            logger.error(f"Could not download {path}")
+            raise e
 
     def list_initial_project(self, period, storage_client):
         pattern = f"^{period}\\/[0-9]+\\/initial-project\\.pdf$"
