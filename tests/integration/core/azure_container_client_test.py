@@ -19,7 +19,6 @@ class TestAzureContainerClient:
         file_path = "tests/integration/core/upload.txt"
         container_name = api_config.container
         access_key = api_config.storage_access_key
-        
         az_client = AzureContainerClient(
             container=container_name, access_key=access_key
         )
@@ -52,6 +51,66 @@ class TestAzureContainerClient:
         access_key = api_config.storage_access_key
         az_client = AzureContainerClient(
             container=container_name, access_key=access_key
-        ) 
+        )
+
+        # Act & Assert
         with pytest.raises(Exception):
             az_client.download(filename)
+
+    @pytest.mark.integration
+    def test_list_blob_with_prefix(self):
+        # Arrange
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+
+        # Act
+        blobs = az_client.list_blobs(prefix="test_data")
+
+        # Assert
+        assert len(blobs) == 1
+
+    @pytest.mark.integration
+    def test_list_blob_with_prefix_and_pattern(self):
+        # Arrange
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+        pattern = "^1C2025\/[0-9]+\/initial-project\.pdf$"
+
+        # Act
+        blobs = az_client.list_blobs(prefix="1C2025", pattern=pattern)
+
+        # Assert
+        assert len(blobs) == 1
+
+    @pytest.mark.integration
+    @pytest.mark.parametrize(
+        "blobname, expected",
+        [
+            ("1C2025/1/initial-project.pdf", True),
+            ("1C2025/2/initial-project.pdf", True),
+            ("1C2025/123/initial-project.pdf", True),
+            ("1C2025//1/initial-project.pdf", False),
+            ("1C2025/initial-project.pdf", False),
+            ("1C2025//1/initial-project.pdf", False),
+        ],
+    )
+    def test_matches_pattern(self, blobname, expected):
+        # Arrange
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+        pattern = "^1C2025\\/[0-9]+\\/initial-project\\.pdf$"
+
+        # Act
+        result = az_client._matches_pattern(blobname=blobname, pattern=pattern)
+
+        # Assert
+        assert result is expected

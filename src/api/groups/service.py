@@ -2,6 +2,7 @@ import datetime
 
 from src.api.exceptions import EntityNotInserted, EntityNotFound
 from src.api.groups.exceptions import GroupNotFound
+from src.api.groups.schemas import BlobDetails
 from src.api.students.exceptions import StudentNotFound
 
 from src.config.logging import logger
@@ -126,3 +127,17 @@ class GroupService:
         except Exception as e:
             logger.error(f"Could not download {path}")
             raise e
+
+    def list_initial_project(self, period, storage_client):
+        pattern = f"^{period}\\/[0-9]+\\/initial-project\\.pdf$"
+        blobs = storage_client.list_blobs(prefix=period,pattern=pattern)
+        blob_details_list =  [
+            BlobDetails(
+                name=blob.name,
+                created_on=blob.creation_time,
+                last_modified=blob.last_modified,
+                container=blob.container
+            )
+            for blob in blobs
+        ]
+        return blob_details_list

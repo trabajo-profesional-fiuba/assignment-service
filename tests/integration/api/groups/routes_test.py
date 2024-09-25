@@ -323,5 +323,25 @@ def test_download_group_initial_project(fastapi):
 
     with open('tests/test.pdf', 'rb') as file:
         expected_file = file.read()
-    
     assert expected_file == response.content
+
+
+
+@pytest.mark.integration
+def test_all_groups_initial_project_details(fastapi):
+    # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
+    params = {"period": "1C2025"}
+
+    response = fastapi.get(
+        f"{PREFIX}/initial-project",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    blob = response.json()[0]
+    blob['name'] = '1C2025/1/initial-project.pdf'
+    blob['container'] = 'dev'
+    
+

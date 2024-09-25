@@ -18,7 +18,7 @@ from src.api.tutors.repository import TutorRepository
 
 from src.api.users.exceptions import InvalidCredentials
 
-from src.api.utils.ResponseBuilder import ResponseBuilder
+from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 
 

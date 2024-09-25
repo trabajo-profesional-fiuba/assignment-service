@@ -27,7 +27,7 @@ from src.api.tutors.schemas import (
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
-from src.api.utils.ResponseBuilder import ResponseBuilder
+from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 
 router = APIRouter(prefix="/tutors")
@@ -109,7 +109,7 @@ async def add_tutor(
         res = TutorResponse.model_validate(
             service.add_tutor(tutor, hasher, UserRepository(session))
         )
-    
+
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
@@ -181,7 +181,7 @@ async def add_period_to_tutor(
         res = TutorResponse.model_validate(
             service.add_period_to_tutor(tutor_id, period_id)
         )
-    
+
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
@@ -215,7 +215,7 @@ async def get_tutor_periods(
         auth_service.assert_only_admin(token)
         service = TutorService(TutorRepository(session))
         res = TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
-        
+
         return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
@@ -252,7 +252,7 @@ async def get_tutors_by_period_id(
         res = TutorWithTopicsList.model_validate(
             service.get_tutors_by_period_id(period_id)
         )
-    
+
         return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
@@ -289,7 +289,7 @@ async def get_groups_by_tutor(
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
 
-        groups =  GroupList.model_validate(
+        groups = GroupList.model_validate(
             service.get_groups_from_tutor_id(tutor_id, period_id, group_repository)
         )
 
