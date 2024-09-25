@@ -20,6 +20,7 @@ from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
 from src.api.users.schemas import UserList, UserResponse
 
+from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -56,9 +57,11 @@ async def upload_csv_file(
         content = (await file.read()).decode("utf-8")
         service = StudentService(StudentRepository(session))
 
-        return service.create_students_from_string(
+        res = service.create_students_from_string(
             content, hasher, UserRepository(session), period
         )
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
@@ -95,10 +98,7 @@ async def get_students_by_ids(
         res = service.get_students_by_ids(user_ids)
         logger.info("Retrieve all students by ids.")
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=7200"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -138,10 +138,7 @@ async def get_student_info(
 
         logger.info("Retrieve student info by id.")
 
-        response = JSONResponse(content=res.model_dump())
-        response.headers["Cache-Control"] = "private, max-age=7200"
-
-        return response
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -172,9 +169,12 @@ async def add_student(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = StudentService(StudentRepository(session))
-        return UserResponse.model_validate(
+
+        res = UserResponse.model_validate(
             service.add_student(student, hasher, UserRepository(session))
         )
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
     except InvalidJwt as e:

@@ -1,6 +1,8 @@
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, Depends, status, Query, Path
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
@@ -20,6 +22,7 @@ from src.api.periods.schemas import (
 )
 from src.api.auth.schemas import oauth2_scheme
 from src.api.periods.exceptions import InvalidPeriod
+from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.api.periods.repository import PeriodRepository
 from src.api.periods.service import PeriodService
@@ -51,7 +54,9 @@ async def add_period(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = PeriodService(PeriodRepository(session))
-        return PeriodResponse.model_validate(service.add_period(period))
+        res = PeriodResponse.model_validate(service.add_period(period))
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidPeriod, Duplicated) as e:
         raise e
     except InvalidJwt as e:
@@ -83,7 +88,9 @@ async def get_periods(
         auth_service.assert_only_admin(token)
         service = PeriodService(PeriodRepository(session))
 
-        return PeriodList.model_validate(service.get_all_periods(order))
+        res = PeriodList.model_validate(service.get_all_periods(order))
+
+        return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
@@ -115,7 +122,9 @@ async def get_period_by_id(
 
         service = PeriodService(PeriodRepository(session))
 
-        return PeriodResponse.model_validate(service.get_period_by_id(period_id))
+        res = PeriodResponse.model_validate(service.get_period_by_id(period_id))
+
+        return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
@@ -129,6 +138,7 @@ async def get_period_by_id(
     response_model=PeriodResponse,
     summary="Update a period",
     description="""This endpoint updates a period """,
+    tags=["Periods"],
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully updated period"},
         status.HTTP_400_BAD_REQUEST: {
@@ -159,7 +169,9 @@ async def update_period(
         auth_service.assert_only_admin(token)
 
         period_service = PeriodService(PeriodRepository(session))
-        return period_service.update(period)
+        res = period_service.update(period)
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
