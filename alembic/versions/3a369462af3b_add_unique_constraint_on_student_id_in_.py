@@ -19,12 +19,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade():
-    op.create_primary_key("student_id_pkey", "student_periods", ["student_id"])
     op.create_unique_constraint("uq_student_period", "student_periods", ["student_id"])
 
 
 def downgrade():
-    op.create_primary_key(
-        "student_periods_pkey", "student_periods", ["period_id", "student_id"]
-    )
     op.drop_constraint("uq_student_period", "student_periods", type_="unique")
