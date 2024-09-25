@@ -11,6 +11,7 @@ from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import (
     AssignedGroupConfirmationRequest,
+    BlobDetailsList,
     GroupList,
     GroupResponse,
     GroupWithTutorTopicRequest,
@@ -24,7 +25,7 @@ from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 
-from src.api.utils.ResponseBuilder import ResponseBuilder
+from src.api.utils.response_builder import ResponseBuilder
 from src.core.azure_container_client import AzureContainerClient
 from src.config.config import api_config
 from src.config.database.database import get_db
@@ -165,6 +166,45 @@ async def get_groups(
         res = GroupList.model_validate(group_service.get_groups(period))
 
         return ResponseBuilder.build_private_cache_response(res)
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.get(
+    "/initial_project",
+    description="Gets all the initial projects metadata from a period",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
+
+    },
+)
+async def list_initial_projects(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+
+        group_service = GroupService(GroupRepository(session))
+        blobs = group_service.list_initial_project(period, az_client)
+        
+        return BlobDetailsList.model_validate(blobs)
+
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

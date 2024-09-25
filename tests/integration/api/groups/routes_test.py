@@ -289,10 +289,9 @@ def test_post_groups_initial_project(fastapi, tables):
         period_id="1C2025",
     )
     user_token = helper.create_student_token()
-
     with open("tests/test.pdf", "rb") as file:
         content = file.read()
-
+    
     filename = "test"
     content_type = "application/pdf"
     files = {"file": (filename, content, content_type)}
@@ -301,5 +300,24 @@ def test_post_groups_initial_project(fastapi, tables):
         files=files,
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
-
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+def test_all_groups_initial_project_details(fastapi):
+    # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
+    params = {"period": "1C2025"}
+
+    response = fastapi.get(
+        f"{PREFIX}/initial_project",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    blob = response.json()[0]
+    blob['name'] = '1C2025/1/initial-project.pdf'
+    blob['container'] = 'dev'
+    
+
