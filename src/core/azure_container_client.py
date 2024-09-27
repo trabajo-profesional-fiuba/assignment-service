@@ -57,7 +57,8 @@ class AzureContainerClient:
         pattern: str | None = None,
         **kwargs: Any
     ):
-        """Walks through the blobs using recursion looking for a blob file that matches the pattern"""
+        """Walks through the blobs using recursion looking for a blob file that matches
+        the pattern"""
 
         for blob in container_client.walk_blobs(name_starts_with=prefix, **kwargs):
             if isinstance(blob, BlobPrefix):

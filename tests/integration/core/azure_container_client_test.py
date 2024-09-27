@@ -1,4 +1,3 @@
-import os
 import pytest
 from src.config.config import api_config
 from src.core.azure_container_client import AzureContainerClient
@@ -46,7 +45,8 @@ class TestAzureContainerClient:
 
         assert (
             file_content == expected_content
-        ), f"Content does not match. Expected: '{expected_content}', Found: '{file_content}'"
+        ), f"Content does not match. Expected: '{expected_content}', \
+            Found: '{file_content}'"
 
     @pytest.mark.integration
     def test_try_to_download_file_not_exists(self):
