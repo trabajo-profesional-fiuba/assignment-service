@@ -215,6 +215,7 @@ async def download_group_initial_project(
     except Exception as e:
         raise ServerError(message=str(e))
 
+
 @router.get(
     "/initial-project",
     description="Gets all the initial projects metadata from a period",
@@ -223,7 +224,6 @@ async def download_group_initial_project(
         status.HTTP_200_OK: {"description": "Success"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
-
     },
 )
 async def list_initial_projects(
@@ -245,13 +245,14 @@ async def list_initial_projects(
 
         group_service = GroupService(GroupRepository(session))
         blobs = group_service.list_initial_project(period, az_client)
-        
+
         return BlobDetailsList.model_validate(blobs)
 
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
+
 
 @router.put(
     "/",

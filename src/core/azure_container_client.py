@@ -43,12 +43,11 @@ class AzureContainerClient:
 
         return blob
 
-    def download(self, blob_name: str)-> bytes:
+    def download(self, blob_name: str) -> bytes:
         container_client = self._get_container_client()
         stream_downloader = container_client.download_blob(blob=blob_name)
         content = stream_downloader.readall()
         return content
-
 
     def _walk_blob_hierarchy(
         self,

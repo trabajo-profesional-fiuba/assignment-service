@@ -212,7 +212,7 @@ async def get_tutor_periods(
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service.assert_tutor_rol(token)
         service = TutorService(TutorRepository(session))
         res = TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
 

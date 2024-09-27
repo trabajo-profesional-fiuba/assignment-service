@@ -80,5 +80,6 @@ class BlobDetails(BaseModel):
     last_modified: datetime
     container: str
 
+
 class BlobDetailsList(RootModel):
     root: List[BlobDetails] = Field(default=[])

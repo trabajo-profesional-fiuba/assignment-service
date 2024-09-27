@@ -130,13 +130,13 @@ class GroupService:
 
     def list_initial_project(self, period, storage_client):
         pattern = f"^{period}\\/[0-9]+\\/initial-project\\.pdf$"
-        blobs = storage_client.list_blobs(prefix=period,pattern=pattern)
-        blob_details_list =  [
+        blobs = storage_client.list_blobs(prefix=period, pattern=pattern)
+        blob_details_list = [
             BlobDetails(
                 name=blob.name,
                 created_on=blob.creation_time,
                 last_modified=blob.last_modified,
-                container=blob.container
+                container=blob.container,
             )
             for blob in blobs
         ]

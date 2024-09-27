@@ -231,7 +231,7 @@ def test_add_same_period_to_two_tutors_with_success(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_get_tutors_period_with_success(fastapi, tables):
+def test_get_tutors_period_with_admin_success(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2024")
@@ -513,3 +513,21 @@ def test_get_groups_assigned_to_tutor(fastapi, tables):
 
     assert response.status_code == 200
     assert len(response.json()) == 2
+
+
+@pytest.mark.integration
+def test_get_tutors_periods_with_tutor_success(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    helper.create_tutor_period("105600", "1C2024")
+    student_token = helper.create_tutor_token_with_id("105600")
+
+    # Act
+    response = fastapi.get(
+        f"{PREFIX}/{105600}/periods",
+        headers={"Authorization": f"Bearer {student_token.access_token}"},
+    )
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
