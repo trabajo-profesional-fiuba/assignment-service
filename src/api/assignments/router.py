@@ -157,5 +157,5 @@ async def assign_group_topic_tutor(
         )
     except InvalidJwt as e:
         raise InvalidCredentials(str(e))
-    except Exception as e:
+    except Exception:
         raise ServerError("error")

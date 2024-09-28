@@ -1,5 +1,4 @@
 from fastapi import APIRouter, status, Depends, UploadFile, Query
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 
@@ -100,7 +99,7 @@ async def get_topics(
         topics = service.get_topics()
 
         return ResponseBuilder.build_private_cache_response(topics)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
