@@ -13,6 +13,7 @@ from src.api.groups.schemas import (
     BlobDetailsList,
     GroupList,
     GroupResponse,
+    GroupStates,
     GroupWithTutorTopicRequest,
 )
 from src.api.groups.service import GroupService
@@ -167,6 +168,51 @@ async def get_groups(
         return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.get(
+    "/states/{group_id}",
+    response_model=GroupStates,
+    summary="Returns states of a group",
+    responses={
+        status.HTTP_200_OK: {"description": "Successfully returned states"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unknown operation"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_group_by_id(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    group_id: int,
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_role(token)
+        student_id = auth_service.get_user_id(token)
+
+        group_service = GroupService(GroupRepository(session))
+        group = group_service.get_group_by_student_id(student_id)
+        if group.id != group_id:
+            raise InvalidJwt("Group requested is different to de student's group")
+        group_model = GroupStates.model_validate(group)
+
+        return ResponseBuilder.build_private_cache_response(group_model)
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except EntityNotFound as e:
+        raise e
     except Exception as e:
         raise ServerError(message=str(e))
 

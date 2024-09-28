@@ -141,3 +141,24 @@ class GroupService:
             for blob in blobs
         ]
         return blob_details_list
+
+    def get_group(
+        self,
+        group_id: int,
+    ):
+        try:
+            logger.info(f"Fetching group: {group_id}")
+            group = self._repository.get_group_by_id(group_id)
+            return group
+        except GroupNotFound as e:
+            logger.error(f"Could not found group because of: {str(e)}")
+            raise EntityNotFound(message=str(e))
+
+    def get_group_by_student_id(self, student_id: int):
+        try:
+            logger.info(f"Fetching group for student : {student_id}")
+            group = self._repository.get_group_by_student_id(student_id)
+            return group
+        except GroupNotFound as e:
+            logger.error(f"Could not found group because of: {str(e)}")
+            raise EntityNotFound(message=str(e))

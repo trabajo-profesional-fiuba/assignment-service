@@ -503,7 +503,7 @@ def test_get_groups_assigned_to_tutor(fastapi, tables):
     helper.create_student("juan", "Student2", "105286", "student2@fi.uba.ar")
     helper.create_group([105285], period.id, 1, "1C2024")
     helper.create_group([105286], period.id, 2, "1C2024")
-    token = helper.create_tutor_token_with_id(12345678)
+    token = helper.create_tutor_token(12345678)
 
     params = {"period_id": "1C2024"}
     response = fastapi.get(
