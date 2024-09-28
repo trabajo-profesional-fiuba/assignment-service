@@ -1,6 +1,11 @@
-from src.api.users.exceptions import InvalidCredentials
-from src.api.users.repository import UserRepository
 from src.config.logging import logger
+
+from src.api.users.repository import UserRepository
+from src.api.users.models import User, Role
+
+from src.api.exceptions import EntityNotFound
+from src.api.users.exceptions import InvalidCredentials
+from src.api.auth.jwt import InvalidJwt
 
 
 class UserService:
@@ -12,7 +17,19 @@ class UserService:
         logger.info(f"{email} is trying to log in")
         user = self._repository.get_user_by_email(email)
         if user.password != hashed_password:
-            logger.error(f"The email {email} introduced wrong answerd")
+            logger.error(f"The email {email} introduced wrong answered")
             raise InvalidCredentials(message="Email or password is incorrect")
 
         return user
+
+    def get_user_by_id(self, user_id: int):
+        try:
+            logger.info(f"Getting user info of {user_id}")
+            return self._repository.get_user_by_id(user_id)
+        except Exception as err:
+            logger.error(f"Error when getting user {user_id} info: {err}")
+            raise EntityNotFound("User not found")
+
+    def validate_tutor(self, tutor_id: int, user: User):
+        if tutor_id != user.id:
+            raise InvalidJwt("User unauthorized")

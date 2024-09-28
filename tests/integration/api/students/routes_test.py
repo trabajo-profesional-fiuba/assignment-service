@@ -213,6 +213,7 @@ def test_get_personal_info_without_form_answers(fastapi, tables):
     assert response.json()["id"] == 100
     assert not response.json()["form_answered"]
 
+
 @pytest.mark.integration
 def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables):
     helper = ApiHelper()

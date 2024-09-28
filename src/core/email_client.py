@@ -8,7 +8,7 @@ class SendGridEmailClient:
     def __init__(self, api_key: str = None):
         self.api_key = api_key
         self.sender = "fiuba.tpp.notificaciones@gmail.com"
-        self.name = 'FIUBA Trabajo Profesional'
+        self.name = "FIUBA Trabajo Profesional"
 
     def _get_api_client(self):
         if self.api_key is None:
@@ -22,10 +22,10 @@ class SendGridEmailClient:
             logger.info(
                 f"Sendgrid send email had a problem, the response code status is: {response.status_code}"
             )
-    
+
     def send_mail(self, mail: Mail):
         sg = self._get_api_client()
-        
+
         # Get a JSON-ready representation of the Mail object
         mail_json = mail.get()
         response = sg.client.mail.send.post(request_body=mail_json)
@@ -49,4 +49,3 @@ class SendGridEmailClient:
         response = self.send_mail(mail)
         self._log_response(response)
         return response.status_code
-

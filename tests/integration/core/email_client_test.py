@@ -47,6 +47,6 @@ class TestEmailClient:
             "avillores@fi.uba.ar ",
             "Mensaje importante para vos",
             "Hola como andas?",
-            cc=['alejovillores@gmail.com']
+            cc=["alejovillores@gmail.com"],
         )
         assert response == 202

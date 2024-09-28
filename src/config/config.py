@@ -71,10 +71,11 @@ class ApiConfiguration:
     @property
     def container(self) -> str:
         return self.config("AZURE_STORAGE_CONTAINER_NAME", cast=str)
+
     @property
     def email_key(self) -> str:
         return self.config("EMAIL_API_KEY", cast=str)
-    
+
     def set_env(self, key: str, value):
         environ[key.to_upper()] = value
 

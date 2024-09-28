@@ -29,6 +29,9 @@ from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
+from src.api.users.service import UserService
+from src.api.users.repository import UserRepository
+from src.api.users.models import Role
 
 router = APIRouter(prefix="/tutors")
 
@@ -195,7 +198,7 @@ async def add_period_to_tutor(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
     description="Returns all the periods for tutor_id",
-    summary="Get all periods",
+    summary="Get all periods of tutor_id",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
     responses={
@@ -212,11 +215,19 @@ async def get_tutor_periods(
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
-        service = TutorService(TutorRepository(session))
-        res = TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
+        auth_service.assert_tutor_rol(token)
 
-        return ResponseBuilder.build_private_cache_response(res)
+        user_id = auth_service.get_user_id(token)
+        user_service = UserService(UserRepository(session))
+        user = user_service.get_user_by_id(user_id)
+        if user.role == Role.TUTOR:
+            user_service.validate_tutor(tutor_id, user)
+
+        service = TutorService(TutorRepository(session))
+        response = TutorResponse.model_validate(
+            service.get_periods_by_tutor_id(tutor_id)
+        )
+        return ResponseBuilder.build_private_cache_response(response)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:

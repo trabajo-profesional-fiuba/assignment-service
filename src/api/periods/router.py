@@ -11,7 +11,6 @@ from src.api.exceptions import (
     Duplicated,
     EntityNotFound,
     ServerError,
-    EntityNotInserted,
 )
 from src.api.users.exceptions import InvalidCredentials
 from src.api.periods.schemas import (
