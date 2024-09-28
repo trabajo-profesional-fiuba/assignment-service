@@ -23,17 +23,28 @@ class SendGridEmailClient:
                 f"Sendgrid send email had a problem, the response code status is: {response.status_code}"
             )
     
-    def send_email(self, to: str, subject: str, body: str):
-        return self._send_mail([to], subject, body)
+    def send_mail(self, mail: Mail):
+        sg = self._get_api_client()
+        
+        # Get a JSON-ready representation of the Mail object
+        mail_json = mail.get()
+        response = sg.client.mail.send.post(request_body=mail_json)
+        return response
 
-    def send_emails(self, to: list[str], subject: str, body: str):
-        return self._send_mail(to, subject, body)
+    def send_email(self, to: str, subject: str, body: str, cc: list[str] = []):
+        return self._send_mail([to], subject, body, cc)
 
-    def _send_mail(self, to: list[str], subject: str, body: str):
+    def send_emails(self, to: list[str], subject: str, body: str, cc: list[str] = []):
+        return self._send_mail(to, subject, body, cc)
+
+    def _send_mail(self, to: list[str], subject: str, body: str, cc: list[str] = []):
         from_email = Email(self.sender, name=self.name)
         to_emails = [To(user) for user in to]
         content = Content("text/plain", body)
         mail = Mail(from_email, to_emails, subject, content)
+
+        if len(cc) != 0:
+            mail.cc = cc
 
         response = self.send_mail(mail)
         self._log_response(response)

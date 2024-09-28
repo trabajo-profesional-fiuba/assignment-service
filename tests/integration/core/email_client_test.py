@@ -13,7 +13,7 @@ class TestEmailClient:
         email_client = SendGridEmailClient(api_key)
         response = email_client.send_email(
             "avillores@fi.uba.ar ",
-            "Mensaje importante para Agus",
+            "Mensaje importante para vos",
             "Hola como andas?",
         )
         assert response == 202
@@ -36,5 +36,17 @@ class TestEmailClient:
         ]
         response = email_client.send_emails(
             users, "Test FIUBA", "Esto es una prueba no responder"
+        )
+        assert response == 202
+
+    @pytest.mark.skip
+    def test_send_email_to_user_with_cc(self):
+        api_key = api_config.email_key
+        email_client = SendGridEmailClient(api_key)
+        response = email_client.send_email(
+            "avillores@fi.uba.ar ",
+            "Mensaje importante para vos",
+            "Hola como andas?",
+            cc=['alejovillores@gmail.com']
         )
         assert response == 202
