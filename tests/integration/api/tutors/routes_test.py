@@ -523,7 +523,7 @@ def test_get_tutor_periods_with_tutor(fastapi, tables):
     helper.create_period("1C2024")
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
     helper.create_tutor_period("105600", "1C2024")
-    tutor_token = helper.create_tutor_token_with_id(105600)
+    tutor_token = helper.create_tutor_token(105600)
 
     # Act
     response = fastapi.get(
@@ -543,7 +543,7 @@ def test_get_tutor_periods_with_unauthorized_tutor(fastapi, tables):
     helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
     helper.create_tutor("Juana", "Perez", "105601", "email1@fi.uba.ar")
     helper.create_tutor_period("105601", "1C2024")
-    tutor_token = helper.create_tutor_token_with_id(105601)
+    tutor_token = helper.create_tutor_token(105601)
 
     # Act
     response = fastapi.get(

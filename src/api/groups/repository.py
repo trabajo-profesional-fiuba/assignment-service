@@ -160,7 +160,7 @@ class GroupRepository:
     def get_group_by_student_id(self, student_id: int) -> Group:
         with self.Session() as session:
             result = (
-                session.query(association_table.c.group_id.label('id'))
+                session.query(association_table.c.group_id.label("id"))
                 .filter_by(student_id=student_id)
                 .one_or_none()
             )

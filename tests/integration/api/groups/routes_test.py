@@ -339,9 +339,9 @@ def test_all_groups_initial_project_details(fastapi):
     )
     assert response.status_code == status.HTTP_200_OK
     blob = response.json()[0]
-    blob['name'] = '1C2025/1/initial-project.pdf'
-    blob['container'] = 'dev'
-    
+    blob["name"] = "1C2025/1/initial-project.pdf"
+    blob["container"] = "dev"
+
 
 @pytest.mark.integration
 def test_get_groups_by_id(fastapi, tables):
@@ -362,7 +362,7 @@ def test_get_groups_by_id(fastapi, tables):
     )
     user_token = helper.create_student_token(105001)
     params = {"period": "1C2025"}
-    
+
     response = fastapi.get(
         f"{PREFIX}/states/{group.id}",
         params=params,
