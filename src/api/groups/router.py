@@ -178,7 +178,7 @@ async def get_groups(
     response_model=GroupStates,
     summary="Returns states of a group",
     responses={
-        status.HTTP_200_OK: {"description": "Successfully added a new group."},
+        status.HTTP_200_OK: {"description": "Successfully returned states"},
         status.HTTP_400_BAD_REQUEST: {
             "description": "Bad Request due unknown operation"
         },
