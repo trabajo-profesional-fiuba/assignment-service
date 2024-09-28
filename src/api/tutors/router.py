@@ -194,7 +194,7 @@ async def add_period_to_tutor(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
     description="Returns all the periods for tutor_id",
-    summary="Get all periods",
+    summary="Get all periods of tutor_id",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
     responses={
@@ -212,10 +212,16 @@ async def get_tutor_periods(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
-        service = TutorService(TutorRepository(session))
-        res = TutorResponse.model_validate(service.get_periods_by_tutor_id(tutor_id))
+        user_id = auth_service.get_user_id(token)
 
-        return ResponseBuilder.build_private_cache_response(res)
+        service = TutorService(TutorRepository(session))
+        if tutor_id != user_id:
+            raise InvalidJwt("User unauthorized")
+
+        response = TutorResponse.model_validate(
+            service.get_periods_by_tutor_id(tutor_id)
+        )
+        return ResponseBuilder.build_private_cache_response(response)
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:
