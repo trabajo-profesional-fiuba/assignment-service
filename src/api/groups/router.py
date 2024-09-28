@@ -198,14 +198,21 @@ async def get_group_by_id(
     group_id: int,
 ):
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
-        student_id = auth_service.get_user_id(token)
-
         group_service = GroupService(GroupRepository(session))
-        group = group_service.get_group_by_student_id(student_id)
-        if group.id != group_id:
-            raise InvalidJwt("Group requested is different to de student's group")
+        auth_service = AuthenticationService(jwt_resolver)
+
+        is_admin = auth_service.is_admin(token)
+        if is_admin:
+            group = group_service.get_group(group_id)
+        else:
+            jwt_token = auth_service.assert_student_role(token)
+            student_id = auth_service.get_user_id(jwt_token)
+
+            group = group_service.get_group_by_student_id(student_id)
+
+            if group.id != group_id:
+                raise InvalidJwt("Group requested is different to de student's group")
+
         group_model = GroupStates.model_validate(group)
 
         return ResponseBuilder.build_private_cache_response(group_model)
