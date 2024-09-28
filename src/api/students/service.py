@@ -95,7 +95,6 @@ class StudentService:
     ):
 
         form_answers = form_repository.get_answers_by_user_id(id)
-
         form_answered = len(form_answers) > 0
 
         groups_without_preferred_topics = (
@@ -129,7 +128,6 @@ class StudentService:
         tutor = repository.get_tutor_by_id(student_info_db.tutor_id)
 
         teammates = self._repository.get_teammates(id, student_info_db.group_id)
-
         personal_information.group_id = student_info_db.group_id
         personal_information.tutor = f"{tutor.name} {tutor.last_name}"
         personal_information.topic = student_info_db.topic_name

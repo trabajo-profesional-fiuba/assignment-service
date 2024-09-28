@@ -5,7 +5,6 @@ from src.api.users.schemas import UserResponse
 
 class PersonalInformation(BaseModel):
     id: int
-    form_answered: bool
     group_id: int
     tutor: str
     topic: str
