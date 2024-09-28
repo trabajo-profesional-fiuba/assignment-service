@@ -1,4 +1,3 @@
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, Response, UploadFile, status, Query
 from sqlalchemy.orm import Session
@@ -14,6 +13,7 @@ from src.api.groups.schemas import (
     BlobDetailsList,
     GroupList,
     GroupResponse,
+    GroupStates,
     GroupWithTutorTopicRequest,
 )
 from src.api.groups.service import GroupService
@@ -87,7 +87,7 @@ async def add_group(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
@@ -166,8 +166,60 @@ async def get_groups(
         res = GroupList.model_validate(group_service.get_groups(period))
 
         return ResponseBuilder.build_private_cache_response(res)
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.get(
+    "/states/{group_id}",
+    response_model=GroupStates,
+    summary="Returns states of a group",
+    responses={
+        status.HTTP_200_OK: {"description": "Successfully returned states"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unknown operation"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_group_by_id(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    group_id: int,
+):
+    try:
+        group_service = GroupService(GroupRepository(session))
+        auth_service = AuthenticationService(jwt_resolver)
+
+        is_student = auth_service.is_student(token)
+        if is_student:
+            jwt_token = auth_service.assert_student_role(token)
+            student_id = auth_service.get_user_id(jwt_token)
+
+            group = group_service.get_group_by_student_id(student_id)
+
+            if group.id != group_id:
+                raise InvalidJwt("Group requested is different to de student's group")
+        else:
+            group = group_service.get_group(group_id)
+
+        group_model = GroupStates.model_validate(group)
+
+        return ResponseBuilder.build_private_cache_response(group_model)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
+    except EntityNotFound as e:
+        raise e
     except Exception as e:
         raise ServerError(message=str(e))
 
@@ -215,6 +267,7 @@ async def download_group_initial_project(
     except Exception as e:
         raise ServerError(message=str(e))
 
+
 @router.get(
     "/initial-project",
     description="Gets all the initial projects metadata from a period",
@@ -223,7 +276,6 @@ async def download_group_initial_project(
         status.HTTP_200_OK: {"description": "Success"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
-
     },
 )
 async def list_initial_projects(
@@ -245,13 +297,14 @@ async def list_initial_projects(
 
         group_service = GroupService(GroupRepository(session))
         blobs = group_service.list_initial_project(period, az_client)
-        
+
         return BlobDetailsList.model_validate(blobs)
 
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
+
 
 @router.put(
     "/",
@@ -297,7 +350,7 @@ async def update_groups(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))

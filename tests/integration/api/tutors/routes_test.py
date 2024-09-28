@@ -231,7 +231,7 @@ def test_add_same_period_to_two_tutors_with_success(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_get_tutors_period_with_success(fastapi, tables):
+def test_get_tutors_period_with_admin_success(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2024")
@@ -244,6 +244,7 @@ def test_get_tutors_period_with_success(fastapi, tables):
         f"{PREFIX}/{105600}/periods",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
+
     # Assert
     assert response.status_code == status.HTTP_200_OK
 
@@ -502,7 +503,7 @@ def test_get_groups_assigned_to_tutor(fastapi, tables):
     helper.create_student("juan", "Student2", "105286", "student2@fi.uba.ar")
     helper.create_group([105285], period.id, 1, "1C2024")
     helper.create_group([105286], period.id, 2, "1C2024")
-    token = helper.create_tutor_token_with_id(12345678)
+    token = helper.create_tutor_token(12345678)
 
     params = {"period_id": "1C2024"}
     response = fastapi.get(
@@ -513,3 +514,42 @@ def test_get_groups_assigned_to_tutor(fastapi, tables):
 
     assert response.status_code == 200
     assert len(response.json()) == 2
+
+
+@pytest.mark.integration
+def test_get_tutor_periods_with_tutor(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    helper.create_tutor_period("105600", "1C2024")
+    tutor_token = helper.create_tutor_token(105600)
+
+    # Act
+    response = fastapi.get(
+        f"{PREFIX}/{105600}/periods",
+        headers={"Authorization": f"Bearer {tutor_token.access_token}"},
+    )
+
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+def test_get_tutor_periods_with_unauthorized_tutor(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_tutor("Juan", "Perez", "105600", "email@fi.uba.ar")
+    helper.create_tutor("Juana", "Perez", "105601", "email1@fi.uba.ar")
+    helper.create_tutor_period("105601", "1C2024")
+    tutor_token = helper.create_tutor_token(105601)
+
+    # Act
+    response = fastapi.get(
+        f"{PREFIX}/{105600}/periods",
+        headers={"Authorization": f"Bearer {tutor_token.access_token}"},
+    )
+
+    # Assert
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED

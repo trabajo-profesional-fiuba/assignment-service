@@ -1,7 +1,5 @@
 from datetime import datetime
 from fastapi import APIRouter, status, Depends
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 from src.api.forms.schemas import (
@@ -81,7 +79,7 @@ async def add_answers(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
@@ -122,7 +120,7 @@ async def get_answers(
         res = GroupAnswerList.model_validate(response)
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
@@ -156,7 +154,7 @@ async def get_answers_by_user_id(
         res = service.get_answers_by_user_id(user_id, TopicRepository(session))
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
@@ -189,7 +187,7 @@ async def delete_answer(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))

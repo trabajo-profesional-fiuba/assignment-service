@@ -51,7 +51,7 @@ class GroupResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CompleteGroupResponse(GroupResponse):
+class GroupStates(BaseModel):
     pre_report_date: datetime | None
     pre_report_approved: bool
     intermediate_assigment_date: datetime | None
@@ -66,10 +66,6 @@ class GroupList(RootModel):
     root: List[GroupResponse] = Field(default=[])
 
 
-class CompleteGroupList(RootModel):
-    root: List[CompleteGroupResponse] = Field(default=[])
-
-
 class AssignedGroupList(RootModel):
     root: List[AssignedGroupResponse] = Field(default=[])
 
@@ -79,6 +75,7 @@ class BlobDetails(BaseModel):
     created_on: datetime
     last_modified: datetime
     container: str
+
 
 class BlobDetailsList(RootModel):
     root: List[BlobDetails] = Field(default=[])
