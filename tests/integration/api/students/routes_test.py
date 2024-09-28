@@ -200,7 +200,7 @@ def test_update_student_file_with_success(fastapi, tables):
 @pytest.mark.integration
 def test_get_personal_info_without_form_answers(fastapi, tables):
     helper = ApiHelper()
-    token = helper.create_student_token_with_id(100)
+    token = helper.create_student_token(100)
 
     helper.create_student("Juan", "Perez", "100", "juanperez@fi.uba.ar")
     helper.create_student_period(100, "2C2024")
@@ -213,11 +213,10 @@ def test_get_personal_info_without_form_answers(fastapi, tables):
     assert response.json()["id"] == 100
     assert not response.json()["form_answered"]
 
-
 @pytest.mark.integration
 def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables):
     helper = ApiHelper()
-    token = helper.create_student_token_with_id(100)
+    token = helper.create_student_token(100)
     helper.create_tutor("Tutor1", "Apellido", "1000", "email@fi.uba.ar")
     helper.create_tutor_period(1000, "2C2024", 1)
     helper.create_default_topics(["t1", "t2", "t3", "t4"])
@@ -239,7 +238,7 @@ def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables)
 def test_get_existing_period_by_id(fastapi, tables):
     # Arrange
     helper = ApiHelper()
-    student_token = helper.create_student_token_with_id(100)
+    student_token = helper.create_student_token(100)
 
     response = fastapi.get(
         f"{PERIOD_PREFIX}/2C2024",

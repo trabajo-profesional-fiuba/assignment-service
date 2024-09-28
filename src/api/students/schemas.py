@@ -5,8 +5,8 @@ from src.api.users.schemas import UserResponse
 
 class PersonalInformation(BaseModel):
     id: int
-    form_answered: bool
     group_id: int
+    form_answered: bool
     tutor: str
     topic: str
     teammates: List[str]
