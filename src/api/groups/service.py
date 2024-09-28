@@ -130,14 +130,35 @@ class GroupService:
 
     def list_initial_project(self, period, storage_client):
         pattern = f"^{period}\\/[0-9]+\\/initial-project\\.pdf$"
-        blobs = storage_client.list_blobs(prefix=period,pattern=pattern)
-        blob_details_list =  [
+        blobs = storage_client.list_blobs(prefix=period, pattern=pattern)
+        blob_details_list = [
             BlobDetails(
                 name=blob.name,
                 created_on=blob.creation_time,
                 last_modified=blob.last_modified,
-                container=blob.container
+                container=blob.container,
             )
             for blob in blobs
         ]
         return blob_details_list
+
+    def get_group(
+        self,
+        group_id: int,
+    ):
+        try:
+            logger.info(f"Fetching group: {group_id}")
+            group = self._repository.get_group_by_id(group_id)
+            return group
+        except GroupNotFound as e:
+            logger.error(f"Could not found group because of: {str(e)}")
+            raise EntityNotFound(message=str(e))
+
+    def get_group_by_student_id(self, student_id: int):
+        try:
+            logger.info(f"Fetching group for student : {student_id}")
+            group = self._repository.get_group_by_student_id(student_id)
+            return group
+        except GroupNotFound as e:
+            logger.error(f"Could not found group because of: {str(e)}")
+            raise EntityNotFound(message=str(e))

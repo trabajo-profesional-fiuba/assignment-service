@@ -81,18 +81,7 @@ class ApiHelper:
         token = jwt.create_token(sub, "admin")
         return token
 
-    def create_student_token(self):
-        sub = {
-            "id": 1,
-            "name": "student",
-            "last_name": "student",
-            "role": "student",
-        }
-        jwt = JwtResolver()
-        token = jwt.create_token(sub, "student")
-        return token
-
-    def create_student_token_with_id(self, id: int):
+    def create_student_token(self, id: int = 1):
         sub = {
             "id": id,
             "name": "student",
@@ -103,7 +92,7 @@ class ApiHelper:
         token = jwt.create_token(sub, "student")
         return token
 
-    def create_tutor_token_with_id(self, id: int):
+    def create_tutor_token(self, id: int = 2):
         sub = {
             "id": id,
             "name": "tutor",

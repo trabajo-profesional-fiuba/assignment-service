@@ -2,7 +2,7 @@ from sqlalchemy import func, bindparam, update
 from sqlalchemy.orm import Session, joinedload
 
 from src.api.groups.exceptions import GroupNotFound
-from src.api.groups.models import Group
+from src.api.groups.models import Group, association_table
 from src.api.students.exceptions import StudentNotFound
 from src.api.users.models import User
 
@@ -63,7 +63,7 @@ class GroupRepository:
 
         return group
 
-    def get_groups(self, period):
+    def get_groups(self, period) -> list[Group]:
         """Returns all groups for a given period"""
         with self.Session() as session:
             groups = (
@@ -80,7 +80,7 @@ class GroupRepository:
             session.expunge_all()
         return groups
 
-    def get_groups_without_tutor_and_period(self):
+    def get_groups_without_tutor_and_period(self) -> list[Group]:
         with self.Session() as session:
             groups = (
                 session.query(Group)
@@ -92,7 +92,7 @@ class GroupRepository:
 
         return groups
 
-    def get_groups_without_preferred_topics(self):
+    def get_groups_without_preferred_topics(self) -> list[Group]:
         with self.Session() as session:
             groups = (
                 session.query(Group)
@@ -103,7 +103,7 @@ class GroupRepository:
 
         return groups
 
-    def get_groups_learning_path(self, period):
+    def get_groups_learning_path(self, period) -> list[Group]:
         """Returns all groups learning path information for a given period"""
         with self.Session() as session:
             groups = session.query(Group).filter(Group.period_id == period).all()
@@ -131,7 +131,7 @@ class GroupRepository:
             session.execute(stmt)
             session.commit()
 
-    def get_groups_by_period_id(self, tutor_period_id):
+    def get_groups_by_period_id(self, tutor_period_id) -> list[Group]:
         """Returns all groups for a given assigned_tutor_period"""
         with self.Session() as session:
             groups = (
@@ -148,11 +148,25 @@ class GroupRepository:
             session.expunge_all()
         return groups
 
-    def get_group_by_id(self, group_id):
+    def get_group_by_id(self, group_id) -> Group:
         with self.Session() as session:
             group = session.query(Group).filter(Group.id == group_id).one_or_none()
             if group is None:
                 raise GroupNotFound(message=f"{group_id} not found in db")
 
+            session.expunge(group)
+        return group
+
+    def get_group_by_student_id(self, student_id: int) -> Group:
+        with self.Session() as session:
+            result = (
+                session.query(association_table.c.group_id.label('id'))
+                .filter_by(student_id=student_id)
+                .one_or_none()
+            )
+            if result is None:
+                raise GroupNotFound(message=f"{result.id} not found in db")
+
+            group = session.query(Group).filter(Group.id == result.id).one_or_none()
             session.expunge(group)
         return group
