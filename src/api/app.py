@@ -12,7 +12,7 @@ from src.api.periods.router import router as period_router
 from src.api.assignments.router import router as assignment_router
 
 from src.config.config import api_config
-from src.config.database.database import create_tables
+from src.config.database.database import init_default_values
 from src.config.logging import logger
 
 
@@ -23,12 +23,17 @@ api_description = """
 The Assignment Management API is designed to optimize the allocation of resources and
 scheduling within educational projects. Key functionalities include:
 
-- **Group Assignments**: Allocate individuals to incomplete student groups.
-- **Topic and Tutor Assignments**: Assign relevant topics and tutors to student
-groups.
-- **Presentation Scheduling**: Set and manage presentation dates for each group.
+The API, Assignment Management is design to optimize the allocation of resources and
+scheduling within educational projects. Key functionalities include:
 
-This API is crucial for efficiently matching group members, topics, and presentation
+- Group Assignments: Divide individuals to incomplete student groups.
+
+- Topic and Tutor Assignments: Assign relevant topics and tutors to student
+groups.
+
+- Presentation Scheduling: Set and manage presentation dates for each group.
+
+This API is crucial for matching group members, topics, and presentation
 slots, ensuring effective project organization and execution.
 
 **Key Entities**:
@@ -48,8 +53,21 @@ facilitate smooth and effective assignments.
 - Iván Lautaro Pfaab   - ipfaab@fi.uba.ar
 - Alejo Villores       - avillores@fi.uba.ar
 """
-logger.info("Initializing databases")
-create_tables()
+logger.info("Initializing all the database default values.")
+init_default_values()
+
+# List of routers to add
+routers = [
+    ("authentication", auth_router),
+    ("period", period_router),
+    ("student", student_router),
+    ("tutors", tutor_router),
+    ("topics", topic_router),
+    ("forms", form_router),
+    ("groups", group_router),
+    ("assignments", assignment_router)
+]
+
 
 logger.info("Instanciating FastAPI App")
 app = FastAPI(
@@ -60,23 +78,13 @@ app = FastAPI(
     docs_url="/docs",
     root_path="/api",
 )
-logger.info("Adding authentication router")
-app.include_router(auth_router)
-logger.info("Adding period router")
-app.include_router(period_router)
-logger.info("Adding student router")
-app.include_router(student_router)
-logger.info("Adding tutors router")
-app.include_router(tutor_router)
-logger.info("Adding topics router")
-app.include_router(topic_router)
-logger.info("Adding forms router")
-app.include_router(form_router)
-logger.info("Adding groups router")
-app.include_router(group_router)
-logger.info("Adding assigments router")
-app.include_router(assignment_router)
-logger.info("Adding middlewares")
+# Adding routers
+for name, router in routers:
+    logger.info(f"Adding {name} router")
+    app.include_router(router)
+
+
+logger.info("Adding api middlewares")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -90,3 +98,7 @@ app.add_middleware(
 async def root(request: Request):
     docs_url = str(request.base_url) + "docs"
     return RedirectResponse(docs_url)
+
+@app.get('/version', description="Returns the current version of the api")
+async def version():
+    return api_config.api_version
