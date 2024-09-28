@@ -13,6 +13,9 @@ class PeriodResponse(PeriodRequest):
     initial_project_active: Optional[bool] = None
     intermediate_project_active: Optional[bool] = None
     final_project_active: Optional[bool] = None
+    groups_assignment_completed: Optional[bool] = None
+    topics_tutors_assignment_completed: Optional[bool] = None
+    presentation_dates_assignment_completed: Optional[bool] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -28,3 +31,6 @@ class UpdatePeriodRequest(PeriodRequest):
     initial_project_active: Optional[bool] = None
     intermediate_project_active: Optional[bool] = None
     final_project_active: Optional[bool] = None
+    groups_assignment_completed: Optional[bool] = None
+    topics_tutors_assignment_completed: Optional[bool] = None
+    presentation_dates_assignment_completed: Optional[bool] = None
