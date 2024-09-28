@@ -93,7 +93,6 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-
 @app.get("/", description="This endpoint redirects to docs")
 async def root(request: Request):
     docs_url = str(request.base_url) + "docs"
