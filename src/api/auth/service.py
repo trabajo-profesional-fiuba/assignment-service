@@ -21,6 +21,7 @@ class AuthenticationService:
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
         self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.STUDENT.value])
+        return token_decoded
 
     def assert_only_admin(self, token: str):
         token_decoded = self._jwt_resolver.decode_token(token)
@@ -37,3 +38,13 @@ class AuthenticationService:
             token = self._jwt_resolver.decode_token(token)
         user = token.sub
         return user["id"]
+
+    def is_admin(self, token: str | JwtDecoded) -> bool:
+        try:
+            if isinstance(token, str):
+                token = self._jwt_resolver.decode_token(token)
+            user = token.sub
+            self._assert_role(user["role"], Role.ADMIN.value)
+            return True
+        except:
+            return False
