@@ -1,4 +1,3 @@
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, Response, UploadFile, status, Query
 from sqlalchemy.orm import Session
@@ -88,7 +87,7 @@ async def add_group(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
@@ -167,7 +166,7 @@ async def get_groups(
         res = GroupList.model_validate(group_service.get_groups(period))
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
@@ -294,7 +293,7 @@ async def list_initial_projects(
 
         return BlobDetailsList.model_validate(blobs)
 
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
@@ -344,7 +343,7 @@ async def update_groups(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (EntityNotInserted, EntityNotFound) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))

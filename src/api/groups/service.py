@@ -63,7 +63,7 @@ class GroupService:
         except StudentNotFound as e:
             logger.error("Could not insert a group because some ids are not valid")
             raise EntityNotFound(message=str(e))
-        except Exception as e:
+        except Exception:
             logger.error(f"Could not insert a group with email: {str(emails)}")
             raise EntityNotInserted(
                 message="Group could't be created check if params exits"

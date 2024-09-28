@@ -1,7 +1,6 @@
-from sqlalchemy import exc, select, update
-from sqlalchemy.dialects.postgresql import insert
-
+from sqlalchemy import exc, select
 from sqlalchemy.orm import Session
+
 from src.api.groups.models import Group
 from src.api.topics.models import Topic
 from src.api.tutors.models import TutorPeriod

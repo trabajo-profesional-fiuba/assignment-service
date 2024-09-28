@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import exc, select, update
+from sqlalchemy import exc, select
 
 from src.api.exceptions import Duplicated
 from src.api.students.exceptions import StudentDuplicated, StudentNotInserted
@@ -12,15 +12,6 @@ class UserRepository:
 
     def __init__(self, sess: Session):
         self.Session = sess
-
-    def get_user_by_email(self, email: str):
-        with self.Session() as session:
-            user = session.query(User).filter(User.email == email).one_or_none()
-            if not user:
-                raise UserNotFound("User not found")
-            session.expunge(user)
-
-        return user
 
     def _add_users(self, new_users: list[User]):
         with self.Session() as session:
@@ -46,7 +37,7 @@ class UserRepository:
     def add_tutors(self, tutors: list[User]):
         try:
             return self._add_users(tutors)
-        except exc.IntegrityError as e:
+        except exc.IntegrityError:
             raise TutorDuplicated("Duplicated tutor")
         except Exception:
             raise TutorNotInserted("Could not insert a tutor in the database")
@@ -101,7 +92,7 @@ class UserRepository:
                     session.commit()
 
                 return students
-        except Exception as e:
+        except Exception:
             raise StudentNotInserted("Could not insert a student in the database")
 
     def delete_students(self):
@@ -130,3 +121,21 @@ class UserRepository:
             )
 
         return tutor
+
+    def get_user_by_email(self, email: str):
+        with self.Session() as session:
+            user = session.query(User).filter(User.email == email).one_or_none()
+            if not user:
+                raise UserNotFound("User not found")
+            session.expunge(user)
+
+        return user
+
+    def get_user_by_id(self, user_id: int):
+        with self.Session() as session:
+            user = session.query(User).filter(User.id == user_id).one_or_none()
+            if not user:
+                raise UserNotFound("User not found")
+            session.expunge(user)
+
+        return user

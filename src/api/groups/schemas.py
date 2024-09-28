@@ -62,9 +62,9 @@ class GroupStates(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-
 class GroupList(RootModel):
     root: List[GroupResponse] = Field(default=[])
+
 
 class AssignedGroupList(RootModel):
     root: List[AssignedGroupResponse] = Field(default=[])
@@ -75,6 +75,7 @@ class BlobDetails(BaseModel):
     created_on: datetime
     last_modified: datetime
     container: str
+
 
 class BlobDetailsList(RootModel):
     root: List[BlobDetails] = Field(default=[])

@@ -1,5 +1,3 @@
-import tempfile
-import os
 import pytest
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
@@ -293,7 +291,7 @@ def test_post_groups_initial_project(fastapi, tables):
     user_token = helper.create_student_token()
 
     with open("tests/test.pdf", "rb") as file:
-                content = file.read()
+        content = file.read()
 
     filename = "test"
     content_type = "application/pdf"
@@ -305,6 +303,7 @@ def test_post_groups_initial_project(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_200_OK
+
 
 @pytest.mark.integration
 def test_download_group_initial_project(fastapi):
@@ -321,10 +320,9 @@ def test_download_group_initial_project(fastapi):
 
     assert response.status_code == status.HTTP_200_OK
 
-    with open('tests/test.pdf', 'rb') as file:
+    with open("tests/test.pdf", "rb") as file:
         expected_file = file.read()
     assert expected_file == response.content
-
 
 
 @pytest.mark.integration
@@ -341,9 +339,9 @@ def test_all_groups_initial_project_details(fastapi):
     )
     assert response.status_code == status.HTTP_200_OK
     blob = response.json()[0]
-    blob['name'] = '1C2025/1/initial-project.pdf'
-    blob['container'] = 'dev'
-    
+    blob["name"] = "1C2025/1/initial-project.pdf"
+    blob["container"] = "dev"
+
 
 @pytest.mark.integration
 def test_get_groups_by_id(fastapi, tables):
@@ -364,7 +362,7 @@ def test_get_groups_by_id(fastapi, tables):
     )
     user_token = helper.create_student_token(105001)
     params = {"period": "1C2025"}
-    
+
     response = fastapi.get(
         f"{PREFIX}/states/{group.id}",
         params=params,
