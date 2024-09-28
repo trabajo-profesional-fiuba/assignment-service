@@ -95,6 +95,7 @@ class StudentService:
     ):
 
         form_answers = form_repository.get_answers_by_user_id(id)
+        
         form_answered = len(form_answers) > 0
 
         groups_without_preferred_topics = (
