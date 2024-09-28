@@ -28,6 +28,9 @@ from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
+from src.api.users.service import UserService
+from src.api.users.repository import UserRepository
+from src.api.users.models import Role
 
 router = APIRouter(prefix="/tutors")
 
@@ -212,12 +215,14 @@ async def get_tutor_periods(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
+
         user_id = auth_service.get_user_id(token)
+        user_service = UserService(UserRepository(session))
+        user = user_service.get_user_by_id(user_id)
+        if user.role == Role.TUTOR:
+            user_service.validate_tutor(tutor_id, user)
 
         service = TutorService(TutorRepository(session))
-        if tutor_id != user_id:
-            raise InvalidJwt("User unauthorized")
-
         response = TutorResponse.model_validate(
             service.get_periods_by_tutor_id(tutor_id)
         )

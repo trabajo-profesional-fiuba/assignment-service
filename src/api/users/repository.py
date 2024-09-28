@@ -13,15 +13,6 @@ class UserRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def get_user_by_email(self, email: str):
-        with self.Session() as session:
-            user = session.query(User).filter(User.email == email).one_or_none()
-            if not user:
-                raise UserNotFound("User not found")
-            session.expunge(user)
-
-        return user
-
     def _add_users(self, new_users: list[User]):
         with self.Session() as session:
             session.add_all(new_users)
@@ -130,3 +121,21 @@ class UserRepository:
             )
 
         return tutor
+
+    def get_user_by_email(self, email: str):
+        with self.Session() as session:
+            user = session.query(User).filter(User.email == email).one_or_none()
+            if not user:
+                raise UserNotFound("User not found")
+            session.expunge(user)
+
+        return user
+
+    def get_user_by_id(self, user_id: int):
+        with self.Session() as session:
+            user = session.query(User).filter(User.id == user_id).one_or_none()
+            if not user:
+                raise UserNotFound("User not found")
+            session.expunge(user)
+
+        return user
