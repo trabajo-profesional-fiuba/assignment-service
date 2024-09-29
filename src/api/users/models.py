@@ -29,10 +29,16 @@ class User(Base):
     )
     # immediate - items should be loaded as the parents are loaded,
     # using a separate SELECT statement
-    periods = relationship(
+    tutor_periods = relationship(
         "TutorPeriod",
         back_populates="tutor",
         uselist=True,
-        lazy="subquery",
+        lazy="noload",
+        cascade="all, delete-orphan",
+    )
+    student_periods = relationship(
+        "StudentPeriod",
+        back_populates="student",
+        lazy="noload",
         cascade="all, delete-orphan",
     )

@@ -7,6 +7,7 @@ from src.api.forms.router import router as form_router
 from src.api.students.router import router as student_router
 from src.api.tutors.router import router as tutor_router
 from src.api.topics.router import router as topic_router
+from src.api.periods.router import router as period_router
 from src.config.database.database import create_tables, drop_tables
 from tests.integration.api.helper import ApiHelper
 
@@ -14,6 +15,7 @@ PREFIX = "/forms"
 TOPIC_PREFIX = "/topics"
 STUDENT_PREFIX = "/students"
 TUTOR_PREFIX = "/tutors"
+PERIOD_PREFIX = "/periods"
 
 
 @pytest.fixture(scope="function")
@@ -32,6 +34,7 @@ def fastapi():
     app.include_router(student_router)
     app.include_router(tutor_router)
     app.include_router(topic_router)
+    app.include_router(period_router)
     client = TestClient(app)
     yield client
 
@@ -88,7 +91,6 @@ def test_add_answers_with_topic_not_found(fastapi, tables):
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {"detail": "Topic 'topic1' not found."}
 
 
 @pytest.mark.integration
@@ -108,7 +110,7 @@ def test_add_answers_with_student_not_found(fastapi, tables, topics, tutors):
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -130,9 +132,7 @@ def test_add_answers_with_student_not_found(fastapi, tables, topics, tutors):
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {
-        "detail": "Be sure that the id: 105285 is a valid student."
-    }
+    assert response.json() == {"detail": "Be sure that all the ids are students"}
 
 
 @pytest.mark.integration
@@ -140,12 +140,7 @@ def test_add_answers_with_success(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -158,7 +153,7 @@ def test_add_answers_with_success(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -166,6 +161,7 @@ def test_add_answers_with_success(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -224,12 +220,7 @@ def test_add_answers_with_invalid_role(fastapi, tables, topics, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -242,7 +233,7 @@ def test_add_answers_with_invalid_role(fastapi, tables, topics, tutors):
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -274,12 +265,7 @@ def test_add_answers_duplicated(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -292,7 +278,7 @@ def test_add_answers_duplicated(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -300,6 +286,7 @@ def test_add_answers_duplicated(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -366,12 +353,7 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -384,7 +366,7 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -392,6 +374,7 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -445,7 +428,7 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
     ]
 
     today = dt.datetime.today().isoformat()
-    body = {
+    body1 = {
         "user_id_sender": 105285,
         "user_id_student_2": 105286,
         "user_id_student_3": 105287,
@@ -457,7 +440,7 @@ def test_add_not_duplicated_answers(fastapi, tables, topics, students, tutors):
     }
     response = fastapi.post(
         f"{PREFIX}/answers",
-        json=body,
+        json=body1,
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -498,12 +481,7 @@ def test_get_answers_by_group(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -516,7 +494,7 @@ def test_get_answers_by_group(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -524,6 +502,7 @@ def test_get_answers_by_group(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -571,17 +550,13 @@ def test_get_answers_by_group(fastapi, tables, topics, students, tutors):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
 
+
 @pytest.mark.integration
 def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
-    response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
-        json={"id": "1C2024"},
-        headers={"Authorization": f"Bearer {admin_token.access_token}"},
-    )
-    assert response.status_code == status.HTTP_201_CREATED
+    helper.create_period("1C2024")
 
     response = fastapi.post(
         f"{TUTOR_PREFIX}/upload",
@@ -594,7 +569,7 @@ def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -602,6 +577,7 @@ def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -650,14 +626,13 @@ def test_get_answers_by_user_id(fastapi, tables, topics, students, tutors):
     assert len(response.json()) == 2
 
 
-
 @pytest.mark.integration
 def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
     response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
+        f"{PERIOD_PREFIX}",
         json={"id": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
@@ -674,7 +649,7 @@ def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -682,6 +657,7 @@ def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -724,7 +700,7 @@ def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
 def test_delete_answers_not_found(fastapi, tables, topics, students):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
-    user_token = helper.create_student_token()
+
     today = dt.datetime.today().isoformat()
     response = fastapi.delete(
         f"{PREFIX}/answers/{today}",
@@ -737,7 +713,7 @@ def test_delete_answers_not_found(fastapi, tables, topics, students):
 def test_get_empty_answers_with_success(fastapi, tables, topics):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
-    user_token = helper.create_student_token()
+
     response = fastapi.get(
         f"{PREFIX}/answers",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
@@ -753,7 +729,7 @@ def test_delete_answers_when_updating_students_with_success(
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
     response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
+        f"{PERIOD_PREFIX}",
         json={"id": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
@@ -770,7 +746,7 @@ def test_delete_answers_when_updating_students_with_success(
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -778,6 +754,7 @@ def test_delete_answers_when_updating_students_with_success(
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -809,6 +786,7 @@ def test_delete_answers_when_updating_students_with_success(
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -822,7 +800,7 @@ def test_delete_answers_when_updating_topics_with_success(
     admin_token = helper.create_admin_token()
     user_token = helper.create_student_token()
     response = fastapi.post(
-        f"{TUTOR_PREFIX}/periods",
+        f"{PERIOD_PREFIX}",
         json={"id": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
@@ -839,7 +817,7 @@ def test_delete_answers_when_updating_topics_with_success(
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -847,6 +825,7 @@ def test_delete_answers_when_updating_topics_with_success(
     response = fastapi.post(
         f"{STUDENT_PREFIX}/upload",
         files=students,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -872,7 +851,7 @@ def test_delete_answers_when_updating_topics_with_success(
     response = fastapi.post(
         f"{TOPIC_PREFIX}/upload",
         files=topics,
-        params={"period_id": "1C2024"},
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED

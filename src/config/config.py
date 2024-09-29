@@ -4,8 +4,6 @@ from starlette.datastructures import Secret
 
 
 class ApiConfiguration:
-
-
     """
     The order in which configuration values are read is:
 
@@ -17,7 +15,7 @@ class ApiConfiguration:
 
     def __init__(self) -> None:
         # Default to '.env.development' but use ENV_FILE if set
-        config_file = os.getenv('ENV_FILE', '.env.development')
+        config_file = os.getenv("ENV_FILE", ".env.development")
         print(f"Env file read: {config_file}")
         self.config = Config(config_file)
 
@@ -61,10 +59,18 @@ class ApiConfiguration:
     @property
     def api_version(self) -> str:
         return self.config("API_VERSION", cast=str, default="1.0.0")
-    
+
     @property
     def workers(self) -> int:
         return self.config("WORKERS", cast=int, default=1)
+
+    @property
+    def storage_access_key(self) -> str:
+        return self.config("AZURE_STORAGE_CONNECTION_STRING", cast=str)
+
+    @property
+    def container(self) -> str:
+        return self.config("AZURE_STORAGE_CONTAINER_NAME", cast=str)
 
     def set_env(self, key: str, value):
         environ[key.to_upper()] = value

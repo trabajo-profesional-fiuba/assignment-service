@@ -12,8 +12,7 @@ if __name__ == "__main__":
     logger.warning(f"Server listening at port: {port}")
     logger.warning(f"Server running with workers: {workers}")
 
-
     try:
-        uvicorn.run(app, host=host, port=port,workers=workers )
+        uvicorn.run(app, host=host, port=port, workers=workers)
     except KeyboardInterrupt:
         logger.warning("Server stopped mannualy")

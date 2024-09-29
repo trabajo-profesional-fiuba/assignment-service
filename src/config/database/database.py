@@ -7,7 +7,7 @@ from src.config.logging import logger
 from src.config.database.models import Base
 
 # In Fast API the best thing to do is to have only one engine
-# in charged of creating transaccional sessions.
+# in charged of creating transactional sessions.
 
 # Database Configurations
 database_url = api_config.database_url
@@ -16,9 +16,7 @@ logger.info(f"Database ulr: {database_url}")
 pool_size = api_config.database_pool_size
 pool_timeout = api_config.database_pool_timeout
 
-engine = create_engine(
-    database_url, pool_size=pool_size, pool_timeout=pool_timeout
-)
+engine = create_engine(database_url, pool_size=pool_size, pool_timeout=pool_timeout)
 
 
 def init_default_values():
@@ -37,6 +35,7 @@ def init_default_values():
                 logger.error(f"An error occurred: {e}")
     else:
         logger.warn("Database engine is not initialized.")
+
 
 def create_tables():
     """
@@ -67,4 +66,3 @@ def get_db():
         yield Session
     else:
         yield None
-

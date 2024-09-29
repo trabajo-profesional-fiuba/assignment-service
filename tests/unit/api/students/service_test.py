@@ -20,12 +20,13 @@ class TestStudentService:
     @pytest.mark.unit
     def tests_bad_csv_raise_exception(self, mocker):
         repo = UserRepository(None)
+
         mocker.patch.object(repo, "add_students", return_value=None)
         hash = ShaHasher()
         service = StudentService(repo)
 
         with pytest.raises(InvalidCsv):
-            _ = service.create_students_from_string("bla,bla,bla", hash)
+            _ = service.create_students_from_string("bla,bla,bla", hash, repo, "1C2024")
 
     @pytest.mark.unit
     def test_get_student_by_ids(self, mocker):
@@ -53,6 +54,7 @@ class TestStudentService:
         students = [student1, student2, student3]
 
         repo = StudentRepository(None)
+
         mocker.patch.object(repo, "get_students_by_ids", return_value=students)
         service = StudentService(repo)
         response = service.get_students_by_ids([12345, 54321, 11111])
@@ -77,6 +79,7 @@ class TestStudentService:
         )
         students = [student1, student2]
         repo = StudentRepository(None)
+
         mocker.patch.object(repo, "get_students_by_ids", return_value=students)
         service = StudentService(repo)
 
@@ -87,6 +90,7 @@ class TestStudentService:
     @pytest.mark.unit
     def tests_empty_students_raise_student_not_found(self, mocker):
         repo = StudentRepository(None)
+
         mocker.patch.object(repo, "get_students_by_ids", return_value=[])
         service = StudentService(repo)
 

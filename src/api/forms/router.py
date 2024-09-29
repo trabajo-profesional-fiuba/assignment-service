@@ -5,8 +5,10 @@ from typing_extensions import Annotated
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
+    FormPreferencesResponse,
     GroupAnswerList,
-    UserAnswerList
+    GroupAnswerResponse,
+    UserAnswerList,
 )
 from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService
@@ -21,6 +23,7 @@ from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
 from src.api.users.exceptions import InvalidCredentials
+from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 
@@ -37,10 +40,12 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
             "description": "Successfully added topic preferences answers."
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
-            "description": "Input validation has failed, typically resulting in a client-facing error response."
+            "description": "Input validation has failed, typically resulting in a \
+            client-facing error response."
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Internal Server Error - Something happend inside the backend"
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
         },
     },
     status_code=status.HTTP_201_CREATED,
@@ -54,11 +59,27 @@ async def add_answers(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
+
         service = FormService(FormRepository(session))
-        return service.add_answers(answers)
+        answers_saved = service.add_answers(answers)
+
+        res = FormPreferencesList.model_validate(
+            [
+                FormPreferencesResponse(
+                    user_id=answer.id,
+                    answer_id=answer.answer_id,
+                    topic_1=answer.topics[0],
+                    topic_2=answer.topics[1],
+                    topic_3=answer.topics[2],
+                )
+                for answer in answers_saved
+            ]
+        )
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
@@ -86,12 +107,25 @@ async def get_answers(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
-        return service.get_answers(TopicRepository(session))
-    except InvalidJwt as e:
+        answers = service.get_answers(TopicRepository(session))
+        response = list()
+        for answer in answers:
+            response.append(
+                GroupAnswerResponse(
+                    id=answer.id,
+                    students=answer.students,
+                    topics=answer.get_topic_names(),
+                )
+            )
+        res = GroupAnswerList.model_validate(response)
+
+        return ResponseBuilder.build_private_cache_response(res)
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
         raise ServerError(message=str(e))
+
 
 @router.get(
     "/answers/{user_id}",
@@ -107,22 +141,25 @@ async def get_answers(
     },
     status_code=status.HTTP_200_OK,
 )
-async def get_answers(
+async def get_answers_by_user_id(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    user_id:int
+    user_id: int,
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
         service = FormService(FormRepository(session))
-        return service.get_answers_by_user_id(user_id,TopicRepository(session))
-    except InvalidJwt as e:
+        res = service.get_answers_by_user_id(user_id, TopicRepository(session))
+
+        return ResponseBuilder.build_private_cache_response(res)
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
         raise ServerError(message=str(e))
+
 
 @router.delete(
     "/answers/{answer_id}",
@@ -145,10 +182,12 @@ async def delete_answer(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
         service = FormService(FormRepository(session))
-        return service.delete_answers_by_answer_id(answer_id)
+        res = service.delete_answers_by_answer_id(answer_id)
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))

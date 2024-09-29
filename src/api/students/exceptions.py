@@ -12,3 +12,8 @@ class StudentNotFound(Exception):
 class StudentNotInserted(Exception):
     def __init__(self, message):
         super().__init__(message)
+
+
+class StudentPeriodNotInserted(Exception):
+    def __init__(self, message):
+        super().__init__(message)

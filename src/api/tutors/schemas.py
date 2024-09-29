@@ -1,24 +1,7 @@
-from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 from typing import List
 from src.api.topics.schemas import SimpleTopic
 from src.api.users.schemas import UserResponse
-
-
-class PeriodRequest(BaseModel):
-    id: str
-
-
-class PeriodResponse(PeriodRequest):
-    created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class PeriodList(RootModel):
-    """List of Period"""
-
-    root: List[PeriodResponse]
 
 
 class TutorPeriodResponse(BaseModel):
@@ -42,13 +25,13 @@ class TutorPeriodWithTopicsResponse(TutorPeriodResponse):
 class TutorResponse(UserResponse):
     """Tutor representation with the periods inside"""
 
-    periods: List[TutorPeriodResponse] = Field(default=[])
+    tutor_periods: List[TutorPeriodResponse] = Field(default=[])
 
 
 class TutorResponseWithTopics(UserResponse):
     """Tutor representation with the periods inside"""
 
-    periods: List[TutorPeriodWithTopicsResponse] = Field(default=[])
+    tutor_periods: List[TutorPeriodWithTopicsResponse] = Field(default=[])
 
 
 class TutorList(RootModel):
@@ -67,3 +50,12 @@ class TutorWithTopicsList(RootModel):
 
     def __iter__(self):
         return iter(self.root)
+
+
+class TutorRequest(BaseModel):
+    id: int
+    name: str
+    last_name: str
+    email: str
+    period: str
+    capacity: int

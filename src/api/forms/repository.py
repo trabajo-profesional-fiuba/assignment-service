@@ -9,6 +9,7 @@ from src.api.topics.models import Topic
 from src.api.users.models import User, Role
 
 from src.config.logging import logger
+from src.core.student_form_answer import StudentFormAnswer
 
 
 class FormRepository:
@@ -16,55 +17,58 @@ class FormRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def _verify_topics(self, session, topics: list[str]):
-        ids = []
-        for topic in topics:
-            found = session.query(Topic).filter_by(name=topic).first()
-            if found:
-                ids.append(found.id)
-            else:
-                logger.error(f"Topic '{topic}' not found in db")
-                raise TopicNotFound(f"Topic '{topic}' not found.")
+    def _verify_topics(self, session, topic_names: list[str]):
+
+        topics = session.query(Topic).filter(Topic.name.in_(topic_names)).all()
+        topic_id_map = {topic.name: topic.id for topic in topics}
+
+        missing_topics = set(topic_names) - set(topic_id_map.keys())
+        if missing_topics:
+            raise TopicNotFound(f"Topics not found: {', '.join(missing_topics)}")
+
+        ids = [topic_id_map[topic] for topic in topic_names]
+
         return ids
 
-    def _verify_user(self, session, user_id: int):
-        user = session.query(User).filter_by(id=user_id).first()
-        if not user or user.role != Role.STUDENT:
-            logger.error(f"User with id: {user_id} is not in db")
-            raise StudentNotFound(
-                message=f"Be sure that the id: {user_id} is a valid student."
-            )
+    def _verify_users_exists(self, session, user_ids: list[int]):
+        users = session.query(User).filter(User.id.in_(user_ids)).all()
+
+        if len(users) != len(user_ids):
+            raise StudentNotFound(message="Be sure that all the ids are students")
+
+        for user in users:
+            if not user or user.id not in user_ids or user.role != Role.STUDENT:
+                logger.error(f"User with id: {user.id} is not in db")
+                raise StudentNotFound(
+                    message=f"Be sure that the id: {user.id} is a valid student."
+                )
 
     def _verify_answer(self, session, topics_id: list[int], user_ids: list[int]):
-        count = 0
         topic_1_id, topic_2_id, topic_3_id = topics_id
-        for user_id in user_ids:
-            answer = (
-                session.query(FormPreferences)
-                .filter_by(
-                    user_id=user_id,
-                    topic_1=topic_1_id,
-                    topic_2=topic_2_id,
-                    topic_3=topic_3_id,
-                )
-                .first()
+        answers = (
+            session.query(FormPreferences)
+            .filter(
+                FormPreferences.user_id.in_(user_ids),
+                FormPreferences.topic_1 == topic_1_id,
+                FormPreferences.topic_2 == topic_2_id,
+                FormPreferences.topic_3 == topic_3_id,
             )
-            if answer is not None:
-                count += 1
-        if count == len(user_ids):
-            logger.error(f"Answer duplicated send by ")
+            .all()
+        )
+        if len(answers) == len(user_ids):
+            logger.error("Answer duplicated")
             raise Duplicated(message="The answer already exists.")
 
     def add_answers(
-        self, answers: list[FormPreferences], topics: list[str], user_ids: list[int]
+        self, answers: list[StudentFormAnswer], topics: list[str], user_ids: list[int]
     ):
         with self.Session() as session:
             topic_ids = self._verify_topics(session, topics)
+            self._verify_users_exists(session, user_ids)
             self._verify_answer(session, topic_ids, user_ids)
             for answer in answers:
-                self._verify_user(session, answer.user_id)
                 answer = FormPreferences(
-                    user_id=answer.user_id,
+                    user_id=answer.id,
                     answer_id=answer.answer_id,
                     topic_1=topic_ids[0],
                     topic_2=topic_ids[1],
@@ -109,7 +113,7 @@ class FormRepository:
                 .all()
             )
             session.expunge_all()
-            logger.info(f"Get all the answers")
+            logger.info("Get all the answers")
 
         return answers
 
@@ -127,6 +131,6 @@ class FormRepository:
                 .all()
             )
             session.expunge_all()
-            logger.info(f"Get all the answers")
+            logger.info("Get all the answers")
 
         return answers

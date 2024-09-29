@@ -1,7 +1,6 @@
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
-from fastapi import status
 
 from src.api.auth.router import router
 from src.api.users.models import User, Role

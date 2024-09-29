@@ -15,7 +15,8 @@ class Category(Base):
         lazy="joined",
         cascade="all, delete-orphan",
     )
-    # cascade="all, delete-orphan" => delete a category if there are no topics assigned to it
+    # cascade="all, delete-orphan" => delete a category if there are no topics assigned
+    # to it
 
 
 class Topic(Base):

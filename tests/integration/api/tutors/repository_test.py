@@ -4,13 +4,15 @@ from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from src.api.tutors.repository import TutorRepository
-from src.api.tutors.models import Period, TutorPeriod
+from src.api.periods.models import Period
+from src.api.tutors.models import TutorPeriod
 from src.api.users.repository import UserRepository
 from src.api.users.models import User, Role
 from src.api.topics.repository import TopicRepository
 from src.api.topics.models import Topic, Category
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
-from src.api.topics.exceptions import TopicNotFound
+from tests.integration.api.helper import ApiHelper
+from src.api.periods.repository import PeriodRepository
 
 
 class TestTutorRepository:
@@ -33,7 +35,9 @@ class TestTutorRepository:
 
         t_repository = TutorRepository(self.Session)
         with pytest.raises(TutorNotFound):
-            t_repository.add_topic_tutor_period("1C2024","tutor2@com", topics, capacities)
+            t_repository.add_topic_tutor_period(
+                "1C2024", "tutor2@com", topics, capacities
+            )
 
     @pytest.mark.integration
     def test_add_tutors_with_success(self, tables):
@@ -54,7 +58,7 @@ class TestTutorRepository:
         t_repository = TutorRepository(self.Session)
         response = t_repository.get_tutor_by_tutor_id(12345)
         assert response.id == 12345
-        assert response.periods == []
+        assert response.tutor_periods == []
 
     @pytest.mark.integration
     def test_add_topic_tutor_period_with_tutor_period_not_found(self, tables):
@@ -67,17 +71,23 @@ class TestTutorRepository:
 
         t_repository = TutorRepository(self.Session)
         with pytest.raises(TutorPeriodNotFound):
-            t_repository.add_topic_tutor_period("1C2024","tutor1@com", [topic], capacities)
+            t_repository.add_topic_tutor_period(
+                "1C2024", "tutor1@com", [topic], capacities
+            )
 
     @pytest.mark.integration
     def test_add_topic_tutor_period_with_success(self, tables):
+        p_repository = PeriodRepository(self.Session)
+        p_repository.add_period(Period(id="1C2024"))
+
         t_repository = TutorRepository(self.Session)
-        t_repository.add_period(Period(id="1C2024"))
         t_repository.add_tutor_period(12345, "1C2024")
 
         topics = [Topic(name="topic 1", category_id=2)]
         capacities = [2]
-        response = t_repository.add_topic_tutor_period("1C2024","tutor1@com", topics, capacities)
+        response = t_repository.add_topic_tutor_period(
+            "1C2024", "tutor1@com", topics, capacities
+        )
         assert len(response) == 1
         assert response[0].topic_id == 1
         assert response[0].tutor_period_id == 1
@@ -114,7 +124,9 @@ class TestTutorRepository:
         u_repository = UserRepository(self.Session)
         _ = u_repository.add_tutors([tutor])
 
-        t_repository.add_period(Period(id="1C2025"))
+        p_repository = PeriodRepository(self.Session)
+        p_repository.add_period(Period(id="1C2025"))
+
         t_repository.add_tutor_period(11111, "1C2024")
         t_repository.add_tutor_period(11111, "1C2025")
 
@@ -127,3 +139,16 @@ class TestTutorRepository:
         with self.Session() as sess:
             tutor_periods = sess.query(TutorPeriod).all()
             assert len(tutor_periods) == 0
+
+    @pytest.mark.integration
+    def test_get_full_tutor_by_id(self, tables):
+        helper = ApiHelper()
+        helper.create_tutor("Carlos", "Fontela", "100", "cfontela@fi.uba.ar")
+        u_repository = UserRepository(self.Session)
+
+        tutor = u_repository.get_tutor_by_id(100)
+
+        assert tutor.id == 100
+        assert tutor.name == "Carlos"
+        assert tutor.last_name == "Fontela"
+        assert tutor.email == "cfontela@fi.uba.ar"

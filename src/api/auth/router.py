@@ -13,11 +13,7 @@ from src.api.users.service import UserService
 from src.config.database.database import get_db
 
 
-
-
-
 router = APIRouter(tags=["Authentication"])
-
 
 
 @router.post(

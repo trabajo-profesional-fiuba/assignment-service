@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, Table
+from sqlalchemy import Column, Integer, DateTime, Boolean, ForeignKey, Table, String
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, relationship
 from typing import List
 
 from src.api.users.models import User
@@ -12,7 +11,7 @@ from src.config.database.base import Base
 association_table = Table(
     "groups_students",
     Base.metadata,
-    Column("group_id", ForeignKey("groups.id",ondelete="CASCADE")),
+    Column("group_id", ForeignKey("groups.id", ondelete="CASCADE")),
     Column("student_id", ForeignKey("users.id"), primary_key=True),
 )
 
@@ -28,10 +27,12 @@ class Group(Base):
     __tablename__ = "groups"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    assigned_topic_id = Column(Integer, ForeignKey("topics.id", ondelete="SET NULL"), nullable=True)
+    assigned_topic_id = Column(
+        Integer, ForeignKey("topics.id", ondelete="SET NULL"), nullable=True
+    )
     tutor_period_id = Column(
         Integer,
-        ForeignKey("tutor_periods.id"),
+        ForeignKey("tutor_periods.id", ondelete="SET NULL"),
         nullable=True,
     )
     pre_report_date = Column(DateTime(timezone=False))
@@ -48,9 +49,11 @@ class Group(Base):
         to skip the relationship config.
     """
     preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1), default=[])
+    period_id = Column(String, ForeignKey("periods.id"))
 
     students: Mapped[List[User]] = relationship(
-        secondary=association_table, lazy="joined"
+        secondary=association_table, lazy="subquery"
     )
-    topic = relationship("Topic", back_populates="groups", lazy="joined")
-    tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="joined")
+    topic = relationship("Topic", back_populates="groups", lazy="noload")
+    tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="noload")
+    period = relationship("Period", back_populates="groups", lazy="noload")

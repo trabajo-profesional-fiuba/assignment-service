@@ -1,4 +1,6 @@
 from src.api.auth.jwt import InvalidJwt, JwtResolver
+from src.api.auth.schemas import JwtDecoded
+from src.api.groups.repository import GroupRepository
 from src.api.users.models import Role
 
 
@@ -19,6 +21,7 @@ class AuthenticationService:
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
         self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.STUDENT.value])
+        return token_decoded
 
     def assert_only_admin(self, token: str):
         token_decoded = self._jwt_resolver.decode_token(token)
@@ -29,4 +32,29 @@ class AuthenticationService:
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
         self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.TUTOR.value])
-    
+
+    def get_user_id(self, token: str | JwtDecoded):
+        if isinstance(token, str):
+            token = self._jwt_resolver.decode_token(token)
+        user = token.sub
+        return user["id"]
+
+    def is_admin(self, token: str | JwtDecoded) -> bool:
+        try:
+            if isinstance(token, str):
+                token = self._jwt_resolver.decode_token(token)
+            user = token.sub
+            self._assert_role(user["role"], Role.ADMIN.value)
+            return True
+        except:
+            return False
+        
+    def is_student(self, token: str | JwtDecoded) -> bool:
+        try:
+            if isinstance(token, str):
+                token = self._jwt_resolver.decode_token(token)
+            user = token.sub
+            self._assert_role(user["role"], Role.STUDENT.value)
+            return True
+        except:
+            return False

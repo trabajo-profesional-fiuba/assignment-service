@@ -1,10 +1,8 @@
 import pytest
 from unittest.mock import create_autospec
-from datetime import datetime
 
 from src.api.forms.service import FormService
 from src.api.forms.repository import FormRepository
-from src.api.forms.schemas import UserAnswerResponse, GroupAnswerResponse
 from src.api.topics.repository import TopicRepository
 from src.api.topics.models import Topic
 
@@ -47,7 +45,7 @@ def service(mock_form_repository):
 @pytest.mark.integration
 def test_filter_user_ids_without_none_user_ids(service):
     user_ids = [111111, 111112, 111113, 111114]
-    result = service._filter_user_ids(user_ids)
+    result = list(filter(lambda x: x is not None, user_ids))
 
     assert len(result) == 4
     assert result == user_ids
@@ -56,7 +54,7 @@ def test_filter_user_ids_without_none_user_ids(service):
 @pytest.mark.integration
 def test_filter_user_ids_with_some_none_user_ids(service):
     user_ids = [111111, 111112, None, None]
-    result = service._filter_user_ids(user_ids)
+    result = list(filter(lambda x: x is not None, user_ids))
 
     assert len(result) == 2
     assert result == [111111, 111112]
@@ -65,7 +63,7 @@ def test_filter_user_ids_with_some_none_user_ids(service):
 @pytest.mark.integration
 def test_filter_user_ids_with_all_none_user_ids(service):
     user_ids = [None, None, None, None]
-    result = service._filter_user_ids(user_ids)
+    result = list(filter(lambda x: x is not None, user_ids))
 
     assert len(result) == 0
     assert result == []

@@ -1,15 +1,10 @@
-from collections import defaultdict
 from datetime import datetime
 
 from src.api.forms.repository import FormRepository
 from src.api.exceptions import EntityNotFound
 from src.api.forms.exceptions import AnswerNotFound
-from src.api.forms.models import FormPreferences
 from src.api.forms.schemas import (
     FormPreferencesRequest,
-    FormPreferencesList,
-    UserAnswerList,
-    GroupAnswerResponse,
     UserAnswerResponse,
 )
 from src.api.students.exceptions import StudentNotFound
@@ -18,7 +13,8 @@ from src.api.topics.repository import TopicRepository
 
 from src.config.logging import logger
 
-from src.core.group_answer import GroupFormAnswer
+from src.core.group_form_answer import GroupFormAnswer
+from src.core.student_form_answer import StudentFormAnswer
 from src.core.topic import Topic
 
 
@@ -27,30 +23,21 @@ class FormService:
     def __init__(self, form_repository: FormRepository):
         self._repository = form_repository
 
-    def _filter_user_ids(self, user_ids: list[int]):
-        """
-        Filters out 'None' values from a list of university IDs.
-
-        Returns a list of university IDs with 'None' values removed.
-        """
-        filtered_user_ids = []
-        for user_id in user_ids:
-            if user_id is not None:
-                filtered_user_ids.append(user_id)
-        return filtered_user_ids
-
     def add_answers(self, form_preference: FormPreferencesRequest):
         try:
             """
             Adds a new set of answers to the repository.
             """
-            cleaned_user_ids = self._filter_user_ids(
-                [
-                    form_preference.user_id_sender,
-                    form_preference.user_id_student_2,
-                    form_preference.user_id_student_3,
-                    form_preference.user_id_student_4,
-                ]
+            cleaned_user_ids = list(
+                filter(
+                    lambda x: x is not None,
+                    [
+                        form_preference.user_id_sender,
+                        form_preference.user_id_student_2,
+                        form_preference.user_id_student_3,
+                        form_preference.user_id_student_4,
+                    ],
+                )
             )
             topics = [
                 form_preference.topic_1,
@@ -60,19 +47,17 @@ class FormService:
 
             answers = []
             for user_id in cleaned_user_ids:
-                answer = FormPreferences(
-                    user_id=user_id,
+                answer = StudentFormAnswer(
+                    id=user_id,
                     answer_id=form_preference.answer_id,
-                    topic_1=form_preference.topic_1,
-                    topic_2=form_preference.topic_2,
-                    topic_3=form_preference.topic_3,
+                    topics=topics,
                 )
                 answers.append(answer)
 
             answers_saved = self._repository.add_answers(
                 answers, topics, cleaned_user_ids
             )
-            return FormPreferencesList.model_validate(answers_saved)
+            return answers_saved
         except (StudentNotFound, TopicNotFound, AnswerNotFound) as e:
             message = str(e)
             logger.error(f"Entity not found: {message}")
@@ -88,11 +73,25 @@ class FormService:
         return self._repository.delete_answers_by_answer_id(answer_id)
 
     def _make_topic(self, topic):
+        """Make a Topic based on a Topic Orm Object."""
         id = topic.id
         name = topic.name
         category = topic.category.name
         topic = Topic(id=id, title=name, category=category)
         return topic
+
+    def _transform_topics(self, topic_repository: TopicRepository) -> dict:
+        """Builds a dictionary of name: Topic with all the topics from the
+        database.
+        The Topic object are not ORM objects.
+        """
+        topics = topic_repository.get_topics()
+        topcis_as_dict = dict()
+        for orm_topic in topics:
+            topic = self._make_topic(orm_topic)
+            topcis_as_dict[topic.id] = topic
+
+        return topcis_as_dict
 
     def get_answers(self, topic_repository: TopicRepository):
         """
@@ -103,18 +102,17 @@ class FormService:
         students and topics, with duplicate topics removed.
         """
         db_answers = self._repository.get_answers()
+        topics = self._transform_topics(topic_repository)
+
         response = []
         if len(db_answers) != 0:
 
             answers = {}
             for db_answer in db_answers:
                 id = str(db_answer.answer_id.timestamp())
-                topic_1 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_1))
-                topic_2 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_2))
-                topic_3 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_3))
+                topic_1 = topics[db_answer.topic_1]
+                topic_2 = topics[db_answer.topic_2]
+                topic_3 = topics[db_answer.topic_3]
                 if id not in answers:
                     group = GroupFormAnswer(id)
                     answers[id] = group
@@ -123,14 +121,7 @@ class FormService:
                 group.add_student(db_answer.email)
                 group.add_topics([topic_1, topic_2, topic_3])
 
-            for answer_id, data in answers.items():
-                response.append(
-                    GroupAnswerResponse(
-                        id=answer_id,
-                        students=data.students,
-                        topics=data.get_topic_names(),
-                    )
-                )
+            response = list(answers.values())
 
         return response
 
@@ -139,24 +130,21 @@ class FormService:
         Retrieves answers from one user based on his id
         """
         answers = self._repository.get_answers_by_user_id(user_id)
+        topics = self._transform_topics(topic_repository)
         response = []
         if len(answers) != 0:
 
             for db_answer in answers:
-                topic_1 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_1))
-                topic_2 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_2))
-                topic_3 = self._make_topic(
-                    topic_repository.get_topic_by_id(db_answer.topic_3))
-
+                topic_1 = topics[db_answer.topic_1]
+                topic_2 = topics[db_answer.topic_2]
+                topic_3 = topics[db_answer.topic_3]
                 response.append(
                     UserAnswerResponse(
                         answer_id=db_answer.answer_id,
                         email=db_answer.email,
                         topic_1=topic_1.name,
                         topic_2=topic_2.name,
-                        topic_3=topic_3.name
+                        topic_3=topic_3.name,
                     )
                 )
         return response

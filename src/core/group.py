@@ -10,7 +10,9 @@ class Group:
         self._available_dates = []
         self._assigned_date = None
         self._topics = []
+        self._assigned_topic = None
 
+    @property
     def id(self) -> str:
         return self._id
 
@@ -27,6 +29,10 @@ class Group:
         return self._available_dates
 
     @property
+    def assigned_topic(self):
+        return self._assigned_topic
+
+    @property
     def topics(self) -> list[Topic]:
         """
         Returns a list of topics.
@@ -35,6 +41,9 @@ class Group:
 
     def add_topics(self, topics: list[Topic]):
         self._topics = topics
+
+    def assign_topic(self, topic: Topic):
+        self._assigned_topic = topic
 
     def preference_of(self, topic: Topic) -> int:
         """
@@ -81,3 +90,20 @@ class Group:
         )
         cost = DAY_SLOTS - availability
         return cost
+
+
+class UnassignedGroup:
+    """The base group only contains the id, Students and the Topics"""
+
+    def __init__(self, id: int, students: list = None, topics: list = None) -> None:
+        self._id = id
+        self._topics = topics if topics is not None else []
+        self._students = students if students is not None else []
+
+    @property
+    def id(self) -> str:
+        return self._id
+
+    @property
+    def topics(self) -> str:
+        return self._topics

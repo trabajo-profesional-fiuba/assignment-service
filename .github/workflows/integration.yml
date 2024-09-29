@@ -5,6 +5,12 @@ on:
       CODECOV_TOKEN:
         description: 'token from codecov page' 
         required: true
+      AZURE_STORAGE_CONNECTION_STRING:
+        description: 'connection string from azure page' 
+        required: true
+      AZURE_STORAGE_CONTAINER_NAME:
+        description: 'container name from azure page' 
+        required: true
 
 jobs:
   performance_tests:
@@ -12,6 +18,8 @@ jobs:
       env:
         DATABASE_URL: "postgresql://postgres:postgres@localhost/postgres"
         ENVIRONMENT: "CI"
+        AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+        AZURE_STORAGE_CONTAINER_NAME: ${{ secrets.AZURE_STORAGE_CONTAINER_NAME }}
       steps:
         - name: Setting up postgres database.
           uses: ikalnytskyi/action-setup-postgres@v6 
