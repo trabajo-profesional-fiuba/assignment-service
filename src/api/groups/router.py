@@ -244,7 +244,7 @@ async def download_group_initial_project(
     try:
 
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service.assert_tutor_rol(token)
 
         container_name = api_config.container
         access_key = api_config.storage_access_key

@@ -213,7 +213,7 @@ def test_put_confirmed_groups(fastapi, tables):
     assert len(groups) == 1
     first = groups[0]
     assert first["id"] == 1
-    assert first["topic_id"] == 1
+    assert first["topic"]["id"] == 1
     assert first["tutor_period_id"] == 1
 
 
