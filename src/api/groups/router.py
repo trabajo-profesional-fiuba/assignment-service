@@ -201,10 +201,8 @@ async def get_group_by_id(
         group_service = GroupService(GroupRepository(session))
         auth_service = AuthenticationService(jwt_resolver)
 
-        is_admin = auth_service.is_admin(token)
-        if is_admin:
-            group = group_service.get_group(group_id)
-        else:
+        is_student = auth_service.is_student(token)
+        if is_student:
             jwt_token = auth_service.assert_student_role(token)
             student_id = auth_service.get_user_id(jwt_token)
 
@@ -212,6 +210,8 @@ async def get_group_by_id(
 
             if group.id != group_id:
                 raise InvalidJwt("Group requested is different to de student's group")
+        else:
+            group = group_service.get_group(group_id)
 
         group_model = GroupStates.model_validate(group)
 
@@ -244,7 +244,7 @@ async def download_group_initial_project(
     try:
 
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service.assert_tutor_rol(token)
 
         container_name = api_config.container
         access_key = api_config.storage_access_key

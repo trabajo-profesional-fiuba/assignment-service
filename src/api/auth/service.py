@@ -48,3 +48,13 @@ class AuthenticationService:
             return True
         except:
             return False
+        
+    def is_student(self, token: str | JwtDecoded) -> bool:
+        try:
+            if isinstance(token, str):
+                token = self._jwt_resolver.decode_token(token)
+            user = token.sub
+            self._assert_role(user["role"], Role.STUDENT.value)
+            return True
+        except:
+            return False
