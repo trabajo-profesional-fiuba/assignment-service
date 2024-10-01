@@ -38,6 +38,7 @@ class PeriodService:
         try:
             valid = self._validate_period(period.id)
             if valid:
+                logger.info(f"Attempting to create new period with id: {period.id}")
                 period_db = Period(id=period.id)
                 return self._repository.add_period(period_db)
             else:
@@ -52,14 +53,17 @@ class PeriodService:
         """
         Returns the list of periods
         """
+        logger.info(f"Attempts to get all the periods ordered by: {order}")
         return PeriodList.model_validate(self._repository.get_all_periods(order))
 
     def get_period_by_id(self, period_id: str) -> Period:
+        logger.info(f"Attempts to get one period by id: {period_id}")
         return self._repository.get_period_by_id(period_id)
 
     def update(self, period: UpdatePeriodRequest):
         try:
-            attributes = period.dict(exclude_unset=True)
+            logger.info(f"Updatin period with id: {period.id}")
+            attributes = period.model_dump(exclude_unset=True)
             attributes.pop("id", None)
             self._repository.update(period.id, attributes)
             return PeriodResponse.model_validate(period)
