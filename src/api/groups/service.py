@@ -69,9 +69,18 @@ class GroupService:
                 message="Group could't be created check if params exits"
             )
 
-    def get_groups(self, period: str):
+    def get_groups(
+        self,
+        period: str,
+        load_topic: bool,
+        load_tutor_period: bool,
+        load_period: bool,
+        load_students: bool,
+    ):
         logger.info("Fetching all groups")
-        groups = self._repository.get_groups(period=period)
+        groups = self._repository.get_groups(
+            period, load_topic, load_tutor_period, load_period, load_students
+        )
         return groups
 
     def create_basic_groups(self, group_result, period_id):

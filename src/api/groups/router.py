@@ -14,6 +14,7 @@ from src.api.groups.schemas import (
     GroupList,
     GroupResponse,
     GroupStates,
+    GroupCompleteList,
     GroupWithTutorTopicRequest,
 )
 from src.api.groups.service import GroupService
@@ -123,7 +124,9 @@ async def post_initial_project(
         )
         content_as_bytes = await file.read()
         group_service = GroupService(GroupRepository(session))
-        group_service.upload_initial_project(group_id, project_title, content_as_bytes, az_client)
+        group_service.upload_initial_project(
+            group_id, project_title, content_as_bytes, az_client
+        )
         return "File uploaded successfully"
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
@@ -135,7 +138,7 @@ async def post_initial_project(
 
 @router.get(
     "/",
-    response_model=GroupList,
+    response_model=GroupCompleteList,
     summary="Returns the list of groups that are in a specific period",
     responses={
         status.HTTP_200_OK: {"description": "Successfully added a new group."},
@@ -156,6 +159,10 @@ async def get_groups(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    load_topic: bool = True,
+    load_tutor_period: bool = False,
+    load_period: bool = False,
+    load_students: bool = True,
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
@@ -164,7 +171,11 @@ async def get_groups(
 
         group_service = GroupService(GroupRepository(session))
 
-        res = GroupList.model_validate(group_service.get_groups(period))
+        res = GroupCompleteList.model_validate(
+            group_service.get_groups(
+                period, load_topic, load_tutor_period, load_period, load_students
+            )
+        )
 
         return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt:
