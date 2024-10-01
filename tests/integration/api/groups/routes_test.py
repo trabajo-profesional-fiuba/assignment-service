@@ -296,9 +296,11 @@ def test_post_groups_initial_project(fastapi, tables):
     filename = "test"
     content_type = "application/pdf"
     files = {"file": (filename, content, content_type)}
+    params = {"project_title": "My title"}
     response = fastapi.post(
         f"{PREFIX}/{group.id}/initial-project",
         files=files,
+        params=params,
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
 

@@ -63,20 +63,28 @@ class GroupRepository:
 
         return group
 
-    def get_groups(self, period) -> list[Group]:
+    def get_groups(
+        self,
+        period: str,
+        load_topic=False,
+        load_tutor_period=False,
+        load_period=False,
+        load_students=False,
+    ) -> list[Group]:
         """Returns all groups for a given period"""
         with self.Session() as session:
-            groups = (
-                session.query(Group)
-                .options(
-                    joinedload(Group.topic),
-                    joinedload(Group.tutor_period),
-                    joinedload(Group.period),
-                    joinedload(Group.students),
-                )
-                .filter(Group.period_id == period)
-                .all()
-            )
+            query = session.query(Group)
+
+            if load_topic:
+                query = query.options(joinedload(Group.topic))
+            if load_tutor_period:
+                query = query.options(joinedload(Group.tutor_period))
+            if load_period:
+                query = query.options(joinedload(Group.period))
+            if load_students:
+                query = query.options(joinedload(Group.students))
+
+            groups = query.filter(Group.period_id == period).all()
             session.expunge_all()
         return groups
 
@@ -131,20 +139,26 @@ class GroupRepository:
             session.execute(stmt)
             session.commit()
 
-    def get_groups_by_period_id(self, tutor_period_id) -> list[Group]:
+    def get_groups_by_period_id(
+        self,
+        tutor_period_id: int,
+        load_topic=False,
+        load_period=False,
+        load_students=False,
+    ) -> list[Group]:
         """Returns all groups for a given assigned_tutor_period"""
         with self.Session() as session:
-            groups = (
-                session.query(Group)
-                .options(
-                    joinedload(Group.topic),
-                    joinedload(Group.tutor_period),
-                    joinedload(Group.period),
-                    joinedload(Group.students),
-                )
-                .filter(Group.tutor_period_id == tutor_period_id)
-                .all()
-            )
+            query = session.query(Group).options(joinedload(Group.tutor_period))
+
+            if load_topic:
+                query = query.options(joinedload(Group.topic))
+            if load_period:
+                query = query.options(joinedload(Group.period))
+            if load_students:
+                query = query.options(joinedload(Group.students))
+
+            groups = query.filter(Group.tutor_period_id == tutor_period_id).all()
+            session.expunge_all()
             session.expunge_all()
         return groups
 

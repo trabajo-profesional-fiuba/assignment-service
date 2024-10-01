@@ -71,7 +71,7 @@ class GroupService:
 
     def get_groups(self, period: str):
         logger.info("Fetching all groups")
-        groups = self._repository.get_groups(period)
+        groups = self._repository.get_groups(period=period)
         return groups
 
     def create_basic_groups(self, group_result, period_id):
@@ -97,7 +97,7 @@ class GroupService:
                     }
                 )
             self._repository.bulk_update(groups_to_update, period)
-            return self._repository.get_groups(period)
+            return self._repository.get_groups(period=period, load_topic=True)
         except Exception as e:
             logger.error(f"Could not update groups because of: {str(e)}")
             raise EntityNotInserted(
@@ -105,13 +105,19 @@ class GroupService:
                 id provided are correct."
             )
 
-    def upload_initial_project(self, group_id: int, data: bytes, storage_client):
+    def upload_initial_project(
+        self, group_id: int, project_title: str, data: bytes, storage_client
+    ):
         try:
             group = self._repository.get_group_by_id(group_id)
             path = f"{group.period_id}/{group.id}/initial-project.pdf"
             blob = storage_client.upload(data=data, filename=path, overwrite=True)
             self._repository.update(
-                group_id, {"pre_report_date": datetime.datetime.now()}
+                group_id,
+                {
+                    "pre_report_date": datetime.datetime.now(),
+                    "pre_report_title": project_title,
+                },
             )
 
             return blob

@@ -109,6 +109,7 @@ async def post_initial_project(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    project_title: str = Query(...),
 ):
     try:
 
@@ -122,7 +123,7 @@ async def post_initial_project(
         )
         content_as_bytes = await file.read()
         group_service = GroupService(GroupRepository(session))
-        group_service.upload_initial_project(group_id, content_as_bytes, az_client)
+        group_service.upload_initial_project(group_id, project_title, content_as_bytes, az_client)
         return "File uploaded successfully"
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
