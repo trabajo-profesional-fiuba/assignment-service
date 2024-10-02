@@ -43,7 +43,7 @@ class GroupResponse(BaseModel):
     id: int = Field(description="Id of the group")
     students: List[UserResponse] = Field(default=[])
     period_id: str
-    #topic_id: int | None = Field(validation_alias="assigned_topic_id")
+    # topic_id: int | None = Field(validation_alias="assigned_topic_id")
     tutor_period_id: int | None = Field(validation_alias="tutor_period_id")
     preferred_topics: Optional[List[int]] = Field(
         description="Ids of topics the group selected in the form answer"
@@ -52,21 +52,28 @@ class GroupResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-
 class GroupStates(BaseModel):
     pre_report_date: datetime | None
     pre_report_approved: bool
+    pre_report_title: str | None
     intermediate_assigment_date: datetime | None
     intermediate_assigment_approved: bool
     final_report_approved: bool
+    final_report_title: str | None
+    final_report_date: datetime | None
     exhibition_date: datetime | None
 
     model_config = ConfigDict(from_attributes=True)
 
 
+class CompleteGroupResponse(GroupResponse,GroupStates):
+    ...
+
 class GroupList(RootModel):
     root: List[GroupResponse] = Field(default=[])
 
+class GroupCompleteList(RootModel):
+    root: List[CompleteGroupResponse] = Field(default=[])
 
 class AssignedGroupList(RootModel):
     root: List[AssignedGroupResponse] = Field(default=[])
