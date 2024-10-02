@@ -228,5 +228,5 @@ class TutorService:
 
     def get_groups_from_tutor_id(self, tutor_id, period_id, group_repository):
         period = self.get_tutor_period_by_tutor_id(period_id, tutor_id)
-        groups = group_repository.get_groups_by_period_id(period.id)
+        groups = group_repository.get_groups_by_period_id(tutor_period_id=period.id, load_topic=True)
         return groups

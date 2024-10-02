@@ -37,9 +37,12 @@ class Group(Base):
     )
     pre_report_date = Column(DateTime(timezone=False))
     pre_report_approved = Column(Boolean, default=False)
+    pre_report_title = Column(String(100))
     intermediate_assigment_date = Column(DateTime(timezone=False))
     intermediate_assigment_approved = Column(Boolean, default=False)
     final_report_approved = Column(Boolean, default=False)
+    final_report_title = Column(String(100))
+    final_report_date = Column(DateTime(timezone=False))
     exhibition_date = Column(DateTime(timezone=False))
     """ postgresql.ARRAY is a dialect specif datatype for postgres sql
         if in the future the db changes, this should be refactored using a
