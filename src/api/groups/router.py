@@ -1,5 +1,5 @@
 from typing_extensions import Annotated
-from fastapi import APIRouter, Depends, Response, UploadFile, status, Query
+from fastapi import APIRouter, Depends, Response, UploadFile, status, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
@@ -110,6 +110,7 @@ async def post_initial_project(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    background_tasks: BackgroundTasks
     project_title: str = Query(...),
 ):
     try:
