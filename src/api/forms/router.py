@@ -122,11 +122,7 @@ async def get_answers(
         res = GroupAnswerList.model_validate(response)
 
         return ResponseBuilder.build_private_cache_response(res)
-<<<<<<< HEAD
-    except InvalidJwt as e:
-=======
     except InvalidJwt:
->>>>>>> main
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
@@ -160,11 +156,7 @@ async def get_answers_by_user_id(
         res = service.get_answers_by_user_id(user_id, TopicRepository(session))
 
         return ResponseBuilder.build_private_cache_response(res)
-<<<<<<< HEAD
     except InvalidJwt as e:
-=======
-    except InvalidJwt:
->>>>>>> main
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")
