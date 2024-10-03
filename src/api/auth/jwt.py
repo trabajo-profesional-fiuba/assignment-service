@@ -69,6 +69,7 @@ class JwtResolver:
 
             return JwtDecoded(**jwt_decoded)
         except Exception as e:
+            logger.error(f"Invalid Jwt")
             raise InvalidJwt(message=str(e))
 
 

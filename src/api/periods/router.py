@@ -52,6 +52,7 @@ async def add_period(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
+        
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.add_period(period))
 
@@ -85,8 +86,8 @@ async def get_periods(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
-        service = PeriodService(PeriodRepository(session))
 
+        service = PeriodService(PeriodRepository(session))
         res = PeriodList.model_validate(service.get_all_periods(order))
 
         return ResponseBuilder.build_private_cache_response(res)
@@ -120,7 +121,6 @@ async def get_period_by_id(
         auth_service.assert_student_role(token)
 
         service = PeriodService(PeriodRepository(session))
-
         res = PeriodResponse.model_validate(service.get_period_by_id(period_id))
 
         return ResponseBuilder.build_private_cache_response(res)
