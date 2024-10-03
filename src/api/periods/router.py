@@ -1,6 +1,8 @@
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, Depends, status, Query, Path
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver

@@ -1,5 +1,7 @@
 from datetime import datetime
 from fastapi import APIRouter, status, Depends
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 from src.api.forms.schemas import (
@@ -154,7 +156,7 @@ async def get_answers_by_user_id(
         res = service.get_answers_by_user_id(user_id, TopicRepository(session))
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt:
+    except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         logger.error("Could not get all the answers from the db")

@@ -1,3 +1,4 @@
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
