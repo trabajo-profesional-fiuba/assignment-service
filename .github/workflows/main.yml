@@ -3,15 +3,22 @@ on:
   push:
     branches:
       - main
+  workflow_call:
+
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
+  build:
+    uses: ./.github/workflows/build.yml
+
+  unit_test:
+    needs: build
+    uses: ./.github/workflows/tests.yml
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  performance:
+  integration:
+    needs: build
     uses: ./.github/workflows/integration.yml
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
       AZURE_STORAGE_CONTAINER_NAME: ${{ secrets.AZURE_STORAGE_CONTAINER_NAME }}
+      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
