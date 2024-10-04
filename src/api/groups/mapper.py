@@ -1,4 +1,5 @@
 from src.core.group import UnassignedGroup
+from src.core.tutor import Tutor
 
 
 class GroupMapper:
@@ -18,3 +19,6 @@ class GroupMapper:
         ]
 
         return groups
+
+    def convert_from_model_to_group(self, db_group):
+        tutor = Tutor()

@@ -8,6 +8,7 @@ from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
 from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 
+from src.api.groups.mapper import GroupMapper
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import (
     AssignedGroupConfirmationRequest,
@@ -31,6 +32,7 @@ from src.api.utils.response_builder import ResponseBuilder
 from src.core.azure_container_client import AzureContainerClient
 from src.config.config import api_config
 from src.config.database.database import get_db
+from src.core.email_client import SendGridEmailClient
 
 router = APIRouter(prefix="/groups", tags=["Groups"])
 
@@ -111,7 +113,7 @@ async def post_initial_project(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
     project_title: str = Query(...),
 ):
     try:
@@ -125,10 +127,16 @@ async def post_initial_project(
             container=container_name, access_key=access_key
         )
         content_as_bytes = await file.read()
+        group_mapper = GroupMapper()
         group_service = GroupService(GroupRepository(session))
         group_service.upload_initial_project(
             group_id, project_title, content_as_bytes, az_client
         )
+
+        group = group_mapper.convert_from_model_to_group(group_service.get_group_by_id(group_id))
+
+
+
         return "File uploaded successfully"
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
@@ -225,7 +233,7 @@ async def get_group_by_id(
             if group.id != group_id:
                 raise InvalidJwt("Group requested is different to de student's group")
         else:
-            group = group_service.get_group(group_id)
+            group = group_service.get_group_by_id(group_id)
 
         group_model = GroupStates.model_validate(group)
 

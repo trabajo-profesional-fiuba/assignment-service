@@ -157,7 +157,7 @@ class GroupService:
         ]
         return blob_details_list
 
-    def get_group(
+    def get_group_by_id(
         self,
         group_id: int,
     ):
