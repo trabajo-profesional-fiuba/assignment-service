@@ -25,6 +25,10 @@ class AssignedGroupConfirmationRequest(BaseModel):
     id: int
     tutor_period_id: int
     topic_id: int
+    reviewer_id: int
+    pre_report_approved: bool
+    intermediate_assigment_approved: bool
+    final_report_approved: bool
 
 
 class AssignedGroupResponse(BaseModel):

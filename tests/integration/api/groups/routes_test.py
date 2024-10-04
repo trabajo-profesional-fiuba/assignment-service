@@ -200,7 +200,7 @@ def test_put_confirmed_groups(fastapi, tables):
     group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
-    body = [{"id": group.id, "tutor_period_id": 1, "topic_id": 1}]
+    body = [{"id": group.id, "tutor_period_id": 1, "topic_id": 1, "reviewer_id": 1, "pre_report_approved": True, "intermediate_assigment_approved": True, "final_report_approved": True}]
     params = {"period": "1C2025"}
     response = fastapi.put(
         f"{PREFIX}/",
@@ -233,7 +233,7 @@ def test_put_confirmed_groups_tutor_period_id_not_exist(fastapi, tables):
     group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
-    body = [{"id": group.id, "tutor_period_id": 10, "topic_id": 1}]
+    body = [{"id": group.id, "tutor_period_id": 10, "topic_id": 1, "reviewer_id": 1, "pre_report_approved": True, "intermediate_assigment_approved": True, "final_report_approved": True}]
     params = {"period": "1C2025"}
     response = fastapi.put(
         f"{PREFIX}/",
@@ -260,7 +260,7 @@ def test_put_confirmed_groups_topic_id_not_exist(fastapi, tables):
     group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
-    body = [{"id": group.id, "tutor_period_id": 1, "topic_id": 3}]
+    body = [{"id": group.id, "tutor_period_id": 1, "topic_id": 3, "reviewer_id": 1, "pre_report_approved": True, "intermediate_assigment_approved": True, "final_report_approved": True}]
     params = {"period": "1C2025"}
     response = fastapi.put(
         f"{PREFIX}/",

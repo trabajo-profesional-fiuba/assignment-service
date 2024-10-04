@@ -103,6 +103,10 @@ class GroupService:
                         "b_id": group.id,
                         "b_assigned_topic_id": group.topic_id,
                         "b_tutor_period_id": group.tutor_period_id,
+                        "b_reviewer_id": group.reviewer_id,
+                        "b_pre_report_approved": group.pre_report_approved,
+                        "b_intermediate_assigment_approved": group.intermediate_assigment_approved,
+                        "b_final_report_approved": group.final_report_approved,
                     }
                 )
             self._repository.bulk_update(groups_to_update, period)
