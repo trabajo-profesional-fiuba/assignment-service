@@ -95,21 +95,12 @@ class GroupService:
 
     def update(self, groups, period):
         try:
-            groups_to_update = list()
             for group in groups:
-                # b_* comes from binding params
-                groups_to_update.append(
-                    {
-                        "b_id": group.id,
-                        "b_assigned_topic_id": group.topic_id,
-                        "b_tutor_period_id": group.tutor_period_id,
-                        "b_reviewer_id": group.reviewer_id,
-                        "b_pre_report_approved": group.pre_report_approved,
-                        "b_intermediate_assigment_approved": group.intermediate_assigment_approved,
-                        "b_final_report_approved": group.final_report_approved,
-                    }
-                )
-            self._repository.bulk_update(groups_to_update, period)
+                attributes = group.model_dump(exclude_unset=True)
+                attributes.pop("id", None)
+
+                self._repository.update(group.id, attributes)           
+
             return self._repository.get_groups(period=period, load_topic=True)
         except Exception as e:
             logger.error(f"Could not update groups because of: {str(e)}")
