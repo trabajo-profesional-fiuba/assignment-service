@@ -232,3 +232,12 @@ class TutorService:
             tutor_period_id=period.id, load_topic=True
         )
         return groups
+
+    def get_groups_from_reviewer_id(self, reviewer_id, period_id, group_repository):
+        try:
+            groups = group_repository.get_groups_by_reviewer_id(
+                reviewer_id=reviewer_id, period_id=period_id, load_topic=True
+            )
+            return groups
+        except Exception as e:
+            raise EntityNotFound(message=str(e))

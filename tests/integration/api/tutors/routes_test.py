@@ -553,3 +553,30 @@ def test_get_tutor_periods_with_unauthorized_tutor(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.integration
+def test_get_groups_assigned_to_tutor_as_reviewer(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_tutor("pepe", "tutor", "12345678", "pepe@fi.uba.ar")
+    period = helper.create_tutor_period(12345678, "1C2024")
+    helper.create_default_topics(["topic1", "topic2"])
+    helper.add_tutor_to_topic("1C2024", "pepe@fi.uba.ar", ["topic2"], [1])
+    helper.create_student("john", "Student", "105285", "student@fi.uba.ar")
+    helper.create_student("juan", "Student2", "105286", "student2@fi.uba.ar")
+    helper.create_group([105285], None, 1, "1C2024")
+    helper.create_group([105286], period.id, 2, "1C2024")
+    helper.assign_reviewer(reviewer_id=12345678, group_id=1)
+
+    token = helper.create_tutor_token(12345678)
+
+    params = {"period_id": "1C2024"}
+    response = fastapi.get(
+        f"{PREFIX}/reviewer/my-groups",
+        params=params,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+
+    assert response.status_code == 200
+    assert len(response.json()) == 1
