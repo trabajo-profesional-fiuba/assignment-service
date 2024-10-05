@@ -168,7 +168,7 @@ class GroupRepository:
         load_topic=False,
         load_period=False,
         load_students=False,
-        load_tutor=False
+        load_tutor=False,
     ) -> Group:
         with self.Session() as session:
             query = session.query(Group)
@@ -180,7 +180,7 @@ class GroupRepository:
                 query = query.options(joinedload(Group.students))
             if load_tutor:
                 query = query.options(joinedload(Group.tutor_period))
-                
+
             group = query.filter(Group.id == group_id).one_or_none()
             if group is None:
                 raise GroupNotFound(message=f"{group_id} not found in db")

@@ -95,7 +95,7 @@ class Group:
         )
         cost = DAY_SLOTS - availability
         return cost
-    
+
     def tutor_email(self):
         return self._tutor.email
 

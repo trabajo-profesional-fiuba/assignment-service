@@ -9,20 +9,20 @@ from src.api.groups.router import router
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from src.core.email_client import SendGridEmailClient
 from tests.integration.api.helper import ApiHelper
 
 PREFIX = "/groups"
 
+
 class MockSendGrid:
-    
+
     def notify_attachement(self, group, type):
         return 200
 
+
 async def override_get_email_sender():
     yield MockSendGrid()
-    
-    
+
 
 @pytest.fixture(scope="function")
 def tables():
@@ -40,7 +40,7 @@ Session = scoped_session(SessionFactory)
 @pytest.fixture(scope="module")
 def fastapi():
     app = FastAPI()
-    
+
     app.include_router(router)
     client = TestClient(app)
     yield client
@@ -245,7 +245,14 @@ def test_put_confirmed_groups_tutor_period_id_not_exist(fastapi, tables):
     group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
-    body = [{"id": group.id, "tutor_period_id": 10, "assigned_topic_id": 1, "reviewer_id": 1}]
+    body = [
+        {
+            "id": group.id,
+            "tutor_period_id": 10,
+            "assigned_topic_id": 1,
+            "reviewer_id": 1,
+        }
+    ]
     params = {"period": "1C2025"}
     response = fastapi.put(
         f"{PREFIX}/",
@@ -284,6 +291,7 @@ def test_put_confirmed_groups_topic_id_not_exist(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+
 @pytest.mark.integration
 def test_put_approve_pre_report(fastapi, tables):
     # Arrange
@@ -308,6 +316,7 @@ def test_put_approve_pre_report(fastapi, tables):
     )
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
+
 
 @pytest.mark.integration
 def test_put_approve_intermediate_assigment(fastapi, tables):
@@ -334,6 +343,7 @@ def test_put_approve_intermediate_assigment(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
 
+
 @pytest.mark.integration
 def test_put_approve_final_report_assigment(fastapi, tables):
     # Arrange
@@ -358,6 +368,7 @@ def test_put_approve_final_report_assigment(fastapi, tables):
     )
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
+
 
 @pytest.mark.integration
 def test_add_reviewer(fastapi, tables):

@@ -51,8 +51,7 @@ class SendGridEmailClient:
         self._log_response(response)
         return response.status_code
 
-
-    def notify_attachement(self, group:Group, type_of_attachment:str):
+    def notify_attachement(self, group: Group, type_of_attachment: str):
         to = group.students_emails + [group.tutor_email()]
         subject = f"Grupo {group.id} ha subido un nuevo archivo"
         email_body = f"""
@@ -64,4 +63,4 @@ class SendGridEmailClient:
         """
         cc = "avillores@fi.uba.ar"
 
-        self._send_mail(to,subject,email_body,cc)
+        self._send_mail(to, subject, email_body, cc)

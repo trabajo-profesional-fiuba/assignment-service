@@ -99,7 +99,7 @@ class GroupService:
                 attributes = group.model_dump(exclude_unset=True)
                 attributes.pop("id", None)
 
-                self._repository.update(group.id, attributes)           
+                self._repository.update(group.id, attributes)
 
             return self._repository.get_groups(period=period, load_topic=True)
         except Exception as e:
@@ -153,10 +153,7 @@ class GroupService:
         return blob_details_list
 
     def get_group_by_id(
-        self,
-        group_id: int,
-        load_students:bool = False,
-        load_tutor=False
+        self, group_id: int, load_students: bool = False, load_tutor=False
     ):
         try:
             logger.info(f"Fetching group: {group_id}")

@@ -20,7 +20,7 @@ class Tutor:
         capacity: int = 0,
         groups=None,
         topics=None,
-        is_evaluator = False,
+        is_evaluator=False,
     ):
         self._id = id
         self._name = name
