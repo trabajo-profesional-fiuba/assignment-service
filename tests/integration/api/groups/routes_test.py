@@ -4,14 +4,25 @@ import pytest
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
+from src.api.groups.dependencies import get_email_sender
 from src.api.groups.router import router
 from src.config.database.database import create_tables, drop_tables, engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
+from src.core.email_client import SendGridEmailClient
 from tests.integration.api.helper import ApiHelper
 
 PREFIX = "/groups"
 
+class MockSendGrid:
+    
+    def notify_attachement(self, group, type):
+        return 200
+
+async def override_get_email_sender():
+    yield MockSendGrid()
+    
+    
 
 @pytest.fixture(scope="function")
 def tables():
@@ -29,6 +40,7 @@ Session = scoped_session(SessionFactory)
 @pytest.fixture(scope="module")
 def fastapi():
     app = FastAPI()
+    
     app.include_router(router)
     client = TestClient(app)
     yield client
@@ -272,17 +284,17 @@ def test_put_confirmed_groups_topic_id_not_exist(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-
 @pytest.mark.integration
 def test_post_groups_initial_project(fastapi, tables):
     # Arrange
+    fastapi.app.dependency_overrides[get_email_sender] = override_get_email_sender
     helper = ApiHelper()
     helper.create_period("1C2025")
-    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
     period = helper.create_tutor_period("105000", "1C2025")
-    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
-    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
-    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    helper.create_student("Ivan", "B", "105002", "ipfaab@fi.uba.ar")
+    helper.create_student("Joaquin", "C", "105003", "joagomez@fi.uba.ar")
     topic = helper.create_topic("TopicCustom")
     group = helper.create_group(
         ids=[105001, 105002, 105003],
