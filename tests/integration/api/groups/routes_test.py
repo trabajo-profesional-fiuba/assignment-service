@@ -582,3 +582,38 @@ def test_get_groups_by_id_being_tutor(fastapi, tables):
         headers={"Authorization": f"Bearer {tutor_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
+
+@pytest.mark.integration
+def test_post_groups_final_project(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    period = helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    topic = helper.create_topic("TopicCustom")
+    group = helper.create_group(
+        ids=[105001, 105002, 105003],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="1C2025",
+    )
+    user_token = helper.create_student_token()
+
+    with open("tests/test.pdf", "rb") as file:
+        content = file.read()
+
+    filename = "test"
+    content_type = "application/pdf"
+    files = {"file": (filename, content, content_type)}
+    params = {"project_title": "Proyecto Final"}
+    response = fastapi.post(
+        f"{PREFIX}/{group.id}/final-project",
+        files=files,
+        params=params,
+        headers={"Authorization": f"Bearer {user_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
