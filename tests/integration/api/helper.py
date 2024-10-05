@@ -169,3 +169,9 @@ class ApiHelper:
             period_id=period_id,
             topic_id=topic_id,
         )
+    
+    def assign_reviewer(self, reviewer_id:int, group_id:int):
+        attributes = {
+            'reviewer_id':reviewer_id
+        }
+        self._groups_repository.update(group_id, attributes=attributes)
