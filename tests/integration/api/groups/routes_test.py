@@ -200,7 +200,7 @@ def test_put_confirmed_groups(fastapi, tables):
     group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
-    body = [{"id": group.id, "tutor_period_id": 1, "topic_id": 1}]
+    body = [{"id": group.id, "tutor_period_id": 1, "assigned_topic_id": 1}]
     params = {"period": "1C2025"}
     response = fastapi.put(
         f"{PREFIX}/",
@@ -233,7 +233,7 @@ def test_put_confirmed_groups_tutor_period_id_not_exist(fastapi, tables):
     group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
-    body = [{"id": group.id, "tutor_period_id": 10, "topic_id": 1}]
+    body = [{"id": group.id, "tutor_period_id": 10, "assigned_topic_id": 1, "reviewer_id": 1}]
     params = {"period": "1C2025"}
     response = fastapi.put(
         f"{PREFIX}/",
@@ -260,7 +260,7 @@ def test_put_confirmed_groups_topic_id_not_exist(fastapi, tables):
     group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
     admin_token = helper.create_admin_token()
 
-    body = [{"id": group.id, "tutor_period_id": 1, "topic_id": 3}]
+    body = [{"id": group.id, "tutor_period_id": 1, "assigned_topic_id": 3}]
     params = {"period": "1C2025"}
     response = fastapi.put(
         f"{PREFIX}/",
@@ -271,6 +271,107 @@ def test_put_confirmed_groups_topic_id_not_exist(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+@pytest.mark.integration
+def test_put_approve_pre_report(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    helper.create_topic("Basic topic")
+    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
+    admin_token = helper.create_admin_token()
+
+    body = [{"id": group.id, "pre_report_approved": True}]
+    params = {"period": "1C2025"}
+    response = fastapi.put(
+        f"{PREFIX}/",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED
+
+@pytest.mark.integration
+def test_put_approve_intermediate_assigment(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    helper.create_topic("Basic topic")
+    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
+    admin_token = helper.create_admin_token()
+
+    body = [{"id": group.id, "intermediate_assigment_approved": True}]
+    params = {"period": "1C2025"}
+    response = fastapi.put(
+        f"{PREFIX}/",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED
+
+@pytest.mark.integration
+def test_put_approve_final_report_assigment(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    helper.create_topic("Basic topic")
+    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
+    admin_token = helper.create_admin_token()
+
+    body = [{"id": group.id, "final_report_approved": True}]
+    params = {"period": "1C2025"}
+    response = fastapi.put(
+        f"{PREFIX}/",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED
+
+@pytest.mark.integration
+def test_add_reviewer(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    helper.create_topic("Basic topic")
+    group = helper.create_basic_group([105001, 105002, 105003], [1, 2, 3], "1C2025")
+    admin_token = helper.create_admin_token()
+
+    body = [{"id": group.id, "reviewer_id": 1}]
+    params = {"period": "1C2025"}
+    response = fastapi.put(
+        f"{PREFIX}/",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED
 
 
 @pytest.mark.integration

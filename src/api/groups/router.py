@@ -437,7 +437,7 @@ async def update_groups(
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service.assert_tutor_rol(token)
 
         group_service = GroupService(GroupRepository(session))
         groups_updated = group_service.update(groups, period)

@@ -23,8 +23,12 @@ class GroupWithTutorTopicRequest(GroupRequest):
 
 class AssignedGroupConfirmationRequest(BaseModel):
     id: int
-    tutor_period_id: int
-    topic_id: int
+    tutor_period_id: Optional[int] = None
+    assigned_topic_id: Optional[int] = None
+    reviewer_id: Optional[int] = None
+    pre_report_approved: Optional[bool] = None
+    intermediate_assigment_approved: Optional[bool] = None
+    final_report_approved: Optional[bool] = None
 
 
 class AssignedGroupResponse(BaseModel):
@@ -49,7 +53,8 @@ class GroupResponse(BaseModel):
         description="Ids of topics the group selected in the form answer"
     )
     topic: Optional[TopicResponse]
-
+    reviewer_id: Optional[int]
+    
     model_config = ConfigDict(from_attributes=True)
 
 class GroupStates(BaseModel):
