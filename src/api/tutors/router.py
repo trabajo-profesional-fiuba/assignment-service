@@ -311,3 +311,42 @@ async def get_groups_by_tutor(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
+
+@router.get(
+    "/reviewer/my-groups",
+    response_model=GroupList,
+    description="Returns the groups that the tutor is their revisor",
+    summary="Get all the groups of a tutor based on a period",
+    tags=["Tutors"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_groups_by_reviewer_id(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+        tutor_id = auth_service.get_user_id(token)
+
+        service = TutorService(TutorRepository(session))
+        group_repository = GroupRepository(session)
+
+        groups = GroupList.model_validate(
+            service.get_groups_from_reviewer_id(tutor_id, period_id, group_repository)
+        )
+
+        return ResponseBuilder.build_private_cache_response(groups)
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))

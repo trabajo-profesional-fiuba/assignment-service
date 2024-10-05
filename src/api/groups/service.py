@@ -114,7 +114,7 @@ class GroupService:
     ):
         try:
             group = self._repository.get_group_by_id(group_id)
-            path = f"{group.period_id}/{group.id}/initial-project.pdf"
+            path = f"{group.period_id}/{group.id}/anteproyecto.pdf"
             blob = storage_client.upload(data=data, filename=path, overwrite=True)
             self._repository.update(
                 group_id,
@@ -131,7 +131,7 @@ class GroupService:
 
     def download_initial_project(self, period: str, group_id: int, storage_client):
         try:
-            path = f"{period}/{group_id}/initial-project.pdf"
+            path = f"{period}/{group_id}/anteproyecto.pdf"
             file_as_bytes = storage_client.download(path)
             return file_as_bytes
         except Exception as e:
@@ -139,7 +139,7 @@ class GroupService:
             raise e
 
     def list_initial_project(self, period, storage_client):
-        pattern = f"^{period}\\/[0-9]+\\/initial-project\\.pdf$"
+        pattern = f"^{period}\\/[0-9]+\\/anteproyecto\\.pdf$"
         blobs = storage_client.list_blobs(prefix=period, pattern=pattern)
         blob_details_list = [
             BlobDetails(
