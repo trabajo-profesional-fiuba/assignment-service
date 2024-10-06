@@ -4,6 +4,16 @@ on:
     branches:
       - main
   workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        description: 'token from codecov page' 
+        required: true
+      AZURE_STORAGE_CONNECTION_STRING:
+        description: 'connection string from azure page' 
+        required: true
+      AZURE_STORAGE_CONTAINER_NAME:
+        description: 'container name from azure page' 
+        required: true
 
 jobs:
   build:

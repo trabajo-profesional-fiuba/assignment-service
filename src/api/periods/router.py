@@ -52,7 +52,7 @@ async def add_period(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
-        
+
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.add_period(period))
 

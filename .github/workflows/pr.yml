@@ -4,6 +4,7 @@ on:
     pull_request:
       types: [opened]
     workflow_dispatch:
+        
 
 jobs:
     check_branches:
@@ -21,4 +22,8 @@ jobs:
     build:
       needs: [check_branches]
       uses: ./.github/workflows/main.yml
+      secrets:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        AZURE_STORAGE_CONTAINER_NAME: ${{ secrets.AZURE_STORAGE_CONTAINER_NAME }}
+        AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
 

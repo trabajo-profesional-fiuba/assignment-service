@@ -4,13 +4,14 @@ from src.core.topic import Topic
 
 class Group:
 
-    def __init__(self, id: int, tutor=None) -> None:
+    def __init__(self, id: int, tutor=None, students_emails: list[str] = None) -> None:
         self._id = id
         self._tutor = tutor
         self._available_dates = []
         self._assigned_date = None
         self._topics = []
         self._assigned_topic = None
+        self._students_emails = students_emails if students_emails is not None else []
 
     @property
     def id(self) -> str:
@@ -19,6 +20,10 @@ class Group:
     @property
     def tutor(self):
         return self._tutor
+
+    @property
+    def students_emails(self):
+        return self._students_emails
 
     @property
     def assigned_date(self):
@@ -90,6 +95,9 @@ class Group:
         )
         cost = DAY_SLOTS - availability
         return cost
+
+    def tutor_email(self):
+        return self._tutor.email
 
 
 class UnassignedGroup:
