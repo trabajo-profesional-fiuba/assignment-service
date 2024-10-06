@@ -241,3 +241,26 @@ class TutorService:
             return groups
         except Exception as e:
             raise EntityNotFound(message=str(e))
+
+    def notify_students(self, sender_id, group, email_sender, message):
+        try:
+            sender = self._repository.get_tutor_by_tutor_id(sender_id)
+            to = group.students_emails
+            
+            if group.reviewer_id and sender.id == group.reviewer_id:
+                tutor = self._repository.get_tutor_by_tutor_id(group.tutor_id())
+                to.extend([tutor.email, sender.email])
+                subject = "Tienes un nuevo mensaje de tu revisor"
+            else:
+                to.append(sender.email)
+                subject = "Tienes un nuevo mensaje de tu tutor"
+            
+            body = f"Mensaje:\n\n{message}\n\nGracias"
+            cc = "avillores@fi.uba.ar"
+            response = email_sender.send_emails(
+                to=to, subject=subject, body=body, cc=cc
+            )
+            
+            return response
+        except Exception as e:
+            raise EntityNotFound(message=str(e))

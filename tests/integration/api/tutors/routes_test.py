@@ -580,3 +580,72 @@ def test_get_groups_assigned_to_tutor_as_reviewer(fastapi, tables):
 
     assert response.status_code == 200
     assert len(response.json()) == 1
+
+@pytest.mark.integration
+@pytest.mark.skip
+def test_notify_group_being_their_tutor(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Alejo", "Perez", "105000", "alejovillores@gmail.com")
+    period = helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    helper.create_student("Ivan", "B", "105002", "ipfaab@fi.uba.ar")
+    helper.create_student("Joaquin", "C", "105003", "joagomez@fi.uba.ar")
+    topic = helper.create_topic("TopicCustom")
+    group = helper.create_group(
+        ids=[105001, 105002, 105003],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="1C2025",
+    )
+    json = {
+        "body": "Esta es una notificacion para los integrantes del test:test_notify_group_being_their_tutor",
+    }
+    params = {
+        "group_id": group.id
+    }
+    token = helper.create_tutor_token(105000)
+    response = fastapi.post(
+        f"{PREFIX}/notify-group",
+        params=params,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+        json=json,
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+@pytest.mark.skip
+def test_notify_group_being_their_reviewer(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Alejo", "Perez", "105000", "alejovillores@gmail.com")
+    helper.create_tutor("Celeste", "Revisor", "105004", "cdituro@fi.uba.ar")
+    period = helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    helper.create_student("Ivan", "B", "105002", "ipfaab@fi.uba.ar")
+    helper.create_student("Joaquin", "C", "105003", "joagomez@fi.uba.ar")
+    topic = helper.create_topic("TopicCustom")
+    group = helper.create_group(
+        ids=[105001, 105002, 105003],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="1C2025",
+    )
+    helper.assign_reviewer(reviewer_id=105004, group_id=1)
+    json = {
+        "body": "Esta es una notificacion para los integrantes del test:test_notify_group_being_their_reviewer",
+    }
+    params = {
+        "group_id": group.id
+    }
+    token = helper.create_tutor_token(105004)
+    response = fastapi.post(
+        f"{PREFIX}/notify-group",
+        params=params,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+        json=json,
+    )
+
+    assert response.status_code == status.HTTP_200_OK
