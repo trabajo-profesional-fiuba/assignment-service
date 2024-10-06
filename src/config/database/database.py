@@ -15,7 +15,9 @@ pool_size = api_config.database_pool_size
 pool_timeout = api_config.database_pool_timeout
 
 
-engine = create_engine(database_url, pool_size=pool_size, pool_timeout=pool_timeout, pool_pre_ping=True)
+engine = create_engine(
+    database_url, pool_size=pool_size, pool_timeout=pool_timeout, pool_pre_ping=True
+)
 
 
 def init_default_values():

@@ -99,7 +99,7 @@ class GroupService:
                 attributes = group.model_dump(exclude_unset=True)
                 attributes.pop("id", None)
 
-                self._repository.update(group.id, attributes)           
+                self._repository.update(group.id, attributes)
 
             return self._repository.get_groups(period=period, load_topic=True)
         except Exception as e:
@@ -128,7 +128,7 @@ class GroupService:
         except GroupNotFound as e:
             logger.error(f"Could not found group because of: {str(e)}")
             raise EntityNotFound(message=str(e))
-    
+
     def upload_final_project(
         self, group_id: int, project_title: str, data: bytes, storage_client
     ):
@@ -195,13 +195,14 @@ class GroupService:
         ]
         return blob_details_list
 
-    def get_group(
-        self,
-        group_id: int,
+    def get_group_by_id(
+        self, group_id: int, load_students: bool = False, load_tutor=False
     ):
         try:
             logger.info(f"Fetching group: {group_id}")
-            group = self._repository.get_group_by_id(group_id)
+            group = self._repository.get_group_by_id(
+                group_id=group_id, load_students=load_students, load_tutor=load_tutor
+            )
             return group
         except GroupNotFound as e:
             logger.error(f"Could not found group because of: {str(e)}")

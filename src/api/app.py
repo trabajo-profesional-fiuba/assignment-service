@@ -65,7 +65,7 @@ routers = [
     ("topics", topic_router),
     ("forms", form_router),
     ("groups", group_router),
-    ("assignments", assignment_router)
+    ("assignments", assignment_router),
 ]
 
 
@@ -93,11 +93,13 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+
 @app.get("/", description="This endpoint redirects to docs")
 async def root(request: Request):
     docs_url = str(request.base_url) + "docs"
     return RedirectResponse(docs_url)
 
-@app.get('/version', description="Returns the current version of the api")
+
+@app.get("/version", description="Returns the current version of the api")
 async def version():
     return api_config.api_version

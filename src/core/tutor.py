@@ -20,6 +20,7 @@ class Tutor:
         capacity: int = 0,
         groups=None,
         topics=None,
+        is_evaluator=False,
     ):
         self._id = id
         self._name = name
@@ -29,7 +30,7 @@ class Tutor:
         self._as_tutor_dates = []
         self._as_evaluator_dates = []
         self._substitute_dates = []
-        self._is_evaluator = False
+        self._is_evaluator = is_evaluator
         self._capacity = capacity
         self._groups = groups
         self._topics = topics
@@ -69,10 +70,6 @@ class Tutor:
     @property
     def groups(self):
         return self._groups
-
-    # @property
-    # def groups(self) -> int:
-    #     return self._groups
 
     @property
     def topics(self):
