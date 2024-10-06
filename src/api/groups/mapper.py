@@ -28,10 +28,12 @@ class GroupMapper:
         return groups
 
     def convert_from_model_to_group(self, db_group):
-        tutor = self._tutor_mapper.convert_from_period_to_single_period_tutor(
-            db_group.tutor_period
-        )
+        tutor = None
+        if self._tutor_mapper:
+            tutor = self._tutor_mapper.convert_from_period_to_single_period_tutor(
+                db_group.tutor_period
+            )
         students_emails = [student.email for student in db_group.students]
-        group = Group(id=db_group.id, tutor=tutor, students_emails=students_emails)
+        group = Group(id=db_group.id, tutor=tutor, students_emails=students_emails, reviewer_id=db_group.reviewer_id )
 
         return group
