@@ -1,0 +1,19 @@
+name: Create branch and add labels
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  set_issue_for_work:
+    env:
+      GH_TOKEN: ${{ secrets.PAT_WORKFLOW }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - run: gh issue edit $ISSUE_NUMBER --add-label "enhancement"
+      - run: gh issue edit $ISSUE_NUMBER --add-project "Backlog"
+      - run: gh issue develop $ISSUE_NUMBER --branch-repo https://github.com/trabajo-profesional-fiuba/assignment-service -b main -n feat/assignment-$ISSUE_NUMBER

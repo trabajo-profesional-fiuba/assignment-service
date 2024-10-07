@@ -53,6 +53,11 @@ class Group(Base):
     """
     preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1), default=[])
     period_id = Column(String, ForeignKey("periods.id"))
+    reviewer_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
 
     students: Mapped[List[User]] = relationship(
         secondary=association_table, lazy="subquery"

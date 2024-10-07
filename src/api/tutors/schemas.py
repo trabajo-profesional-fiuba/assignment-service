@@ -59,3 +59,7 @@ class TutorRequest(BaseModel):
     email: str
     period: str
     capacity: int
+
+
+class TutorMessage(BaseModel):
+    body: str

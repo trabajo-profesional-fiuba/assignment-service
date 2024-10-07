@@ -1,3 +1,4 @@
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
@@ -12,12 +13,16 @@ from src.api.exceptions import (
     InvalidFileType,
     ServerError,
 )
+from src.api.groups.dependencies import get_email_sender
+from src.api.groups.mapper import GroupMapper
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import GroupList
+from src.api.tutors.mapper import TutorMapper
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
 from src.api.tutors.schemas import (
+    TutorMessage,
     TutorRequest,
     TutorResponse,
     TutorList,
@@ -304,6 +309,91 @@ async def get_groups_by_tutor(
         )
 
         return ResponseBuilder.build_private_cache_response(groups)
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.get(
+    "/reviewer/my-groups",
+    response_model=GroupList,
+    description="Returns the groups that the tutor is their revisor",
+    summary="Get all the groups of a tutor based on a period",
+    tags=["Tutors"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_groups_by_reviewer_id(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+        tutor_id = auth_service.get_user_id(token)
+
+        service = TutorService(TutorRepository(session))
+        group_repository = GroupRepository(session)
+
+        groups = GroupList.model_validate(
+            service.get_groups_from_reviewer_id(tutor_id, period_id, group_repository)
+        )
+
+        return ResponseBuilder.build_private_cache_response(groups)
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.post(
+    "/notify-group",
+    description="Sends to students and tutor the email notification",
+    tags=["Tutors"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def notify_students(
+    body: TutorMessage,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    email_sender: Annotated[object, Depends(get_email_sender)],
+    group_id: int = Query(...),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+        tutor_id = auth_service.get_user_id(token)
+
+        service = TutorService(TutorRepository(session))
+        group_repository = GroupRepository(session)
+
+        group_mapper = GroupMapper(TutorMapper())
+        group = group_mapper.convert_from_model_to_group(
+            group_repository.get_group_by_id(group_id, True, False, True, True)
+        )
+
+        response = service.notify_students(tutor_id, group, email_sender, body.body)
+        if response == 202:
+            return "Emails sent succesfully"
+        else:
+            raise Exception("Something happend while sending emails")
     except EntityNotFound as e:
         raise e
     except InvalidJwt as e:

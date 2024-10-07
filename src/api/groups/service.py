@@ -95,17 +95,12 @@ class GroupService:
 
     def update(self, groups, period):
         try:
-            groups_to_update = list()
             for group in groups:
-                # b_* comes from binding params
-                groups_to_update.append(
-                    {
-                        "b_id": group.id,
-                        "b_assigned_topic_id": group.topic_id,
-                        "b_tutor_period_id": group.tutor_period_id,
-                    }
-                )
-            self._repository.bulk_update(groups_to_update, period)
+                attributes = group.model_dump(exclude_unset=True)
+                attributes.pop("id", None)
+
+                self._repository.update(group.id, attributes)
+
             return self._repository.get_groups(period=period, load_topic=True)
         except Exception as e:
             logger.error(f"Could not update groups because of: {str(e)}")
@@ -119,7 +114,7 @@ class GroupService:
     ):
         try:
             group = self._repository.get_group_by_id(group_id)
-            path = f"{group.period_id}/{group.id}/initial-project.pdf"
+            path = f"{group.period_id}/{group.id}/anteproyecto.pdf"
             blob = storage_client.upload(data=data, filename=path, overwrite=True)
             self._repository.update(
                 group_id,
@@ -134,9 +129,38 @@ class GroupService:
             logger.error(f"Could not found group because of: {str(e)}")
             raise EntityNotFound(message=str(e))
 
+    def upload_final_project(
+        self, group_id: int, project_title: str, data: bytes, storage_client
+    ):
+        try:
+            group = self._repository.get_group_by_id(group_id)
+            path = f"{group.period_id}/{group.id}/informe-final.pdf"
+            blob = storage_client.upload(data=data, filename=path, overwrite=True)
+            self._repository.update(
+                group_id,
+                {
+                    "final_report_date": datetime.datetime.now(),
+                    "final_report_title": project_title,
+                },
+            )
+
+            return blob
+        except GroupNotFound as e:
+            logger.error(f"Could not found group because of: {str(e)}")
+            raise EntityNotFound(message=str(e))
+
+    def download_final_project(self, period: str, group_id: int, storage_client):
+        try:
+            path = f"{period}/{group_id}/informe-final.pdf"
+            file_as_bytes = storage_client.download(path)
+            return file_as_bytes
+        except Exception as e:
+            logger.error(f"Could not download {path}")
+            raise e
+
     def download_initial_project(self, period: str, group_id: int, storage_client):
         try:
-            path = f"{period}/{group_id}/initial-project.pdf"
+            path = f"{period}/{group_id}/anteproyecto.pdf"
             file_as_bytes = storage_client.download(path)
             return file_as_bytes
         except Exception as e:
@@ -144,7 +168,7 @@ class GroupService:
             raise e
 
     def list_initial_project(self, period, storage_client):
-        pattern = f"^{period}\\/[0-9]+\\/initial-project\\.pdf$"
+        pattern = f"^{period}\\/[0-9]+\\/anteproyecto\\.pdf$"
         blobs = storage_client.list_blobs(prefix=period, pattern=pattern)
         blob_details_list = [
             BlobDetails(
@@ -157,13 +181,28 @@ class GroupService:
         ]
         return blob_details_list
 
-    def get_group(
-        self,
-        group_id: int,
+    def list_final_project(self, period, storage_client):
+        pattern = f"^{period}\\/[0-9]+\\/informe-final\\.pdf$"
+        blobs = storage_client.list_blobs(prefix=period, pattern=pattern)
+        blob_details_list = [
+            BlobDetails(
+                name=blob.name,
+                created_on=blob.creation_time,
+                last_modified=blob.last_modified,
+                container=blob.container,
+            )
+            for blob in blobs
+        ]
+        return blob_details_list
+
+    def get_group_by_id(
+        self, group_id: int, load_students: bool = False, load_tutor=False
     ):
         try:
             logger.info(f"Fetching group: {group_id}")
-            group = self._repository.get_group_by_id(group_id)
+            group = self._repository.get_group_by_id(
+                group_id=group_id, load_students=load_students, load_tutor=load_tutor
+            )
             return group
         except GroupNotFound as e:
             logger.error(f"Could not found group because of: {str(e)}")

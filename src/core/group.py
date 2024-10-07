@@ -4,21 +4,37 @@ from src.core.topic import Topic
 
 class Group:
 
-    def __init__(self, id: int, tutor=None) -> None:
+    def __init__(
+        self,
+        id: int,
+        tutor=None,
+        students_emails: list[str] = None,
+        reviewer_id: int = None,
+    ) -> None:
         self._id = id
         self._tutor = tutor
         self._available_dates = []
         self._assigned_date = None
         self._topics = []
         self._assigned_topic = None
+        self._students_emails = students_emails if students_emails is not None else []
+        self._reviewer_id = reviewer_id
 
     @property
     def id(self) -> str:
         return self._id
 
     @property
+    def reviewer_id(self) -> str:
+        return self._reviewer_id
+
+    @property
     def tutor(self):
         return self._tutor
+
+    @property
+    def students_emails(self):
+        return self._students_emails
 
     @property
     def assigned_date(self):
@@ -91,6 +107,15 @@ class Group:
         cost = DAY_SLOTS - availability
         return cost
 
+    def tutor_email(self):
+        if self._tutor:
+            return self._tutor.email
+        return None
+    
+    def tutor_id(self):
+        if self._tutor:
+            return self._tutor.id
+        return None
 
 class UnassignedGroup:
     """The base group only contains the id, Students and the Topics"""

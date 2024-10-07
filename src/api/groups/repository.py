@@ -162,9 +162,26 @@ class GroupRepository:
             session.expunge_all()
         return groups
 
-    def get_group_by_id(self, group_id) -> Group:
+    def get_group_by_id(
+        self,
+        group_id,
+        load_topic=False,
+        load_period=False,
+        load_students=False,
+        load_tutor=False,
+    ) -> Group:
         with self.Session() as session:
-            group = session.query(Group).filter(Group.id == group_id).one_or_none()
+            query = session.query(Group)
+            if load_topic:
+                query = query.options(joinedload(Group.topic))
+            if load_period:
+                query = query.options(joinedload(Group.period))
+            if load_students:
+                query = query.options(joinedload(Group.students))
+            if load_tutor:
+                query = query.options(joinedload(Group.tutor_period))
+
+            group = query.filter(Group.id == group_id).one_or_none()
             if group is None:
                 raise GroupNotFound(message=f"{group_id} not found in db")
 
@@ -184,3 +201,31 @@ class GroupRepository:
             group = session.query(Group).filter(Group.id == result.id).one_or_none()
             session.expunge(group)
         return group
+
+    def get_groups_by_reviewer_id(
+        self,
+        reviewer_id: int,
+        period_id: str,
+        load_topic=False,
+        load_period=False,
+        load_students=False,
+        load_tutor_period=False,
+    ) -> list[Group]:
+        """Returns all groups for a given reviewer_id and period_id"""
+        with self.Session() as session:
+            query = session.query(Group)
+
+            if load_topic:
+                query = query.options(joinedload(Group.topic))
+            if load_tutor_period:
+                query = query.options(joinedload(Group.tutor_period))
+            if load_period:
+                query = query.options(joinedload(Group.period))
+            if load_students:
+                query = query.options(joinedload(Group.students))
+
+            groups = query.filter(
+                Group.period_id == period_id, Group.reviewer_id == reviewer_id
+            ).all()
+            session.expunge_all()
+        return groups
