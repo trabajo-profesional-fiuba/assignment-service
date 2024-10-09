@@ -60,10 +60,10 @@ def test_add_new_dates(fastapi, tables):
 def test_only_admin_can_add_new_dates(fastapi, tables):
     # Arrange
     helper = ApiHelper()
-    helper.create_period("2C2024")
+    helper.create_period("1C2024")
     student_token = helper.create_student_token()
 
-    params = {"period": "2C2024"}
+    params = {"period": "1C2024"}
 
     body = [
         {"start": "2024-10-07T12:00:00.000Z", "end": "2024-10-07T16:00:00.000Z"},
@@ -87,7 +87,7 @@ def test_period_needs_to_exits(fastapi, tables):
     helper = ApiHelper()
     admin_token = helper.create_admin_token()
 
-    params = {"period": "2C2024"}
+    params = {"period": "1C2023"}
 
     body = [
         {"start": "2024-10-07T12:00:00.000Z", "end": "2024-10-07T16:00:00.000Z"},
