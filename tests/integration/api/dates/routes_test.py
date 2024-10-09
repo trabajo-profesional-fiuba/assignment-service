@@ -54,3 +54,28 @@ def test_add_new_dates(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == expected_slots
+
+
+@pytest.mark.integration
+def test_only_admin_can_add_new_dates(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    student_token = helper.create_student_token()
+
+    params = {"period": "2C2024"}
+
+    body = [
+        {"start": "2024-10-07T12:00:00.000Z", "end": "2024-10-07T16:00:00.000Z"},
+    ]                                                                             
+    # Act
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {student_token.access_token}"},
+    )
+    
+    # Assert
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid Authorization"
