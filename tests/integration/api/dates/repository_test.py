@@ -40,9 +40,6 @@ class TestDateRepository:
     @pytest.mark.integration
     def test_bulk_insert_slot_into_dates(self, tables):
         # Arrange
-        helper = ApiHelper()
-        helper.create_period("2C2024")
-
         period = "2C2024"
         slots = [
             {
