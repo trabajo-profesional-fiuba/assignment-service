@@ -75,7 +75,30 @@ def test_only_admin_can_add_new_dates(fastapi, tables):
         params=params,
         headers={"Authorization": f"Bearer {student_token.access_token}"},
     )
-    
+
     # Assert
     assert response.status_code == 401
     assert response.json()["detail"] == "Invalid Authorization"
+
+
+@pytest.mark.integration
+def test_period_needs_to_exits(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    admin_token = helper.create_admin_token()
+
+    params = {"period": "2C2024"}
+
+    body = [
+        {"start": "2024-10-07T12:00:00.000Z", "end": "2024-10-07T16:00:00.000Z"},
+    ]                                                                             
+    # Act
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    
+    # Assert
+    assert response.status_code == 400

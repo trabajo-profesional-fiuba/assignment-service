@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from src.api.dates.exceptions import InvalidDate
 from src.api.dates.models import DateSlot
 
 from src.api.periods.exceptions import PeriodNotFound
@@ -32,6 +33,6 @@ class DateSlotsService:
             slots_saved = self._repository.bulk_insert(slots_to_save)
 
             return slots_saved
-        except PeriodNotFound as e:
+        except Exception as e:
             logger.error(f"Could not update period because of: {str(e)}")
-            raise EntityNotFound(str(e))
+            raise InvalidDate(str(e))

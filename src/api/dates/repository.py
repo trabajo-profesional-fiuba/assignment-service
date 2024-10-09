@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import insert
+from sqlalchemy import insert, exc
 
 from src.api.dates.models import DateSlot
 from src.config.logging import logger

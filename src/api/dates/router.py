@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
+from src.api.dates.exceptions import InvalidDate
 from src.api.dates.repository import DateSlotRepository
 from src.api.dates.schemas import DateSlotRequestList, DateSlotResponseList
 from src.api.dates.service import DateSlotsService
@@ -69,7 +70,7 @@ async def add_group(
         res = DateSlotResponseList.model_validate(slots_added)
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
 
-    except (EntityNotInserted, EntityNotFound) as e:
+    except InvalidDate as e:
         raise e
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
