@@ -53,7 +53,7 @@ router = APIRouter(prefix="/dates", tags=["Dates"])
     },
     status_code=status.HTTP_201_CREATED,
 )
-async def add_group(
+async def add_dates(
     slots: DateSlotRequestList,
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
