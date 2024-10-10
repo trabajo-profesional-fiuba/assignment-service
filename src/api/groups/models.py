@@ -65,3 +65,4 @@ class Group(Base):
     topic = relationship("Topic", back_populates="groups", lazy="noload")
     tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="noload")
     period = relationship("Period", back_populates="groups", lazy="noload")
+    group_dates_slots = relationship("GroupDateSlot", back_populates="groups", lazy="noload")

@@ -42,3 +42,6 @@ class User(Base):
         lazy="noload",
         cascade="all, delete-orphan",
     )
+    tutor_dates_slots = relationship(
+        "TutorDateSlot", back_populates="tutors", lazy="noload"
+    )
