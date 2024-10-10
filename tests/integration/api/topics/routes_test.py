@@ -291,6 +291,5 @@ def test_add_topics_withot_csv_file(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json() == [
-        {"id": 1, "name": "My custom topic", "category": {"name": "Fake"}},
-    ]
+    assert response.json() == {"id": 1, "name": "My custom topic", "category": {"name": "Fake"}}
+    

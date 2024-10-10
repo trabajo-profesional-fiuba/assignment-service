@@ -10,7 +10,7 @@ from src.api.auth.service import AuthenticationService
 from src.api.exceptions import EntityNotFound, InvalidCsv, InvalidFileType, ServerError
 
 from src.api.topics.repository import TopicRepository
-from src.api.topics.schemas import CompleteCategoryResponse, SimpleCategory, TopicList
+from src.api.topics.schemas import CompleteCategoryResponse, SimpleCategory, TopicList, TopicRequest, TopicResponse
 from src.api.topics.service import TopicService
 
 from src.api.tutors.repository import TutorRepository
@@ -132,6 +132,39 @@ async def add_category(
         category_saved = service.add_category(category.name)
 
         return CompleteCategoryResponse.model_validate(category_saved)
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+    
+
+@router.post(
+    "/",
+    response_model=TopicResponse,
+    description="Add a new topic",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_201_CREATED: {"description": "Successfully."},
+        status.HTTP_409_CONFLICT: {"description": "Category duplicated"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error."
+        },
+    },
+)
+async def add_topic(
+    topic: TopicRequest, 
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        service = TopicService(TopicRepository(session))
+        topic_saved= service.add_topic(topic)
+
+        return TopicResponse.model_validate(topic_saved)
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

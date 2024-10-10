@@ -2,7 +2,7 @@ from src.api.exceptions import EntityNotFound
 
 from src.api.topics.models import Topic, Category
 from src.api.topics.repository import TopicRepository
-from src.api.topics.schemas import TopicList, TopicResponse
+from src.api.topics.schemas import TopicList, TopicRequest, TopicResponse
 from src.api.topics.utils import TopicCsvFile
 
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
@@ -140,3 +140,7 @@ class TopicService:
     def add_category(self, categoy_name: str):
         category = self._repository.add_category(Category(name=categoy_name))
         return category
+
+    def add_topic(self, topic_req: TopicRequest):
+        topic = self._repository.add_topic_with_category(Topic(name=topic_req.name), topic_req.category)
+        return topic
