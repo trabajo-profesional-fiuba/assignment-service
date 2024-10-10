@@ -48,10 +48,10 @@ class DateSlotsService:
             logger.error(f"Could not update period because of: {str(e)}")
             raise InvalidDate(str(e))
         
-    def add_tutor_slots(self, tutor_id, slot_ranges):
+    def add_tutor_slots(self, tutor_id, period, slot_ranges):
         try:
             slots = self._create_slots_from_ranges(slot_ranges)
-            slots_to_save = [{"tutor_id": tutor_id, "slot": slot} for slot in slots]
+            slots_to_save = [{"tutor_id": tutor_id, "slot": slot, "period_id": period} for slot in slots]
             slots_saved = self._repository.add_bulk(TutorDateSlot,slots_to_save)
 
             return slots_saved

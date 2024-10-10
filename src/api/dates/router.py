@@ -156,13 +156,14 @@ async def add_tutors_dates(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     tutor_id: int = Query(...),
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
 
         service = DateSlotsService(DateSlotRepository(session))
-        slots_added = service.add_tutor_slots(tutor_id, slots)
+        slots_added = service.add_tutor_slots(tutor_id, period, slots)
 
         res = DateSlotResponseList.model_validate(slots_added)
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)

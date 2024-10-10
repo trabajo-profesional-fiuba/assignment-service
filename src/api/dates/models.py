@@ -49,9 +49,11 @@ class TutorDateSlot(Base):
         ForeignKey("dates_slots.slot", ondelete="CASCADE"),
         primary_key=True,
     )
+    period_id = Column(String, ForeignKey("periods.id", ondelete="CASCADE"))
 
     # relationships
     tutors = relationship("User", back_populates="tutor_dates_slots", lazy="noload")
     dates_slots = relationship(
         "DateSlot", back_populates="tutor_dates_slots", lazy="noload"
     )
+    period = relationship("Period", back_populates="tutor_dates_slots", lazy="noload")

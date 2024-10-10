@@ -205,7 +205,7 @@ def test_add_tutor_dates(fastapi, tables):
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == expected_slots
 
-    params = {"tutor_id": 105000}
+    params = {"tutor_id": 105000, "period": "2C2024"}
     # Act
     response = fastapi.post(
         f"{PREFIX}/tutors",
