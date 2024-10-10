@@ -251,3 +251,46 @@ def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
+
+@pytest.mark.integration
+def test_add_category_withot_csv_file(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    admin_token = helper.create_admin_token()
+
+    category_request =  {
+        "name": "FakeCategory",
+    }
+
+    response = fastapi.post(
+        f"{PREFIX}/category",
+        json=category_request,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json() == {"id": 2, "name": "FakeCategory"}
+
+
+@pytest.mark.integration
+def test_add_topics_withot_csv_file(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_category("Fake")
+    admin_token = helper.create_admin_token()
+
+    topic_request =  {
+        "name": "My custom topic",
+        "category": "Fake"
+    }
+
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=topic_request,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json() == [
+        {"id": 1, "name": "My custom topic", "category": {"name": "Fake"}},
+    ]

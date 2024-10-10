@@ -136,3 +136,7 @@ class TopicService:
     def get_topics_by_period(self, period_id):
         db_topics = self._repository.get_topics_by_period_id(period_id)
         return db_topics
+
+    def add_category(self, categoy_name: str):
+        category = self._repository.add_category(Category(name=categoy_name))
+        return category
