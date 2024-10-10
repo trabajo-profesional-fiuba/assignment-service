@@ -37,12 +37,24 @@ def test_add_new_dates(fastapi, tables):
     params = {"period": "2C2024"}
 
     body = [
-        {"start": "2024-10-07T12:00:00.000Z", "end": "2024-10-07T16:00:00.000Z"}, # 4 slots
-        {"start": "2024-10-07T18:00:00.000Z", "end": "2024-10-07T22:00:00.000Z"}, # 4 slots
-        {"start": "2024-10-08T12:00:00.000Z", "end": "2024-10-08T14:00:00.000Z"}, # 2 slots
-        {"start": "2024-10-09T12:00:00.000Z", "end": "2024-10-09T18:00:00.000Z"}, # 6 slots
-    ]                                                                             
-    expected_slots = 4+4+2+6
+        {
+            "start": "2024-10-07T12:00:00.000Z",
+            "end": "2024-10-07T16:00:00.000Z",
+        },  # 4 slots
+        {
+            "start": "2024-10-07T18:00:00.000Z",
+            "end": "2024-10-07T22:00:00.000Z",
+        },  # 4 slots
+        {
+            "start": "2024-10-08T12:00:00.000Z",
+            "end": "2024-10-08T14:00:00.000Z",
+        },  # 2 slots
+        {
+            "start": "2024-10-09T12:00:00.000Z",
+            "end": "2024-10-09T18:00:00.000Z",
+        },  # 6 slots
+    ]
+    expected_slots = 4 + 4 + 2 + 6
     # Act
     response = fastapi.post(
         f"{PREFIX}",
@@ -67,7 +79,7 @@ def test_only_admin_can_add_new_dates(fastapi, tables):
 
     body = [
         {"start": "2024-10-07T12:00:00.000Z", "end": "2024-10-07T16:00:00.000Z"},
-    ]                                                                             
+    ]
     # Act
     response = fastapi.post(
         f"{PREFIX}",
@@ -91,7 +103,7 @@ def test_period_needs_to_exits(fastapi, tables):
 
     body = [
         {"start": "2024-10-07T12:00:00.000Z", "end": "2024-10-07T16:00:00.000Z"},
-    ]                                                                             
+    ]
     # Act
     response = fastapi.post(
         f"{PREFIX}",
@@ -99,6 +111,109 @@ def test_period_needs_to_exits(fastapi, tables):
         params=params,
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
-    
+
     # Assert
     assert response.status_code == 400
+
+
+@pytest.mark.integration
+def test_add_group_dates(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
+    period = helper.create_tutor_period("105000", "2C2024")
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    helper.create_student("Ivan", "B", "105002", "ipfaab@fi.uba.ar")
+    helper.create_student("Joaquin", "C", "105003", "joagomez@fi.uba.ar")
+    topic = helper.create_topic("TopicCustom")
+    group = helper.create_group(
+        ids=[105001, 105002, 105003],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="2C2024",
+    )
+    user_token = helper.create_student_token(105001)
+    expected_slots = 4 + 4
+
+    
+    body = [
+        {
+            "start": "2024-10-07T12:00:00.000Z",
+            "end": "2024-10-07T16:00:00.000Z",
+        },  # 4 slots
+        {
+            "start": "2024-10-07T18:00:00.000Z",
+            "end": "2024-10-07T22:00:00.000Z",
+        },  # 4 slots
+    ]
+    admin_token = helper.create_admin_token()
+
+    params = {"period": "2C2024"}
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert len(response.json()) == expected_slots
+
+    params = {"group_id": group.id}
+    # Act
+    response = fastapi.post(
+        f"{PREFIX}/groups",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {user_token.access_token}"},
+    )
+
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED
+    assert len(response.json()) == expected_slots
+
+
+@pytest.mark.integration
+def test_add_tutor_dates(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
+    period = helper.create_tutor_period("105000", "2C2024")
+    tutor_token = helper.create_tutor_token(105000)
+    expected_slots = 4 + 4
+
+    body = [
+        {
+            "start": "2024-10-07T12:00:00.000Z",
+            "end": "2024-10-07T16:00:00.000Z",
+        },  # 4 slots
+        {
+            "start": "2024-10-07T18:00:00.000Z",
+            "end": "2024-10-07T22:00:00.000Z",
+        },  # 4 slots
+    ]
+    admin_token = helper.create_admin_token()
+
+    params = {"period": "2C2024"}
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert len(response.json()) == expected_slots
+
+    params = {"tutor_id": 105000}
+    # Act
+    response = fastapi.post(
+        f"{PREFIX}/tutors",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {tutor_token.access_token}"},
+    )
+
+    # Assert
+    assert response.status_code == status.HTTP_201_CREATED
+    assert len(response.json()) == expected_slots

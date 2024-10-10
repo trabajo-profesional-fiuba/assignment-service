@@ -30,6 +30,7 @@ from src.config.database.database import get_db
 
 router = APIRouter(prefix="/dates", tags=["Dates"])
 
+
 @router.post(
     "/",
     response_model=DateSlotResponseList,
@@ -66,6 +67,102 @@ async def add_dates(
 
         service = DateSlotsService(DateSlotRepository(session))
         slots_added = service.add_slots(slots, period)
+
+        res = DateSlotResponseList.model_validate(slots_added)
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
+
+    except InvalidDate as e:
+        raise e
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.post(
+    "/groups",
+    response_model=DateSlotResponseList,
+    summary="Creates a new list of slots for the groups",
+    responses={
+        status.HTTP_201_CREATED: {"description": "Successfully created slots."},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unknown operation"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a \
+            client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_201_CREATED,
+)
+async def add_groups_dates(
+    slots: DateSlotRequestList,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    group_id: int = Query(...),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_role(token)
+
+        service = DateSlotsService(DateSlotRepository(session))
+        slots_added = service.add_group_slots(group_id, slots)
+
+        res = DateSlotResponseList.model_validate(slots_added)
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
+
+    except InvalidDate as e:
+        raise e
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.post(
+    "/tutors",
+    response_model=DateSlotResponseList,
+    summary="Creates a new list of slots for the tutor",
+    responses={
+        status.HTTP_201_CREATED: {"description": "Successfully created slots."},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unknown operation"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a \
+            client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_201_CREATED,
+)
+async def add_tutors_dates(
+    slots: DateSlotRequestList,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    tutor_id: int = Query(...),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+
+        service = DateSlotsService(DateSlotRepository(session))
+        slots_added = service.add_tutor_slots(tutor_id, slots)
 
         res = DateSlotResponseList.model_validate(slots_added)
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)

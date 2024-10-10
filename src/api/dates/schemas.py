@@ -15,7 +15,6 @@ class DateSlotRequestList(RootModel):
         return iter(self.root)
 
 class DateSlotResponse(BaseModel):
-    period_id: str
     slot: datetime
 
     model_config = ConfigDict(from_attributes=True)

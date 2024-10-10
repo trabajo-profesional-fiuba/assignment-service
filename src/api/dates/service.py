@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from src.api.dates.exceptions import InvalidDate
-from src.api.dates.models import DateSlot
+from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 
 from src.api.periods.exceptions import PeriodNotFound
 from src.api.exceptions import EntityNotFound
@@ -30,7 +30,29 @@ class DateSlotsService:
         try:
             slots = self._create_slots_from_ranges(slot_ranges)
             slots_to_save = [{"period_id": period, "slot": slot} for slot in slots]
-            slots_saved = self._repository.bulk_insert(slots_to_save)
+            slots_saved = self._repository.add_bulk(DateSlot,slots_to_save)
+
+            return slots_saved
+        except Exception as e:
+            logger.error(f"Could not update period because of: {str(e)}")
+            raise InvalidDate(str(e))
+        
+    def add_group_slots(self, group_id, slot_ranges):
+        try:
+            slots = self._create_slots_from_ranges(slot_ranges)
+            slots_to_save = [{"group_id": group_id, "slot": slot} for slot in slots]
+            slots_saved = self._repository.add_bulk(GroupDateSlot,slots_to_save)
+
+            return slots_saved
+        except Exception as e:
+            logger.error(f"Could not update period because of: {str(e)}")
+            raise InvalidDate(str(e))
+        
+    def add_tutor_slots(self, tutor_id, slot_ranges):
+        try:
+            slots = self._create_slots_from_ranges(slot_ranges)
+            slots_to_save = [{"tutor_id": tutor_id, "slot": slot} for slot in slots]
+            slots_saved = self._repository.add_bulk(TutorDateSlot,slots_to_save)
 
             return slots_saved
         except Exception as e:
