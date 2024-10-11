@@ -60,3 +60,10 @@ class AuthenticationService:
             return True
         except:
             return False
+
+    def assert_student_in_group(self, token: str, group_id: str, group_repository):
+        jwt = self.assert_student_role(token=token)
+        student_id = self.get_user_id(jwt)
+
+        if not group_repository.student_in_group(student_id, group_id):
+            raise InvalidJwt("Invalid jwt")

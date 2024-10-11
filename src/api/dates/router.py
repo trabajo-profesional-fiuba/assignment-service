@@ -20,6 +20,7 @@ from src.api.dates.schemas import DateSlotRequestList, DateSlotResponseList
 from src.api.dates.service import DateSlotsService
 from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
 
+from src.api.groups.repository import GroupRepository
 from src.api.users.exceptions import InvalidCredentials
 
 from src.api.utils.response_builder import ResponseBuilder
@@ -111,7 +112,7 @@ async def add_groups_dates(
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
+        auth_service.assert_student_in_group(token, group_id, GroupRepository(session))
 
         service = DateSlotsService(DateSlotRepository(session))
         slots_added = service.add_group_slots(group_id, slots)
