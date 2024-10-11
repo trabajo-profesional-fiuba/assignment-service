@@ -49,7 +49,7 @@ class TestDateRepository:
             {
                 "period_id": period,
                 "slot": dt.datetime(2024, 10, 7, 22, 0),
-            },  
+            },
             {
                 "period_id": period,
                 "slot": dt.datetime(2024, 10, 8, 14, 0),
@@ -61,5 +61,5 @@ class TestDateRepository:
         ]
 
         repository = DateSlotRepository(self.Session)
-        dates_saved = repository.bulk_insert(slots)
+        dates_saved = repository.add_bulk(DateSlot, slots)
         assert len(dates_saved) == 4
