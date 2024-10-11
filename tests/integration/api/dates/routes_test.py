@@ -205,7 +205,7 @@ def test_add_tutor_dates(fastapi, tables):
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == expected_slots
 
-    params = {"tutor_id": 105000, "period": "2C2024"}
+    params = {"period": "2C2024"}
     # Act
     response = fastapi.post(
         f"{PREFIX}/tutors",
@@ -217,3 +217,59 @@ def test_add_tutor_dates(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_201_CREATED
     assert len(response.json()) == expected_slots
+
+
+@pytest.mark.integration
+def test_add_group_dates_fails_if_student_not_in_group(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
+    period = helper.create_tutor_period("105000", "2C2024")
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    helper.create_student("Ivan", "B", "105002", "ipfaab@fi.uba.ar")
+    helper.create_student("Joaquin", "C", "105003", "joagomez@fi.uba.ar")
+    topic = helper.create_topic("TopicCustom")
+    group = helper.create_group(
+        ids=[105001, 105002, 105003],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="2C2024",
+    )
+    user_token = helper.create_student_token(11111)
+    expected_slots = 4 + 4
+
+    
+    body = [
+        {
+            "start": "2024-10-07T12:00:00.000Z",
+            "end": "2024-10-07T16:00:00.000Z",
+        },  # 4 slots
+        {
+            "start": "2024-10-07T18:00:00.000Z",
+            "end": "2024-10-07T22:00:00.000Z",
+        },  # 4 slots
+    ]
+    admin_token = helper.create_admin_token()
+
+    params = {"period": "2C2024"}
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    assert len(response.json()) == expected_slots
+
+    params = {"group_id": group.id}
+    # Act
+    response = fastapi.post(
+        f"{PREFIX}/groups",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {user_token.access_token}"},
+    )
+
+    # Assert
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
