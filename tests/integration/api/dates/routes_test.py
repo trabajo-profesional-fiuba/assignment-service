@@ -273,3 +273,20 @@ def test_add_group_dates_fails_if_student_not_in_group(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    
+    
+@pytest.mark.integration
+def test_get_empty_list_of_available_slots(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    admin_token = helper.create_admin_token()
+
+    params = {"period_id": "2C2024"}
+    response = fastapi.post(
+        f"{PREFIX}/groups",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK

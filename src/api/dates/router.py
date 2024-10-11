@@ -192,14 +192,15 @@ async def add_tutors_dates(
 async def get_available_slots(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)]
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_multiple_role(token)
 
         service = DateSlotsService(DateSlotRepository(session))
-        slots = service.get_slots()
+        slots = service.get_slots(period)
         logger.info("Retrieve all available slots.")
 
         res = DateSlotResponseList.model_validate(slots)

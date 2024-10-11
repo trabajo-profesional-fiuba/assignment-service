@@ -34,9 +34,9 @@ class DateSlotRepository:
             
         return saved_data
     
-    def get_slots(self):
+    def get_slots_by_period(self, period: str):
         with self.Session() as session:
-            slots = session.query(DateSlot).all()
+            slots = session.query(DateSlot).filter(DateSlot.period_id == period).all()
             for slot in slots:
                 session.expunge(slot)
 
