@@ -43,6 +43,7 @@ class TopicRepository:
             topic.category_id = category.id
             session.add(topic)
             session.commit()
+            session.refresh(topic)
             session.expunge(topic)
 
         return topic
