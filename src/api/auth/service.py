@@ -17,21 +17,23 @@ class AuthenticationService:
         if role not in expected_roles:
             raise InvalidJwt("Invalid jwt")
 
-    def assert_student_role(self, token: str):
+    def assert_student_role(self, token: str) -> JwtDecoded:
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
         self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.STUDENT.value])
         return token_decoded
 
-    def assert_only_admin(self, token: str):
+    def assert_only_admin(self, token: str) -> JwtDecoded:
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
         self._assert_role(user["role"], Role.ADMIN.value)
+        return token_decoded
 
-    def assert_tutor_rol(self, token: str):
+    def assert_tutor_rol(self, token: str) -> JwtDecoded:
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
         self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.TUTOR.value])
+        return token_decoded
 
     def get_user_id(self, token: str | JwtDecoded):
         if isinstance(token, str):
