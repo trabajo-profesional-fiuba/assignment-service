@@ -136,7 +136,6 @@ def test_add_group_dates(fastapi, tables):
     user_token = helper.create_student_token(105001)
     expected_slots = 4 + 4
 
-    
     body = [
         {
             "start": "2024-10-07T12:00:00.000Z",
@@ -179,7 +178,7 @@ def test_add_tutor_dates(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("2C2024")
     helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
-    period = helper.create_tutor_period("105000", "2C2024")
+    helper.create_tutor_period("105000", "2C2024")
     tutor_token = helper.create_tutor_token(105000)
     expected_slots = 4 + 4
 
@@ -239,7 +238,6 @@ def test_add_group_dates_fails_if_student_not_in_group(fastapi, tables):
     user_token = helper.create_student_token(11111)
     expected_slots = 4 + 4
 
-    
     body = [
         {
             "start": "2024-10-07T12:00:00.000Z",
@@ -273,8 +271,8 @@ def test_add_group_dates_fails_if_student_not_in_group(fastapi, tables):
 
     # Assert
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
-    
+
+
 @pytest.mark.integration
 def test_get_empty_list_of_available_slots(fastapi, tables):
     helper = ApiHelper()
@@ -288,7 +286,8 @@ def test_get_empty_list_of_available_slots(fastapi, tables):
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    
+
+
 @pytest.mark.integration
 def test_get_list_of_available_slots(fastapi, tables):
     helper = ApiHelper()
@@ -303,7 +302,7 @@ def test_get_list_of_available_slots(fastapi, tables):
         {
             "start": "2024-10-07T18:00:00.000Z",
             "end": "2024-10-07T22:00:00.000Z",
-        }
+        },
     ]
     admin_token = helper.create_admin_token()
 
@@ -316,7 +315,7 @@ def test_get_list_of_available_slots(fastapi, tables):
     )
     expected_slots = response.json()
     assert response.status_code == status.HTTP_201_CREATED
-    
+
     params = {"period": "2C2024"}
     response = fastapi.get(
         f"{PREFIX}",

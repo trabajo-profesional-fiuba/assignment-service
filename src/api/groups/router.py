@@ -1,4 +1,3 @@
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi import (
     APIRouter,
@@ -42,7 +41,6 @@ from src.api.utils.response_builder import ResponseBuilder
 from src.core.azure_container_client import AzureContainerClient
 from src.config.config import api_config
 from src.config.database.database import get_db
-from src.core.email_client import SendGridEmailClient
 
 router = APIRouter(prefix="/groups", tags=["Groups"])
 
@@ -152,7 +150,7 @@ async def post_initial_project(
         )
 
         return "File uploaded successfully"
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except EntityNotFound as e:
         raise e
@@ -194,12 +192,13 @@ async def post_final_project(
             group_id, project_title, content_as_bytes, az_client
         )
         return "File uploaded successfully"
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except EntityNotFound as e:
         raise e
     except Exception as e:
         raise ServerError(message=str(e))
+
 
 @router.get(
     "/",
@@ -293,7 +292,7 @@ async def get_group_by_id(
         group_model = GroupStates.model_validate(group)
 
         return ResponseBuilder.build_private_cache_response(group_model)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except EntityNotFound as e:
         raise e
@@ -339,7 +338,7 @@ async def download_group_initial_project(
             "attachment; filename=initial_project.pdf"
         )
         return response
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
@@ -377,13 +376,14 @@ async def list_initial_projects(
 
         return BlobDetailsList.model_validate(blobs)
 
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except EntityNotFound as e:
         raise e
     except Exception as e:
         raise ServerError(message=str(e))
-    
+
+
 @router.put(
     "/",
     response_model=GroupList,

@@ -134,7 +134,7 @@ class StudentRepository:
                     session.commit()
 
                 return student_periods
-        except Exception as e:
+        except Exception:
             raise StudentPeriodNotInserted(
                 "Could not insert student periods in the database"
             )

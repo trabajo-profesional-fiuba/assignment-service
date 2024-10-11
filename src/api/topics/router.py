@@ -10,7 +10,13 @@ from src.api.auth.service import AuthenticationService
 from src.api.exceptions import EntityNotFound, InvalidCsv, InvalidFileType, ServerError
 
 from src.api.topics.repository import TopicRepository
-from src.api.topics.schemas import CompleteCategoryResponse, SimpleCategory, TopicList, TopicRequest, TopicResponse
+from src.api.topics.schemas import (
+    CompleteCategoryResponse,
+    SimpleCategory,
+    TopicList,
+    TopicRequest,
+    TopicResponse,
+)
 from src.api.topics.service import TopicService
 
 from src.api.tutors.repository import TutorRepository
@@ -68,7 +74,7 @@ async def upload_csv_file(
         InvalidCsv,
     ) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -119,7 +125,7 @@ async def get_topics(
     },
 )
 async def add_category(
-    category: SimpleCategory, 
+    category: SimpleCategory,
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
@@ -136,7 +142,7 @@ async def add_category(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
-    
+
 
 @router.post(
     "/",
@@ -152,7 +158,7 @@ async def add_category(
     },
 )
 async def add_topic(
-    topic: TopicRequest, 
+    topic: TopicRequest,
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
@@ -162,7 +168,7 @@ async def add_topic(
         auth_service.assert_only_admin(token)
 
         service = TopicService(TopicRepository(session))
-        topic_saved= service.add_topic(topic)
+        topic_saved = service.add_topic(topic)
 
         return TopicResponse.model_validate(topic_saved)
     except InvalidJwt:

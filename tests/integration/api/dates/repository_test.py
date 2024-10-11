@@ -25,11 +25,11 @@ class TestDateRepository:
         helper = ApiHelper()
         period = "2C2024"
         helper.create_period(period)
-        
+
         repository = DateSlotRepository(self.Session)
         dates_saved = repository.get_slots_by_period(period)
         assert len(dates_saved) == 0
-        
+
     @pytest.mark.integration
     def test_insert_slot_into_dates(self, tables):
         # Arrange

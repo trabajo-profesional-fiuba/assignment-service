@@ -1,8 +1,6 @@
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, Depends, status, Query, Path
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
@@ -59,7 +57,7 @@ async def add_period(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidPeriod, Duplicated) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -91,7 +89,7 @@ async def get_periods(
         res = PeriodList.model_validate(service.get_all_periods(order))
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -126,7 +124,7 @@ async def get_period_by_id(
         return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -173,7 +171,7 @@ async def update_period(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
