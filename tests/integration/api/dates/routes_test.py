@@ -274,7 +274,7 @@ def test_add_group_dates_fails_if_student_not_in_group(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_get_empty_list_of_available_slots(fastapi, tables):
+def test_get_empty_list_of_available_slots_with_admin(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("2C2024")
     admin_token = helper.create_admin_token()
@@ -284,6 +284,35 @@ def test_get_empty_list_of_available_slots(fastapi, tables):
         f"{PREFIX}",
         params=params,
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+def test_get_available_slots_with_student_and_tutor(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+
+    helper.create_tutor("Juan", "Perez", "105000", "jperez@fi.uba.ar")
+    helper.create_tutor_period("105000", "2C2024")
+    tutor_token = helper.create_tutor_token()
+
+    params = {"period": "2C2024"}
+    response = fastapi.get(
+        f"{PREFIX}",
+        params=params,
+        headers={"Authorization": f"Bearer {tutor_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    student_token = helper.create_student_token()
+    helper.create_student("Juana", "Perez", "105001", "japerez@fi.uba.ar")
+    helper.create_student_period("105001", "2C2024")
+    params = {"period": "2C2024"}
+    response = fastapi.get(
+        f"{PREFIX}",
+        params=params,
+        headers={"Authorization": f"Bearer {student_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
 
