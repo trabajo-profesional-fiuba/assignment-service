@@ -277,16 +277,51 @@ def test_add_group_dates_fails_if_student_not_in_group(fastapi, tables):
     
 @pytest.mark.integration
 def test_get_empty_list_of_available_slots(fastapi, tables):
-    # Arrange
     helper = ApiHelper()
     helper.create_period("2C2024")
     admin_token = helper.create_admin_token()
 
-    params = {"period_id": "2C2024"}
-    response = fastapi.post(
-        f"{PREFIX}/groups",
-        json=body,
+    params = {"period": "2C2024"}
+    response = fastapi.get(
+        f"{PREFIX}",
         params=params,
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
+    
+@pytest.mark.integration
+def test_get_list_of_available_slots(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    admin_token = helper.create_admin_token()
+
+    body = [
+        {
+            "start": "2024-10-07T12:00:00.000Z",
+            "end": "2024-10-07T16:00:00.000Z",
+        },
+        {
+            "start": "2024-10-07T18:00:00.000Z",
+            "end": "2024-10-07T22:00:00.000Z",
+        }
+    ]
+    admin_token = helper.create_admin_token()
+
+    params = {"period": "2C2024"}
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    expected_slots = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+    
+    params = {"period": "2C2024"}
+    response = fastapi.get(
+        f"{PREFIX}",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == len(expected_slots)

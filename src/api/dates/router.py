@@ -27,6 +27,7 @@ from src.api.utils.response_builder import ResponseBuilder
 
 from src.config.config import api_config
 from src.config.database.database import get_db
+from src.config.logging import logger
 
 
 router = APIRouter(prefix="/dates", tags=["Dates"])
