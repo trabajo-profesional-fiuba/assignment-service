@@ -33,3 +33,11 @@ class DateSlotRepository:
             saved_data = [getattr(row, model.__name__) for row in rows]
             
         return saved_data
+    
+    def get_slots(self):
+        with self.Session() as session:
+            slots = session.query(DateSlot).all()
+            for slot in slots:
+                session.expunge(slot)
+
+        return slots

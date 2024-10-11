@@ -63,3 +63,9 @@ class TestDateRepository:
         repository = DateSlotRepository(self.Session)
         dates_saved = repository.add_bulk(DateSlot, slots)
         assert len(dates_saved) == 4
+
+    @pytest.mark.integration
+    def test_get_slots(self, tables):
+        repository = DateSlotRepository(self.Session)
+        dates_saved = repository.get_slots()
+        assert len(dates_saved) == 5

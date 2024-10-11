@@ -58,3 +58,6 @@ class DateSlotsService:
         except Exception as e:
             logger.error(f"Could not update period because of: {str(e)}")
             raise InvalidDate(str(e))
+        
+    def get_slots(self):
+        return self._repository.get_slots()

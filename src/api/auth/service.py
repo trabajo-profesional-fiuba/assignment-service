@@ -35,6 +35,12 @@ class AuthenticationService:
         self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.TUTOR.value])
         return token_decoded
 
+    def assert_multiple_role(self, token: str) -> JwtDecoded:
+        token_decoded = self._jwt_resolver.decode_token(token)
+        user = token_decoded.sub
+        self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.STUDENT.value, Role.TUTOR.value])
+        return token_decoded
+    
     def get_user_id(self, token: str | JwtDecoded):
         if isinstance(token, str):
             token = self._jwt_resolver.decode_token(token)

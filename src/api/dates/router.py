@@ -175,3 +175,36 @@ async def add_tutors_dates(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
+    
+@router.get(
+    "/",
+    response_model=DateSlotResponseList,
+    summary="Returns a list of available slots",
+    responses={
+        status.HTTP_200_OK: {"description": "Successfully retrieve a list of available slots."},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_available_slots(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)]
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_multiple_role(token)
+
+        service = DateSlotsService(DateSlotRepository(session))
+        slots = service.get_slots()
+        logger.info("Retrieve all available slots.")
+
+        res = DateSlotResponseList.model_validate(slots)
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise e
