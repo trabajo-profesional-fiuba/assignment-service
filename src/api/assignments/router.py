@@ -136,7 +136,6 @@ async def assign_group_topic_tutor(
         )
 
         service = AssignmentService()
-
         assignment_result = service.assignment_group_topic_tutor(
             groups, topics, tutors, balance_limit
         )

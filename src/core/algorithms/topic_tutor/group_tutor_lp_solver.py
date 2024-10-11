@@ -22,13 +22,14 @@ class GroupTutorLPSolver:
             - groups: list of groups.
             - tutors: list of tutors.
             - topics: list of topics.
+            - balance_limit: max difference between groups associated to a tutor
         """
         self._groups = groups
         self._topics = topics
         self._tutors = tutors
         self._balance_limit = balance_limit
 
-    def _create_decision_variables(self):
+    def _create_decision_variables(self) -> dict:
         """
         Create decision variables.
 
@@ -49,7 +50,7 @@ class GroupTutorLPSolver:
                     )
         return assignment_vars
 
-    def _create_optimization_problem(self):
+    def _create_optimization_problem(self) -> LpProblem:
         """
         Create the optimization problem.
 
@@ -57,7 +58,7 @@ class GroupTutorLPSolver:
         """
         return LpProblem("GroupAssignment", LpMaximize)
 
-    def _add_objective_function(self, prob, assignment_vars):
+    def _add_objective_function(self, prob: LpProblem, assignment_vars: dict):
         """
         Add the objective function to the optimization problem.
 
@@ -112,7 +113,7 @@ class GroupTutorLPSolver:
             for topic in tutor.topics
         )
 
-    def _add_constraints(self, prob, assignment_vars):
+    def _add_constraints(self, prob: LpProblem, assignment_vars: dict):
         """
         Add constraints for the linear programming algorithm.
 
@@ -222,7 +223,9 @@ class GroupTutorLPSolver:
                         )
                     ) <= self._balance_limit
 
-    def _solve_optimization_problem(self, prob):
+    def _solve_optimization_problem(
+        self, prob: LpProblem
+    ) -> list[GroupTutorAssigmentResult]:
         """
         Solve the optimization problem.
 
@@ -295,7 +298,7 @@ class GroupTutorLPSolver:
             if topic.id == topic_id:
                 return topic
 
-    def solve(self):
+    def solve(self) -> list[GroupTutorAssigmentResult]:
         """
         Solve the optimization problem using the linear programming method.
 
