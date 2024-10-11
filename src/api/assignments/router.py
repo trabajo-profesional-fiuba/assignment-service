@@ -119,7 +119,7 @@ async def assign_group_topic_tutor(
 
         tutors_service = TutorService(TutorRepository(session))
         tutors_mapper = TutorMapper()
-        tutors = tutors_mapper.convert_from_periods_to_single_period_tutors(
+        tutors = tutors_mapper.convert_to_single_period_tutors(
             tutors_service.get_tutor_periods_by_period_id(period_id)
         )
 
