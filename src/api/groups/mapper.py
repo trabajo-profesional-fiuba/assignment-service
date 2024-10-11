@@ -1,6 +1,5 @@
 from src.api.tutors.mapper import TutorMapper
 from src.core.group import Group, UnassignedGroup
-from src.core.tutor import SinglePeriodTutor, Tutor
 
 
 class GroupMapper:
@@ -34,6 +33,11 @@ class GroupMapper:
                 db_group.tutor_period
             )
         students_emails = [student.email for student in db_group.students]
-        group = Group(id=db_group.id, tutor=tutor, students_emails=students_emails, reviewer_id=db_group.reviewer_id )
+        group = Group(
+            id=db_group.id,
+            tutor=tutor,
+            students_emails=students_emails,
+            reviewer_id=db_group.reviewer_id,
+        )
 
         return group

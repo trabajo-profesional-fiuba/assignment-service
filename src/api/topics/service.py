@@ -142,5 +142,7 @@ class TopicService:
         return category
 
     def add_topic(self, topic_req: TopicRequest):
-        topic = self._repository.add_topic_with_category(Topic(name=topic_req.name), topic_req.category)
+        topic = self._repository.add_topic_with_category(
+            Topic(name=topic_req.name), topic_req.category
+        )
         return topic

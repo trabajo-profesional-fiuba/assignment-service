@@ -1,14 +1,5 @@
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
-from fastapi import (
-    APIRouter,
-    Depends,
-    Response,
-    UploadFile,
-    status,
-    Query,
-    BackgroundTasks,
-)
+from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
@@ -18,15 +9,15 @@ from src.api.dates.exceptions import InvalidDate
 from src.api.dates.repository import DateSlotRepository
 from src.api.dates.schemas import DateSlotRequestList, DateSlotResponseList
 from src.api.dates.service import DateSlotsService
-from src.api.exceptions import EntityNotInserted, EntityNotFound, ServerError
+from src.api.exceptions import ServerError
 
 from src.api.groups.repository import GroupRepository
 from src.api.users.exceptions import InvalidCredentials
 
 from src.api.utils.response_builder import ResponseBuilder
 
-from src.config.config import api_config
 from src.config.database.database import get_db
+from src.config.logging import logger
 
 
 router = APIRouter(prefix="/dates", tags=["Dates"])
@@ -175,3 +166,40 @@ async def add_tutors_dates(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
+
+
+@router.get(
+    "/",
+    response_model=DateSlotResponseList,
+    summary="Returns a list of available slots",
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Successfully retrieve a list of available slots."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_available_slots(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_multiple_role(token)
+
+        service = DateSlotsService(DateSlotRepository(session))
+        slots = service.get_slots(period)
+        logger.info("Retrieve all available slots.")
+
+        res = DateSlotResponseList.model_validate(slots)
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise e

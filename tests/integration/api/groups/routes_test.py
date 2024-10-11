@@ -1,5 +1,3 @@
-import tempfile
-import os
 import pytest
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
@@ -511,7 +509,7 @@ def test_get_groups_by_id_fails_if_user_doesnt_belong_to_group(fastapi, tables):
     helper.create_student("Alejo", "B", "105002", "b@gmail.com")
     helper.create_student("Tomas", "C", "105003", "c@gmail.com")
     topic = helper.create_topic("TopicCustom")
-    group = helper.create_group(
+    helper.create_group(
         ids=[105001, 105002, 105003],
         tutor_period_id=period.id,
         topic_id=topic.id,
@@ -582,6 +580,7 @@ def test_get_groups_by_id_being_tutor(fastapi, tables):
         headers={"Authorization": f"Bearer {tutor_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
+
 
 @pytest.mark.integration
 def test_post_groups_final_project(fastapi, tables):
