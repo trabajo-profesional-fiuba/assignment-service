@@ -21,11 +21,13 @@ from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import (
     AssignedGroupConfirmationRequest,
     BlobDetailsList,
+    CompleteGroupResponse,
     GroupList,
     GroupResponse,
     GroupStates,
     GroupCompleteList,
     GroupWithTutorTopicRequest,
+    IntermediateAssignmentRequest,
 )
 from src.api.groups.service import GroupService
 
@@ -199,6 +201,35 @@ async def post_final_project(
     except Exception as e:
         raise ServerError(message=str(e))
 
+@router.post(
+    "/{group_id}/intermediate-report",
+    description="Updates the intermediate project",
+    status_code=status.HTTP_202_ACCEPTED,
+    responses={
+        status.HTTP_202_ACCEPTED: {"description": "Group updated"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+    },
+)
+async def post_final_project(
+    group_id: int,
+    link: IntermediateAssignmentRequest,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        group_repository = GroupRepository(session)
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_in_group(token, group_id, group_repository)
+
+        group_service = GroupService(group_repository)
+        group_service.upload_intermediate_project(group_id, link.url)
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except EntityNotFound as e:
+        raise e
+    except Exception as e:
+        raise ServerError(message=str(e))
 
 @router.get(
     "/",
@@ -383,7 +414,35 @@ async def list_initial_projects(
     except Exception as e:
         raise ServerError(message=str(e))
 
+@router.get(
+    "/{group_id}/intermediate-report",
+    response_model=CompleteGroupResponse,
+    description="Gets the intermediate for a group in an specific period",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
+    },
+)
+async def gets_intermediate_assigment(
+    group_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
 
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+
+        group_service = GroupService(GroupRepository(session))
+        return CompleteGroupResponse.model_validate(group_service.get_group_by_id(group_id))
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+   
 @router.put(
     "/",
     response_model=GroupList,

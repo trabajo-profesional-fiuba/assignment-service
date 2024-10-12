@@ -3,8 +3,8 @@ from src.api.auth.schemas import JwtDecoded
 from src.api.users.models import Role
 
 
-class AuthenticationService:
 
+class AuthenticationService:
     def __init__(self, jwt_resolver: JwtResolver) -> None:
         self._jwt_resolver = jwt_resolver
 

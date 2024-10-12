@@ -64,6 +64,7 @@ class GroupStates(BaseModel):
     pre_report_title: str | None
     intermediate_assigment_date: datetime | None
     intermediate_assigment_approved: bool
+    intermediate_assigment: str | None
     final_report_approved: bool
     final_report_title: str | None
     final_report_date: datetime | None
@@ -96,3 +97,6 @@ class BlobDetails(BaseModel):
 
 class BlobDetailsList(RootModel):
     root: List[BlobDetails] = Field(default=[])
+
+class IntermediateAssignmentRequest(BaseModel):
+    url: str
