@@ -124,13 +124,12 @@ async def assign_group_topic_tutor(
             topic_service.get_topics_by_period(period_id)
         )
 
-
         tutors_service = TutorService(TutorRepository(session))
         tutors_mapper = TutorMapper(topic_mapper=topic_mapper)
         tutors = tutors_mapper.convert_to_single_period_tutors(
             tutors_service.get_tutor_periods_by_period_id(period_id)
         )
-        
+
         group_service = GroupService(GroupRepository(session))
         group_mapper = GroupMapper()
         groups = group_mapper.convert_from_models_to_unassigned_groups(
