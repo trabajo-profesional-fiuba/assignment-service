@@ -148,6 +148,21 @@ class GroupService:
         except GroupNotFound as e:
             logger.error(f"Could not found group because of: {str(e)}")
             raise EntityNotFound(message=str(e))
+    
+    def upload_intermediate_project(self, group_id: int, link:str):
+        try:
+            group = self._repository.get_group_by_id(group_id)
+            self._repository.update(
+                group.id,
+                {
+                    "intermediate_assigment_date": datetime.datetime.now(),
+                    "intermediate_assigment": link,
+                },
+            )
+            return link
+        except GroupNotFound as e:
+            logger.error(f"Could not found group because of: {str(e)}")
+            raise EntityNotFound(message=str(e))       
 
     def download_final_project(self, period: str, group_id: int, storage_client):
         try:

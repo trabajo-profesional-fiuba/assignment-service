@@ -1,4 +1,3 @@
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi import APIRouter, UploadFile, Depends, status, Query
 from sqlalchemy.orm import Session
@@ -65,7 +64,7 @@ async def upload_csv_file(
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -99,7 +98,7 @@ async def get_students_by_ids(
         logger.info("Retrieve all students by ids.")
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise e
@@ -139,7 +138,7 @@ async def get_student_info(
         logger.info("Retrieve student info by id.")
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise e
@@ -177,7 +176,7 @@ async def add_student(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))

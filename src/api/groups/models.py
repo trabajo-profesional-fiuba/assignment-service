@@ -37,11 +37,12 @@ class Group(Base):
     )
     pre_report_date = Column(DateTime(timezone=False))
     pre_report_approved = Column(Boolean, default=False)
-    pre_report_title = Column(String(100))
+    pre_report_title = Column(String(100), nullable=True)
     intermediate_assigment_date = Column(DateTime(timezone=False))
     intermediate_assigment_approved = Column(Boolean, default=False)
+    intermediate_assigment = Column(String(250), nullable=True)
     final_report_approved = Column(Boolean, default=False)
-    final_report_title = Column(String(100))
+    final_report_title = Column(String(100), nullable=True)
     final_report_date = Column(DateTime(timezone=False))
     exhibition_date = Column(DateTime(timezone=False))
     """ postgresql.ARRAY is a dialect specif datatype for postgres sql
@@ -65,4 +66,6 @@ class Group(Base):
     topic = relationship("Topic", back_populates="groups", lazy="noload")
     tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="noload")
     period = relationship("Period", back_populates="groups", lazy="noload")
-    group_dates_slots = relationship("GroupDateSlot", back_populates="groups", lazy="noload")
+    group_dates_slots = relationship(
+        "GroupDateSlot", back_populates="groups", lazy="noload"
+    )

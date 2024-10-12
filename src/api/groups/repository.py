@@ -231,13 +231,17 @@ class GroupRepository:
         return groups
 
     def student_in_group(self, student_id: int, group_id: int) -> bool:
-        """ Verify that a student is part of a group """
+        """Verify that a student is part of a group"""
         with self.Session() as session:
-            exists_query = select().where(
-                association_table.c.group_id == group_id,
-                association_table.c.student_id == student_id,
-            ).exists()
-            
+            exists_query = (
+                select()
+                .where(
+                    association_table.c.group_id == group_id,
+                    association_table.c.student_id == student_id,
+                )
+                .exists()
+            )
+
             query = select(exists_query)
             result = session.execute(query).scalar()
 

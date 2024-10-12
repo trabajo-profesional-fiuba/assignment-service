@@ -21,11 +21,18 @@ class TestDateRepository:
         drop_tables()
 
     @pytest.mark.integration
+    def test_get_empty_list_of_slots(self, tables):
+        helper = ApiHelper()
+        period = "2C2024"
+        helper.create_period(period)
+
+        repository = DateSlotRepository(self.Session)
+        dates_saved = repository.get_slots_by_period(period)
+        assert len(dates_saved) == 0
+
+    @pytest.mark.integration
     def test_insert_slot_into_dates(self, tables):
         # Arrange
-        helper = ApiHelper()
-        helper.create_period("2C2024")
-
         slot = dt.datetime(2024, 10, 8, 9, 0)
         period = "2C2024"
 
@@ -63,3 +70,10 @@ class TestDateRepository:
         repository = DateSlotRepository(self.Session)
         dates_saved = repository.add_bulk(DateSlot, slots)
         assert len(dates_saved) == 4
+
+    @pytest.mark.integration
+    def test_get_list_of_slots_by_period(self, tables):
+        repository = DateSlotRepository(self.Session)
+        period = "2C2024"
+        dates_saved = repository.get_slots_by_period(period)
+        assert len(dates_saved) == 5

@@ -1,4 +1,3 @@
-import os
 import pytest
 from src.config.config import api_config
 from src.core.email_client import SendGridEmailClient
@@ -22,7 +21,7 @@ class TestEmailClient:
     def test_send_api_withou_key_raise_exception(self):
         email_client = SendGridEmailClient()
         with pytest.raises(Exception):
-            response = email_client.send_email("test@fiuba.com", "Test FIUBA", "body")
+            email_client.send_email("test@fiuba.com", "Test FIUBA", "body")
 
     @pytest.mark.skip
     def test_send_email_to_multiple_users(self):

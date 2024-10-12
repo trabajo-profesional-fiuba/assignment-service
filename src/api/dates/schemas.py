@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, RootModel
-from typing import List, Optional
+from typing import List
 from datetime import datetime
 
 
@@ -13,6 +13,7 @@ class DateSlotRequestList(RootModel):
 
     def __iter__(self):
         return iter(self.root)
+
 
 class DateSlotResponse(BaseModel):
     slot: datetime

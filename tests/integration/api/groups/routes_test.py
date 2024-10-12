@@ -1,5 +1,3 @@
-import tempfile
-import os
 import pytest
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
@@ -511,7 +509,7 @@ def test_get_groups_by_id_fails_if_user_doesnt_belong_to_group(fastapi, tables):
     helper.create_student("Alejo", "B", "105002", "b@gmail.com")
     helper.create_student("Tomas", "C", "105003", "c@gmail.com")
     topic = helper.create_topic("TopicCustom")
-    group = helper.create_group(
+    helper.create_group(
         ids=[105001, 105002, 105003],
         tutor_period_id=period.id,
         topic_id=topic.id,
@@ -583,6 +581,7 @@ def test_get_groups_by_id_being_tutor(fastapi, tables):
     )
     assert response.status_code == status.HTTP_200_OK
 
+
 @pytest.mark.integration
 def test_post_groups_final_project(fastapi, tables):
     # Arrange
@@ -617,3 +616,77 @@ def test_post_groups_final_project(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+def test_post_groups_intermediate_project(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    period = helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    topic = helper.create_topic("TopicCustom")
+    group = helper.create_group(
+        ids=[105001, 105002, 105003],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="1C2025",
+    )
+    user_token = helper.create_student_token(105001)
+    youtube_link = 'https://www.youtube.com/watch?v=IGjE_zgs2Hw'
+
+    body = {
+        "url": youtube_link
+    }
+
+    response = fastapi.post(
+        f"{PREFIX}/{group.id}/intermediate-report",
+        json=body,
+        headers={"Authorization": f"Bearer {user_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_202_ACCEPTED
+
+@pytest.mark.integration
+def test_get_groups_intermediate_project(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Juan", "Perez", "105000", "perez@gmail.com")
+    period = helper.create_tutor_period("105000", "1C2025")
+    helper.create_student("Pedro", "A", "105001", "a@gmail.com")
+    helper.create_student("Alejo", "B", "105002", "b@gmail.com")
+    helper.create_student("Tomas", "C", "105003", "c@gmail.com")
+    topic = helper.create_topic("TopicCustom")
+    group = helper.create_group(
+        ids=[105001, 105002, 105003],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="1C2025",
+    )
+    user_token = helper.create_student_token(105001)
+    youtube_link = 'https://www.youtube.com/watch?v=IGjE_zgs2Hw'
+
+    body = {
+        "url": youtube_link
+    }
+
+    response = fastapi.post(
+        f"{PREFIX}/{group.id}/intermediate-report",
+        json=body,
+        headers={"Authorization": f"Bearer {user_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_202_ACCEPTED
+
+    tutor_token = helper.create_tutor_token(105000)
+    response = fastapi.get(
+        f"{PREFIX}/{group.id}/intermediate-report",
+        headers={"Authorization": f"Bearer {tutor_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()['intermediate_assigment'] == youtube_link

@@ -1,6 +1,5 @@
 from src.api.tutors.mapper import TutorMapper
 from src.core.group import Group, UnassignedGroup
-from src.core.tutor import SinglePeriodTutor, Tutor
 
 
 class GroupMapper:

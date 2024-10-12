@@ -252,13 +252,14 @@ def test_update_topics_csv_with_success(fastapi, tables, tutors, topics):
     )
     assert response.status_code == status.HTTP_201_CREATED
 
+
 @pytest.mark.integration
 def test_add_category_withot_csv_file(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("1C2024")
     admin_token = helper.create_admin_token()
 
-    category_request =  {
+    category_request = {
         "name": "FakeCategory",
     }
 
@@ -279,10 +280,7 @@ def test_add_topics_withot_csv_file(fastapi, tables):
     helper.create_category("Fake")
     admin_token = helper.create_admin_token()
 
-    topic_request =  {
-        "name": "My custom topic",
-        "category": "Fake"
-    }
+    topic_request = {"name": "My custom topic", "category": "Fake"}
 
     response = fastapi.post(
         f"{PREFIX}",
@@ -291,5 +289,8 @@ def test_add_topics_withot_csv_file(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json() == {"id": 1, "name": "My custom topic", "category": {"name": "Fake"}}
-    
+    assert response.json() == {
+        "id": 1,
+        "name": "My custom topic",
+        "category": {"name": "Fake"},
+    }
