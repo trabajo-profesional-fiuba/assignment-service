@@ -1,22 +1,21 @@
+from typing import Optional
+from src.api.topics.mapper import TopicMapper
+from src.api.tutors.models import TutorPeriod
+
 from src.core.topic import Topic
 from src.core.tutor import SinglePeriodTutor
 
 
 class TutorMapper:
 
-    def convert_from_periods_to_single_period_tutors(self, db_periods):
+    def __init__(self, topic_mapper: Optional[TopicMapper] = None) -> None:
+        self._topic_mapper = topic_mapper
+
+    def convert_to_single_period_tutors(self, db_periods: list[TutorPeriod]):
         tutors = list()
         for db_period in db_periods:
             db_tutor = db_period.tutor
-            topics = [
-                Topic(
-                    id=topic.id,
-                    title=topic.name,
-                    category=topic.category.name,
-                    capacity=1,
-                )
-                for topic in db_period.topics
-            ]
+            topics = self._topic_mapper.convert_from_models_to_topic(db_period.topics) if self._topic_mapper else []
             tutor = SinglePeriodTutor(
                 id=db_tutor.id,
                 period_id=db_period.id,
@@ -30,8 +29,8 @@ class TutorMapper:
 
         return tutors
 
-    def convert_from_period_to_single_period_tutor(
-        self, db_tutor_period, topics: list[Topic] = []
+    def convert_to_single_period_tutor(
+        self, db_tutor_period: TutorPeriod, topics: list[Topic] = []
     ):
         tutor = SinglePeriodTutor(
             id=db_tutor_period.tutor_id,
@@ -42,5 +41,4 @@ class TutorMapper:
             capacity=db_tutor_period.capacity,
             topics=topics,
         )
-
         return tutor

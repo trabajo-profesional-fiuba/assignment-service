@@ -1,3 +1,4 @@
+from typing import List, Optional
 from src.core.tutor import Tutor
 from src.core.topic import Topic
 
@@ -121,10 +122,10 @@ class Group:
 class UnassignedGroup:
     """The base group only contains the id, Students and the Topics"""
 
-    def __init__(self, id: int, students: list = None, topics: list = None) -> None:
+    def __init__(self, id: int, students: Optional[List[int]] = None, topics: Optional[List[Topic]] = None) -> None:
         self._id = id
-        self._topics = topics if topics is not None else []
         self._students = students if students is not None else []
+        self._topics = topics if topics is not None else []
 
     @property
     def id(self) -> str:
@@ -133,3 +134,8 @@ class UnassignedGroup:
     @property
     def topics(self) -> str:
         return self._topics
+    
+    def preference_of(self, topic: Topic) -> int:
+        topic_id = topic.id
+        preference = next((index + 1 for index, t in enumerate(self._topics) if t.id == topic_id), -1)
+        return preference * 10 if preference >= 0 else 100 # 100 es el costo de no querer ese topic.

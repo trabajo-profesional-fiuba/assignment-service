@@ -112,21 +112,22 @@ async def assign_group_topic_tutor(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
     balance_limit: int = Query(gt=0, default=5),
+    method: str = Query(pattern="^(lp|flow)$", default="lp"),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
 
-        tutors_service = TutorService(TutorRepository(session))
-        tutors_mapper = TutorMapper()
-        tutors = tutors_mapper.convert_from_periods_to_single_period_tutors(
-            tutors_service.get_tutor_periods_by_period_id(period_id)
-        )
-
         topic_service = TopicService(TopicRepository(session))
         topic_mapper = TopicMapper()
         topics = topic_mapper.convert_from_models_to_topic(
             topic_service.get_topics_by_period(period_id)
+        )
+
+        tutors_service = TutorService(TutorRepository(session))
+        tutors_mapper = TutorMapper(topic_mapper=topic_mapper)
+        tutors = tutors_mapper.convert_to_single_period_tutors(
+            tutors_service.get_tutor_periods_by_period_id(period_id)
         )
 
         group_service = GroupService(GroupRepository(session))
@@ -136,9 +137,8 @@ async def assign_group_topic_tutor(
         )
 
         service = AssignmentService()
-
         assignment_result = service.assignment_group_topic_tutor(
-            groups, topics, tutors, balance_limit
+            groups, topics, tutors, balance_limit, method
         )
 
         assignment_response = AssignedGroupList.model_validate(
