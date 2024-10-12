@@ -202,7 +202,7 @@ async def post_final_project(
         raise ServerError(message=str(e))
 
 @router.post(
-    "/{group_id}/intermediate-project",
+    "/{group_id}/intermediate-report",
     description="Updates the intermediate project",
     status_code=status.HTTP_202_ACCEPTED,
     responses={
@@ -414,7 +414,7 @@ async def list_initial_projects(
         raise ServerError(message=str(e))
 
 @router.get(
-    "/{group_id}/intermediate-project",
+    "/{group_id}/intermediate-report",
     response_model=CompleteGroupResponse,
     description="Gets the intermediate for a group in an specific period",
     status_code=status.HTTP_200_OK,

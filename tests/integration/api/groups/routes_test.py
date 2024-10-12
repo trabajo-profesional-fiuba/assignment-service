@@ -643,7 +643,7 @@ def test_post_groups_intermediate_project(fastapi, tables):
     }
 
     response = fastapi.post(
-        f"{PREFIX}/{group.id}/intermediate-project",
+        f"{PREFIX}/{group.id}/intermediate-report",
         json=body,
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
@@ -675,7 +675,7 @@ def test_get_groups_intermediate_project(fastapi, tables):
     }
 
     response = fastapi.post(
-        f"{PREFIX}/{group.id}/intermediate-project",
+        f"{PREFIX}/{group.id}/intermediate-report",
         json=body,
         headers={"Authorization": f"Bearer {user_token.access_token}"},
     )
@@ -684,7 +684,7 @@ def test_get_groups_intermediate_project(fastapi, tables):
 
     tutor_token = helper.create_tutor_token(105000)
     response = fastapi.get(
-        f"{PREFIX}/{group.id}/intermediate-project",
+        f"{PREFIX}/{group.id}/intermediate-report",
         headers={"Authorization": f"Bearer {tutor_token.access_token}"},
     )
 
