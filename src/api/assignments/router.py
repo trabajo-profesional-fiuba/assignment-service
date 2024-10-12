@@ -118,18 +118,19 @@ async def assign_group_topic_tutor(
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
 
-        tutors_service = TutorService(TutorRepository(session))
-        tutors_mapper = TutorMapper()
-        tutors = tutors_mapper.convert_to_single_period_tutors(
-            tutors_service.get_tutor_periods_by_period_id(period_id)
-        )
-
         topic_service = TopicService(TopicRepository(session))
         topic_mapper = TopicMapper()
         topics = topic_mapper.convert_from_models_to_topic(
             topic_service.get_topics_by_period(period_id)
         )
 
+
+        tutors_service = TutorService(TutorRepository(session))
+        tutors_mapper = TutorMapper(topic_mapper=topic_mapper)
+        tutors = tutors_mapper.convert_to_single_period_tutors(
+            tutors_service.get_tutor_periods_by_period_id(period_id)
+        )
+        
         group_service = GroupService(GroupRepository(session))
         group_mapper = GroupMapper()
         groups = group_mapper.convert_from_models_to_unassigned_groups(

@@ -32,7 +32,7 @@ class TutorMapper:
     def convert_to_single_period_tutor(
         self, db_tutor_period: TutorPeriod, topics: list[Topic] = []
     ):
-        return SinglePeriodTutor(
+        tutor = SinglePeriodTutor(
             id=db_tutor_period.tutor_id,
             period_id=db_tutor_period.id,
             name=db_tutor_period.tutor.name,
@@ -41,3 +41,4 @@ class TutorMapper:
             capacity=db_tutor_period.capacity,
             topics=topics,
         )
+        return tutor
