@@ -218,10 +218,11 @@ async def post_final_project(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
     try:
+        group_repository = GroupRepository(session)
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
+        auth_service.assert_student_in_group(token, group_id, group_repository)
 
-        group_service = GroupService(GroupRepository(session))
+        group_service = GroupService(group_repository)
         group_service.upload_intermediate_project(group_id, link.url)
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")

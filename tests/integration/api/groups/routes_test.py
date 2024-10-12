@@ -635,7 +635,7 @@ def test_post_groups_intermediate_project(fastapi, tables):
         topic_id=topic.id,
         period_id="1C2025",
     )
-    user_token = helper.create_student_token()
+    user_token = helper.create_student_token(105001)
     youtube_link = 'https://www.youtube.com/watch?v=IGjE_zgs2Hw'
 
     body = {
@@ -667,7 +667,7 @@ def test_get_groups_intermediate_project(fastapi, tables):
         topic_id=topic.id,
         period_id="1C2025",
     )
-    user_token = helper.create_student_token()
+    user_token = helper.create_student_token(105001)
     youtube_link = 'https://www.youtube.com/watch?v=IGjE_zgs2Hw'
 
     body = {
