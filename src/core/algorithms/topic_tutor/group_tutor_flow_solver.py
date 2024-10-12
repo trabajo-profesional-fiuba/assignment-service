@@ -154,6 +154,28 @@ class GroupTutorFlowSolver:
         graph.add_edges_from(edges)
         return graph
 
+    def _convert_result(self, graph: nx.DiGraph, result: dict):
+        group_ids = list()
+        groups = list()
+        for key, value in result[SOURCE_NODE_ID].items():
+            if value > 0:
+                # group-n => n
+                group_id = key.split("-")[1]
+                group_ids.append(int(group_id))
+
+        for i in group_ids:
+            path = nx.shortest_path(graph, f"{GROUP_ID}-{i}", f"{SINK_NODE_ID}")
+            _, topic_id, tutor_id, _ = path
+            topic = next(
+                (t for t in self._topics if t.id == int(topic_id.split("-")[1])), None
+            )
+            tutor = next(
+                (t for t in self._tutors if t.id == int(tutor_id.split("-")[1])), None
+            )
+            groups.append(GroupTutorAssigmentResult(id=i, tutor=tutor, topic=topic))
+
+        return groups
+
     def solve(self) -> list[GroupTutorAssigmentResult]:
         """
         Runs the assignment algorithm to find the maximum flow of
@@ -168,7 +190,8 @@ class GroupTutorFlowSolver:
         """
         edges = self._create_edges()
         graph = self._create_graph(edges)
-        flow_dict = nx.max_flow_min_cost(
+        result = nx.max_flow_min_cost(
             graph, SOURCE_NODE_ID, SINK_NODE_ID, capacity="capacity", weight="cost"
         )
-        return flow_dict
+        group_tutor_assigment_results = self._convert_result(graph, result)
+        return group_tutor_assigment_results

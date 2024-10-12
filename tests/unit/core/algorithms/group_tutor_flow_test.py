@@ -88,7 +88,6 @@ class TestGroupTutorFlowSolver:
         edges = solver._create_tutors_sink_edges()
         assert len(edges) == 2
 
-    # ------------ Logic Tests ------------
     @pytest.mark.unit
     def test_success(self):
         topics = [
@@ -122,3 +121,4 @@ class TestGroupTutorFlowSolver:
 
         solver = GroupTutorFlowSolver(groups, topics, tutors)
         result = solver.solve()
+        assert len(result) == 2

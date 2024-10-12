@@ -137,4 +137,4 @@ class UnassignedGroup:
     def preference_of(self, topic: Topic) -> int:
         topic_id = topic.id
         preference = next((index + 1 for index, t in enumerate(self._topics) if t.id == topic_id), -1)
-        return preference * 10 if preference >= 0 else 1
+        return preference * 10 if preference >= 0 else 100 # 100 es el costo de no querer ese topic.
