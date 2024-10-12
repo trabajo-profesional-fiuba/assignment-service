@@ -41,3 +41,32 @@ class DateSlotRepository:
                 session.expunge(slot)
 
         return slots
+
+    def get_tutor_slots_by_id(self, tutor_id: int, period: str):
+        with self.Session() as session:
+            slots = (
+                session.query(TutorDateSlot)
+                .filter(
+                    TutorDateSlot.tutor_id == tutor_id,
+                    TutorDateSlot.period_id == period,
+                )
+                .all()
+            )
+            for slot in slots:
+                session.expunge(slot)
+
+        return slots
+
+    def get_groups_slots_by_id(self, group_id: int):
+        with self.Session() as session:
+            slots = (
+                session.query(GroupDateSlot)
+                .filter(
+                    GroupDateSlot.group_id == group_id,
+                )
+                .all()
+            )
+            for slot in slots:
+                session.expunge(slot)
+
+        return slots

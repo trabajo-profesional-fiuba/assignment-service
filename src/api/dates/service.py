@@ -61,3 +61,9 @@ class DateSlotsService:
 
     def get_slots(self, period: str):
         return self._repository.get_slots_by_period(period)
+
+    def get_tutors_slots_by_id(self, tutor_id: int, period: str):
+        return self._repository.get_tutor_slots_by_id(tutor_id, period)
+
+    def get_groups_slots_by_id(self, group_id: int):
+        return self._repository.get_groups_slots_by_id(group_id)
