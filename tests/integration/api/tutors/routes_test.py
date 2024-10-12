@@ -581,6 +581,7 @@ def test_get_groups_assigned_to_tutor_as_reviewer(fastapi, tables):
     assert response.status_code == 200
     assert len(response.json()) == 1
 
+
 @pytest.mark.integration
 @pytest.mark.skip
 def test_notify_group_being_their_tutor(fastapi, tables):
@@ -599,11 +600,10 @@ def test_notify_group_being_their_tutor(fastapi, tables):
         period_id="1C2025",
     )
     json = {
-        "body": "Esta es una notificacion para los integrantes del test:test_notify_group_being_their_tutor",
+        "body": "Esta es una notificacion para los integrantes del \
+            test:test_notify_group_being_their_tutor",
     }
-    params = {
-        "group_id": group.id
-    }
+    params = {"group_id": group.id}
     token = helper.create_tutor_token(105000)
     response = fastapi.post(
         f"{PREFIX}/notify-group",
@@ -635,11 +635,10 @@ def test_notify_group_being_their_reviewer(fastapi, tables):
     )
     helper.assign_reviewer(reviewer_id=105004, group_id=1)
     json = {
-        "body": "Esta es una notificacion para los integrantes del test:test_notify_group_being_their_reviewer",
+        "body": "Esta es una notificacion para los integrantes del \
+            test:test_notify_group_being_their_reviewer",
     }
-    params = {
-        "group_id": group.id
-    }
+    params = {"group_id": group.id}
     token = helper.create_tutor_token(105004)
     response = fastapi.post(
         f"{PREFIX}/notify-group",

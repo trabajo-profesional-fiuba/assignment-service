@@ -2,8 +2,6 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 
 
-
-
 # External
 class InvalidDate(HTTPException):
     def __init__(self, message: str):

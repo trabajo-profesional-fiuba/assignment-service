@@ -111,11 +111,12 @@ class Group:
         if self._tutor:
             return self._tutor.email
         return None
-    
+
     def tutor_id(self):
         if self._tutor:
             return self._tutor.id
         return None
+
 
 class UnassignedGroup:
     """The base group only contains the id, Students and the Topics"""

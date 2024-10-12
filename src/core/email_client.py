@@ -21,7 +21,8 @@ class SendGridEmailClient:
             logger.info("Email send successfully")
         else:
             logger.info(
-                f"Sendgrid send email had a problem, the response code status is: {response.status_code}"
+                f"Sendgrid send email had a problem, the response code status is: \
+                {response.status_code}"
             )
 
     def send_mail(self, mail: Mail):
@@ -57,7 +58,8 @@ class SendGridEmailClient:
         email_body = f"""
         Hola,
 
-        Este es un mensaje automático para informarte que el grupo {group.id} ha subido su {type_of_attachment} al sistema.
+        Este es un mensaje automático para informarte que el grupo {group.id} \
+        ha subido su {type_of_attachment} al sistema.
 
         Gracias.
         """

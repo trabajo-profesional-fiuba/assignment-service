@@ -1,7 +1,7 @@
 """add intermediate field
 
 Revision ID: 972e5ddd861b
-Revises: 140c542d2c01
+Revises: 7d0c0baebc8e
 Create Date: 2024-10-10 14:59:07.541767
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '972e5ddd861b'
-down_revision: Union[str, None] = '140c542d2c01'
+down_revision: Union[str, None] = '7d0c0baebc8e'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

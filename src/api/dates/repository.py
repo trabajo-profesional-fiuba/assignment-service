@@ -1,9 +1,7 @@
-from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import insert, exc
+from sqlalchemy import insert
 
-from src.api.dates.models import DateSlot
-from src.config.logging import logger
+from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 
 
 class DateSlotRepository:
@@ -22,14 +20,24 @@ class DateSlotRepository:
 
         return date_slot
 
-    def bulk_insert(self, date_slots: list[dict]):
+    def add_bulk(
+        self, model: DateSlot | GroupDateSlot | TutorDateSlot, data: list[dict]
+    ):
         with self.Session() as session:
-            result = session.execute(insert(DateSlot).returning(DateSlot), date_slots)
+            result = session.execute(insert(model).returning(model), data)
             session.commit()
-            
+
             # Extract the inserted rows from the result
             rows = result.fetchall()
             session.expunge_all()
-            date_slots_saved = [row.DateSlot for row in rows]
-            
-        return date_slots_saved
+            saved_data = [getattr(row, model.__name__) for row in rows]
+
+        return saved_data
+
+    def get_slots_by_period(self, period: str):
+        with self.Session() as session:
+            slots = session.query(DateSlot).filter(DateSlot.period_id == period).all()
+            for slot in slots:
+                session.expunge(slot)
+
+        return slots

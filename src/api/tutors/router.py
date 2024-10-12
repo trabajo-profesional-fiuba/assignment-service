@@ -1,4 +1,3 @@
-from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 
 from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
@@ -20,7 +19,6 @@ from src.api.groups.schemas import GroupList
 from src.api.tutors.mapper import TutorMapper
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
-from src.api.users.repository import UserRepository
 from src.api.tutors.schemas import (
     TutorMessage,
     TutorRequest,
@@ -82,7 +80,7 @@ async def upload_csv_file(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidCsv, EntityNotFound, Duplicated, InvalidFileType) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -120,7 +118,7 @@ async def add_tutor(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -154,7 +152,7 @@ async def delete_tutor(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_202_ACCEPTED)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -192,7 +190,7 @@ async def add_period_to_tutor(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -234,7 +232,7 @@ async def get_tutor_periods(
         return ResponseBuilder.build_private_cache_response(response)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -271,7 +269,7 @@ async def get_tutors_by_period_id(
         return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -311,7 +309,7 @@ async def get_groups_by_tutor(
         return ResponseBuilder.build_private_cache_response(groups)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -351,7 +349,7 @@ async def get_groups_by_reviewer_id(
         return ResponseBuilder.build_private_cache_response(groups)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -396,7 +394,7 @@ async def notify_students(
             raise Exception("Something happend while sending emails")
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))

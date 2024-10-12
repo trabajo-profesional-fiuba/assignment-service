@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, RootModel
-from typing import List, Optional
+from typing import List
 from datetime import datetime
 
 
@@ -14,8 +14,8 @@ class DateSlotRequestList(RootModel):
     def __iter__(self):
         return iter(self.root)
 
+
 class DateSlotResponse(BaseModel):
-    period_id: str
     slot: datetime
 
     model_config = ConfigDict(from_attributes=True)

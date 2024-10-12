@@ -23,3 +23,6 @@ class Period(Base):
         "StudentPeriod", back_populates="period", lazy="noload"
     )
     dates_slots = relationship("DateSlot", back_populates="period", lazy="noload")
+    tutor_dates_slots = relationship(
+        "TutorDateSlot", back_populates="period", lazy="noload"
+    )
