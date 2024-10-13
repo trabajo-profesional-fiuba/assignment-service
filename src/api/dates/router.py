@@ -203,3 +203,78 @@ async def get_available_slots(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise e
+
+
+@router.get(
+    "/tutors/{tutor_id}",
+    response_model=DateSlotResponseList,
+    summary="Returns a list of slots by tutor id",
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Successfully retrieve a list of available slots."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_slots_by_tutor_id(
+    tutor_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token, tutor_id)
+
+        service = DateSlotsService(DateSlotRepository(session))
+        slots = service.get_tutors_slots_by_id(tutor_id, period)
+        logger.info(f"Retrieve all slots from tutor id: {tutor_id}")
+
+        res = DateSlotResponseList.model_validate(slots)
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise e
+
+
+@router.get(
+    "/groups/{group_id}",
+    response_model=DateSlotResponseList,
+    summary="Returns a list of slots by group id",
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Successfully retrieve a list of available slots by group"
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_slots_by_group_id(
+    group_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_in_group(token, group_id, GroupRepository(session))
+
+        service = DateSlotsService(DateSlotRepository(session))
+        slots = service.get_groups_slots_by_id(group_id)
+        logger.info(f"Retrieve all slots from group id: {group_id}")
+
+        res = DateSlotResponseList.model_validate(slots)
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_200_OK)
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise e

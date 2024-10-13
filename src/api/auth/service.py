@@ -28,10 +28,16 @@ class AuthenticationService:
         self._assert_role(user["role"], Role.ADMIN.value)
         return token_decoded
 
-    def assert_tutor_rol(self, token: str) -> JwtDecoded:
+    def assert_tutor_rol(self, token: str, tutor_id: int | None = None) -> JwtDecoded:
         token_decoded = self._jwt_resolver.decode_token(token)
         user = token_decoded.sub
-        self._assert_multiple_role(user["role"], [Role.ADMIN.value, Role.TUTOR.value])
+        if user["role"] == Role.TUTOR.value and tutor_id:
+            if user["id"] != tutor_id:
+                raise InvalidJwt("Invalid jwt")
+        else:
+            self._assert_multiple_role(
+                user["role"], [Role.ADMIN.value, Role.TUTOR.value]
+            )
         return token_decoded
 
     def assert_multiple_role(self, token: str) -> JwtDecoded:
