@@ -3,11 +3,14 @@ Module providing the assignment flow algorithm that solves the assignment
 of groups to topics and tutors.
 """
 
+from typing import Optional
 import networkx as nx
 
 from src.constants import SOURCE_NODE_ID, SINK_NODE_ID, GROUP_ID, TOPIC_ID, TUTOR_ID
-from src.core.group import Group
-from src.core.tutor import Tutor
+from src.core.group import UnassignedGroup
+from src.core.result import GroupTutorAssigmentResult
+from src.core.topic import Topic
+from src.core.tutor import SinglePeriodTutor, Tutor
 
 
 class GroupTutorFlowSolver:
@@ -17,9 +20,10 @@ class GroupTutorFlowSolver:
 
     def __init__(
         self,
-        groups: list[Group],
-        tutors: list[Tutor],
-    ) -> None:
+        groups: Optional[list[UnassignedGroup]] = None,
+        topics: Optional[list[Topic]] = None,
+        tutors: Optional[list[SinglePeriodTutor]] = None,
+    ):
         """
         Initializes the solver with the provided groups, topics, and tutors.
 
@@ -28,8 +32,9 @@ class GroupTutorFlowSolver:
             tutors (list[Tutor]): A list of tutor objects to be assigned to
             topics.
         """
-        self._groups = groups
-        self._tutors = tutors
+        self._groups = groups if groups is not None else []
+        self._tutors = tutors if tutors is not None else []
+        self._topics = topics if topics is not None else []
 
     def _create_source_groups_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
@@ -53,12 +58,14 @@ class GroupTutorFlowSolver:
             and costs.
         """
         group_topic_edges = []
-        for i, group in enumerate(self._groups):
-            for j, topic in enumerate(group.topics):
+
+        for group in self._groups:
+            for topic in self._topics:
+                topic_id = topic.id
                 group_topic_edges.append(
                     (
                         f"{GROUP_ID}-{group.id}",
-                        f"{TOPIC_ID}-{topic.id}",
+                        f"{TOPIC_ID}-{topic_id}",
                         {
                             "capacity": 1,
                             "cost": group.preference_of(topic),
@@ -76,18 +83,20 @@ class GroupTutorFlowSolver:
             and costs.
         """
         topic_tutor_edges = []
-        for j, tutor in enumerate(self._tutors):
-            for k, topic in enumerate(tutor.topics()):
-                topic_tutor_edges.append(
-                    (
-                        f"{TOPIC_ID}-{topic.id}",
-                        f"{TUTOR_ID}-{tutor.id}",
-                        {
-                            "capacity": tutor.capacity_of(topic),
-                            "cost": tutor.preference_of(topic),
-                        },
+        for tutor in self._tutors:
+            for topic in self._topics:
+                capacity = tutor.capacity_of(topic)
+                if capacity > 0:
+                    topic_tutor_edges.append(
+                        (
+                            f"{TOPIC_ID}-{topic.id}",
+                            f"{TUTOR_ID}-{tutor.id}",
+                            {
+                                "capacity": capacity,
+                                "cost": 1,
+                            },
+                        )
                     )
-                )
         return topic_tutor_edges
 
     def _create_tutors_sink_edges(self) -> list[tuple[str, str, dict[str, int]]]:
@@ -102,9 +111,9 @@ class GroupTutorFlowSolver:
             (
                 f"{TUTOR_ID}-{tutor.id}",
                 SINK_NODE_ID,
-                {"capacity": tutor.capacity(), "cost": 1},
+                {"capacity": tutor.capacity, "cost": 1},
             )
-            for i, tutor in enumerate(self._tutors)
+            for tutor in self._tutors
         ]
         return tutor_sink_edges
 
@@ -118,8 +127,8 @@ class GroupTutorFlowSolver:
         Returns:
             list[tuple[str, str, dict[str, int]]]: A list of all edges in the graph.
         """
-        group_topic_edges = self._create_groups_topics_edges()
         source_groups_edges = self._create_source_groups_edges()
+        group_topic_edges = self._create_groups_topics_edges()
         topic_tutor_edges = self._create_topics_tutors_edges()
         tutor_sink_edges = self._create_tutors_sink_edges()
         return (
@@ -145,7 +154,29 @@ class GroupTutorFlowSolver:
         graph.add_edges_from(edges)
         return graph
 
-    def solve(self) -> dict[str, dict[str, int]]:
+    def _convert_result(self, graph: nx.DiGraph, result: dict):
+        group_ids = list()
+        groups = list()
+        for key, value in result[SOURCE_NODE_ID].items():
+            if value > 0:
+                # group-n => n
+                group_id = key.split("-")[1]
+                group_ids.append(int(group_id))
+
+        for i in group_ids:
+            path = nx.shortest_path(graph, f"{GROUP_ID}-{i}", f"{SINK_NODE_ID}")
+            _, topic_id, tutor_id, _ = path
+            topic = next(
+                (t for t in self._topics if t.id == int(topic_id.split("-")[1])), None
+            )
+            tutor = next(
+                (t for t in self._tutors if t.id == int(tutor_id.split("-")[1])), None
+            )
+            groups.append(GroupTutorAssigmentResult(id=i, tutor=tutor, topic=topic))
+
+        return groups
+
+    def solve(self) -> list[GroupTutorAssigmentResult]:
         """
         Runs the assignment algorithm to find the maximum flow of
         minimum cost.
@@ -159,7 +190,8 @@ class GroupTutorFlowSolver:
         """
         edges = self._create_edges()
         graph = self._create_graph(edges)
-        flow_dict = nx.max_flow_min_cost(
+        result = nx.max_flow_min_cost(
             graph, SOURCE_NODE_ID, SINK_NODE_ID, capacity="capacity", weight="cost"
         )
-        return flow_dict
+        group_tutor_assigment_results = self._convert_result(graph, result)
+        return group_tutor_assigment_results

@@ -1,3 +1,4 @@
+from typing import List, Optional
 from src.core.delivery_date import DeliveryDate
 from src.core.topic import Topic
 
@@ -154,7 +155,7 @@ class SinglePeriodTutor:
         last_name: str,
         email: str,
         capacity: int = 0,
-        topics=None,
+        topics: Optional[List[Topic]] = None,
     ):
         self._id = id
         self._name = name
@@ -195,3 +196,11 @@ class SinglePeriodTutor:
 
     def topics_ids(self):
         return [topic.id for topic in self._topics]
+
+    def capacity_of(self, topic: Topic) -> int:
+        matching_topic = next((t for t in self._topics if t.id == topic.id), None)
+        if matching_topic is None:
+            return 0
+        return matching_topic.capacity
+    
+        

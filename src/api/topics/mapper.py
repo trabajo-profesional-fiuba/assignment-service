@@ -1,9 +1,10 @@
 from src.core.topic import Topic
+from src.api.topics.models import Topic as TopicModel
 
 
 class TopicMapper:
 
-    def convert_from_models_to_topic(self, db_topics):
+    def convert_from_models_to_topic(self, db_topics: list[TopicModel]):
         topics = list()
 
         for db_topic in db_topics:

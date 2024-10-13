@@ -220,7 +220,7 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
 
-    def get_tutor_periods_by_period_id(self, period_id):
+    def get_tutor_periods_by_period_id(self, period_id: int) -> list[TutorPeriod]:
         try:
             return self._repository.get_tutor_periods_by_periods_id(period_id)
         except TutorNotFound as e:
@@ -246,7 +246,7 @@ class TutorService:
         try:
             sender = self._repository.get_tutor_by_tutor_id(sender_id)
             to = group.students_emails
-            
+
             if group.reviewer_id and sender.id == group.reviewer_id:
                 tutor = self._repository.get_tutor_by_tutor_id(group.tutor_id())
                 to.extend([tutor.email, sender.email])
@@ -254,13 +254,13 @@ class TutorService:
             else:
                 to.append(sender.email)
                 subject = "Tienes un nuevo mensaje de tu tutor"
-            
+
             body = f"Mensaje:\n\n{message}\n\nGracias"
             cc = "avillores@fi.uba.ar"
             response = email_sender.send_emails(
                 to=to, subject=subject, body=body, cc=cc
             )
-            
+
             return response
         except Exception as e:
             raise EntityNotFound(message=str(e))

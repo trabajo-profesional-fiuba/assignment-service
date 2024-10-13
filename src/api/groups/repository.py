@@ -1,4 +1,4 @@
-from sqlalchemy import func, bindparam, update
+from sqlalchemy import func, bindparam, update, select
 from sqlalchemy.orm import Session, joinedload
 
 from src.api.groups.exceptions import GroupNotFound
@@ -229,3 +229,20 @@ class GroupRepository:
             ).all()
             session.expunge_all()
         return groups
+
+    def student_in_group(self, student_id: int, group_id: int) -> bool:
+        """Verify that a student is part of a group"""
+        with self.Session() as session:
+            exists_query = (
+                select()
+                .where(
+                    association_table.c.group_id == group_id,
+                    association_table.c.student_id == student_id,
+                )
+                .exists()
+            )
+
+            query = select(exists_query)
+            result = session.execute(query).scalar()
+
+        return result

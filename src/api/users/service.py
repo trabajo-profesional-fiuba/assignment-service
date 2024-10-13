@@ -1,8 +1,7 @@
 from src.config.logging import logger
 
 from src.api.users.repository import UserRepository
-from src.api.users.models import User, Role
-
+from src.api.users.models import User
 from src.api.exceptions import EntityNotFound
 from src.api.users.exceptions import InvalidCredentials
 from src.api.auth.jwt import InvalidJwt
