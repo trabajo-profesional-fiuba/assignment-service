@@ -84,10 +84,40 @@ class DateSlotRepository:
             )
             session.execute(delete_stmt)
 
+            existing_slots = session.query(DateSlot).all()
+            existing_slot_ids = {(slot.slot, slot.period_id) for slot in existing_slots}
             # Add new slots
             for slot in slots_to_update:
-                if not session.query(DateSlot).filter_by(slot=slot["slot"]).first():
+                if (slot["slot"], slot["period_id"]) not in existing_slot_ids:
                     new_slot = DateSlot(**slot)
+                    session.add(new_slot)
+
+            session.commit()
+
+    def bulk_update_group_slots(self, slots_to_update: list[dict], group_id: int):
+        """
+        Deletes existing slots that are not in updated list and add the new ones.
+        """
+        with self.Session() as session:
+            slot_ids = {(slot["slot"], slot["group_id"]) for slot in slots_to_update}
+
+            existing_slots = session.query(GroupDateSlot).all()
+            existing_slot_ids = {(slot.slot, slot.group_id) for slot in existing_slots}
+
+            # Identify slots to delete
+            slots_to_delete = existing_slot_ids - slot_ids
+
+            # Delete slots not in the update list
+            for slot, group_id in slots_to_delete:
+                delete_stmt = delete(GroupDateSlot).where(
+                    GroupDateSlot.slot == slot, GroupDateSlot.group_id == group_id
+                )
+                session.execute(delete_stmt)
+
+            # Add new slots
+            for slot in slots_to_update:
+                if (slot["slot"], slot["group_id"]) not in existing_slot_ids:
+                    new_slot = GroupDateSlot(**slot)
                     session.add(new_slot)
 
             session.commit()

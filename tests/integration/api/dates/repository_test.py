@@ -2,7 +2,7 @@ import pytest
 import datetime as dt
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from src.api.dates.models import DateSlot
+from src.api.dates.models import DateSlot, GroupDateSlot
 from src.api.dates.repository import DateSlotRepository
 from src.config.database.database import create_tables, drop_tables, engine
 from tests.integration.api.helper import ApiHelper
@@ -81,15 +81,48 @@ class TestDateRepository:
         assert len(dates_saved) == 5
 
     @pytest.mark.integration
-    def test_update_slots_adding_one_and_deleting_existing_ones(self, tables):
+    def test_update_slots(self, tables):
         repository = DateSlotRepository(self.Session)
         period = "2C2024"
         slots_to_update = [
             {
                 "period_id": period,
                 "slot": dt.datetime(2024, 10, 15, 9, 0),
-            }
+            },
+            {
+                "period_id": period,
+                "slot": dt.datetime(2024, 10, 15, 10, 0),
+            },
         ]
         repository.bulk_update_slots(slots_to_update, period)
         dates_saved = repository.get_slots_by_period(period)
+        assert len(dates_saved) == 2
+
+    @pytest.mark.integration
+    def test_add_group_slots(self, tables):
+        helper = ApiHelper()
+        helper.create_student("Juan", "Perez", "105285", "juanperez@fi.uba.ar")
+        helper.create_student_period("105285", "2C2024")
+        helper.create_tutor("Tutor1", "Apellido", "1010", "email@fi.uba.ar")
+        tutor_period = helper.create_tutor_period(1010, "2C2024", 1)
+        topic = helper.create_topic("TopicCustom")
+        group = helper.create_group(["105285"], tutor_period.id, topic.id, "2C2024")
+
+        date_repository = DateSlotRepository(self.Session)
+        data = [{"group_id": group.id, "slot": dt.datetime(2024, 10, 15, 9, 0)}]
+        date_repository.add_bulk(GroupDateSlot, data)
+        dates_saved = date_repository.get_groups_slots_by_id(group.id)
         assert len(dates_saved) == 1
+
+    @pytest.mark.integration
+    def test_update_group_slots(self, tables):
+        date_repository = DateSlotRepository(self.Session)
+        group_id = 1
+        slots_to_update = [
+            {"group_id": group_id, "slot": dt.datetime(2024, 10, 15, 10, 0)}
+        ]
+        date_repository.bulk_update_group_slots(slots_to_update, group_id)
+        dates_saved = date_repository.get_groups_slots_by_id(group_id)
+        assert len(dates_saved) == 1
+        assert dates_saved[0].group_id == group_id
+        assert dates_saved[0].slot == dt.datetime(2024, 10, 15, 10, 0)
