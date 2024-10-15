@@ -278,3 +278,4 @@ async def get_slots_by_group_id(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise e
+

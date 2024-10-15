@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import insert
+from sqlalchemy import insert, delete
 
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 
@@ -70,3 +70,25 @@ class DateSlotRepository:
                 session.expunge(slot)
 
         return slots
+    
+    def bulk_update_slots(self, slots_to_update: list[dict], period: str):
+        """
+        Deletes existing slots that are not in updated list and add the new ones.
+        """
+        with self.Session() as session:
+            slot_ids = [slot['slot'] for slot in slots_to_update]
+
+            # Delete slots not in the update list
+            delete_stmt = delete(DateSlot).where(
+                DateSlot.period_id == period,
+                DateSlot.slot.notin_(slot_ids)
+            )
+            session.execute(delete_stmt)
+
+            # Add new slots
+            for slot in slots_to_update:
+                if not session.query(DateSlot).filter_by(slot=slot['slot']).first():
+                    new_slot = DateSlot(**slot)
+                    session.add(new_slot)
+
+            session.commit()
