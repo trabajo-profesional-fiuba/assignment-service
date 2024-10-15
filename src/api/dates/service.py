@@ -2,7 +2,7 @@ from datetime import timedelta
 from src.api.dates.exceptions import InvalidDate
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 from src.config.logging import logger
-
+from src.api.dates.schemas import DateSlotRequestList
 
 class DateSlotsService:
 
@@ -67,3 +67,13 @@ class DateSlotsService:
 
     def get_groups_slots_by_id(self, group_id: int):
         return self._repository.get_groups_slots_by_id(group_id)
+
+    def update_slots(self, slot_ranges: DateSlotRequestList, period: str):
+        try:
+            slots = self._create_slots_from_ranges(slot_ranges)
+            slots_to_save = [{"period_id": period, "slot": slot} for slot in slots]
+            self._repository.bulk_update_slots(slots_to_save, period)
+            return slots_to_save
+        except Exception as e:
+            logger.error(f"Could not update period because of: {str(e)}")
+            raise InvalidDate(str(e))

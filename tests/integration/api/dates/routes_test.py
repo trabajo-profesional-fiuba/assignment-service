@@ -479,3 +479,55 @@ def test_get_group_dates_by_id(fastapi, tables):
     # Assert
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 4
+
+@pytest.mark.integration
+def test_update_dates_with_success(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    admin_token = helper.create_admin_token()
+
+    params = {"period": "2C2024"}
+    body = [
+        {
+            "start": "2024-10-07T12:00:00.000Z",
+            "end": "2024-10-07T14:00:00.000Z",
+        }  # 4 slots
+    ]
+    
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    
+    updated_body = [
+        {
+            "start": "2024-10-15T12:00:00.000Z", # start hour updated
+            "end": "2024-10-15T14:00:00.000Z", # final hour updated
+        }  # 2 slots
+    ]
+    response = fastapi.put(
+        f"{PREFIX}",
+        json=updated_body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    
+    response = fastapi.get(
+        f"{PREFIX}",
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert len(response.json()) == 2
+    assert response.json() == [
+        {
+            'slot': '2024-10-15T12:00:00'
+        },
+        {
+            'slot': '2024-10-15T13:00:00'
+        }
+    ]
