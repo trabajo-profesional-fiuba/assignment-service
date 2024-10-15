@@ -279,6 +279,7 @@ async def get_slots_by_group_id(
     except Exception as e:
         raise e
 
+
 @router.put(
     "/",
     response_model=DateSlotResponseList,

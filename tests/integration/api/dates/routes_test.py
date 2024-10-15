@@ -480,6 +480,7 @@ def test_get_group_dates_by_id(fastapi, tables):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 4
 
+
 @pytest.mark.integration
 def test_update_dates_with_success(fastapi, tables):
     # Arrange
@@ -494,7 +495,7 @@ def test_update_dates_with_success(fastapi, tables):
             "end": "2024-10-07T14:00:00.000Z",
         }  # 4 slots
     ]
-    
+
     response = fastapi.post(
         f"{PREFIX}",
         json=body,
@@ -502,11 +503,11 @@ def test_update_dates_with_success(fastapi, tables):
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
-    
+
     updated_body = [
         {
-            "start": "2024-10-15T12:00:00.000Z", # start hour updated
-            "end": "2024-10-15T14:00:00.000Z", # final hour updated
+            "start": "2024-10-15T12:00:00.000Z",  # start hour updated
+            "end": "2024-10-15T14:00:00.000Z",  # final hour updated
         }  # 2 slots
     ]
     response = fastapi.put(
@@ -516,7 +517,7 @@ def test_update_dates_with_success(fastapi, tables):
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_201_CREATED
-    
+
     response = fastapi.get(
         f"{PREFIX}",
         params=params,
@@ -524,10 +525,6 @@ def test_update_dates_with_success(fastapi, tables):
     )
     assert len(response.json()) == 2
     assert response.json() == [
-        {
-            'slot': '2024-10-15T12:00:00'
-        },
-        {
-            'slot': '2024-10-15T13:00:00'
-        }
+        {"slot": "2024-10-15T12:00:00"},
+        {"slot": "2024-10-15T13:00:00"},
     ]

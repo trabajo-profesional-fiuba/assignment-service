@@ -4,6 +4,7 @@ from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 from src.config.logging import logger
 from src.api.dates.schemas import DateSlotRequestList
 
+
 class DateSlotsService:
 
     def __init__(self, repository) -> None:

@@ -76,10 +76,10 @@ class TestDateRepository:
     def test_get_list_of_slots_by_period(self, tables):
         repository = DateSlotRepository(self.Session)
         period = "2C2024"
-        
+
         dates_saved = repository.get_slots_by_period(period)
         assert len(dates_saved) == 5
-        
+
     @pytest.mark.integration
     def test_update_slots_adding_one_and_deleting_existing_ones(self, tables):
         repository = DateSlotRepository(self.Session)

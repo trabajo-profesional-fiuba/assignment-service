@@ -98,5 +98,6 @@ class BlobDetails(BaseModel):
 class BlobDetailsList(RootModel):
     root: List[BlobDetails] = Field(default=[])
 
+
 class IntermediateAssignmentRequest(BaseModel):
     url: str

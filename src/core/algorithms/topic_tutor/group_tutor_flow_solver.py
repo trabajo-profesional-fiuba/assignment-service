@@ -10,7 +10,7 @@ from src.constants import SOURCE_NODE_ID, SINK_NODE_ID, GROUP_ID, TOPIC_ID, TUTO
 from src.core.group import UnassignedGroup
 from src.core.result import GroupTutorAssigmentResult
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor, Tutor
+from src.core.tutor import SinglePeriodTutor
 
 
 class GroupTutorFlowSolver:

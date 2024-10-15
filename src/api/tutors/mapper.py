@@ -15,7 +15,11 @@ class TutorMapper:
         tutors = list()
         for db_period in db_periods:
             db_tutor = db_period.tutor
-            topics = self._topic_mapper.convert_from_models_to_topic(db_period.topics) if self._topic_mapper else []
+            topics = (
+                self._topic_mapper.convert_from_models_to_topic(db_period.topics)
+                if self._topic_mapper
+                else []
+            )
             tutor = SinglePeriodTutor(
                 id=db_tutor.id,
                 period_id=db_period.id,
