@@ -90,3 +90,20 @@ class DateSlotsService:
         except Exception as e:
             logger.error(f"Could not update group slots because of: {str(e)}")
             raise InvalidDate(str(e))
+
+    def update_tutor_slots(
+        self, slot_ranges: DateSlotRequestList, tutor_id: int, period: str
+    ):
+        try:
+            slots = self._create_slots_from_ranges(slot_ranges)
+            slots_to_save = [
+                {"tutor_id": tutor_id, "slot": slot, "period_id": period}
+                for slot in slots
+            ]
+            updated_slots = self._repository.bulk_update_tutor_slots(
+                slots_to_save, tutor_id, period
+            )
+            return slots_to_save
+        except Exception as e:
+            logger.error(f"Could not update tutor slots because of: {str(e)}")
+            raise InvalidDate(str(e))

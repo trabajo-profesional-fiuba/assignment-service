@@ -597,3 +597,67 @@ def test_update_group_dates_with_success(fastapi, tables):
     assert response.json() == [
         {"slot": "2024-10-07T13:00:00"},
     ]
+
+
+@pytest.mark.integration
+def test_update_tutor_dates_with_success(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
+    helper.create_tutor_period("105000", "2C2024")
+
+    period = "2C2024"
+    tutor_id = 105000
+    tutor_token = helper.create_tutor_token(105000)
+    admin_token = helper.create_admin_token()
+
+    params = {"period": period}
+    body = [
+        {
+            "start": "2024-10-07T12:00:00.000Z",
+            "end": "2024-10-07T14:00:00.000Z",
+        }  # 4 slots
+    ]
+    response = fastapi.post(
+        f"{PREFIX}",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    params = {"tutor_id": tutor_id, "period": period}
+    response = fastapi.post(
+        f"{PREFIX}/tutors",
+        json=body,
+        params=params,
+        headers={"Authorization": f"Bearer {tutor_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    updated_body = [
+        {
+            "start": "2024-10-07T13:00:00.000Z",
+            "end": "2024-10-07T14:00:00.000Z",
+        }  # 2 slots
+    ]
+    response = fastapi.put(
+        f"{PREFIX}/tutors",
+        json=updated_body,
+        params=params,
+        headers={"Authorization": f"Bearer {tutor_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    params = {"period": "2C2024"}
+    response = fastapi.get(
+        f"{PREFIX}/tutors/{tutor_id}",
+        params=params,
+        headers={"Authorization": f"Bearer {tutor_token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 1
+    assert response.json() == [
+        {"slot": "2024-10-07T13:00:00"},
+    ]
