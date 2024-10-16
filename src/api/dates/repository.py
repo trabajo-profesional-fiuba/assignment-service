@@ -121,3 +121,44 @@ class DateSlotRepository:
                     session.add(new_slot)
 
             session.commit()
+
+    def bulk_update_tutor_slots(
+        self, slots_to_update: list[dict], tutor_id: int, period: str
+    ):
+        """
+        Deletes existing slots that are not in updated list and add the new ones.
+        """
+        with self.Session() as session:
+            slot_ids = {
+                (slot["slot"], slot["tutor_id"], slot["period_id"])
+                for slot in slots_to_update
+            }
+
+            existing_slots = session.query(TutorDateSlot).all()
+            existing_slot_ids = {
+                (slot.slot, slot.tutor_id, slot.period_id) for slot in existing_slots
+            }
+
+            # Identify slots to delete
+            slots_to_delete = existing_slot_ids - slot_ids
+
+            # Delete slots not in the update list
+            for slot, tutor_id, period_id in slots_to_delete:
+                delete_stmt = delete(TutorDateSlot).where(
+                    TutorDateSlot.period_id == period,
+                    TutorDateSlot.tutor_id == tutor_id,
+                    TutorDateSlot.slot == slot,
+                )
+                session.execute(delete_stmt)
+
+            # Add new slots
+            for slot in slots_to_update:
+                if (
+                    slot["slot"],
+                    slot["tutor_id"],
+                    slot["period_id"],
+                ) not in existing_slot_ids:
+                    new_slot = TutorDateSlot(**slot)
+                    session.add(new_slot)
+
+            session.commit()

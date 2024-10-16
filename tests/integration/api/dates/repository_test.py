@@ -2,7 +2,7 @@ import pytest
 import datetime as dt
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from src.api.dates.models import DateSlot, GroupDateSlot
+from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 from src.api.dates.repository import DateSlotRepository
 from src.config.database.database import create_tables, drop_tables, engine
 from tests.integration.api.helper import ApiHelper
@@ -125,4 +125,42 @@ class TestDateRepository:
         dates_saved = date_repository.get_groups_slots_by_id(group_id)
         assert len(dates_saved) == 1
         assert dates_saved[0].group_id == group_id
+        assert dates_saved[0].slot == dt.datetime(2024, 10, 15, 10, 0)
+
+    @pytest.mark.integration
+    def test_add_tutor_slots(self, tables):
+        tutor_id = 1010
+        period = "2C2024"
+        data = [
+            {
+                "period_id": period,
+                "slot": dt.datetime(2024, 10, 15, 9, 0),
+                "tutor_id": tutor_id,
+            }
+        ]
+
+        date_repository = DateSlotRepository(self.Session)
+        date_repository.add_bulk(TutorDateSlot, data)
+
+        dates_saved = date_repository.get_tutor_slots_by_id(tutor_id, period)
+        assert len(dates_saved) == 1
+
+    @pytest.mark.integration
+    def test_update_tutor_slots(self, tables):
+        tutor_id = 1010
+        period = "2C2024"
+        slots_to_update = [
+            {
+                "period_id": period,
+                "slot": dt.datetime(2024, 10, 15, 10, 0),
+                "tutor_id": tutor_id,
+            }
+        ]
+
+        date_repository = DateSlotRepository(self.Session)
+        date_repository.bulk_update_tutor_slots(slots_to_update, tutor_id, period)
+
+        dates_saved = date_repository.get_tutor_slots_by_id(tutor_id, period)
+        assert len(dates_saved) == 1
+        assert dates_saved[0].tutor_id == tutor_id
         assert dates_saved[0].slot == dt.datetime(2024, 10, 15, 10, 0)
