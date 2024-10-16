@@ -316,6 +316,7 @@ async def update_slots(
 
         service = DateSlotsService(DateSlotRepository(session))
         slots_added = service.update_slots(slots, period)
+        logger.info("Slots already updated")
 
         res = DateSlotResponseList.model_validate(slots_added)
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
@@ -326,3 +327,41 @@ async def update_slots(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
+
+
+@router.put(
+    "/groups",
+    response_model=DateSlotResponseList,
+    summary="Updates a list of slots by group id",
+    responses={
+        status.HTTP_201_CREATED: {
+            "description": "Successfully updates a list of available slots by group"
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+            backend"
+        },
+    },
+    status_code=status.HTTP_201_CREATED,
+)
+async def update_group_slots(
+    slots: DateSlotRequestList,
+    group_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_student_in_group(token, group_id, GroupRepository(session))
+
+        service = DateSlotsService(DateSlotRepository(session))
+        slots = service.update_group_slots(slots, group_id)
+        logger.info(f"Updates all slots from group id: {group_id}")
+
+        res = DateSlotResponseList.model_validate(slots)
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise e
