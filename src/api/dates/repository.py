@@ -83,18 +83,6 @@ class DateSlotRepository:
             session.execute(delete_stmt)
             session.commit()
 
-    def bulk_insert_slots(
-        self,
-        model: DateSlot | GroupDateSlot | TutorDateSlot,
-        slots_to_insert: list[dict],
-    ):
-        """
-        Inserts new date, group or tutor slots.
-        """
-        with self.Session() as session:
-            session.execute(insert(model).values(slots_to_insert))
-            session.commit()
-
     def sync_date_slots(self, slots_to_update: list[dict], period: str):
         """
         Deletes existing slots that are not in updated list and add the new ones.
@@ -118,7 +106,7 @@ class DateSlotRepository:
                 if (slot["slot"], slot["period_id"]) not in existing_slots_set
             ]
             if new_slots:
-                self.bulk_insert_slots(DateSlot, new_slots)
+                self.add_bulk(DateSlot, new_slots)
 
     def delete_group_slots(self, slots_to_delete: list[dict], group_id: int):
         """
@@ -159,7 +147,7 @@ class DateSlotRepository:
                 if (slot["slot"], slot["group_id"]) not in existing_slots_set
             ]
             if new_slots:
-                self.bulk_insert_slots(GroupDateSlot, new_slots)
+                self.add_bulk(GroupDateSlot, new_slots)
 
     def delete_tutor_slots(
         self, slots_to_delete: list[dict], tutor_id: int, period: str
@@ -206,4 +194,4 @@ class DateSlotRepository:
                 not in existing_slots_set
             ]
             if new_slots:
-                self.bulk_insert_slots(TutorDateSlot, new_slots)
+                self.add_bulk(TutorDateSlot, new_slots)
