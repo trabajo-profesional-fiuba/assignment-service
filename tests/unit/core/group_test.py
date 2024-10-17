@@ -6,7 +6,6 @@ from src.core.group import AssignedGroup, UnassignedGroup
 from src.core.student import Student
 from src.core.tutor import Tutor
 from src.core.topic import Topic
-from src.core.delivery_date import DeliveryDate
 
 
 class TestUnassignedGroup:
