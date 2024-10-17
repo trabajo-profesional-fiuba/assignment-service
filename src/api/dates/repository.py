@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import insert, delete
+from sqlalchemy import insert, delete, and_
 
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 
@@ -71,7 +71,7 @@ class DateSlotRepository:
 
         return slots
 
-    def bulk_update_slots(self, slots_to_update: list[dict], period: str):
+    def sync_date_slots(self, slots_to_update: list[dict], period: str):
         """
         Deletes existing slots that are not in updated list and add the new ones.
         """
@@ -94,7 +94,7 @@ class DateSlotRepository:
 
             session.commit()
 
-    def bulk_update_group_slots(self, slots_to_update: list[dict], group_id: int):
+    def sync_group_slots(self, slots_to_update: list[dict], group_id: int):
         """
         Deletes existing slots that are not in updated list and add the new ones.
         """
@@ -108,11 +108,17 @@ class DateSlotRepository:
             slots_to_delete = existing_slot_ids - slot_ids
 
             # Delete slots not in the update list
-            for slot, group_id in slots_to_delete:
-                delete_stmt = delete(GroupDateSlot).where(
-                    GroupDateSlot.slot == slot, GroupDateSlot.group_id == group_id
+            delete_stmt = delete(GroupDateSlot).where(
+                and_(
+                    GroupDateSlot.slot.in_(
+                        [slot for slot, group_id in slots_to_delete]
+                    ),
+                    GroupDateSlot.group_id.in_(
+                        [group_id for slot, group_id in slots_to_delete]
+                    ),
                 )
-                session.execute(delete_stmt)
+            )
+            session.execute(delete_stmt)
 
             # Add new slots
             for slot in slots_to_update:
@@ -122,9 +128,7 @@ class DateSlotRepository:
 
             session.commit()
 
-    def bulk_update_tutor_slots(
-        self, slots_to_update: list[dict], tutor_id: int, period: str
-    ):
+    def sync_tutor_slots(self, slots_to_update: list[dict], tutor_id: int, period: str):
         """
         Deletes existing slots that are not in updated list and add the new ones.
         """

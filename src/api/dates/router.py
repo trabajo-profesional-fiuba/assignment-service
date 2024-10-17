@@ -303,7 +303,7 @@ async def get_slots_by_group_id(
     },
     status_code=status.HTTP_201_CREATED,
 )
-async def update_slots(
+async def sync_date_slots(
     slots: DateSlotRequestList,
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
@@ -315,7 +315,7 @@ async def update_slots(
         auth_service.assert_only_admin(token)
 
         service = DateSlotsService(DateSlotRepository(session))
-        slots_added = service.update_slots(slots, period)
+        slots_added = service.sync_date_slots(slots, period)
         logger.info("Slots already updated")
 
         res = DateSlotResponseList.model_validate(slots_added)
@@ -352,7 +352,7 @@ async def update_slots(
     },
     status_code=status.HTTP_201_CREATED,
 )
-async def update_group_slots(
+async def sync_group_slots(
     slots: DateSlotRequestList,
     group_id: int,
     session: Annotated[Session, Depends(get_db)],
@@ -364,7 +364,7 @@ async def update_group_slots(
         auth_service.assert_student_in_group(token, group_id, GroupRepository(session))
 
         service = DateSlotsService(DateSlotRepository(session))
-        slots = service.update_group_slots(slots, group_id)
+        slots = service.sync_group_slots(slots, group_id)
         logger.info(f"Updates all slots from group id: {group_id}")
 
         res = DateSlotResponseList.model_validate(slots)
@@ -398,7 +398,7 @@ async def update_group_slots(
     },
     status_code=status.HTTP_201_CREATED,
 )
-async def update_tutor_slots(
+async def sync_tutor_slots(
     slots: DateSlotRequestList,
     tutor_id: int,
     session: Annotated[Session, Depends(get_db)],
@@ -412,7 +412,7 @@ async def update_tutor_slots(
         tutor_id = auth_service.get_user_id(jwt)
 
         service = DateSlotsService(DateSlotRepository(session))
-        slots_added = service.update_tutor_slots(slots, tutor_id, period)
+        slots_added = service.sync_tutor_slots(slots, tutor_id, period)
 
         res = DateSlotResponseList.model_validate(slots_added)
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)

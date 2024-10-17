@@ -81,7 +81,7 @@ class TestDateRepository:
         assert len(dates_saved) == 5
 
     @pytest.mark.integration
-    def test_update_slots(self, tables):
+    def test_sync_date_slots(self, tables):
         repository = DateSlotRepository(self.Session)
         period = "2C2024"
         slots_to_update = [
@@ -94,7 +94,7 @@ class TestDateRepository:
                 "slot": dt.datetime(2024, 10, 15, 10, 0),
             },
         ]
-        repository.bulk_update_slots(slots_to_update, period)
+        repository.sync_date_slots(slots_to_update, period)
         dates_saved = repository.get_slots_by_period(period)
         assert len(dates_saved) == 2
 
@@ -115,13 +115,13 @@ class TestDateRepository:
         assert len(dates_saved) == 1
 
     @pytest.mark.integration
-    def test_update_group_slots(self, tables):
+    def test_sync_group_slots(self, tables):
         date_repository = DateSlotRepository(self.Session)
         group_id = 1
         slots_to_update = [
             {"group_id": group_id, "slot": dt.datetime(2024, 10, 15, 10, 0)}
         ]
-        date_repository.bulk_update_group_slots(slots_to_update, group_id)
+        date_repository.sync_group_slots(slots_to_update, group_id)
         dates_saved = date_repository.get_groups_slots_by_id(group_id)
         assert len(dates_saved) == 1
         assert dates_saved[0].group_id == group_id
@@ -146,7 +146,7 @@ class TestDateRepository:
         assert len(dates_saved) == 1
 
     @pytest.mark.integration
-    def test_update_tutor_slots(self, tables):
+    def test_sync_tutor_slots(self, tables):
         tutor_id = 1010
         period = "2C2024"
         slots_to_update = [
@@ -158,7 +158,7 @@ class TestDateRepository:
         ]
 
         date_repository = DateSlotRepository(self.Session)
-        date_repository.bulk_update_tutor_slots(slots_to_update, tutor_id, period)
+        date_repository.sync_tutor_slots(slots_to_update, tutor_id, period)
 
         dates_saved = date_repository.get_tutor_slots_by_id(tutor_id, period)
         assert len(dates_saved) == 1
