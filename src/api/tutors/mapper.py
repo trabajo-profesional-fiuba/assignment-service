@@ -3,7 +3,7 @@ from src.api.topics.mapper import TopicMapper
 from src.api.tutors.models import TutorPeriod
 
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor
+from src.core.tutor import Tutor
 
 
 class TutorMapper:
@@ -20,7 +20,7 @@ class TutorMapper:
                 if self._topic_mapper
                 else []
             )
-            tutor = SinglePeriodTutor(
+            tutor = Tutor(
                 id=db_tutor.id,
                 period_id=db_period.id,
                 name=db_tutor.name,
@@ -38,7 +38,7 @@ class TutorMapper:
     ):
         tutor = None
         if db_tutor_period:
-            tutor = SinglePeriodTutor(
+            tutor = Tutor(
                 id=db_tutor_period.tutor_id,
                 period_id=db_tutor_period.id,
                 name=db_tutor_period.tutor.name,

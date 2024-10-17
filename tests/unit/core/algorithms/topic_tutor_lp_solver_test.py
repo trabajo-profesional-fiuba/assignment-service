@@ -3,7 +3,7 @@ import pytest
 from src.core.algorithms.topic_tutor.group_tutor_lp_solver import GroupTutorLPSolver
 from src.core.group import UnassignedGroup
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor
+from src.core.tutor import Tutor
 
 
 class TestGroupTutorLPSolver:
@@ -31,10 +31,10 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0], topics[1]]
         )
-        tutor2 = SinglePeriodTutor(
+        tutor2 = Tutor(
             2, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[2], topics[3]]
         )
 
@@ -82,10 +82,10 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1, 1, "Email", "Name", "Lastname", capacity=1, topics=[topics[0], topics[1]]
         )
-        tutor2 = SinglePeriodTutor(
+        tutor2 = Tutor(
             2,
             1,
             "Email",
@@ -149,10 +149,10 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1, 1, "Email", "Name", "Lastname", capacity=3, topics=[topics[0], topics[1]]
         )
-        tutor2 = SinglePeriodTutor(
+        tutor2 = Tutor(
             2,
             1,
             "Email",
@@ -223,7 +223,7 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1,
             1,
             "Email",
@@ -278,10 +278,10 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0]]
         )
-        tutor2 = SinglePeriodTutor(
+        tutor2 = Tutor(
             2, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[1]]
         )
         tutors = [tutor1, tutor2]
@@ -323,7 +323,7 @@ class TestGroupTutorLPSolver:
                 students=["Student 5", "Student 6"],
             ),
         ]
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1, 1, "Email", "Name", "Lastname", capacity=3, topics=[topics[0], topics[1]]
         )
 

@@ -10,7 +10,7 @@ from src.constants import SOURCE_NODE_ID, SINK_NODE_ID, GROUP_ID, TOPIC_ID, TUTO
 from src.core.group import UnassignedGroup
 from src.core.result import GroupTutorAssigmentResult
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor
+from src.core.tutor import Tutor
 
 
 class GroupTutorFlowSolver:
@@ -22,7 +22,7 @@ class GroupTutorFlowSolver:
         self,
         groups: Optional[list[UnassignedGroup]] = None,
         topics: Optional[list[Topic]] = None,
-        tutors: Optional[list[SinglePeriodTutor]] = None,
+        tutors: Optional[list[Tutor]] = None,
     ):
         """
         Initializes the solver with the provided groups, topics, and tutors.

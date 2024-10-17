@@ -3,7 +3,7 @@ import pytest
 from src.core.algorithms.topic_tutor.group_tutor_flow_solver import GroupTutorFlowSolver
 from src.core.group import UnassignedGroup
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor
+from src.core.tutor import Tutor
 
 
 class TestGroupTutorFlowSolver:
@@ -60,10 +60,10 @@ class TestGroupTutorFlowSolver:
             Topic(id=3, title="Tema E", capacity=10, category="Category B"),
         ]
 
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0], topics[1]]
         )
-        tutor2 = SinglePeriodTutor(
+        tutor2 = Tutor(
             2, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[2], topics[3]]
         )
 
@@ -74,10 +74,10 @@ class TestGroupTutorFlowSolver:
 
     @pytest.mark.unit
     def test_create_tutor_sink_edges(self):
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1, 1, "Email", "Name", "Lastname", capacity=2, topics=[]
         )
-        tutor2 = SinglePeriodTutor(
+        tutor2 = Tutor(
             2, 1, "Email", "Name", "Lastname", capacity=5, topics=[]
         )
 
@@ -108,10 +108,10 @@ class TestGroupTutorFlowSolver:
             ),
         ]
 
-        tutor1 = SinglePeriodTutor(
+        tutor1 = Tutor(
             1, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0], topics[1]]
         )
-        tutor2 = SinglePeriodTutor(
+        tutor2 = Tutor(
             2, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[2], topics[3]]
         )
 

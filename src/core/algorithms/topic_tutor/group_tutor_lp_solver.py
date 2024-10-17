@@ -4,7 +4,7 @@ from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.core.group import UnassignedGroup
 from src.core.result import GroupTutorAssigmentResult
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor
+from src.core.tutor import Tutor
 
 
 class GroupTutorLPSolver:
@@ -12,7 +12,7 @@ class GroupTutorLPSolver:
         self,
         groups: list[UnassignedGroup],
         topics: list[Topic],
-        tutors: list[SinglePeriodTutor],
+        tutors: list[Tutor],
         balance_limit,
     ):
         """
