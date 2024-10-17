@@ -120,7 +120,7 @@ async def assign_group_topic_tutor(
 
         topic_service = TopicService(TopicRepository(session))
         topic_mapper = TopicMapper()
-        topics = topic_mapper.convert_from_models_to_topic(
+        topics = topic_mapper.map_models_to_topics(
             topic_service.get_topics_by_period(period_id)
         )
 

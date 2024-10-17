@@ -138,7 +138,7 @@ async def post_initial_project(
             container=container_name, access_key=access_key
         )
         content_as_bytes = await file.read()
-        group_mapper = GroupMapper(tutor_mapper=TutorMapper())
+        group_mapper = GroupMapper()
         group_service = GroupService(GroupRepository(session))
         group_service.upload_initial_project(
             group_id, project_title, content_as_bytes, az_client

@@ -127,7 +127,7 @@ class UnassignedGroup:
     def __init__(
         self,
         id: int,
-        students: Optional[List[int]] = None,
+        students: Optional[List[Student]] = None,
         topics: Optional[List[Topic]] = None,
     ) -> None:
         self._id = id

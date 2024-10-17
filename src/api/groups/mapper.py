@@ -1,14 +1,17 @@
+from src.api.topics.mapper import TopicMapper
 from src.api.tutors.mapper import TutorMapper
-from src.core.group import Group, UnassignedGroup
+from src.core.group import AssignedGroup, Group, UnassignedGroup
+from src.core.student import StudentMapper
 
 
 class GroupMapper:
 
     def __init__(
         self,
-        tutor_mapper: TutorMapper | None = None,
     ) -> None:
-        self._tutor_mapper = tutor_mapper
+        self._tutor_mapper = TutorMapper()
+        self._student_mapper = StudentMapper()
+        self._topic_mapper = TopicMapper()
 
     def map_models_to_unassigned_groups(self, db_groups, topics):
         topics_mapped = {topic.id: topic for topic in topics}
@@ -28,16 +31,18 @@ class GroupMapper:
 
     def map_model_to_assigned_group(self, db_group):
         tutor = (
-            self._tutor_mapper.convert_to_single_period_tutor(db_group.tutor_period)
+            self._tutor_mapper.map_model_to_single_period_tutor(db_group.tutor_period)
             if self._tutor_mapper
             else None
         )
-        students_emails = [student.email for student in db_group.students]
-        group = Group(
+        students = self._student_mapper.map_models_to_students(db_group.students)
+        topic = self._topic_mapper.map_model_to_topic(db_group.topic)
+        group = AssignedGroup(
             id=db_group.id,
             tutor=tutor,
-            students_emails=students_emails,
+            students=students,
             reviewer_id=db_group.reviewer_id,
+            topic_assigned=topic
         )
 
         return group
