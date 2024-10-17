@@ -167,7 +167,6 @@ class AssignedGroup:
         self._tutor = tutor
         self._available_dates = available_dates if available_dates is not None else []
         self._assigned_date = None
-        self._topics = []
         self._assigned_topic = topic_assigned
         self._students = students if students is not None else []
         self._reviewer_id = reviewer_id
