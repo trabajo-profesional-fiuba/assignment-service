@@ -71,34 +71,51 @@ class DateSlotRepository:
 
         return slots
 
+    def delete_date_slots(self, slots_to_delete: list[dict], period: str):
+        """
+        Deletes slots to delete within a given period.
+        """
+        with self.Session() as session:
+            delete_stmt = delete(DateSlot).where(
+                DateSlot.period_id == period,
+                DateSlot.slot.in_([slot[0] for slot in slots_to_delete]),
+            )
+            session.execute(delete_stmt)
+            session.commit()
+
+    def bulk_insert_date_slots(self, slots_to_insert: list[dict]):
+        """
+        Inserts new slots
+        .
+        """
+        with self.Session() as session:
+            session.execute(insert(DateSlot).values(slots_to_insert))
+            session.commit()
+
     def sync_date_slots(self, slots_to_update: list[dict], period: str):
         """
         Deletes existing slots that are not in updated list and add the new ones.
         """
         with self.Session() as session:
-            slot_ids = [slot["slot"] for slot in slots_to_update]
-
-            # Delete slots not in the update list
-            delete_stmt = delete(DateSlot).where(
-                DateSlot.period_id == period, DateSlot.slot.notin_(slot_ids)
-            )
-            session.execute(delete_stmt)
-
+            # Retrieve existing slots
             existing_slots = session.query(DateSlot).all()
-            existing_slot_ids = {(slot.slot, slot.period_id) for slot in existing_slots}
+            existing_slots_set = {(slot.slot, period) for slot in existing_slots}
 
-            # Filter slots that already exist
+            # Delete existing slots
+            slots_to_update_set = set(
+                (slot["slot"], period) for slot in slots_to_update
+            )
+            slots_to_delete = existing_slots_set - slots_to_update_set
+            self.delete_date_slots(slots_to_delete, period)
+
+            # Bulk insert new slots
             new_slots = [
                 slot
                 for slot in slots_to_update
-                if (slot["slot"], slot["period_id"]) not in existing_slot_ids
+                if (slot["slot"], slot["period_id"]) not in existing_slots_set
             ]
-
-            # Bulk insert new slots
             if new_slots:
-                session.execute(insert(DateSlot).values(new_slots))
-
-            session.commit()
+                self.bulk_insert_date_slots(new_slots)
 
     def sync_group_slots(self, slots_to_update: list[dict], group_id: int):
         """
