@@ -172,8 +172,12 @@ class AssignedGroup:
         self._reviewer_id = reviewer_id
 
     @property
-    def id(self) -> str:
+    def id(self) -> int:
         return self._id
+    
+    @property
+    def reviewer_id(self) -> int:
+        return self._reviewer_id
 
     def emails(self) -> list[str]:
         return [student.email for student in self._students]
@@ -183,3 +187,9 @@ class AssignedGroup:
 
     def assign_tutor(self, tutor: Tutor) -> None:
         self._tutor = tutor
+
+    def tutor_id(self) -> Optional[int]:
+        return self._tutor.id if self._tutor else None
+
+    def tutor_email(self):
+        return self._tutor.email if self._tutor else None

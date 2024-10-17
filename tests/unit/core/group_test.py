@@ -128,3 +128,21 @@ class TestAssignedGroup:
         group = AssignedGroup(id=1)
         group.assign_tutor(tutor)
         assert group._tutor == tutor
+
+    @pytest.mark.unit
+    def test_get_tutor_id(self):
+        tutor = Tutor(
+            id=1, name="Carlos", email="dr.smith@example.com", last_name="Fontela"
+        )
+        group = AssignedGroup(id=1, tutor=tutor)
+        tutor_id = group.tutor_id()
+        assert tutor_id == 1
+
+    @pytest.mark.unit
+    def test_get_tutor_email(self):
+        tutor = Tutor(
+            id=1, name="Carlos", email="dr.smith@example.com", last_name="Fontela"
+        )
+        group = AssignedGroup(id=1, tutor=tutor)
+        email = group.tutor_email()
+        assert email == "dr.smith@example.com"

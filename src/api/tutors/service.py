@@ -1,6 +1,7 @@
 import re
 
 from src.api.exceptions import Duplicated, EntityNotFound
+from src.api.groups.repository import GroupRepository
 from src.api.users.models import User, Role
 from src.api.auth.hasher import ShaHasher
 from src.api.tutors.schemas import TutorPeriodResponse, TutorRequest, TutorResponse
@@ -14,6 +15,7 @@ from src.api.tutors.exceptions import (
 )
 from src.api.tutors.models import TutorPeriod
 from src.api.users.repository import UserRepository
+from src.core.group import AssignedGroup
 
 
 class TutorService:
@@ -200,7 +202,7 @@ class TutorService:
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
 
-    def get_tutor_period_by_tutor_email(self, period, tutor_email):
+    def get_tutor_period_by_tutor_email(self, period: str, tutor_email: str):
         """
         Looks up for a tutor based on its email
         """
@@ -211,7 +213,7 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
 
-    def get_tutor_period_by_tutor_id(self, period, tutor_id) -> TutorPeriod:
+    def get_tutor_period_by_tutor_id(self, period: str, tutor_id: int) -> TutorPeriod:
         """
         Looks up for a tutor based on its email
         """
@@ -220,20 +222,20 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
 
-    def get_tutor_periods_by_period_id(self, period_id: int) -> list[TutorPeriod]:
+    def get_tutor_periods_by_period_id(self, period_id: str) -> list[TutorPeriod]:
         try:
             return self._repository.get_tutor_periods_by_periods_id(period_id)
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
 
-    def get_groups_from_tutor_id(self, tutor_id, period_id, group_repository):
+    def get_groups_from_tutor_id(self, tutor_id: int, period_id: str, group_repository: GroupRepository):
         period = self.get_tutor_period_by_tutor_id(period_id, tutor_id)
         groups = group_repository.get_groups_by_period_id(
             tutor_period_id=period.id, load_topic=True
         )
         return groups
 
-    def get_groups_from_reviewer_id(self, reviewer_id, period_id, group_repository):
+    def get_groups_from_reviewer_id(self, reviewer_id: int, period_id: str, group_repository: GroupRepository):
         try:
             groups = group_repository.get_groups_by_reviewer_id(
                 reviewer_id=reviewer_id, period_id=period_id, load_topic=True
@@ -242,10 +244,12 @@ class TutorService:
         except Exception as e:
             raise EntityNotFound(message=str(e))
 
-    def notify_students(self, sender_id, group, email_sender, message):
+    def notify_students(
+        self, sender_id: int, group: AssignedGroup, email_sender: str, message: str
+    ):
         try:
             sender = self._repository.get_tutor_by_tutor_id(sender_id)
-            to = group.students_emails
+            to = group.emails()
 
             if group.reviewer_id and sender.id == group.reviewer_id:
                 tutor = self._repository.get_tutor_by_tutor_id(group.tutor_id())

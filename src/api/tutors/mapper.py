@@ -36,13 +36,15 @@ class TutorMapper:
     def map_model_to_single_period_tutor(
         self, db_tutor_period: TutorPeriod, topics: list[Topic] = []
     ):
-        tutor = SinglePeriodTutor(
-            id=db_tutor_period.tutor_id,
-            period_id=db_tutor_period.id,
-            name=db_tutor_period.tutor.name,
-            last_name=db_tutor_period.tutor.last_name,
-            email=db_tutor_period.tutor.email,
-            capacity=db_tutor_period.capacity,
-            topics=topics,
-        )
+        tutor = None
+        if db_tutor_period:
+            tutor = SinglePeriodTutor(
+                id=db_tutor_period.tutor_id,
+                period_id=db_tutor_period.id,
+                name=db_tutor_period.tutor.name,
+                last_name=db_tutor_period.tutor.last_name,
+                email=db_tutor_period.tutor.email,
+                capacity=db_tutor_period.capacity,
+                topics=topics,
+            )
         return tutor
