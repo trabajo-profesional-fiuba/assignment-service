@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import insert
+from sqlalchemy import insert, delete, and_, tuple_
 
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 
@@ -70,3 +70,128 @@ class DateSlotRepository:
                 session.expunge(slot)
 
         return slots
+
+    def delete_date_slots(self, slots_to_delete: list[dict], period: str):
+        """
+        Deletes date slots within a given period.
+        """
+        with self.Session() as session:
+            delete_stmt = delete(DateSlot).where(
+                DateSlot.period_id == period,
+                DateSlot.slot.in_([slot[0] for slot in slots_to_delete]),
+            )
+            session.execute(delete_stmt)
+            session.commit()
+
+    def sync_date_slots(self, slots_to_update: list[dict], period: str):
+        """
+        Deletes existing slots that are not in updated list and add the new ones.
+        """
+        with self.Session() as session:
+            # Retrieve existing slots
+            existing_slots = session.query(DateSlot).all()
+            existing_slots_set = {(slot.slot, period) for slot in existing_slots}
+
+            # Delete existing slots
+            slots_to_update_set = set(
+                (slot["slot"], period) for slot in slots_to_update
+            )
+            slots_to_delete = existing_slots_set - slots_to_update_set
+            self.delete_date_slots(slots_to_delete, period)
+
+            # Bulk insert new slots
+            new_slots = [
+                slot
+                for slot in slots_to_update
+                if (slot["slot"], slot["period_id"]) not in existing_slots_set
+            ]
+            if new_slots:
+                self.add_bulk(DateSlot, new_slots)
+
+    def delete_group_slots(self, slots_to_delete: list[dict], group_id: int):
+        """
+        Deletes group slots from a given group id.
+        """
+        with self.Session() as session:
+            delete_stmt = delete(GroupDateSlot).where(
+                and_(
+                    GroupDateSlot.group_id == group_id,
+                    GroupDateSlot.slot.in_(
+                        [slot for slot, group_id in slots_to_delete]
+                    ),
+                )
+            )
+            session.execute(delete_stmt)
+            session.commit()
+
+    def sync_group_slots(self, slots_to_update: list[dict], group_id: int):
+        """
+        Deletes existing slots that are not in updated list and add the new ones.
+        """
+        with self.Session() as session:
+            # Retrieve existing slots
+            existing_slots = session.query(GroupDateSlot).all()
+            existing_slots_set = {(slot.slot, group_id) for slot in existing_slots}
+
+            # Delete existing slots
+            slots_to_update_set = set(
+                (slot["slot"], group_id) for slot in slots_to_update
+            )
+            slots_to_delete = existing_slots_set - slots_to_update_set
+            self.delete_group_slots(slots_to_delete, group_id)
+
+            # Bulk insert new slots
+            new_slots = [
+                slot
+                for slot in slots_to_update
+                if (slot["slot"], slot["group_id"]) not in existing_slots_set
+            ]
+            if new_slots:
+                self.add_bulk(GroupDateSlot, new_slots)
+
+    def delete_tutor_slots(
+        self, slots_to_delete: list[dict], tutor_id: int, period: str
+    ):
+        """
+        Deletes tutor slots from a given tutor id and period.
+        """
+        with self.Session() as session:
+            delete_stmt = delete(TutorDateSlot).where(
+                and_(
+                    TutorDateSlot.period_id == period,
+                    TutorDateSlot.tutor_id == tutor_id,
+                    TutorDateSlot.slot.in_(
+                        [slot for slot, tutor_id, period in slots_to_delete]
+                    ),
+                )
+            )
+            session.execute(delete_stmt)
+            session.commit()
+
+    def sync_tutor_slots(self, slots_to_update: list[dict], tutor_id: int, period: str):
+        """
+        Deletes existing slots that are not in updated list and add the new ones.
+        """
+        with self.Session() as session:
+            # Retrieve existing slots
+            existing_slots = session.query(TutorDateSlot).all()
+            existing_slots_set = {
+                (slot.slot, tutor_id, period) for slot in existing_slots
+            }
+
+            # Delete existing slots
+            slots_to_update_set = set(
+                (slot["slot"], tutor_id, period) for slot in slots_to_update
+            )
+            slots_to_delete = existing_slots_set - slots_to_update_set
+            self.delete_tutor_slots(slots_to_delete, tutor_id, period)
+
+            # Bulk insert new slots
+            new_slots = [
+                slot
+                for slot in slots_to_update
+                if (slot["slot"], slot["tutor_id"], slot["period_id"])
+                not in existing_slots_set
+            ]
+            if new_slots:
+                self.add_bulk(TutorDateSlot, new_slots)

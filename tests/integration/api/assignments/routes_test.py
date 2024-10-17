@@ -214,6 +214,7 @@ def test_resolve_assigment_of_topics_groups_tutors(fastapi, tables):
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 4
 
+
 @pytest.mark.integration
 def test_resolve_assigment_of_topics_groups_tutors_using_flow(fastapi, tables):
     helper = ApiHelper()

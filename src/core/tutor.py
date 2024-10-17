@@ -202,5 +202,3 @@ class SinglePeriodTutor:
         if matching_topic is None:
             return 0
         return matching_topic.capacity
-    
-        
