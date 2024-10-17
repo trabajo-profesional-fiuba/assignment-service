@@ -1,101 +1,54 @@
 import pytest
 
-from src.core.group import Group
+
+from src.core.group import UnassignedGroup
+from src.core.student import Student
 from src.core.tutor import Tutor
 from src.core.topic import Topic
 from src.core.delivery_date import DeliveryDate
 
 
-class TestGroup:
+class TestUnassignedGroup:
 
     @pytest.mark.unit
-    def test_group_starts_with_id_and_no_tutor(self):
-        group = Group(1)
-
+    def test_initialization(self):
+        group = UnassignedGroup(id=1)
+        
         assert group.id == 1
-        assert group.tutor is None
+        assert group._students == []
+        assert group._topics == []
 
     @pytest.mark.unit
-    def test_group_can_be_assigned_to_a_tutor(self):
-        tutor = Tutor(1, "fake@fi.uba.ar", "Juan", "Perez")
-        group = Group(1)
-        tutor.add_groups([group])
-
-        assert group.is_tutored_by(1) is True
-
-    @pytest.mark.unit
-    def test_group_can_have_topics(self):
+    def test_initialization_with_students_and_topics(self):
+        students = [
+            Student(id=1, name="Alice", last_name="Alan", email="alice@fi.uba.ar"),
+            Student(id=2, name="Bob", last_name="Alan", email="boby@fi.uba.ar"),
+        ]
         topics = [
-            Topic(id=1, title="topic1", cost=1, category="Category A", capacity=1),
-            Topic(id=2, title="topic2", cost=2, category="Category A"),
-            Topic(id=3, title="topic3", cost=3, category="Category A"),
+            Topic(id=1, title="Math", category="UBA"),
+            Topic(id=2, title="Science", category="UBA"),
         ]
-        group = Group(1)
-
-        group.add_topics(topics)
-
-        assert (
-            group.preference_of(
-                Topic(id=1, title="topic1", capacity=1, category="Category A")
-            )
-            == 1
-        )
+        group = UnassignedGroup(id=1, students=students, topics=topics)
+        
+        assert group.id == 1
+        assert group._students == students
+        assert group._topics == topics
 
     @pytest.mark.unit
-    def test_group_can_have_available_dates(self):
-        dates = [DeliveryDate(2, 2, 3), DeliveryDate(2, 2, 4), DeliveryDate(2, 2, 5)]
-        group = Group(1)
-        group.add_available_dates(dates)
-
-        expected_cost = (5 * 11) - 3
-        result = group.cost_of_week(2)
-        assert expected_cost == result
+    def test_preference_of_existing_topic(self):
+        topics = [
+            Topic(id=1, title="Math", category="UBA"),
+            Topic(id=2, title="Science", category="UBA"),
+        ]
+        group = UnassignedGroup(id=1, topics=topics)
+        preference = group.preference_of(Topic(id=1, title="Math", category="UBA"))
+        
+        assert preference ==  10  # First topic, so preference is 1 * 10
 
     @pytest.mark.unit
-    def test_group_can_calculate_cost_per_week(self):
-        dates = [
-            DeliveryDate(2, 2, 1),
-            DeliveryDate(2, 2, 2),
-            DeliveryDate(2, 2, 3),
-            DeliveryDate(2, 2, 4),
-            DeliveryDate(2, 2, 5),
-            DeliveryDate(2, 2, 6),
-            DeliveryDate(2, 2, 7),
-            DeliveryDate(2, 2, 8),
-            DeliveryDate(2, 2, 9),
-            DeliveryDate(2, 4, 1),
-            DeliveryDate(2, 4, 2),
-            DeliveryDate(2, 4, 3),
-            DeliveryDate(2, 4, 4),
-            DeliveryDate(2, 4, 5),
-            DeliveryDate(2, 4, 6),
-            DeliveryDate(2, 4, 7),
-            DeliveryDate(2, 4, 8),
-            DeliveryDate(2, 4, 9),
-        ]
-        group = Group(1)
-        group.add_available_dates(dates)
-
-        expected_cost = (5 * 11) - 18
-        result = group.cost_of_week(2)
-        assert expected_cost == result
-
-    @pytest.mark.unit
-    def test_group_can_calculate_cost_per_date(self):
-        dates = [
-            DeliveryDate(2, 2, 1),
-            DeliveryDate(2, 2, 2),
-            DeliveryDate(2, 2, 3),
-            DeliveryDate(2, 2, 4),
-            DeliveryDate(2, 2, 5),
-            DeliveryDate(2, 2, 6),
-            DeliveryDate(2, 2, 7),
-            DeliveryDate(2, 2, 8),
-            DeliveryDate(2, 2, 9),
-        ]
-        group = Group(1)
-        group.add_available_dates(dates)
-
-        expected_cost = 11 - 9
-        result = group.cost_of_date(DeliveryDate(2, 2, 1))
-        assert expected_cost == result
+    def test_preference_of_non_existing_topic(self):
+        topics = [Topic(id=1, title="Math", category="UBA"), Topic(id=2, title="Science", category="UBA")]
+        group = UnassignedGroup(id=1, topics=topics)
+        preference = group.preference_of(Topic(id=3, title="History", category="UBA"))
+        
+        assert preference == 100  # Topic not in list, so preference is 100

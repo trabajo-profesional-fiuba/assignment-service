@@ -172,8 +172,15 @@ class AssignedGroup:
         self._students = students if students is not None else []
         self._reviewer_id = reviewer_id
 
+    @property
+    def id(self) -> str:
+        return self._id
+
     def emails(self) -> list[str]:
         return [student.email for student in self._students]
 
     def tutor_email(self) -> str:
         return self._tutor.email
+
+    def assign_tutor(self, tutor: Tutor) -> None:
+        self._tutor = tutor

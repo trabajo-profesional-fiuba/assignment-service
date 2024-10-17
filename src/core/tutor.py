@@ -89,6 +89,7 @@ class Tutor:
     def add_groups(self, groups):
         if self._groups is None:
             self._groups = []
+            
         for group in groups:
             group.assign_tutor(self)
             self._groups.append(group)
