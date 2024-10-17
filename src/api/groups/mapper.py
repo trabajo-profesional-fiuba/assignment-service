@@ -10,7 +10,7 @@ class GroupMapper:
     ) -> None:
         self._tutor_mapper = tutor_mapper
 
-    def convert_from_models_to_unassigned_groups(self, db_groups, topics):
+    def map_models_to_unassigned_groups(self, db_groups, topics):
         topics_mapped = {topic.id: topic for topic in topics}
 
         groups = [
@@ -26,7 +26,7 @@ class GroupMapper:
 
         return groups
 
-    def convert_from_model_to_group(self, db_group):
+    def map_model_to_assigned_group(self, db_group):
         tutor = (
             self._tutor_mapper.convert_to_single_period_tutor(db_group.tutor_period)
             if self._tutor_mapper

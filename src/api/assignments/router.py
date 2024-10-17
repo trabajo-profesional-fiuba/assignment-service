@@ -132,7 +132,7 @@ async def assign_group_topic_tutor(
 
         group_service = GroupService(GroupRepository(session))
         group_mapper = GroupMapper()
-        groups = group_mapper.convert_from_models_to_unassigned_groups(
+        groups = group_mapper.map_models_to_unassigned_groups(
             group_service.get_goups_without_tutor_and_topic(), topics
         )
 

@@ -1,4 +1,6 @@
 from typing import List, Optional
+from src.core.date_slots import DateSlot
+from src.core.student import Student
 from src.core.tutor import Tutor
 from src.core.topic import Topic
 
@@ -122,7 +124,12 @@ class Group:
 class UnassignedGroup:
     """The base group only contains the id, Students and the Topics"""
 
-    def __init__(self, id: int, students: Optional[List[int]] = None, topics: Optional[List[Topic]] = None) -> None:
+    def __init__(
+        self,
+        id: int,
+        students: Optional[List[int]] = None,
+        topics: Optional[List[Topic]] = None,
+    ) -> None:
         self._id = id
         self._students = students if students is not None else []
         self._topics = topics if topics is not None else []
@@ -134,8 +141,33 @@ class UnassignedGroup:
     @property
     def topics(self) -> str:
         return self._topics
-    
+
     def preference_of(self, topic: Topic) -> int:
         topic_id = topic.id
-        preference = next((index + 1 for index, t in enumerate(self._topics) if t.id == topic_id), -1)
-        return preference * 10 if preference >= 0 else 100 # 100 es el costo de no querer ese topic.
+        preference = next(
+            (index + 1 for index, t in enumerate(self._topics) if t.id == topic_id), -1
+        )
+        return (
+            preference * 10 if preference >= 0 else 100
+        )  # 100 es el costo de no querer ese topic.
+
+
+class AssignedGroup:
+
+    def __init__(
+        self,
+        id: int,
+        tutor: Optional[Tutor] = None,
+        available_dates: Optional[list[DateSlot]] = None,
+        topic_assigned: Optional[Topic] = None,
+        students: Optional[List[Student]] = None,
+        reviewer_id: Optional[int] = None,
+    ) -> None:
+        self._id = id
+        self._tutor = tutor
+        self._available_dates = available_dates if available_dates is not None else []
+        self._assigned_date = None
+        self._topics = []
+        self._assigned_topic = topic_assigned
+        self._students = students if students is not None else []
+        self._reviewer_id = reviewer_id
