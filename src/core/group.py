@@ -171,3 +171,9 @@ class AssignedGroup:
         self._assigned_topic = topic_assigned
         self._students = students if students is not None else []
         self._reviewer_id = reviewer_id
+
+    def emails(self) -> list[str]:
+        return [student.email for student in self._students]
+
+    def tutor_email(self) -> str:
+        return self._tutor.email
