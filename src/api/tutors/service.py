@@ -53,7 +53,7 @@ class TutorService:
         return existing_tutors_id
 
     def create_tutors_from_csv(
-        self, csv: str, period: str, hasher: ShaHasher, user_repository
+        self, csv: str, period: str, hasher: ShaHasher, user_repository: UserRepository
     ):
         try:
             """
@@ -141,7 +141,7 @@ class TutorService:
             print(str(e))
             raise TutorNotInserted("Could not insert a tutor in the database")
 
-    def _validate_period(self, period_id):
+    def _validate_period(self, period_id: str):
         """Validates that the period id
         follows the expected pattern
         ^[1|2]C20[0-9]{2}$
@@ -154,7 +154,7 @@ class TutorService:
         else:
             return False
 
-    def add_period_to_tutor(self, tutor_id, period_id):
+    def add_period_to_tutor(self, tutor_id: int, period_id: str):
         """
         Assigns an existing period to a tutor.
         """
@@ -167,7 +167,7 @@ class TutorService:
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
 
-    def get_periods_by_tutor_id(self, tutor_id):
+    def get_periods_by_tutor_id(self, tutor_id: int):
         """
         Returns the list of periods
         of a tutor based on its id
@@ -177,7 +177,7 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(str(e))
 
-    def delete_tutor(self, tutor_id):
+    def delete_tutor(self, tutor_id: int):
         """
         Deletes a tutor by id
         """
@@ -188,7 +188,7 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(str(e))
 
-    def get_tutors_by_period_id(self, period_id):
+    def get_tutors_by_period_id(self, period_id: str):
         """From a period id, it retrieves all the tutors with their topics"""
         try:
             valid = self._validate_period(period_id)
@@ -228,14 +228,18 @@ class TutorService:
         except TutorNotFound as e:
             raise EntityNotFound(message=str(e))
 
-    def get_groups_from_tutor_id(self, tutor_id: int, period_id: str, group_repository: GroupRepository):
+    def get_groups_from_tutor_id(
+        self, tutor_id: int, period_id: str, group_repository: GroupRepository
+    ):
         period = self.get_tutor_period_by_tutor_id(period_id, tutor_id)
         groups = group_repository.get_groups_by_period_id(
             tutor_period_id=period.id, load_topic=True
         )
         return groups
 
-    def get_groups_from_reviewer_id(self, reviewer_id: int, period_id: str, group_repository: GroupRepository):
+    def get_groups_from_reviewer_id(
+        self, reviewer_id: int, period_id: str, group_repository: GroupRepository
+    ):
         try:
             groups = group_repository.get_groups_by_reviewer_id(
                 reviewer_id=reviewer_id, period_id=period_id, load_topic=True
