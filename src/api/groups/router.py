@@ -201,6 +201,7 @@ async def post_final_project(
     except Exception as e:
         raise ServerError(message=str(e))
 
+
 @router.post(
     "/{group_id}/intermediate-report",
     description="Updates the intermediate project",
@@ -230,6 +231,7 @@ async def post_final_project(
         raise e
     except Exception as e:
         raise ServerError(message=str(e))
+
 
 @router.get(
     "/",
@@ -414,6 +416,7 @@ async def list_initial_projects(
     except Exception as e:
         raise ServerError(message=str(e))
 
+
 @router.get(
     "/{group_id}/intermediate-report",
     response_model=CompleteGroupResponse,
@@ -437,12 +440,15 @@ async def gets_intermediate_assigment(
         auth_service.assert_tutor_rol(token)
 
         group_service = GroupService(GroupRepository(session))
-        return CompleteGroupResponse.model_validate(group_service.get_group_by_id(group_id))
+        return CompleteGroupResponse.model_validate(
+            group_service.get_group_by_id(group_id)
+        )
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))
-   
+
+
 @router.put(
     "/",
     response_model=GroupList,

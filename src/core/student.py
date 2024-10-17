@@ -30,14 +30,16 @@ class Student:
     @property
     def email(self) -> str:
         return self._email
-    
+
+
 class StudentMapper:
 
     def map_models_to_students(self, users: list[User]) -> list[Student]:
         students = [
-            Student(id=user.id, email=user.email, name=user.name, last_name=user.last_name)
+            Student(
+                id=user.id, email=user.email, name=user.name, last_name=user.last_name
+            )
             for user in users
         ]
 
         return students
-

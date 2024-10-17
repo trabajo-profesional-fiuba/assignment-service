@@ -1,7 +1,7 @@
 import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content
 from src.config.logging import logger
-from src.core.group import Group, AssignedGroup
+from src.core.group import AssignedGroup
 
 
 class SendGridEmailClient:

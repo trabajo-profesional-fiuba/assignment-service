@@ -1,8 +1,8 @@
-
 import pytest
 from datetime import datetime
 
 from src.core.date_slots import DateSlot
+
 
 class TestDateSlot:
 

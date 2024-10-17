@@ -636,11 +636,9 @@ def test_post_groups_intermediate_project(fastapi, tables):
         period_id="1C2025",
     )
     user_token = helper.create_student_token(105001)
-    youtube_link = 'https://www.youtube.com/watch?v=IGjE_zgs2Hw'
+    youtube_link = "https://www.youtube.com/watch?v=IGjE_zgs2Hw"
 
-    body = {
-        "url": youtube_link
-    }
+    body = {"url": youtube_link}
 
     response = fastapi.post(
         f"{PREFIX}/{group.id}/intermediate-report",
@@ -649,6 +647,7 @@ def test_post_groups_intermediate_project(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_202_ACCEPTED
+
 
 @pytest.mark.integration
 def test_get_groups_intermediate_project(fastapi, tables):
@@ -668,11 +667,9 @@ def test_get_groups_intermediate_project(fastapi, tables):
         period_id="1C2025",
     )
     user_token = helper.create_student_token(105001)
-    youtube_link = 'https://www.youtube.com/watch?v=IGjE_zgs2Hw'
+    youtube_link = "https://www.youtube.com/watch?v=IGjE_zgs2Hw"
 
-    body = {
-        "url": youtube_link
-    }
+    body = {"url": youtube_link}
 
     response = fastapi.post(
         f"{PREFIX}/{group.id}/intermediate-report",
@@ -689,4 +686,4 @@ def test_get_groups_intermediate_project(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()['intermediate_assigment'] == youtube_link
+    assert response.json()["intermediate_assigment"] == youtube_link

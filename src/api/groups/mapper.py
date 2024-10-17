@@ -1,6 +1,6 @@
 from src.api.topics.mapper import TopicMapper
 from src.api.tutors.mapper import TutorMapper
-from src.core.group import AssignedGroup, Group, UnassignedGroup
+from src.core.group import AssignedGroup, UnassignedGroup
 from src.core.student import StudentMapper
 
 
@@ -42,7 +42,7 @@ class GroupMapper:
             tutor=tutor,
             students=students,
             reviewer_id=db_group.reviewer_id,
-            topic_assigned=topic
+            topic_assigned=topic,
         )
 
         return group
