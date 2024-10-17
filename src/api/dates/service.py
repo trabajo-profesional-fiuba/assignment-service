@@ -2,6 +2,7 @@ from datetime import timedelta
 from src.api.dates.exceptions import InvalidDate
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 from src.config.logging import logger
+from src.api.dates.schemas import DateSlotRequestList
 
 
 class DateSlotsService:
@@ -67,3 +68,40 @@ class DateSlotsService:
 
     def get_groups_slots_by_id(self, group_id: int):
         return self._repository.get_groups_slots_by_id(group_id)
+
+    def sync_date_slots(self, slot_ranges: DateSlotRequestList, period: str):
+        try:
+            slots = self._create_slots_from_ranges(slot_ranges)
+            slots_to_save = [{"period_id": period, "slot": slot} for slot in slots]
+            self._repository.sync_date_slots(slots_to_save, period)
+            return slots_to_save
+        except Exception as e:
+            logger.error(f"Could not update slots because of: {str(e)}")
+            raise InvalidDate(str(e))
+
+    def sync_group_slots(self, slot_ranges: DateSlotRequestList, group_id: int):
+        try:
+            slots = self._create_slots_from_ranges(slot_ranges)
+            slots_to_save = [{"group_id": group_id, "slot": slot} for slot in slots]
+            updated_slots = self._repository.sync_group_slots(slots_to_save, group_id)
+            return slots_to_save
+        except Exception as e:
+            logger.error(f"Could not update group slots because of: {str(e)}")
+            raise InvalidDate(str(e))
+
+    def sync_tutor_slots(
+        self, slot_ranges: DateSlotRequestList, tutor_id: int, period: str
+    ):
+        try:
+            slots = self._create_slots_from_ranges(slot_ranges)
+            slots_to_save = [
+                {"tutor_id": tutor_id, "slot": slot, "period_id": period}
+                for slot in slots
+            ]
+            updated_slots = self._repository.sync_tutor_slots(
+                slots_to_save, tutor_id, period
+            )
+            return slots_to_save
+        except Exception as e:
+            logger.error(f"Could not update tutor slots because of: {str(e)}")
+            raise InvalidDate(str(e))
