@@ -1,10 +1,17 @@
 from enum import Enum
 import math
 
-from src.api.groups.schemas import AssignedGroupResponse, AssignmentResult
-from src.core.group import UnassignedGroup
+from src.api.groups.schemas import (
+    AssignedDateResult,
+    AssignedDateSlotResponse,
+    AssignedGroupResponse,
+    AssignmentResult,
+)
+from src.core.date_slots import DateSlot
+from src.core.group import AssignedGroup, UnassignedGroup
 from src.core.topic import Topic
 from src.core.tutor import Tutor
+
 
 class GroupTutorTopicAssignment:
     """Represents the assigment result"""
@@ -67,7 +74,7 @@ class GroupTutorTopicAssignmentResult:
 
             idcg = 3 * len(self.assignments)
             dcg = sum([assigment.relevance() for assigment in self.assignments])
-            result = round(dcg / idcg,3) * 100
+            result = round(dcg / idcg, 3) * 100
 
         return result
 
@@ -79,4 +86,39 @@ class GroupTutorTopicAssignmentResult:
             status=self.status,
             assigment=[assignment.to_json() for assignment in self.assignments],
             dcg=self.calculate_dcg(),
+        )
+
+
+class DateSlotAssignment:
+    def __init__(
+        self, group_id: int, tutor_id: int, evaluator_id: int, date: DateSlot
+    ) -> None:
+        self.group_id = group_id
+        self.tutor_id = tutor_id
+        self.evaluator_id = evaluator_id
+        self.date = date
+        self.spanish_date = date.get_spanish_date()
+
+    def to_json(self):
+        return AssignedDateSlotResponse(
+            group_id=self.group_id,
+            tutor_id=self.tutor_id,
+            evaluator_id=self.evaluator_id,
+            date=self.date,
+            spanish_date=self.spanish_date,
+        )
+
+
+class DateSlotsAssignmentResult:
+    def __init__(self, status: int, assignment: DateSlotAssignment = None) -> None:
+        self.status = status
+        self.assignments = assignment
+
+    def add_assignment(self, assigment: DateSlotAssignment):
+        self.assignments.append(assigment)
+
+    def to_json(self):
+        return AssignedDateResult(
+            status=self.status,
+            assigment=[assignment.to_json() for assignment in self.assignments],
         )

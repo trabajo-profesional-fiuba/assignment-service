@@ -21,3 +21,10 @@ class DateSlot:
         """Returns the number of wee of the year"""
         return self.date.strftime("%d de %b del %Y")
     
+    def is_same_date(self, week, day, hour):
+        is_same_date = True
+        is_same_date = self.get_week() == week
+        is_same_date = self.get_day_of_week() == day
+        is_same_date = self.get_hour() == hour
+
+        return is_same_date

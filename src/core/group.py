@@ -84,6 +84,9 @@ class AssignedGroup(Group):
 
     def assign_tutor(self, tutor: Tutor) -> None:
         self._tutor = tutor
+    
+    def assign_date(self, date: DateSlot):
+        self._assigned_date = date
 
     def tutor_id(self) -> Optional[int]:
         return self._tutor.id if self._tutor else None

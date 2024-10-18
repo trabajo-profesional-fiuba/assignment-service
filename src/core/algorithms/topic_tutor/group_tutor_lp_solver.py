@@ -240,11 +240,8 @@ class GroupTutorLPSolver:
 
         result = GroupTutorTopicAssignmentResult(status=prob.status, assignments=[])
         if prob.status > 0:
-            result_variables = []
             for var in prob.variables():
                 if var.varValue == 1:
-                    result_variables.append(var)
-
                     # Extraer el id del grupo, tutor y topic del nombre de la variable
                     group_id, tutor_id, topic_id = self._parse_variable_name(var.name)
 

@@ -24,19 +24,21 @@ class Tutor:
         period_id: Optional[int] = None,
         topics: Optional[List[Topic]] = None,
         groups: Optional[List[AssignedGroup]] = None,
-        available_dates: Optional[list[DateSlot]] = None
+        available_dates: Optional[list[DateSlot]] = None,
+        is_evaluator: bool = False
 
     ):
         self._id = id
         self._name = name
         self._last_name = last_name
-        self._is_evaluator = False
+        self._is_evaluator = is_evaluator
         self._capacity = capacity
         self._topics = topics if topics else []
         self._email = email
         self._period_id = period_id
         self._groups = groups if groups else []
         self._available_dates = available_dates if available_dates is not None else []
+        self._dates_assigned =[]
 
     @property
     def id(self) -> str:
@@ -85,3 +87,6 @@ class Tutor:
 
     def assign_groups(self, groups:list[AssignedGroup]):
         self._groups.extend(groups)
+    
+    def assign_date(self, date:DateSlot):
+        self._dates_assigned.append(date)

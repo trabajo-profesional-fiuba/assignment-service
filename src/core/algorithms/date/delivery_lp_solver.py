@@ -3,6 +3,7 @@ from src.constants import DATE_ID, EVALUATOR_ID, GROUP_ID, TUTOR_ID
 from src.core.date_slots import DateSlot
 from src.core.delivery_date import DeliveryDate
 from src.core.group import AssignedGroup
+from src.core.result import DateSlotAssignment, DateSlotsAssignmentResult
 from src.core.tutor import Tutor
 
 GROUP = 0
@@ -471,12 +472,13 @@ class DeliveryLPSolver:
         self.define_objective()
         self._model.optimize()
 
+        results = DateSlotsAssignmentResult(status=-1)
         if self._model.getStatus() == "optimal":
-            return self._get_results()
-        else:
-            return None
+            return self._get_results(results)
 
-    def _get_results(self):
+        return results
+
+    def _get_results(self, results: DateSlotsAssignmentResult):
         """
         Retrieves and prints the results from the solver.
 
@@ -485,51 +487,26 @@ class DeliveryLPSolver:
         list
             List of activated decision variables.
         """
-        print("Status:", self._model.getStatus())
-        print("Optimal objective value:", self._model.getObjVal())
-
-        result = []
         rounded_decision_vars = {
             var: round(self._model.getVal(self._decision_variables[var]))
             for var in self._decision_variables
         }
-        rounded_evaluator_day_vars = {
-            var: round(self._model.getVal(self._evaluator_day_vars[var]))
-            for var in self._evaluator_day_vars
-        }
 
-        print("Activated decision variables:")
+        results.status = 1
         for var in rounded_decision_vars:
             if rounded_decision_vars[var] > 0:
-                print(
-                    f"Variable {var} \
-                    (Group, Tutor, Evaluator, Week, Day, Hour): {var}",
-                    "val:",
-                    self._model.getVal(self._decision_variables[var]),
+                group_id, tutor_id, evaluator_id, week, day, hour = var
+                date = next(
+                    dt
+                    for dt in self._available_dates
+                    if dt.is_same_date(week, day, hour)
                 )
-                # FIXME: no olvidarnos de los subtitutos, (pondria un bool para
-                # calcularlos o no)
-                # substitue = self._find_substitutes_on_date(
-                #     DeliveryDate(var[WEEK], var[DAY], var[HOUR]),
-                #     var[EVALUATOR],
-                #     var[TUTOR],
-                # )
-                result.append(
-                    (
-                        f"{GROUP_ID}-{var[GROUP]}",
-                        f"{EVALUATOR_ID}-{var[EVALUATOR]}",
-                        f"{DATE_ID}-{var[WEEK]}-{var[DAY]}-{var[HOUR]}",
-                    )
+                assignment = DateSlotAssignment(
+                    group_id=group_id,
+                    tutor_id=tutor_id,
+                    evaluator_id=evaluator_id,
+                    date=date,
                 )
+                results.add_assignment(assignment)
 
-                group_id, _, _, week, day, hour = var
-                group = next(g for g in self._groups if g.id == group_id)
-                group.assign_date(DeliveryDate(week, day, hour))
-
-        print("\nAdditional activated variables (Evaluator, Week, Day):")
-        for var in rounded_evaluator_day_vars:
-            if rounded_evaluator_day_vars[var] > 0:
-                print(f"Additional variable {var}")
-
-
-        pass
+        return results

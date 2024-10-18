@@ -49,3 +49,15 @@ class TestDateSlot:
         hour = date.get_hour()
 
         assert hour == 10
+
+    @pytest.mark.parametrize(
+        "week, day, hour, expected",
+        [
+            (42, 2, 10, True),
+            (42, 5, 14, False),
+        ],
+    )
+    @pytest.mark.unit
+    def test_is_same_date(self, week, day, hour, expected):
+        date = DateSlot(start_time=datetime(2024, 10, 15, 10, 0, 0))
+        assert date.is_same_date(week, day, hour) == expected
