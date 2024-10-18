@@ -1,7 +1,8 @@
 import pyscipopt as scip
-from src.core.algorithms.adapters.result_context import ResultContext
 from src.constants import DATE_ID, EVALUATOR_ID, GROUP_ID, TUTOR_ID
+from src.core.date_slots import DateSlot
 from src.core.delivery_date import DeliveryDate
+from src.core.group import AssignedGroup
 from src.core.tutor import Tutor
 
 GROUP = 0
@@ -33,7 +34,11 @@ class DeliveryLPSolver:
     """
 
     def __init__(
-        self, tutor_periods: list[Tutor] = [], adapter=None, available_dates=[]
+        self,
+        groups: list[AssignedGroup] = [],
+        tutors: list[Tutor] = [],
+        evaluators: list[Tutor] = [],
+        available_dates: list[DateSlot] = [],
     ):
         """
         Initializes the class with tutor_periods and dates.
@@ -45,29 +50,14 @@ class DeliveryLPSolver:
         tutor_periods : list
             List of tutors.
         """
-        self._evaluators = self.create_evaluators(tutor_periods)
-        self._tutors = self.get_tutors(tutor_periods)
-        self._groups = self.get_all_groups(tutor_periods)
+        self._evaluators = evaluators
+        self._tutors = tutors
+        self._groups = groups
         self._available_dates = available_dates
-        self._adapter = adapter
         self._decision_variables = {}
         self._evaluator_day_vars = {}
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
-
-    def get_tutors(self, tutor_periods: list[Tutor] = []):
-        tutors = list(filter(lambda x: not x.is_evaluator(), tutor_periods))
-        return tutors
-
-    def get_all_groups(self, tutor_periods: list[Tutor] = []):
-        groups = []
-        for t in tutor_periods:
-            groups += t.groups
-        return groups
-
-    def create_evaluators(self, tutor_periods: list[Tutor] = []):
-        evaluators = list(filter(lambda x: x.is_evaluator(), tutor_periods))
-        return evaluators
 
     def create_decision_variables(self):
         """
@@ -87,7 +77,7 @@ class DeliveryLPSolver:
                         group, tutor, evaluator, group_tutor_possible_dates
                     )
 
-    def _find_common_dates(self, group, tutor):
+    def _find_common_dates(self, group: AssignedGroup, tutor: Tutor):
         """
         Finds common dates available for all tutors in the group.
 
@@ -104,18 +94,17 @@ class DeliveryLPSolver:
             List of tuples representing common dates (week, day, hour).
         """
         return [
-            (date.week, date.day, date.hour)
-            for date in group.available_dates
-            if any(
-                t_date.week == date.week
-                and t_date.day == date.day
-                and date.hour == t_date.hour
-                for t_date in tutor.available_dates
-            )
+            (g_date.get_week(), g_date.get_day_of_week(), g_date.get_hour())
+            for g_date in group.available_dates
+            if any(t_date.date == g_date for t_date in tutor.available_dates)
         ]
 
     def _create_evaluator_decision_variables(
-        self, group, tutor, evaluator, group_tutor_possible_dates
+        self,
+        group: AssignedGroup,
+        tutor: Tutor,
+        evaluator: Tutor,
+        group_tutor_possible_dates: list[tuple[int, int, int]],
     ):
         """
         Creates decision variables for an evaluator's possible assignments.
@@ -136,22 +125,31 @@ class DeliveryLPSolver:
         group_tutors_possible_dates : list
             List of dates (week, day, hour) where the group and tutors can meet.
         """
-        group_tutor_evaluator_possible_dates = [
-            (week, day, hour)
-            for (week, day, hour) in group_tutor_possible_dates
-            for e_date in evaluator.available_dates
-            if day == e_date.day and week == e_date.week and hour == e_date.hour
-        ]
-
-        if group_tutor_evaluator_possible_dates:
-            if evaluator.id != tutor.id:
+        if evaluator.id != tutor.id:
+            group_tutor_evaluator_possible_dates = [
+                (week, day, hour)
+                for (week, day, hour) in group_tutor_possible_dates
+                for e_date in evaluator.available_dates
+                if day == e_date.get_day_of_week()
+                and week == e_date.get_week()
+                and hour == e_date.get_hour()
+            ]
+            if group_tutor_evaluator_possible_dates:
                 for week, day, hour in group_tutor_evaluator_possible_dates:
                     self._create_decision_variable(
                         group, tutor.id, evaluator, week, day, hour
                     )
                     self._create_evaluator_day_variable(evaluator, week, day)
 
-    def _create_decision_variable(self, group, tutor_id, evaluator, week, day, hour):
+    def _create_decision_variable(
+        self,
+        group: AssignedGroup,
+        tutor_id: int,
+        evaluator: Tutor,
+        week: int,
+        day: int,
+        hour: int,
+    ):
         """
         Creates a single decision variable for a specific assignment.
 
@@ -222,7 +220,7 @@ class DeliveryLPSolver:
         """
         group_possible_dates = [
             (week, day, hour)
-            for (g, t, e, week, day, hour) in self._decision_variables
+            for (g, _, _, week, day, hour) in self._decision_variables
             if g == group.id
         ]
         if group_possible_dates:
@@ -356,7 +354,7 @@ class DeliveryLPSolver:
         for evaluator in self._evaluators:
             self._add_weekly_group_limit_constraint(evaluator)
 
-    def _add_weekly_group_limit_constraint(self, evaluator):
+    def _add_weekly_group_limit_constraint(self, evaluator: Tutor):
         """
         Adds a constraint to limit the number of groups assigned to
         an evaluator per week.
@@ -366,7 +364,7 @@ class DeliveryLPSolver:
         evaluator : Evaluator
             An evaluator available for assignment.
         """
-        weeks = set(date.week for date in self._available_dates)
+        weeks = set(date.get_week() for date in self._available_dates)
         for week in weeks:
             self._model.addCons(
                 scip.quicksum(
@@ -533,11 +531,5 @@ class DeliveryLPSolver:
             if rounded_evaluator_day_vars[var] > 0:
                 print(f"Additional variable {var}")
 
-        result_context = ResultContext(
-            type="linear",
-            result=result,
-        )
 
-        assignment_result = self._adapter.adapt_results(result_context)
-
-        return assignment_result
+        pass

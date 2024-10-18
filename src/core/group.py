@@ -1,8 +1,12 @@
-from typing import List, Optional
+from __future__ import annotations
+from typing import List, Optional, TYPE_CHECKING
+
 from src.core.date_slots import DateSlot
 from src.core.student import Student
-from src.core.tutor import Tutor
 from src.core.topic import Topic
+
+if TYPE_CHECKING:
+    from src.core.tutor import Tutor
 
 
 class Group:
@@ -67,7 +71,11 @@ class AssignedGroup(Group):
     @property
     def reviewer_id(self) -> int:
         return self._reviewer_id
-
+    
+    @property
+    def available_dates(self) -> list[DateSlot]:
+        return self._available_dates
+    
     def emails(self) -> list[str]:
         return [student.email for student in self._students]
 
@@ -80,5 +88,5 @@ class AssignedGroup(Group):
     def tutor_id(self) -> Optional[int]:
         return self._tutor.id if self._tutor else None
 
-    def tutor_email(self):
+    def tutor_email(self) -> str:
         return self._tutor.email if self._tutor else None

@@ -1,7 +1,10 @@
-from typing import List, Optional
-from src.core.delivery_date import DeliveryDate
+from __future__ import annotations
+from typing import List, Optional, TYPE_CHECKING
+from src.core.date_slots import DateSlot
 from src.core.topic import Topic
 
+if TYPE_CHECKING:
+    from src.core.group import AssignedGroup
 
 class Tutor:
     """
@@ -20,15 +23,20 @@ class Tutor:
         email: str,
         capacity: int = 0,
         topics: Optional[List[Topic]] = None,
+        groups: Optional[List[AssignedGroup]] = None,
+        available_dates: Optional[list[DateSlot]] = None
+
     ):
         self._id = id
         self._name = name
         self._last_name = last_name
         self._is_evaluator = False
         self._capacity = capacity
-        self._topics = topics
+        self._topics = topics if topics else []
         self._email = email
         self._period_id = period_id
+        self._groups = groups if groups else []
+        self._available_dates = available_dates if available_dates is not None else []
 
     @property
     def id(self) -> str:
@@ -57,7 +65,15 @@ class Tutor:
     @property
     def last_name(self) -> str:
         return self._last_name
-
+    
+    @property
+    def groups(self) -> List[AssignedGroup]:
+        return self._groups
+    
+    @property
+    def available_dates(self) -> list[DateSlot]:
+        return self._available_dates
+    
     def topics_ids(self):
         return [topic.id for topic in self._topics]
 
@@ -67,3 +83,5 @@ class Tutor:
             return 0
         return matching_topic.capacity
 
+    def assign_groups(self, groups:list[AssignedGroup]):
+        self._groups.extend(groups)
