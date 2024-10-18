@@ -17,11 +17,11 @@ class Tutor:
     def __init__(
         self,
         id: int,
-        period_id: int,
         name: str,
         last_name: str,
         email: str,
         capacity: int = 0,
+        period_id: Optional[int] = None,
         topics: Optional[List[Topic]] = None,
         groups: Optional[List[AssignedGroup]] = None,
         available_dates: Optional[list[DateSlot]] = None

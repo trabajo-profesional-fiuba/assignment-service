@@ -212,7 +212,8 @@ def test_resolve_assigment_of_topics_groups_tutors(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 4
+    data = response.json()
+    assert data['status'] == 1
 
 
 @pytest.mark.integration
@@ -272,7 +273,9 @@ def test_resolve_assigment_of_topics_groups_tutors_using_flow(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == 4
+    data = response.json()
+    assert data['status'] == 1
+    assert len(data['assigment']) == 4
 
 
 @pytest.mark.integration
@@ -326,4 +329,6 @@ def test_resolve_assigment_of_topics_groups_tutors_with_no_solution(fastapi, tab
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
 
-    assert response.status_code == status.HTTP_200_OK 
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data['status'] == -1

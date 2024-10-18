@@ -47,7 +47,7 @@ class UnassignedGroup(Group):
         )
         return (
             preference * 10 if preference >= 0 else 100
-        )  # 100 es el costo de no querer ese topic.
+        )
 
 
 class AssignedGroup(Group):

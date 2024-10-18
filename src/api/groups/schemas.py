@@ -84,9 +84,10 @@ class GroupCompleteList(RootModel):
     root: List[CompleteGroupResponse] = Field(default=[])
 
 
-class AssignedGroupList(RootModel):
-    root: List[AssignedGroupResponse] = Field(default=[])
-
+class AssignmentResult(BaseModel):
+    status: int
+    assigment: List[AssignedGroupResponse] = Field(default=[])
+    dcg: float
 
 class BlobDetails(BaseModel):
     name: str

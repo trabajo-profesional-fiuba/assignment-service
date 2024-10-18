@@ -12,7 +12,7 @@ from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService
 from src.api.groups.mapper import GroupMapper
 from src.api.groups.repository import GroupRepository
-from src.api.groups.schemas import AssignedGroupList, AssignedGroupResponse
+from src.api.groups.schemas import AssignmentResult, AssignedGroupResponse
 from src.api.groups.service import GroupService
 
 from src.api.topics.mapper import TopicMapper
@@ -82,7 +82,7 @@ async def assign_incomplete_groups(
 
 @router.post(
     "/group-topic-tutor",
-    response_model=AssignedGroupList,
+    response_model=AssignmentResult,
     summary="Runs the assigment of tutor and topic for grpi",
     responses={
         status.HTTP_200_OK: {"description": "Successfully assigned groups"},
@@ -141,21 +141,10 @@ async def assign_group_topic_tutor(
             groups, topics, tutors, balance_limit, method
         )
 
-        assignment_response = AssignedGroupList.model_validate(
-            [
-                AssignedGroupResponse(
-                    id=assigned_group.id,
-                    tutor=assigned_group.tutor_as_dict(),
-                    topic=assigned_group.topic_as_dict(),
-                )
-                for assigned_group in assignment_result
-            ]
-        )
-
         return ResponseBuilder.build_clear_cache_response(
-            assignment_response, status.HTTP_200_OK
+            assignment_result.to_json(), status.HTTP_200_OK
         )
     except InvalidJwt as e:
         raise InvalidCredentials(str(e))
-    except Exception:
-        raise ServerError("error")
+    except Exception as e:
+        raise ServerError(str(e))
