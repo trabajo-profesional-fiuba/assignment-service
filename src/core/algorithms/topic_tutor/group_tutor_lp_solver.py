@@ -173,7 +173,6 @@ class GroupTutorLPSolver:
             - assignment_vars: Assignment variables.
         """
         for tutor in self._tutors:
-            print(tutor.capacity)
             assigned_topics = [topic.id for topic in tutor.topics]
             prob += (
                 lpSum(
@@ -240,7 +239,6 @@ class GroupTutorLPSolver:
         groups_result = []
 
         for var in prob.variables():
-            print(var.name, var.varValue)
             if var.varValue == 1:
                 result_variables.append(var)
 
