@@ -30,7 +30,7 @@ class GroupMapper:
         return groups
 
     def map_model_to_assigned_group(self, db_group):
-        tutor = self._tutor_mapper.map_model_to_single_period_tutor(db_group.tutor_period)
+        tutor = self._tutor_mapper.map_model_to_tutor(db_group.tutor_period)
         students = self._student_mapper.map_models_to_students(db_group.students)
         topic = self._topic_mapper.map_model_to_topic(db_group.topic)
         group = AssignedGroup(

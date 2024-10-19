@@ -8,18 +8,17 @@ from src.core.tutor import Tutor
 
 class TutorMapper:
 
-    def __init__(self, topic_mapper: Optional[TopicMapper] = None) -> None:
-        self._topic_mapper = topic_mapper
+    def __init__(
+        self,
+    ) -> None:
+        self._topic_mapper = TopicMapper()
 
-    def convert_to_single_period_tutors(self, db_periods: list[TutorPeriod]):
+
+    def map_tutor_period_to_tutors(self, db_periods: list[TutorPeriod]):
         tutors = list()
         for db_period in db_periods:
             db_tutor = db_period.tutor
-            topics = (
-                self._topic_mapper.map_models_to_topics(db_period.topics)
-                if self._topic_mapper
-                else []
-            )
+            topics = self._topic_mapper.map_models_to_topics(db_period.topics)
             tutor = Tutor(
                 id=db_tutor.id,
                 period_id=db_period.id,
@@ -33,7 +32,7 @@ class TutorMapper:
 
         return tutors
 
-    def map_model_to_single_period_tutor(
+    def map_model_to_tutor(
         self, db_tutor_period: TutorPeriod, topics: list[Topic] = []
     ):
         tutor = None

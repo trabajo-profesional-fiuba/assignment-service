@@ -6,6 +6,9 @@ from src.api.assignments.service import AssignmentService
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
+from src.api.dates.maper import DateSlotsMapper
+from src.api.dates.repository import DateSlotRepository
+from src.api.dates.service import DateSlotsService
 from src.api.exceptions import ServerError
 
 from src.api.forms.repository import FormRepository
@@ -125,8 +128,8 @@ async def assign_group_topic_tutor(
         )
 
         tutors_service = TutorService(TutorRepository(session))
-        tutors_mapper = TutorMapper(topic_mapper=topic_mapper)
-        tutors = tutors_mapper.convert_to_single_period_tutors(
+        tutors_mapper = TutorMapper()
+        tutors = tutors_mapper.map_tutor_period_to_tutors(
             tutors_service.get_tutor_periods_by_period_id(period_id)
         )
 
@@ -148,3 +151,57 @@ async def assign_group_topic_tutor(
         raise InvalidCredentials(str(e))
     except Exception as e:
         raise ServerError(str(e))
+
+
+@router.post(
+    "/date-assigment",
+    summary="Runs the assignment of assignment dates",
+    responses={
+        status.HTTP_202_ACCEPTED: {"description": "Successfully assigned dates"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unknown operation"
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "User not authorized to perform action"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a \
+                client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+                backend"
+        },
+    },
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def assign_incomplete_groups(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        dates_service = DateSlotsService(DateSlotRepository(session))
+        available_dates = DateSlotsMapper.map_model_to_date_slot(dates_service.get_slots(period_id))
+
+        tutors_service = TutorService(TutorRepository(session))
+        tutors_mapper = TutorMapper()
+        tutors = tutors_mapper.map_model_to_tutor
+
+        topic_repository = TopicRepository(session)
+        group_service = GroupService(GroupRepository(session))
+
+        service = AssignmentService()
+
+        
+        return Response(status_code=status.HTTP_202_ACCEPTED, content="Created")
+    except Exception as e:
+        logger.error(str(e))
+        raise ServerError("Unexpected error happend")
