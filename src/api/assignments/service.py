@@ -21,7 +21,7 @@ class AssignmentService:
         elif method == "flow":
             assigment_model = GroupTutorFlowSolver(groups, topics, tutors)
         else:
-            raise MethodNotFound('Method provided is unkown')
-        
-        results = assigment_model.solve()   
+            raise MethodNotFound("Method provided is unkown")
+
+        results = assigment_model.solve()
         return results
