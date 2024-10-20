@@ -205,7 +205,9 @@ async def assign_incomplete_groups(
         group_service = GroupService(GroupRepository(session))
         group_mapper = GroupMapper()
         groups = group_mapper.map_models_to_assigned_groups(
-            group_service.get_groups(period=period_id, load_tutor_period=True,load_dates=True),
+            group_service.get_groups(
+                period=period_id, load_tutor_period=True, load_dates=True
+            ),
         )
 
         service = AssignmentService()

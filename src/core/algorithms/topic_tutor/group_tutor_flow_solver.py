@@ -166,17 +166,21 @@ class GroupTutorFlowSolver:
                 path = nx.shortest_path(graph, f"{GROUP_ID}-{i}", f"{SINK_NODE_ID}")
                 _, topic_id, tutor_id, _ = path
                 topic = next(
-                    (t for t in self._topics if t.id == int(topic_id.split("-")[1])), None
+                    (t for t in self._topics if t.id == int(topic_id.split("-")[1])),
+                    None,
                 )
                 tutor = next(
-                    (t for t in self._tutors if t.id == int(tutor_id.split("-")[1])), None
+                    (t for t in self._tutors if t.id == int(tutor_id.split("-")[1])),
+                    None,
                 )
-                group = next(
-                    (g for g in self._groups if g.id == i), None
+                group = next((g for g in self._groups if g.id == i), None)
+                assigment_result.add_assignment(
+                    GroupTutorTopicAssignment(group=group, tutor=tutor, topic=topic)
                 )
-                assigment_result.add_assignment(GroupTutorTopicAssignment(group=group, tutor=tutor, topic=topic))
         else:
-            assigment_result = GroupTutorTopicAssignmentResult(status=-1, assignments=[])
+            assigment_result = GroupTutorTopicAssignmentResult(
+                status=-1, assignments=[]
+            )
 
         return assigment_result
 

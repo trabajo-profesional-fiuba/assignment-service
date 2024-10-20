@@ -473,7 +473,7 @@ class DeliveryLPSolver:
         self.define_objective()
         self._model.optimize()
 
-        results = DateSlotsAssignmentResult(status=-1,assignments=[])
+        results = DateSlotsAssignmentResult(status=-1, assignments=[])
         if self._model.getStatus() == "optimal":
             return self._get_results(results)
 

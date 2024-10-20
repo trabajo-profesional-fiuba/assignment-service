@@ -37,7 +37,7 @@ class TestDateSlot:
         # Arrange
         spanish_date = date.get_spanish_date()
 
-        assert "15 de Oct del 2024" == spanish_date
+        assert "15 de Oct del 2024 a las 0hrs" == spanish_date
 
     @pytest.mark.unit
     def test_get_hour_of_date(self):

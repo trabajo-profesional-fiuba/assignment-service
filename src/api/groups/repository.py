@@ -70,7 +70,7 @@ class GroupRepository:
         load_tutor_period=False,
         load_period=False,
         load_students=False,
-        load_dates: bool = False
+        load_dates: bool = False,
     ) -> list[Group]:
         """Returns all groups for a given period"""
         with self.Session() as session:

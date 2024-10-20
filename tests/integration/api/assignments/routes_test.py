@@ -1,4 +1,6 @@
 import pytest
+import datetime as dt
+
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
@@ -213,7 +215,7 @@ def test_resolve_assigment_of_topics_groups_tutors(fastapi, tables):
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert data['status'] == 1
+    assert data["status"] == 1
 
 
 @pytest.mark.integration
@@ -274,8 +276,8 @@ def test_resolve_assigment_of_topics_groups_tutors_using_flow(fastapi, tables):
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert data['status'] == 1
-    assert len(data['assigment']) == 4
+    assert data["status"] == 1
+    assert len(data["assigment"]) == 4
 
 
 @pytest.mark.integration
@@ -331,4 +333,108 @@ def test_resolve_assigment_of_topics_groups_tutors_with_no_solution(fastapi, tab
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert data['status'] == -1
+    assert data["status"] == -1
+
+
+@pytest.mark.integration
+def test_date_slots_assigment(fastapi, tables):
+
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    # tutores y evaluadores
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
+    t_period1 = helper.create_tutor_period("105000", "2C2024")
+    helper.create_tutor("Alejo", "Villores", "105004", "villores@fi.uba.ar")
+    t_period2 = helper.create_tutor_period("105004", "2C2024")
+    helper.create_evaluator(
+        "Carlos", "Fontela", "103010", "cfontela@fi.uba.ar", "2C2024"
+    )
+
+    # Estudiantes y grupos
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    helper.create_student("Ivan", "B", "105002", "ipfaab@fi.uba.ar")
+    helper.create_student("Joaquin", "C", "105003", "joagomez@fi.uba.ar")
+    topic1 = helper.create_topic("TopicCustom")
+    topic2 = helper.create_topic("TopicCustom2")
+    topic3 = helper.create_topic("TopicCustom3")
+
+    group1 = helper.create_group(
+        ids=[105001],
+        tutor_period_id=t_period1.id,
+        topic_id=topic1.id,
+        period_id="2C2024",
+    )
+    group2 = helper.create_group(
+        ids=[
+            105002,
+        ],
+        tutor_period_id=t_period1.id,
+        topic_id=topic2.id,
+        period_id="2C2024",
+    )
+    group3 = helper.create_group(
+        ids=[105003],
+        tutor_period_id=t_period2.id,
+        topic_id=topic3.id,
+        period_id="2C2024",
+    )
+    period = "2C2024"
+    helper.create_dates(
+        [
+            {"period_id": period, "slot": dt.datetime(2024, 10, 8, 10)},
+            {"period_id": period, "slot": dt.datetime(2024, 10, 9, 14)},
+            {"period_id": period, "slot": dt.datetime(2024, 10, 12, 10)},
+        ]
+    )
+    helper.create_group_dates(
+        [
+            {"group_id": group1.id, "slot": dt.datetime(2024, 10, 8, 10)},
+            {"group_id": group2.id, "slot": dt.datetime(2024, 10, 9, 14)},
+            {"group_id": group3.id, "slot": dt.datetime(2024, 10, 12, 10)},
+        ]
+    )
+    helper.create_tutor_dates(
+        [
+            {  # tutores
+                "tutor_id": 105000,
+                "slot": dt.datetime(2024, 10, 8, 10),
+                "period_id": period,
+            },
+            {
+                "tutor_id": 105000,
+                "slot": dt.datetime(2024, 10, 9, 14),
+                "period_id": period,
+            },
+            {
+                "tutor_id": 105004,
+                "slot": dt.datetime(2024, 10, 12, 10),
+                "period_id": period,
+            },  # evaluador
+            {
+                "tutor_id": 103010,
+                "slot": dt.datetime(2024, 10, 8, 10),
+                "period_id": period,
+            },
+            {
+                "tutor_id": 103010,
+                "slot": dt.datetime(2024, 10, 9, 14),
+                "period_id": period,
+            },
+            {
+                "tutor_id": 103010,
+                "slot": dt.datetime(2024, 10, 12, 10),
+                "period_id": period,
+            },
+        ]
+    )
+
+    admin_token = helper.create_admin_token()
+    response = fastapi.post(
+        f"{PREFIX}/date-assigment?period_id=2C2024",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["status"] == 1
+    assert len(data["assigments"]) == 3

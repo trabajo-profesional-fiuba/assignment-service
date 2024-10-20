@@ -45,9 +45,7 @@ class UnassignedGroup(Group):
         preference = next(
             (index + 1 for index, t in enumerate(self._topics) if t.id == topic_id), -1
         )
-        return (
-            preference * 10 if preference >= 0 else 100
-        )
+        return preference * 10 if preference >= 0 else 100
 
 
 class AssignedGroup(Group):
@@ -71,11 +69,11 @@ class AssignedGroup(Group):
     @property
     def reviewer_id(self) -> int:
         return self._reviewer_id
-    
+
     @property
     def available_dates(self) -> list[DateSlot]:
         return self._available_dates
-    
+
     def emails(self) -> list[str]:
         return [student.email for student in self._students]
 
@@ -84,7 +82,7 @@ class AssignedGroup(Group):
 
     def assign_tutor(self, tutor: Tutor) -> None:
         self._tutor = tutor
-    
+
     def assign_date(self, date: DateSlot):
         self._assigned_date = date
 

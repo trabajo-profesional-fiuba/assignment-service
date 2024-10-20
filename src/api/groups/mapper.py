@@ -52,5 +52,5 @@ class GroupMapper:
         groups = list()
         for group in db_groups:
             groups.append(self.map_model_to_assigned_group(group))
-        
+
         return groups
