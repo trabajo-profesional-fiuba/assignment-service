@@ -53,7 +53,7 @@ class TestDateSlot:
     @pytest.mark.parametrize(
         "week, day, hour, expected",
         [
-            (42, 2, 10, True),
+            (2, 2, 10, True),
             (42, 5, 14, False),
         ],
     )

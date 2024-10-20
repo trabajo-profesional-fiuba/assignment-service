@@ -61,10 +61,10 @@ class TestGroupTutorFlowSolver:
         ]
 
         tutor1 = Tutor(
-            1, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0], topics[1]]
+            1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0], topics[1]]
         )
         tutor2 = Tutor(
-            2, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[2], topics[3]]
+            2, "Email", "Name", "Lastname", capacity=2, topics=[topics[2], topics[3]]
         )
 
         tutors = [tutor1, tutor2]
@@ -74,8 +74,8 @@ class TestGroupTutorFlowSolver:
 
     @pytest.mark.unit
     def test_create_tutor_sink_edges(self):
-        tutor1 = Tutor(1, 1, "Email", "Name", "Lastname", capacity=2, topics=[])
-        tutor2 = Tutor(2, 1, "Email", "Name", "Lastname", capacity=5, topics=[])
+        tutor1 = Tutor(1, "Email", "Name", "Lastname", capacity=2, topics=[])
+        tutor2 = Tutor(2, "Email", "Name", "Lastname", capacity=5, topics=[])
 
         tutors = [tutor1, tutor2]
         solver = GroupTutorFlowSolver(tutors=tutors)
@@ -105,14 +105,14 @@ class TestGroupTutorFlowSolver:
         ]
 
         tutor1 = Tutor(
-            1, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0], topics[1]]
+            1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0], topics[1]]
         )
         tutor2 = Tutor(
-            2, 1, "Email", "Name", "Lastname", capacity=2, topics=[topics[2], topics[3]]
+            2, "Email", "Name", "Lastname", capacity=2, topics=[topics[2], topics[3]]
         )
 
         tutors = [tutor1, tutor2]
 
         solver = GroupTutorFlowSolver(groups, topics, tutors)
         result = solver.solve()
-        assert len(result) == 2
+        assert len(result.assignments) == 2
