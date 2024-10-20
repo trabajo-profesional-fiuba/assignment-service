@@ -116,7 +116,7 @@ async def get_period_by_id(
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
+        auth_service.assert_multiple_role(token)
 
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.get_period_by_id(period_id))
