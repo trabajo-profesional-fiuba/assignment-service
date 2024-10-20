@@ -1,7 +1,9 @@
 from typing import Optional
 from src.api.topics.mapper import TopicMapper
 from src.api.tutors.models import TutorPeriod
+from src.api.dates.maper import DateSlotsMapper
 
+from src.api.users.models import User
 from src.core.topic import Topic
 from src.core.tutor import Tutor
 
@@ -12,7 +14,6 @@ class TutorMapper:
         self,
     ) -> None:
         self._topic_mapper = TopicMapper()
-
 
     def map_tutor_period_to_tutors(self, db_periods: list[TutorPeriod]):
         tutors = list()
@@ -32,7 +33,7 @@ class TutorMapper:
 
         return tutors
 
-    def map_model_to_tutor(
+    def map_tutor_period_to_tutor(
         self, db_tutor_period: TutorPeriod, topics: list[Topic] = []
     ):
         tutor = None
@@ -47,3 +48,24 @@ class TutorMapper:
                 topics=topics,
             )
         return tutor
+
+    def map_models_to_tutors(self, db_tutors: list[User]):
+        tutors = list()
+        for user in db_tutors:
+            period = user.tutor_periods[0]
+            topics = self._topic_mapper.map_models_to_topics(period.topics)
+            dates = DateSlotsMapper.map_model_to_date_slot(user.tutor_dates_slots)
+            tutor = Tutor(
+                id=user.id,
+                period_id=period.id,
+                name=user.name,
+                last_name=user.last_name,
+                email=user.email,
+                topics=topics,
+                capacity=period.capacity,
+                is_evaluator=period.is_evaluator,
+                available_dates=dates,
+            )
+            tutors.append(tutor)
+
+        return tutors

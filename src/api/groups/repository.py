@@ -70,6 +70,7 @@ class GroupRepository:
         load_tutor_period=False,
         load_period=False,
         load_students=False,
+        load_dates: bool = False
     ) -> list[Group]:
         """Returns all groups for a given period"""
         with self.Session() as session:
@@ -83,6 +84,8 @@ class GroupRepository:
                 query = query.options(joinedload(Group.period))
             if load_students:
                 query = query.options(joinedload(Group.students))
+            if load_dates:
+                query = query.options(joinedload(Group.group_dates_slots))
 
             groups = query.filter(Group.period_id == period).all()
             session.expunge_all()

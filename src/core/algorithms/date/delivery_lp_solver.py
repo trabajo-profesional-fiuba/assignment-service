@@ -71,12 +71,13 @@ class DeliveryLPSolver:
         to the group on that date.
         """
         for tutor in self._tutors:
-            for group in tutor.groups:
-                group_tutor_possible_dates = self._find_common_dates(group, tutor)
-                for evaluator in self._evaluators:
-                    self._create_evaluator_decision_variables(
-                        group, tutor, evaluator, group_tutor_possible_dates
-                    )
+            for group in self._groups:
+                if group.tutor_id() == tutor.id:
+                    group_tutor_possible_dates = self._find_common_dates(group, tutor)
+                    for evaluator in self._evaluators:
+                        self._create_evaluator_decision_variables(
+                            group, tutor, evaluator, group_tutor_possible_dates
+                        )
 
     def _find_common_dates(self, group: AssignedGroup, tutor: Tutor):
         """
@@ -97,7 +98,7 @@ class DeliveryLPSolver:
         return [
             (g_date.get_week(), g_date.get_day_of_week(), g_date.get_hour())
             for g_date in group.available_dates
-            if any(t_date.date == g_date for t_date in tutor.available_dates)
+            if any(t_date.date == g_date.date for t_date in tutor.available_dates)
         ]
 
     def _create_evaluator_decision_variables(
@@ -172,8 +173,7 @@ class DeliveryLPSolver:
         hour : int
             The hour of the day of the assignment.
         """
-        var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor_id}-{EVALUATOR_ID}-\
-            {evaluator.id}-{DATE_ID}-{week}-{day}-{hour}"
+        var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor_id}-{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}-{hour}"
         self._decision_variables[
             (group.id, tutor_id, evaluator.id, week, day, hour)
         ] = self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
@@ -205,9 +205,10 @@ class DeliveryLPSolver:
         Adds group assignment constraints to the model.
         """
         for tutor in self._tutors:
-            for group in tutor.groups:
-                self._add_unique_date_constraint(group, tutor)
-                self._add_assignment_constraints(group)
+            for group in self._groups:
+                if group.tutor_id() == tutor.id:
+                    self._add_unique_date_constraint(group, tutor)
+                    self._add_assignment_constraints(group)
 
     def _add_unique_date_constraint(self, group, tutor):
         """
@@ -472,7 +473,7 @@ class DeliveryLPSolver:
         self.define_objective()
         self._model.optimize()
 
-        results = DateSlotsAssignmentResult(status=-1)
+        results = DateSlotsAssignmentResult(status=-1,assignments=[])
         if self._model.getStatus() == "optimal":
             return self._get_results(results)
 

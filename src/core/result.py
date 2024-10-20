@@ -104,15 +104,15 @@ class DateSlotAssignment:
             group_id=self.group_id,
             tutor_id=self.tutor_id,
             evaluator_id=self.evaluator_id,
-            date=self.date,
+            date=self.date.date,
             spanish_date=self.spanish_date,
         )
 
 
 class DateSlotsAssignmentResult:
-    def __init__(self, status: int, assignment: DateSlotAssignment = None) -> None:
+    def __init__(self, status: int, assignments: list[DateSlotAssignment]) -> None:
         self.status = status
-        self.assignments = assignment
+        self.assignments = assignments
 
     def add_assignment(self, assigment: DateSlotAssignment):
         self.assignments.append(assigment)
@@ -120,5 +120,5 @@ class DateSlotsAssignmentResult:
     def to_json(self):
         return AssignedDateResult(
             status=self.status,
-            assigment=[assignment.to_json() for assignment in self.assignments],
+            assigments=[assignment.to_json() for assignment in self.assignments],
         )

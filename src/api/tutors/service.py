@@ -272,3 +272,31 @@ class TutorService:
             return response
         except Exception as e:
             raise EntityNotFound(message=str(e))
+
+    def get_tutors_with_dates(self, period_id: str):
+        """From a period id, it retrieves all the tutors with their topics"""
+        try:
+            valid = self._validate_period(period_id)
+            if valid:
+                tutors = self._repository.get_tutors_by_period_id_with_dates(period_id)
+                return tutors
+            else:
+                raise InvalidPeriod(
+                    message="Period id should follow patter nC20year, ie. 1C2024"
+                )
+        except PeriodDuplicated as e:
+            raise Duplicated(str(e))
+
+    def get_evaluators_with_dates(self, period_id: str):
+        """From a period id, it retrieves all the tutors with their topics"""
+        try:
+            valid = self._validate_period(period_id)
+            if valid:
+                evaluators = self._repository.get_evaluators_by_period_id_with_dates(period_id)
+                return evaluators
+            else:
+                raise InvalidPeriod(
+                    message="Period id should follow patter nC20year, ie. 1C2024"
+                )
+        except PeriodDuplicated as e:
+            raise Duplicated(str(e))

@@ -189,19 +189,33 @@ async def assign_incomplete_groups(
         auth_service.assert_only_admin(token)
 
         dates_service = DateSlotsService(DateSlotRepository(session))
-        available_dates = DateSlotsMapper.map_model_to_date_slot(dates_service.get_slots(period_id))
+        available_dates = DateSlotsMapper.map_model_to_date_slot(
+            dates_service.get_slots(period_id)
+        )
 
         tutors_service = TutorService(TutorRepository(session))
         tutors_mapper = TutorMapper()
-        tutors = tutors_mapper.map_model_to_tutor
+        tutors = tutors_mapper.map_models_to_tutors(
+            tutors_service.get_tutors_with_dates(period_id)
+        )
+        evaluators = tutors_mapper.map_models_to_tutors(
+            tutors_service.get_evaluators_with_dates(period_id)
+        )
 
-        topic_repository = TopicRepository(session)
         group_service = GroupService(GroupRepository(session))
+        group_mapper = GroupMapper()
+        groups = group_mapper.map_models_to_assigned_groups(
+            group_service.get_groups(period=period_id, load_tutor_period=True,load_dates=True),
+        )
 
         service = AssignmentService()
+        assignment_result = service.assignment_dates(
+            available_dates, tutors, evaluators, groups
+        )
 
-        
-        return Response(status_code=status.HTTP_202_ACCEPTED, content="Created")
+        return ResponseBuilder.build_clear_cache_response(
+            assignment_result.to_json(), status.HTTP_200_OK
+        )
     except Exception as e:
         logger.error(str(e))
         raise ServerError("Unexpected error happend")
