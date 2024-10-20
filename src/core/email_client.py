@@ -1,7 +1,7 @@
 import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content
 from src.config.logging import logger
-from src.core.group import Group
+from src.core.group import AssignedGroup
 
 
 class SendGridEmailClient:
@@ -52,8 +52,8 @@ class SendGridEmailClient:
         self._log_response(response)
         return response.status_code
 
-    def notify_attachement(self, group: Group, type_of_attachment: str):
-        to = group.students_emails + [group.tutor_email()]
+    def notify_attachement(self, group: AssignedGroup, type_of_attachment: str):
+        to = group.emails() + [group.tutor_email()]
         subject = f"Grupo {group.id} ha subido un nuevo archivo"
         email_body = f"""
         Hola,

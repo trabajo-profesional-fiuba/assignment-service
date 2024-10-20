@@ -1,10 +1,11 @@
+from typing import Optional
 from src.core.topic import Topic
 from src.api.topics.models import Topic as TopicModel
 
 
 class TopicMapper:
 
-    def convert_from_models_to_topic(self, db_topics: list[TopicModel]):
+    def map_models_to_topics(self, db_topics: list[TopicModel]):
         topics = list()
 
         for db_topic in db_topics:
@@ -17,3 +18,7 @@ class TopicMapper:
             topics.append(topic)
 
         return topics
+
+    def map_model_to_topic(self, topic: Optional[TopicModel] = None):
+        if topic:
+            return Topic(id=topic.id, title=topic.name, category=topic.category.name)
