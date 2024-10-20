@@ -1,5 +1,5 @@
 import sendgrid
-from sendgrid.helpers.mail import Mail, Email, To, Content
+from sendgrid.helpers.mail import Mail, Email, To, Content, HtmlContent
 from src.config.logging import logger
 from src.core.group import Group
 
@@ -33,15 +33,34 @@ class SendGridEmailClient:
         response = sg.client.mail.send.post(request_body=mail_json)
         return response
 
-    def send_email(self, to: str, subject: str, body: str, cc: list[str] = []):
+    def send_email(
+        self,
+        to: str,
+        subject: str,
+        body: str | None,
+        cc: list[str] = [],
+    ):
         return self._send_mail([to], subject, body, cc)
 
-    def send_emails(self, to: list[str], subject: str, body: str, cc: list[str] = []):
+    def send_emails(
+        self,
+        to: list[str],
+        subject: str,
+        body: str,
+        cc: list[str] = [],
+    ):
         return self._send_mail(to, subject, body, cc)
 
-    def _send_mail(self, to: list[str], subject: str, body: str, cc: list[str] = []):
+    def _send_mail(
+        self,
+        to: list[str],
+        subject: str,
+        body: str,
+        cc: list[str] = [],
+    ):
         from_email = Email(self.sender, name=self.name)
         to_emails = [To(user) for user in to]
+
         content = Content("text/plain", body)
         mail = Mail(from_email, to_emails, subject, content)
 

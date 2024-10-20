@@ -40,3 +40,8 @@ class JwtDecoded(BaseModel):
 
 class Token(BaseModel):
     token: str
+
+
+class PasswordResetRequest(BaseModel):
+    old_password: str
+    new_password: str
