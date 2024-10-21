@@ -12,7 +12,7 @@ from tests.integration.api.helper import ApiHelper
 
 class MockSendGrid:
 
-    def notify_attachement(self, group, type):
+    def send_email(self, to, subject, body, cc = []):
         return 200
 
 
@@ -59,7 +59,7 @@ def test_if_user_not_found_gets_401(fastapi, tables):
 
 @pytest.mark.integration
 def test_reset_password_of_user(fastapi, tables):
-    #fastapi.app.dependency_overrides[get_email_sender] = override_get_email_sender
+    fastapi.app.dependency_overrides[get_email_sender] = override_get_email_sender
     helper = ApiHelper()
     helper.create_student("Pedro", "Perez", "105288", "alejovillores@gmail.com")
     student_token = helper.create_student_token(105288)

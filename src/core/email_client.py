@@ -37,7 +37,7 @@ class SendGridEmailClient:
         self,
         to: str,
         subject: str,
-        body: str | None,
+        body: str,
         cc: list[str] = [],
     ):
         return self._send_mail([to], subject, body, cc)
