@@ -12,7 +12,7 @@ from tests.integration.api.helper import ApiHelper
 
 class MockSendGrid:
 
-    def send_email(self, to, subject, body, cc = []):
+    def send_email(self, to, subject, body, cc=[]):
         return 200
 
 

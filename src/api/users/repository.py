@@ -145,6 +145,6 @@ class UserRepository:
             stmt = update(User).where(User.id == user_id).values(**attributes)
             session.execute(stmt, execution_options={"synchronize_session": False})
             session.commit()
-            
+
             user = session.query(User).filter(User.id == user_id).one_or_none()
         return user
