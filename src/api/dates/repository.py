@@ -22,7 +22,7 @@ class DateSlotRepository:
 
     def add_bulk(
         self, model: DateSlot | GroupDateSlot | TutorDateSlot, data: list[dict]
-    ):
+    ) -> list[dict]:
         with self.Session() as session:
             result = session.execute(insert(model).returning(model), data)
             session.commit()

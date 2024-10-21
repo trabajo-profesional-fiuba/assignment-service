@@ -383,8 +383,14 @@ async def notify_students(
         group_repository = GroupRepository(session)
 
         group_mapper = GroupMapper(TutorMapper())
-        group = group_mapper.convert_from_model_to_group(
-            group_repository.get_group_by_id(group_id, True, False, True, True)
+        group = group_mapper.map_model_to_assigned_group(
+            group_repository.get_group_by_id(
+                group_id,
+                load_topic=True,
+                load_period=False,
+                load_students=True,
+                load_tutor=True,
+            )
         )
 
         response = service.notify_students(tutor_id, group, email_sender, body.body)

@@ -1,101 +1,147 @@
 import pytest
+from datetime import datetime
 
-from src.core.group import Group
+from src.core.date_slots import DateSlot
+from src.core.group import AssignedGroup, UnassignedGroup
+from src.core.student import Student
 from src.core.tutor import Tutor
 from src.core.topic import Topic
-from src.core.delivery_date import DeliveryDate
 
 
-class TestGroup:
+class TestUnassignedGroup:
 
     @pytest.mark.unit
-    def test_group_starts_with_id_and_no_tutor(self):
-        group = Group(1)
+    def test_initialization(self):
+        group = UnassignedGroup(id=1)
 
         assert group.id == 1
-        assert group.tutor is None
+        assert group._students == []
+        assert group._topics == []
 
     @pytest.mark.unit
-    def test_group_can_be_assigned_to_a_tutor(self):
-        tutor = Tutor(1, "fake@fi.uba.ar", "Juan", "Perez")
-        group = Group(1)
-        tutor.add_groups([group])
-
-        assert group.is_tutored_by(1) is True
-
-    @pytest.mark.unit
-    def test_group_can_have_topics(self):
-        topics = [
-            Topic(id=1, title="topic1", cost=1, category="Category A", capacity=1),
-            Topic(id=2, title="topic2", cost=2, category="Category A"),
-            Topic(id=3, title="topic3", cost=3, category="Category A"),
+    def test_initialization_with_students_and_topics(self):
+        students = [
+            Student(id=1, name="Alice", last_name="Alan", email="alice@fi.uba.ar"),
+            Student(id=2, name="Bob", last_name="Alan", email="boby@fi.uba.ar"),
         ]
-        group = Group(1)
+        topics = [
+            Topic(id=1, title="Math", category="UBA"),
+            Topic(id=2, title="Science", category="UBA"),
+        ]
+        group = UnassignedGroup(id=1, students=students, topics=topics)
 
-        group.add_topics(topics)
+        assert group.id == 1
+        assert group._students == students
+        assert group._topics == topics
 
-        assert (
-            group.preference_of(
-                Topic(id=1, title="topic1", capacity=1, category="Category A")
-            )
-            == 1
+    @pytest.mark.unit
+    def test_preference_of_existing_topic(self):
+        topics = [
+            Topic(id=1, title="Math", category="UBA"),
+            Topic(id=2, title="Science", category="UBA"),
+        ]
+        group = UnassignedGroup(id=1, topics=topics)
+        preference = group.preference_of(Topic(id=1, title="Math", category="UBA"))
+
+        assert preference == 10  # First topic, so preference is 1 * 10
+
+    @pytest.mark.unit
+    def test_preference_of_non_existing_topic(self):
+        topics = [
+            Topic(id=1, title="Math", category="UBA"),
+            Topic(id=2, title="Science", category="UBA"),
+        ]
+        group = UnassignedGroup(id=1, topics=topics)
+        preference = group.preference_of(Topic(id=3, title="History", category="UBA"))
+
+        assert preference == 100  # Topic not in list, so preference is 100
+
+
+class TestAssignedGroup:
+
+    @pytest.mark.unit
+    def test_initialization(self):
+        group = AssignedGroup(id=1)
+        assert group.id == 1
+        assert group._tutor is None
+        assert group._available_dates == []
+        assert group._assigned_date is None
+        assert group._assigned_topic is None
+        assert group._students == []
+        assert group._reviewer_id is None
+
+    @pytest.mark.unit
+    def test_initialization_with_parameters(self):
+        tutor = Tutor(
+            id=1, name="Carlos", email="dr.smith@example.com", last_name="Fontela"
+        )
+        students = [
+            Student(id=1, name="Alice", last_name="Alan", email="alice@fi.uba.ar"),
+            Student(id=2, name="Bob", last_name="Alan", email="boby@fi.uba.ar"),
+        ]
+        topic = Topic(id=1, title="Math", category="UBA")
+        dates = [DateSlot(start_time=datetime(2024, 10, 15, 0, 0, 0))]
+        group = AssignedGroup(
+            id=1,
+            tutor=tutor,
+            available_dates=dates,
+            topic_assigned=topic,
+            students=students,
+            reviewer_id=101,
         )
 
-    @pytest.mark.unit
-    def test_group_can_have_available_dates(self):
-        dates = [DeliveryDate(2, 2, 3), DeliveryDate(2, 2, 4), DeliveryDate(2, 2, 5)]
-        group = Group(1)
-        group.add_available_dates(dates)
-
-        expected_cost = (5 * 11) - 3
-        result = group.cost_of_week(2)
-        assert expected_cost == result
+        assert group.id == 1
+        assert group._tutor == tutor
+        assert group._available_dates == dates
+        assert group._assigned_date is None
+        assert group._assigned_topic == topic
+        assert group._students == students
+        assert group._reviewer_id == 101
 
     @pytest.mark.unit
-    def test_group_can_calculate_cost_per_week(self):
-        dates = [
-            DeliveryDate(2, 2, 1),
-            DeliveryDate(2, 2, 2),
-            DeliveryDate(2, 2, 3),
-            DeliveryDate(2, 2, 4),
-            DeliveryDate(2, 2, 5),
-            DeliveryDate(2, 2, 6),
-            DeliveryDate(2, 2, 7),
-            DeliveryDate(2, 2, 8),
-            DeliveryDate(2, 2, 9),
-            DeliveryDate(2, 4, 1),
-            DeliveryDate(2, 4, 2),
-            DeliveryDate(2, 4, 3),
-            DeliveryDate(2, 4, 4),
-            DeliveryDate(2, 4, 5),
-            DeliveryDate(2, 4, 6),
-            DeliveryDate(2, 4, 7),
-            DeliveryDate(2, 4, 8),
-            DeliveryDate(2, 4, 9),
+    def test_emails(self):
+        students = [
+            Student(id=1, name="Alice", last_name="Alan", email="alice@fi.uba.ar"),
+            Student(id=2, name="Bob", last_name="Alan", email="boby@fi.uba.ar"),
         ]
-        group = Group(1)
-        group.add_available_dates(dates)
+        group = AssignedGroup(id=1, students=students)
+        emails = group.emails()
 
-        expected_cost = (5 * 11) - 18
-        result = group.cost_of_week(2)
-        assert expected_cost == result
+        assert emails == ["alice@fi.uba.ar", "boby@fi.uba.ar"]
 
     @pytest.mark.unit
-    def test_group_can_calculate_cost_per_date(self):
-        dates = [
-            DeliveryDate(2, 2, 1),
-            DeliveryDate(2, 2, 2),
-            DeliveryDate(2, 2, 3),
-            DeliveryDate(2, 2, 4),
-            DeliveryDate(2, 2, 5),
-            DeliveryDate(2, 2, 6),
-            DeliveryDate(2, 2, 7),
-            DeliveryDate(2, 2, 8),
-            DeliveryDate(2, 2, 9),
-        ]
-        group = Group(1)
-        group.add_available_dates(dates)
+    def test_tutor_email(self):
+        tutor = Tutor(
+            id=1, name="Carlos", email="dr.smith@example.com", last_name="Fontela"
+        )
+        group = AssignedGroup(id=1, tutor=tutor)
+        tutor_email = group.tutor_email()
 
-        expected_cost = 11 - 9
-        result = group.cost_of_date(DeliveryDate(2, 2, 1))
-        assert expected_cost == result
+        assert tutor_email == "dr.smith@example.com"
+
+    @pytest.mark.unit
+    def test_assign_tutor(self):
+        tutor = Tutor(
+            id=1, name="Carlos", email="dr.smith@example.com", last_name="Fontela"
+        )
+        group = AssignedGroup(id=1)
+        group.assign_tutor(tutor)
+        assert group._tutor == tutor
+
+    @pytest.mark.unit
+    def test_get_tutor_id(self):
+        tutor = Tutor(
+            id=1, name="Carlos", email="dr.smith@example.com", last_name="Fontela"
+        )
+        group = AssignedGroup(id=1, tutor=tutor)
+        tutor_id = group.tutor_id()
+        assert tutor_id == 1
+
+    @pytest.mark.unit
+    def test_get_tutor_email(self):
+        tutor = Tutor(
+            id=1, name="Carlos", email="dr.smith@example.com", last_name="Fontela"
+        )
+        group = AssignedGroup(id=1, tutor=tutor)
+        email = group.tutor_email()
+        assert email == "dr.smith@example.com"

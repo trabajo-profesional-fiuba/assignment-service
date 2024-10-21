@@ -2,9 +2,12 @@ from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CM
 
 from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.core.group import UnassignedGroup
-from src.core.result import GroupTutorAssigmentResult
+from src.core.result import (
+    GroupTutorTopicAssignmentResult,
+    GroupTutorTopicAssignment,
+)
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor
+from src.core.tutor import Tutor
 
 
 class GroupTutorLPSolver:
@@ -12,7 +15,7 @@ class GroupTutorLPSolver:
         self,
         groups: list[UnassignedGroup],
         topics: list[Topic],
-        tutors: list[SinglePeriodTutor],
+        tutors: list[Tutor],
         balance_limit,
     ):
         """
@@ -173,7 +176,6 @@ class GroupTutorLPSolver:
             - assignment_vars: Assignment variables.
         """
         for tutor in self._tutors:
-            print(tutor.capacity)
             assigned_topics = [topic.id for topic in tutor.topics]
             prob += (
                 lpSum(
@@ -225,7 +227,7 @@ class GroupTutorLPSolver:
 
     def _solve_optimization_problem(
         self, prob: LpProblem
-    ) -> list[GroupTutorAssigmentResult]:
+    ) -> list[GroupTutorTopicAssignment]:
         """
         Solve the optimization problem.
 
@@ -236,27 +238,25 @@ class GroupTutorLPSolver:
         """
         prob.solve(PULP_CBC_CMD(msg=0))
 
-        result_variables = []
-        groups_result = []
+        result = GroupTutorTopicAssignmentResult(status=prob.status, assignments=[])
+        if prob.status > 0:
+            for var in prob.variables():
+                if var.varValue == 1:
+                    # Extraer el id del grupo, tutor y topic del nombre de la variable
+                    group_id, tutor_id, topic_id = self._parse_variable_name(var.name)
 
-        for var in prob.variables():
-            print(var.name, var.varValue)
-            if var.varValue == 1:
-                result_variables.append(var)
+                    # Asignar el tutor al grupo
+                    group = self._get_group_by_id(group_id)
+                    tutor = self._get_tutor_by_id(tutor_id)
 
-                # Extraer el id del grupo, tutor y topic del nombre de la variable
-                group_id, tutor_id, topic_id = self._parse_variable_name(var.name)
+                    topic = self._get_topic_by_id(topic_id)
+                    assignment = GroupTutorTopicAssignment(
+                        group=group, tutor=tutor, topic=topic
+                    )
 
-                # Asignar el tutor al grupo
-                tutor = self._get_tutor_by_id(tutor_id)
+                    result.add_assignment(assignment)
 
-                # Asignar el topic al grupo
-                topic = self._get_topic_by_id(topic_id)
-                group = GroupTutorAssigmentResult(id=group_id, tutor=tutor, topic=topic)
-
-                groups_result.append(group)
-
-        return groups_result
+        return result
 
     def _parse_variable_name(self, name):
         """
@@ -294,11 +294,20 @@ class GroupTutorLPSolver:
 
         Returns a list of Topic instances.
         """
-        for topic in self._topics:
-            if topic.id == topic_id:
-                return topic
+        return next(topic for topic in self._topics if topic.id == topic_id)
 
-    def solve(self) -> list[GroupTutorAssigmentResult]:
+    def _get_group_by_id(self, group_id):
+        """
+        Get the group instance by its id.
+
+        Args:
+            - group_id: The id of the tutor.
+
+        Returns the tutor instance.
+        """
+        return next(group for group in self._groups if group.id == group_id)
+
+    def solve(self) -> GroupTutorTopicAssignmentResult:
         """
         Solve the optimization problem using the linear programming method.
 

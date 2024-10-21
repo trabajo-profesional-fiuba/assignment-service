@@ -1,143 +1,186 @@
 import pytest
+from datetime import datetime
+
+from src.core.date_slots import DateSlot
 from src.core.delivery_date import DeliveryDate
+from src.core.student import Student
 from src.core.topic import Topic
 from src.core.tutor import Tutor
-from src.core.group import Group
+from src.core.group import Group, AssignedGroup
 
 
 class TestTutor:
 
+    @pytest.fixture
+    def assigned_groups_sample(self):
+
+        students1 = [
+            Student(id=1, name="Alice", last_name="Alan", email="alice@fi.uba.ar"),
+            Student(id=2, name="Bob", last_name="Alan", email="bob@fi.uba.ar"),
+        ]
+        students2 = [
+            Student(id=3, name="Juan", last_name="Alan", email="juan@fi.uba.ar"),
+            Student(id=4, name="Boby", last_name="Alan", email="boby@fi.uba.ar"),
+        ]
+
+        topic1 = (Topic(id=1, title="Math", capacity=5, category="UBA"),)
+        topic2 = (Topic(id=2, title="Science", capacity=10, category="UBA"),)
+
+        dates1 = [
+            DateSlot(start_time=datetime(2024, 10, 15, 0, 0, 0)),
+            DateSlot(start_time=datetime(2024, 10, 16, 0, 0, 0)),
+        ]
+        dates2 = [
+            DateSlot(start_time=datetime(2024, 10, 17, 0, 0, 0)),
+            DateSlot(start_time=datetime(2024, 10, 14, 0, 0, 0)),
+        ]
+
+        group1 = AssignedGroup(
+            id=101,
+            available_dates=dates1,
+            topic_assigned=topic1,
+            students=students1,
+            reviewer_id=201,
+        )
+        group2 = AssignedGroup(
+            id=102,
+            available_dates=dates2,
+            topic_assigned=topic2,
+            students=students2,
+            reviewer_id=202,
+        )
+        group3 = AssignedGroup(
+            id=103,
+            available_dates=dates1,
+            topic_assigned=topic2,
+            students=students1,
+            reviewer_id=203,
+        )
+        group4 = AssignedGroup(
+            id=104,
+            available_dates=dates2,
+            topic_assigned=topic1,
+            students=students2,
+            reviewer_id=204,
+        )
+        group5 = AssignedGroup(
+            id=105,
+            available_dates=dates1,
+            topic_assigned=topic1,
+            students=students2,
+            reviewer_id=205,
+        )
+
+        return [group1, group2, group3, group4, group5]
+
     @pytest.mark.unit
-    def test_when_it_is_initialized_it_just_has_id(self):
-        # Arrange
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-        # Assert multiple
-        assert len(tutor.available_dates) == 0
-        assert len(tutor.as_tutor_dates) == 0
-        assert len(tutor.as_evaluator_dates) == 0
-        assert tutor.groups is None
-        assert tutor.topics is None
-        assert tutor.is_evaluator() is False
+    def test_initialization(self):
+        tutor = Tutor(
+            id=1,
+            period_id="2C2024",
+            name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+        )
+        assert tutor.id == 1
+        assert tutor.period_id == "2C2024"
+        assert tutor.name == "John"
+        assert tutor.last_name == "Doe"
+        assert tutor.email == "john.doe@example.com"
         assert tutor.capacity == 0
+        assert tutor.topics == []
 
     @pytest.mark.unit
-    def test_should_change_evaluator_status(self):
-        # Arrange
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-        # Act
-        tutor.make_evaluator()
-        # Assert
-        assert tutor.is_evaluator() is True
+    def test_initialization_with_topics(self):
+        topics = [
+            Topic(id=1, title="Math", category="UBA"),
+            Topic(id=2, title="Science", category="UBA"),
+        ]
+        tutor = Tutor(
+            id=1,
+            period_id="2C2024",
+            name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            capacity=10,
+            topics=topics,
+        )
+
+        assert tutor.id == 1
+        assert tutor.period_id == "2C2024"
+        assert tutor.name == "John"
+        assert tutor.last_name == "Doe"
+        assert tutor.email == "john.doe@example.com"
+        assert tutor.capacity == 10
+        assert tutor.topics == topics
 
     @pytest.mark.unit
-    def test_tutor_has_empty_dates(self):
-        # Arrange
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-        # Act
-        available_dates = tutor.available_dates
-        # Assert
-        assert len(available_dates) == 0
+    def test_topics_ids(self):
+        topics = [
+            Topic(id=1, title="Math", category="UBA"),
+            Topic(id=2, title="Science", category="UBA"),
+        ]
+        tutor = Tutor(
+            id=1,
+            period_id="2C2024",
+            name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            topics=topics,
+        )
+        topics_ids = tutor.topics_ids()
+        assert topics_ids == [1, 2]
 
     @pytest.mark.unit
-    def test_tutor_dates_if_they_are_passed(self):
-        # Arrange
-        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-
-        # Act
-        tutor.add_available_dates(dates)
-        available_dates = tutor.available_dates
-        # Assert
-        assert len(available_dates) == 3
-
-    @pytest.mark.unit
-    def test_tutor_is_avaliable_on_date(self):
-        # Arrange
-        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-        tutor.add_available_dates(dates)
-
-        # Act
-        is_avaliable = tutor.is_avaliable(dates[1].label())
-        # Assert
-        assert is_avaliable is True
+    def test_capacity_of_existing_topic(self):
+        topics = [
+            Topic(id=1, title="Math", capacity=5, category="UBA"),
+            Topic(id=2, title="Science", capacity=10, category="UBA"),
+        ]
+        tutor = Tutor(
+            id=1,
+            period_id="2C2024",
+            name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            topics=topics,
+        )
+        capacity = tutor.capacity_of(Topic(id=1, title="Math"))
+        assert capacity == 5
 
     @pytest.mark.unit
-    def test_tutor_can_have_substitute_dates(self):
-        # Arrange
-        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-        tutor.add_available_dates(dates)
-        subst_date = DeliveryDate(2, 2, 4)
-
-        # Act
-        tutor.add_substitute_date(subst_date)
-
-        # Assert
-        assert tutor.substitute_dates[0] == subst_date
-
-    @pytest.mark.unit
-    def test_tutor_evaluate_date(self):
-        # Arrange
-        date = DeliveryDate(2, 2, 5)
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-
-        # Act & Assert
-        assert len(tutor.as_evaluator_dates) == 0
-        tutor.evaluate_date(date)
-        assert len(tutor.as_evaluator_dates) == 1
+    def test_capacity_of_non_existing_topic(self):
+        topics = [
+            Topic(id=1, title="Math", capacity=5, category="UBA"),
+            Topic(id=2, title="Science", capacity=10, category="UBA"),
+        ]
+        tutor = Tutor(
+            id=1,
+            period_id="2C2024",
+            name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            topics=topics,
+        )
+        capacity = tutor.capacity_of(Topic(id=3, title="History", category="UBA"))
+        assert capacity == 0
 
     @pytest.mark.unit
-    def test_tutor_date(self):
-        # Arrange
-        date = DeliveryDate(2, 2, 5)
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
+    def test_add_groups_to_tutor(self, assigned_groups_sample):
+        topics = [
+            Topic(id=1, title="Math", capacity=5, category="UBA"),
+            Topic(id=2, title="Science", capacity=10, category="UBA"),
+        ]
 
-        # Act & Assert
-        assert len(tutor.as_tutor_dates) == 0
-        tutor.tutor_date(date)
-        assert len(tutor.as_tutor_dates) == 1
+        tutor = Tutor(
+            id=1,
+            period_id="2C2024",
+            name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            topics=topics,
+        )
 
-    @pytest.mark.unit
-    def test_tutor_can_have_topics(self):
-        t1 = Topic(id=1, title="foo", capacity=1, category="Category A")
-        t2 = Topic(id=2, title="bar", capacity=1, category="Category A")
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
+        tutor.assign_groups(assigned_groups_sample)
 
-        tutor.add_topic(t1)
-        tutor.add_topic(t2)
-
-        assert len(tutor._topics) == 2
-
-    @pytest.mark.unit
-    def test_tutor_can_filter_mutual_dates(self):
-        # Arrange
-        dates = [DeliveryDate(1, 2, 3), DeliveryDate(1, 4, 1), DeliveryDate(1, 3, 2)]
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-        tutor.add_available_dates(dates)
-        expected = [dates[1].label(), dates[2].label()]
-
-        # Act & Assert
-        dates_filtered = tutor.find_mutual_dates([dates[1], dates[2]])
-        assert all(e in dates_filtered for e in expected)
-
-    @pytest.mark.unit
-    def test_tutor_assign_groups(self):
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-        g1 = Group(1)
-        g2 = Group(2)
-
-        tutor.add_groups([g1, g2])
-
-        assert len(tutor._groups) == 2
-
-    @pytest.mark.unit
-    def test_tutor_can_return_groups_ids(self):
-        g1 = Group(1)
-        g2 = Group(2)
-        tutor = Tutor(1, "test@fi.uba.ar", "Juan", "Perez")
-        tutor.add_groups([g1, g2])
-
-        result = tutor.groups_ids()
-
-        assert result == [1, 2]
+        assert len(tutor.groups) == len(assigned_groups_sample)

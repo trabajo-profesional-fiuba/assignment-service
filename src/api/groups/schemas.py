@@ -39,6 +39,21 @@ class AssignedGroupResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class AssignedDateSlotResponse(BaseModel):
+    group_id: int
+    tutor_id: int
+    evaluator_id: int
+    date: datetime
+    spanish_date: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AssignedDateResult(BaseModel):
+    status: int
+    assigments: list[AssignedDateSlotResponse]
+
+
 class GroupWithPreferredTopicsRequest(GroupRequest):
     preferred_topics: List[int]
 
@@ -84,8 +99,10 @@ class GroupCompleteList(RootModel):
     root: List[CompleteGroupResponse] = Field(default=[])
 
 
-class AssignedGroupList(RootModel):
-    root: List[AssignedGroupResponse] = Field(default=[])
+class AssignmentResult(BaseModel):
+    status: int
+    assigment: List[AssignedGroupResponse] = Field(default=[])
+    dcg: Optional[float]
 
 
 class BlobDetails(BaseModel):

@@ -1,16 +1,21 @@
+from src.api.dates.maper import DateSlotsMapper
+from src.api.topics.mapper import TopicMapper
 from src.api.tutors.mapper import TutorMapper
-from src.core.group import Group, UnassignedGroup
+from src.core.group import AssignedGroup, UnassignedGroup
+from src.core.student import StudentMapper
 
 
 class GroupMapper:
 
     def __init__(
         self,
-        tutor_mapper: TutorMapper | None = None,
     ) -> None:
-        self._tutor_mapper = tutor_mapper
+        self._tutor_mapper = TutorMapper()
+        self._student_mapper = StudentMapper()
+        self._topic_mapper = TopicMapper()
+        self._dates_mapper = DateSlotsMapper()
 
-    def convert_from_models_to_unassigned_groups(self, db_groups, topics):
+    def map_models_to_unassigned_groups(self, db_groups, topics):
         topics_mapped = {topic.id: topic for topic in topics}
 
         groups = [
@@ -26,18 +31,26 @@ class GroupMapper:
 
         return groups
 
-    def convert_from_model_to_group(self, db_group):
-        tutor = (
-            self._tutor_mapper.convert_to_single_period_tutor(db_group.tutor_period)
-            if self._tutor_mapper
-            else None
-        )
-        students_emails = [student.email for student in db_group.students]
-        group = Group(
+    def map_model_to_assigned_group(self, db_group):
+        tutor = self._tutor_mapper.map_tutor_period_to_tutor(db_group.tutor_period)
+        students = self._student_mapper.map_models_to_students(db_group.students)
+        topic = self._topic_mapper.map_model_to_topic(db_group.topic)
+        group = AssignedGroup(
             id=db_group.id,
             tutor=tutor,
-            students_emails=students_emails,
+            students=students,
             reviewer_id=db_group.reviewer_id,
+            topic_assigned=topic,
+            available_dates=self._dates_mapper.map_model_to_date_slot(
+                db_group.group_dates_slots
+            ),
         )
 
         return group
+
+    def map_models_to_assigned_groups(self, db_groups):
+        groups = list()
+        for group in db_groups:
+            groups.append(self.map_model_to_assigned_group(group))
+
+        return groups
