@@ -100,7 +100,6 @@ class TestGroupTutorLPSolver:
         result = solver.solve()
         assert result.status == -1
 
-
     @pytest.mark.unit
     def test_tutor_group_assignment_balance(self):
         """
@@ -159,10 +158,18 @@ class TestGroupTutorLPSolver:
         # Verificar que la diferencia en el número de grupos asignados a los tutores
         # no sea mayor a 1
         tutor1_groups = len(
-            [assignment for assignment in result.assignments if assignment.tutor == tutor1.email]
+            [
+                assignment
+                for assignment in result.assignments
+                if assignment.tutor == tutor1.email
+            ]
         )
         tutor2_groups = len(
-            [assignment for assignment in result.assignments if assignment.tutor == tutor2.email]
+            [
+                assignment
+                for assignment in result.assignments
+                if assignment.tutor == tutor2.email
+            ]
         )
 
         assert abs(tutor1_groups - tutor2_groups) <= 1
@@ -229,7 +236,6 @@ class TestGroupTutorLPSolver:
         # Verificar que no se asignen más grupos de los permitidos
         assert result.status == -1
 
-
     @pytest.mark.unit
     def test_strict_balance_limit(self):
         """
@@ -265,20 +271,20 @@ class TestGroupTutorLPSolver:
             ),
         ]
 
-        tutor1 = Tutor(
-            1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0]]
-        )
-        tutor2 = Tutor(
-            2, "Email", "Name", "Lastname", capacity=2, topics=[topics[1]]
-        )
+        tutor1 = Tutor(1, "Email", "Name", "Lastname", capacity=2, topics=[topics[0]])
+        tutor2 = Tutor(2, "Email", "Name", "Lastname", capacity=2, topics=[topics[1]])
         tutors = [tutor1, tutor2]
 
         solver = GroupTutorLPSolver(groups, topics, tutors, balance_limit=1)
         result = solver.solve()
 
         # Verificar que la diferencia entre grupos asignados a tutor1 y tutor2 sea <= 1
-        tutor1_groups = len([res for res in result.assignments if res.tutor.email == tutor1.email])
-        tutor2_groups = len([res for res in result.assignments if res.tutor.email == tutor2.email])
+        tutor1_groups = len(
+            [res for res in result.assignments if res.tutor.email == tutor1.email]
+        )
+        tutor2_groups = len(
+            [res for res in result.assignments if res.tutor.email == tutor2.email]
+        )
         assert abs(tutor1_groups - tutor2_groups) <= 1
 
     @pytest.mark.unit
