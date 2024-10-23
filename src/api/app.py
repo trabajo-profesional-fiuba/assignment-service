@@ -11,6 +11,7 @@ from src.api.tutors.router import router as tutor_router
 from src.api.periods.router import router as period_router
 from src.api.assignments.router import router as assignment_router
 from src.api.dates.router import router as dates_router
+from src.api.admins.router import router as admins_router
 
 from src.config.config import api_config
 from src.config.database.database import init_default_values
@@ -68,6 +69,7 @@ routers = [
     ("groups", group_router),
     ("assignments", assignment_router),
     ("dates", dates_router),
+    ("admins", admins_router),
 ]
 
 
