@@ -95,6 +95,10 @@ class GroupList(RootModel):
     root: List[GroupResponse] = Field(default=[])
 
 
+class GroupStatesList(RootModel):
+    root: List[GroupStates] = Field(default=[])
+
+
 class GroupCompleteList(RootModel):
     root: List[CompleteGroupResponse] = Field(default=[])
 
