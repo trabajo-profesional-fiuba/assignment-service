@@ -52,7 +52,7 @@ async def add_admin(
 
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
-        raise Duplicated("Could not insert the new admin")
+        raise Duplicated("Duplicated admin")
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
