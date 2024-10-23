@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import exc, select
+from sqlalchemy import exc, select, update
 
 from src.api.exceptions import Duplicated
 from src.api.students.exceptions import StudentDuplicated, StudentNotInserted
@@ -138,4 +138,13 @@ class UserRepository:
                 raise UserNotFound("User not found")
             session.expunge(user)
 
+        return user
+
+    def update_user(self, user_id: int, attributes: dict) -> User:
+        with self.Session() as session:
+            stmt = update(User).where(User.id == user_id).values(**attributes)
+            session.execute(stmt, execution_options={"synchronize_session": False})
+            session.commit()
+
+            user = session.query(User).filter(User.id == user_id).one_or_none()
         return user

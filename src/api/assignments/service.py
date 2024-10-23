@@ -1,4 +1,5 @@
 from src.api.assignments.exceptions import MethodNotFound
+from src.core.algorithms.date.delivery_lp_solver import DeliveryLPSolver
 from src.core.algorithms.topic_tutor.group_tutor_flow_solver import GroupTutorFlowSolver
 from src.core.algorithms.topic_tutor.incomplete_groups_lp_solver import (
     IncompleteGroupsLPSolver,
@@ -23,5 +24,15 @@ class AssignmentService:
         else:
             raise MethodNotFound("Method provided is unkown")
 
+        results = assigment_model.solve()
+        return results
+
+    def assignment_dates(self, available_dates, tutors, evaluators, groups):
+        assigment_model = DeliveryLPSolver(
+            groups=groups,
+            available_dates=available_dates,
+            tutors=tutors,
+            evaluators=evaluators,
+        )
         results = assigment_model.solve()
         return results

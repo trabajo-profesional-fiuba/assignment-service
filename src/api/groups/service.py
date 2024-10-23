@@ -72,14 +72,20 @@ class GroupService:
     def get_groups(
         self,
         period: str,
-        load_topic: bool,
-        load_tutor_period: bool,
-        load_period: bool,
-        load_students: bool,
+        load_topic: bool = False,
+        load_tutor_period: bool = False,
+        load_period: bool = False,
+        load_students: bool = False,
+        load_dates: bool = False,
     ):
         logger.info("Fetching all groups")
         groups = self._repository.get_groups(
-            period, load_topic, load_tutor_period, load_period, load_students
+            period,
+            load_topic,
+            load_tutor_period,
+            load_period,
+            load_students,
+            load_dates,
         )
         return groups
 

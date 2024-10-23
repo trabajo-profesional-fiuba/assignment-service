@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import exc, exists
 
+from src.api.dates.models import TutorDateSlot
 from src.api.tutors.models import TutorPeriod
 from src.api.periods.exceptions import PeriodDuplicated
 from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
@@ -253,3 +254,35 @@ class TutorRepository:
             return tutor
         except exc.IntegrityError:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
+
+    def get_tutors_by_period_id_with_dates(self, period_id: str):
+        with self.Session() as session:
+            tutors = (
+                session.query(User)
+                .join(TutorPeriod)
+                .filter(TutorPeriod.period_id == period_id)
+                .join(TutorDateSlot)
+                .filter(TutorDateSlot.period_id == period_id)
+                .options(joinedload(User.tutor_periods))
+                .options(joinedload(User.tutor_dates_slots))
+                .all()
+            )
+            session.expunge_all()
+        return tutors
+
+    def get_evaluators_by_period_id_with_dates(self, period_id: str):
+        with self.Session() as session:
+            evaluators = (
+                session.query(User)
+                .join(TutorPeriod)
+                .filter(
+                    TutorPeriod.period_id == period_id, TutorPeriod.is_evaluator == True
+                )
+                .join(TutorDateSlot)
+                .filter(TutorDateSlot.period_id == period_id)
+                .options(joinedload(User.tutor_periods))
+                .options(joinedload(User.tutor_dates_slots))
+                .all()
+            )
+            session.expunge_all()
+        return evaluators

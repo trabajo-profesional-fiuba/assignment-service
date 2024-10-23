@@ -8,9 +8,9 @@ import networkx as nx
 
 from src.constants import SOURCE_NODE_ID, SINK_NODE_ID, GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.core.group import UnassignedGroup
-from src.core.result import GroupTutorAssigmentResult
+from src.core.result import GroupTutorTopicAssignmentResult, GroupTutorTopicAssignment
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor
+from src.core.tutor import Tutor
 
 
 class GroupTutorFlowSolver:
@@ -22,7 +22,7 @@ class GroupTutorFlowSolver:
         self,
         groups: Optional[list[UnassignedGroup]] = None,
         topics: Optional[list[Topic]] = None,
-        tutors: Optional[list[SinglePeriodTutor]] = None,
+        tutors: Optional[list[Tutor]] = None,
     ):
         """
         Initializes the solver with the provided groups, topics, and tutors.
@@ -155,28 +155,36 @@ class GroupTutorFlowSolver:
         return graph
 
     def _convert_result(self, graph: nx.DiGraph, result: dict):
-        group_ids = list()
-        groups = list()
-        for key, value in result[SOURCE_NODE_ID].items():
-            if value > 0:
-                # group-n => n
+        if sum(result[SOURCE_NODE_ID].values()) == len(self._groups):
+            assigment_result = GroupTutorTopicAssignmentResult(status=1, assignments=[])
+            group_ids = list()
+            for key in result[SOURCE_NODE_ID].keys():
                 group_id = key.split("-")[1]
                 group_ids.append(int(group_id))
 
-        for i in group_ids:
-            path = nx.shortest_path(graph, f"{GROUP_ID}-{i}", f"{SINK_NODE_ID}")
-            _, topic_id, tutor_id, _ = path
-            topic = next(
-                (t for t in self._topics if t.id == int(topic_id.split("-")[1])), None
+            for i in group_ids:
+                path = nx.shortest_path(graph, f"{GROUP_ID}-{i}", f"{SINK_NODE_ID}")
+                _, topic_id, tutor_id, _ = path
+                topic = next(
+                    (t for t in self._topics if t.id == int(topic_id.split("-")[1])),
+                    None,
+                )
+                tutor = next(
+                    (t for t in self._tutors if t.id == int(tutor_id.split("-")[1])),
+                    None,
+                )
+                group = next((g for g in self._groups if g.id == i), None)
+                assigment_result.add_assignment(
+                    GroupTutorTopicAssignment(group=group, tutor=tutor, topic=topic)
+                )
+        else:
+            assigment_result = GroupTutorTopicAssignmentResult(
+                status=-1, assignments=[]
             )
-            tutor = next(
-                (t for t in self._tutors if t.id == int(tutor_id.split("-")[1])), None
-            )
-            groups.append(GroupTutorAssigmentResult(id=i, tutor=tutor, topic=topic))
 
-        return groups
+        return assigment_result
 
-    def solve(self) -> list[GroupTutorAssigmentResult]:
+    def solve(self) -> GroupTutorTopicAssignmentResult:
         """
         Runs the assignment algorithm to find the maximum flow of
         minimum cost.

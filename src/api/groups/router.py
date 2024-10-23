@@ -26,6 +26,7 @@ from src.api.groups.schemas import (
     GroupResponse,
     GroupStates,
     GroupCompleteList,
+    GroupStatesList,
     GroupWithTutorTopicRequest,
     IntermediateAssignmentRequest,
 )
@@ -138,13 +139,13 @@ async def post_initial_project(
             container=container_name, access_key=access_key
         )
         content_as_bytes = await file.read()
-        group_mapper = GroupMapper(tutor_mapper=TutorMapper())
+        group_mapper = GroupMapper()
         group_service = GroupService(GroupRepository(session))
         group_service.upload_initial_project(
             group_id, project_title, content_as_bytes, az_client
         )
 
-        group = group_mapper.convert_from_model_to_group(
+        group = group_mapper.map_model_to_assigned_group(
             group_service.get_group_by_id(group_id, True, True)
         )
         background_tasks.add_task(
@@ -445,6 +446,119 @@ async def gets_intermediate_assigment(
         )
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.get(
+    "/intermediate-report",
+    response_model=GroupStatesList,
+    description="Gets the intermediate for all groups in an specific period",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
+    },
+)
+async def gets_intermediate_assigment(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+
+        group_service = GroupService(GroupRepository(session))
+        return GroupStatesList.model_validate(group_service.get_groups(period))
+    except InvalidJwt as e:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.get(
+    "/{group_id}/final-project",
+    description="Downloads the file for a group in an specific period",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
+    },
+)
+async def download_group_final_project(
+    group_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+
+        group_service = GroupService(GroupRepository(session))
+        bytes = group_service.download_final_project(period, group_id, az_client)
+
+        response = Response(
+            content=bytes, status_code=status.HTTP_200_OK, media_type="application/pdf"
+        )
+        response.headers["Content-Disposition"] = (
+            "attachment; filename=informe-final.pdf"
+        )
+        return response
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(message=str(e))
+
+
+@router.get(
+    "/final-project",
+    description="Gets all the final projects metadata from a period",
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {"description": "Success"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Server Error"},
+    },
+)
+async def list_initial_projects(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        container_name = api_config.container
+        access_key = api_config.storage_access_key
+        az_client = AzureContainerClient(
+            container=container_name, access_key=access_key
+        )
+
+        group_service = GroupService(GroupRepository(session))
+        blobs = group_service.list_final_project(period, az_client)
+
+        return BlobDetailsList.model_validate(blobs)
+
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except EntityNotFound as e:
+        raise e
     except Exception as e:
         raise ServerError(message=str(e))
 

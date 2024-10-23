@@ -3,7 +3,7 @@ from src.config.logging import logger
 from src.api.users.repository import UserRepository
 from src.api.users.models import User
 from src.api.exceptions import EntityNotFound
-from src.api.users.exceptions import InvalidCredentials
+from src.api.users.exceptions import InvalidCredentials, InvalidPasswordReset
 from src.api.auth.jwt import InvalidJwt
 
 
@@ -32,3 +32,15 @@ class UserService:
     def validate_tutor(self, tutor_id: int, user: User):
         if tutor_id != user.id:
             raise InvalidJwt("User unauthorized")
+
+    def update_user_password(self, user_id, old_password, new_password):
+        if old_password == new_password:
+            raise InvalidPasswordReset(
+                "The new password can't be equals to the old password"
+            )
+
+        user = self.get_user_by_id(user_id)
+        if user.password != old_password:
+            raise InvalidPasswordReset("The old password is not correct.")
+
+        return self._repository.update_user(user_id, {"password": new_password})
