@@ -1,10 +1,8 @@
-import jwt as jwt_provider
 import datetime
-
-from src.config.logging import logger
-from src.config.config import api_config
+import jwt as jwt_provider
 from src.api.auth.schemas import JwtDecoded, JwtEncoded
-
+from src.config.config import api_config
+from src.config.logging import logger
 
 class InvalidJwt(Exception):
 
@@ -26,11 +24,9 @@ class JwtResolver:
 
     def _get_exp_time(self, minutes) -> float:
         """
-        Gets timedelta of current time + minutes in utc(timedelta(0)).
-        Coordinated Universal Time (UTC) is the primary time standard globally used
-        to regulate clocks and time.
-        It establishes a reference for the current time, forming the basis for civil
-        time and time zones.
+        Obtiene el intervalo de tiempo de la hora actual + minutos en UTC (timedelta(0)).
+        El Tiempo Universal Coordinado (UTC) es el estándar de tiempo principal utilizado globalmente para regular relojes y el tiempo.
+        Establece una referencia para la hora actual, formando la base para el tiempo civil y las zonas horarias
         """
         delta = datetime.timedelta(minutes=minutes)
         now = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -40,8 +36,7 @@ class JwtResolver:
 
     def create_token(self, sub, name, exp_time=None) -> JwtEncoded:
         """
-        Creates a new Jwt with the claims 'sub', 'name','exp'
-        where if the exp_time is none, it sets a 30min jwt.
+        Crea un nuevo JWT con las reclamaciones 'sub', 'name' y 'exp', donde si exp_time es None, establece un JWT de 30 minutos.
         """
         if not exp_time:
             exp_time = self._get_exp_time(30)
@@ -55,9 +50,8 @@ class JwtResolver:
         return jwt
 
     def decode_token(self, jwt: str) -> JwtDecoded:
-        """Attempts to decode the encoded jwt
-        with the expire verification based on the
-        attr set.
+        """
+        Decodifica el jwt
         """
         try:
             jwt_decoded = jwt_provider.decode(
@@ -72,6 +66,6 @@ class JwtResolver:
             logger.error("Invalid Jwt")
             raise InvalidJwt(message=str(e))
 
-
+#TODO - Moverlo a un archivo .py
 def get_jwt_resolver():
     yield JwtResolver()
