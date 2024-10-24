@@ -1,16 +1,20 @@
-import os
 from starlette.config import Config, environ
 from starlette.datastructures import Secret
+import os
 
 
 class ApiConfiguration:
-    """
-    The order in which configuration values are read is:
 
-    - From an environment variable.
-    - From the .env file.
-    - The default value given in config.
-    - If none of those match, then config(...) will raise an error.
+    """
+    Clase de Configuración:
+
+    El orden en el que se leen los valores de configuracion es el siguiente:
+
+    1. Desde una variable de entorno.
+    2. Desde el archivo .env.
+    3. El valor predeterminado dado en la configuracion.
+    4. Si ninguno de estos coincide, entonces config(...) generara un error.
+
     """
 
     def __init__(self) -> None:

@@ -1,3 +1,13 @@
+"""
+Cada vez que se agregue un nuevo modelo al sistema
+debe agregarse en este archivo.
+
+Dado que este archivo es el que tiene el trackeo de todas las tablas
+que estan relacionadas con Base.
+
+Evitando que no haya tablas sin construir
+"""
+
 from src.config.database.base import Base
 
 from src.api.users.models import User
