@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 # Category schemas
 class SimpleCategory(BaseModel):
-    """Represents a simple category with just a name"""
+    """Representa una categoria con solo su nombre"""
 
     name: str
 
@@ -12,7 +12,7 @@ class SimpleCategory(BaseModel):
 
 
 class CompleteCategoryResponse(SimpleCategory):
-    """Represents a complete category with id and name"""
+    """Representa una categoria completa"""
 
     id: int
 
@@ -21,7 +21,7 @@ class CompleteCategoryResponse(SimpleCategory):
 
 
 class SimpleTopic(BaseModel):
-    """Represents a simple topic with just a name"""
+    """Representa un tema simple"""
 
     name: str
 
@@ -29,15 +29,18 @@ class SimpleTopic(BaseModel):
 
 
 class TopicRequest(SimpleTopic):
+    """Representa un tema completo"""
     category: str
 
 
 class TopicResponse(SimpleTopic):
+    """Representa una respuesta de un tema"""
     id: int
     category: SimpleCategory = Field(validation_alias="category")
 
 
 class TopicList(RootModel):
+    """Representa una lista de temas"""
     root: List[TopicResponse]
 
     def __iter__(self):
