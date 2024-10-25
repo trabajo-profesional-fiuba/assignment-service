@@ -1,13 +1,17 @@
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, RootModel
 from typing import List, Optional
-from datetime import datetime
 
 
 class PeriodRequest(BaseModel):
+    """Schema basico de un cuatrimestre"""
+
     id: str
 
 
 class PeriodResponse(PeriodRequest):
+    """Cuatrimestre completo con estados"""
+
     created_at: Optional[datetime] = None
     form_active: Optional[bool] = None
     initial_project_active: Optional[bool] = None
@@ -21,12 +25,14 @@ class PeriodResponse(PeriodRequest):
 
 
 class PeriodList(RootModel):
-    """List of Period"""
+    """Lista de cuatrimestres"""
 
     root: List[PeriodResponse]
 
 
 class UpdatePeriodRequest(PeriodRequest):
+    """Schema para actualizar un cuatrimestre"""
+
     form_active: Optional[bool] = None
     initial_project_active: Optional[bool] = None
     intermediate_project_active: Optional[bool] = None
