@@ -10,8 +10,6 @@ class AzureContainerClient:
         self._container = container
 
     def _get_container_client(self) -> ContainerClient:
-        """Creates and connect to a container based on the connection string"""
-
         conn_str = self._access_key
         container_name = self._container
         container_client = ContainerClient.from_connection_string(
@@ -21,12 +19,10 @@ class AzureContainerClient:
         return container_client
 
     def _matches_pattern(self, blobname: str, pattern: str | None = None) -> bool:
-        """Validates if the blobname follows the expected pattern"""
 
         return pattern is None or bool(re.match(pattern, blobname))
 
     def exists(self) -> bool:
-        """Checks if the current container exists in Azure Storage"""
 
         container_client = self._get_container_client()
         return container_client.exists()
@@ -34,7 +30,6 @@ class AzureContainerClient:
     def upload(
         self, data: bytes | str | Iterable | IO, filename: str, overwrite: bool
     ) -> BlobClient:
-        """Attempts to upload a file to azure container"""
 
         container_client = self._get_container_client()
         blob = container_client.upload_blob(
@@ -57,9 +52,6 @@ class AzureContainerClient:
         pattern: str | None = None,
         **kwargs: Any
     ):
-        """Walks through the blobs using recursion looking for a blob file that matches
-        the pattern"""
-
         for blob in container_client.walk_blobs(name_starts_with=prefix, **kwargs):
             if isinstance(blob, BlobPrefix):
                 self._walk_blob_hierarchy(
@@ -74,8 +66,6 @@ class AzureContainerClient:
     def list_blobs(
         self, prefix: str | None = None, pattern: str | None = None, **kwargs: Any
     ):
-        """Starts the recursion walking and returns the blobs found"""
-
         container_client = self._get_container_client()
         blobs = self._walk_blob_hierarchy(
             container_client, blobs=list(), prefix=prefix, pattern=pattern

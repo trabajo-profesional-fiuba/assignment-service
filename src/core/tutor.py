@@ -9,10 +9,10 @@ if TYPE_CHECKING:
 
 class Tutor:
     """
-    This class represents a tutor as a single period,
-    meaning we abstract away the other periods of the tutor and consider them as a tutor
-    per period.
-    This way, the algorithms do not have knowledge of the other periods of that tutor.
+    Esta clase representa a un tutor como un solo cuatrimestre,
+    lo que significa que abstraemos los otros cuatrimestres del tutor y lo consideramos como un tutor
+    por cuatrimestre.
+    De esta manera, los algoritmos no tienen conocimiento de los otros cuatrimestres de ese tutor.
     """
 
     def __init__(

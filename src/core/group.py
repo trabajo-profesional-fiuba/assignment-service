@@ -25,7 +25,7 @@ class Group:
 
 
 class UnassignedGroup(Group):
-    """The base group only contains the id, Students and the Topics"""
+    """Representacion de un grupo que aun no tiene ni tema ni tutor asignados"""
 
     def __init__(
         self,
@@ -49,6 +49,7 @@ class UnassignedGroup(Group):
 
 
 class AssignedGroup(Group):
+    """Representacion de un grupo ya asignado a tema y tutor"""
 
     def __init__(
         self,
