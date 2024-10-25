@@ -4,5 +4,3 @@ class AnswerNotFound(Exception):
         super().__init__(message)
         self.message = message
 
-
-# External

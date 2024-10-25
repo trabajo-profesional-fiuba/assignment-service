@@ -4,7 +4,8 @@ from typing import List
 
 
 class FormPreferencesRequest(BaseModel):
-    # user_id : university id (e.i: 105285)
+    """Representa el formulario que los alumnos envian"""
+
     user_id_sender: int
     user_id_student_2: int | None
     user_id_student_3: int | None
@@ -16,6 +17,8 @@ class FormPreferencesRequest(BaseModel):
 
 
 class FormPreferencesResponse(BaseModel):
+    """Schema de respuesta particular de un estudiante"""
+
     user_id: int
     answer_id: datetime
     topic_1: str
@@ -26,6 +29,8 @@ class FormPreferencesResponse(BaseModel):
 
 
 class FormPreferencesList(RootModel):
+    """Lista de respuestas"""
+
     root: List[FormPreferencesResponse]
 
     def __iter__(self):
@@ -33,6 +38,8 @@ class FormPreferencesList(RootModel):
 
 
 class UserAnswerResponse(BaseModel):
+    """Respuesta de un usuario"""
+
     answer_id: datetime
     email: str
     topic_1: str
@@ -43,6 +50,8 @@ class UserAnswerResponse(BaseModel):
 
 
 class UserAnswerList(RootModel):
+    """Lista de respuestas de un usuario"""
+
     root: List[UserAnswerResponse]
 
     def __iter__(self):
@@ -50,12 +59,16 @@ class UserAnswerList(RootModel):
 
 
 class GroupAnswerResponse(BaseModel):
+    """Respuestas de un grupo"""
+
     id: datetime
     students: list[str]
     topics: list[str]
 
 
 class GroupAnswerList(RootModel):
+    """Lista de respuestas de un grupo"""
+
     root: List[GroupAnswerResponse]
 
     def __iter__(self):
