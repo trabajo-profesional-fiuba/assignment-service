@@ -20,6 +20,7 @@ class GroupRepository:
         preferred_topics=[],
         period_id=None,
     ):
+        """Inserta un grupo a partir de los diferentes parametros"""
         with self.Session() as session:
             group = Group(
                 tutor_period_id=tutor_period_id,
@@ -45,6 +46,7 @@ class GroupRepository:
         preferred_topics=[],
         period_id=None,
     ):
+        """Inserta un grupo a partir de los emails de los estudiantes"""
         with self.Session() as session:
             group = Group(
                 tutor_period_id=tutor_period_id,
@@ -72,7 +74,7 @@ class GroupRepository:
         load_students=False,
         load_dates: bool = False,
     ) -> list[Group]:
-        """Returns all groups for a given period"""
+        """Devuelve los grupos a partir de un cuatrimestre y diferentes filtros"""
         with self.Session() as session:
             query = session.query(Group)
 
@@ -92,6 +94,7 @@ class GroupRepository:
         return groups
 
     def get_groups_without_tutor_and_period(self) -> list[Group]:
+        """ Devuelve los grupos que no tiene ni tutor ni tema asignado"""
         with self.Session() as session:
             groups = (
                 session.query(Group)
@@ -104,6 +107,7 @@ class GroupRepository:
         return groups
 
     def get_groups_without_preferred_topics(self) -> list[Group]:
+        """Devuelve todos los grupos que no tengan temas de preferencias"""
         with self.Session() as session:
             groups = (
                 session.query(Group)
@@ -115,28 +119,13 @@ class GroupRepository:
         return groups
 
     def get_groups_learning_path(self, period) -> list[Group]:
-        """Returns all groups learning path information for a given period"""
+        """Devuelve todos los grupos de un cuatrimestre"""
         with self.Session() as session:
             groups = session.query(Group).filter(Group.period_id == period).all()
         return groups
 
-    def bulk_update(self, groups_to_update: list[dict], period: str):
-        stmt = (
-            update(Group)
-            .where(Group.id == bindparam("b_id"))
-            .values(
-                assigned_topic_id=bindparam("b_assigned_topic_id"),
-                tutor_period_id=bindparam("b_tutor_period_id"),
-            )
-        )
-        with self.Session() as session:
-            session.connection().execute(
-                stmt,
-                groups_to_update,
-            )
-            session.commit()
-
     def update(self, group_id, attributes: dict):
+        """Actualiza el group_id a partir de los atributos que sean provistos"""
         stmt = update(Group).where(Group.id == group_id).values(**attributes)
         with self.Session() as session:
             session.execute(stmt)
@@ -149,7 +138,7 @@ class GroupRepository:
         load_period=False,
         load_students=False,
     ) -> list[Group]:
-        """Returns all groups for a given assigned_tutor_period"""
+        """Devuelve todos los grupo basado en un TutorPeriod id"""
         with self.Session() as session:
             query = session.query(Group).options(joinedload(Group.tutor_period))
 
@@ -173,6 +162,8 @@ class GroupRepository:
         load_students=False,
         load_tutor=False,
     ) -> Group:
+        """Devuelve el grupo basado en un id"""
+
         with self.Session() as session:
             query = session.query(Group)
             if load_topic:
@@ -214,7 +205,8 @@ class GroupRepository:
         load_students=False,
         load_tutor_period=False,
     ) -> list[Group]:
-        """Returns all groups for a given reviewer_id and period_id"""
+        """Devuelve todos los grupos para un reviewer_id y period_id dados"""
+
         with self.Session() as session:
             query = session.query(Group)
 
@@ -234,7 +226,7 @@ class GroupRepository:
         return groups
 
     def student_in_group(self, student_id: int, group_id: int) -> bool:
-        """Verify that a student is part of a group"""
+        """Indica si el estudiante esta en el grupo"""
         with self.Session() as session:
             exists_query = (
                 select()
