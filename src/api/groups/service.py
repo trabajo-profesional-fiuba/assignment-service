@@ -4,20 +4,16 @@ from src.api.exceptions import EntityNotInserted, EntityNotFound
 from src.api.groups.exceptions import GroupNotFound
 from src.api.groups.schemas import BlobDetails
 from src.api.students.exceptions import StudentNotFound
-
 from src.config.logging import logger
 
 
 class GroupService:
-    """
-    The group service contains the necessary logi to performs operations
-    with Groups as schemas, as entities and as ORM Objects
-    """
 
     def __init__(self, repository) -> None:
         self._repository = repository
 
     def create_assigned_group(self, ids, tutor_period_id, topic_id, period_id):
+        """Crea un grupo que tiene ya tema y tutor"""
         try:
             group = self._repository.add_group(
                 ids, tutor_period_id, topic_id, period_id=period_id
@@ -38,6 +34,7 @@ class GroupService:
             )
 
     def create_basic_group(self, ids, preferred_topics=[], period_id=None):
+        """Crea un grupo sin tema y tutor con temas de preferencias"""
         try:
             group = self._repository.add_group(
                 ids=ids, preferred_topics=preferred_topics, period_id=period_id
@@ -55,6 +52,7 @@ class GroupService:
     def create_basic_group_with_email(
         self, emails, preferred_topics=[], period_id=None
     ):
+        """Crea un grupo sin tema y tutor con temas de preferencias a partir de los emails de los alumnos"""
         try:
             group = self._repository.add_group_having_emails(
                 emails=emails, preferred_topics=preferred_topics, period_id=period_id
@@ -78,6 +76,7 @@ class GroupService:
         load_students: bool = False,
         load_dates: bool = False,
     ):
+        """Obtiene todos los grupos de un cuatrimestre"""
         logger.info("Fetching all groups")
         groups = self._repository.get_groups(
             period,
@@ -90,16 +89,19 @@ class GroupService:
         return groups
 
     def create_basic_groups(self, group_result, period_id):
+        """Crea una lista de grupos sin temas ni tutores"""
         for group in group_result:
             topics = group.get_topic_ids()
             emails = group.students
             self.create_basic_group_with_email(emails, topics, period_id)
 
     def get_goups_without_tutor_and_topic(self):
+        """Obtiene todos los grupos sin tutor ni tema asignado"""
         db_groups = self._repository.get_groups_without_tutor_and_period()
         return db_groups
 
     def update(self, groups, period):
+        """Actualiza los grupos de un cuatrimestre especifico"""
         try:
             for group in groups:
                 attributes = group.model_dump(exclude_unset=True)
@@ -118,6 +120,7 @@ class GroupService:
     def upload_initial_project(
         self, group_id: int, project_title: str, data: bytes, storage_client
     ):
+        """Sube el anteproyecto de un grupo a Azure Storage"""
         try:
             group = self._repository.get_group_by_id(group_id)
             path = f"{group.period_id}/{group.id}/anteproyecto.pdf"
@@ -138,6 +141,7 @@ class GroupService:
     def upload_final_project(
         self, group_id: int, project_title: str, data: bytes, storage_client
     ):
+        """Sube el proyecto final de un grupo a Azure Storage"""
         try:
             group = self._repository.get_group_by_id(group_id)
             path = f"{group.period_id}/{group.id}/informe-final.pdf"
@@ -156,6 +160,7 @@ class GroupService:
             raise EntityNotFound(message=str(e))
 
     def upload_intermediate_project(self, group_id: int, link: str):
+        """Updatea el proyecto intermedio (link a yt) de un grupo"""
         try:
             group = self._repository.get_group_by_id(group_id)
             self._repository.update(
@@ -171,6 +176,7 @@ class GroupService:
             raise EntityNotFound(message=str(e))
 
     def download_final_project(self, period: str, group_id: int, storage_client):
+        """Descarga el proyecto final de uun grupo"""
         try:
             path = f"{period}/{group_id}/informe-final.pdf"
             file_as_bytes = storage_client.download(path)
@@ -180,6 +186,7 @@ class GroupService:
             raise e
 
     def download_initial_project(self, period: str, group_id: int, storage_client):
+        """Descarga el anteproyecto de uun grupo"""
         try:
             path = f"{period}/{group_id}/anteproyecto.pdf"
             file_as_bytes = storage_client.download(path)
@@ -189,6 +196,7 @@ class GroupService:
             raise e
 
     def list_initial_project(self, period, storage_client):
+        """Lista los anteproyectos"""
         pattern = f"^{period}\\/[0-9]+\\/anteproyecto\\.pdf$"
         blobs = storage_client.list_blobs(prefix=period, pattern=pattern)
         blob_details_list = [
@@ -203,6 +211,7 @@ class GroupService:
         return blob_details_list
 
     def list_final_project(self, period, storage_client):
+        """Lista los proyectos finales"""
         pattern = f"^{period}\\/[0-9]+\\/informe-final\\.pdf$"
         blobs = storage_client.list_blobs(prefix=period, pattern=pattern)
         blob_details_list = [
@@ -219,6 +228,7 @@ class GroupService:
     def get_group_by_id(
         self, group_id: int, load_students: bool = False, load_tutor=False
     ):
+        """Obtiene un grupo por id"""
         try:
             logger.info(f"Fetching group: {group_id}")
             group = self._repository.get_group_by_id(
@@ -231,6 +241,7 @@ class GroupService:
 
     def get_group_by_student_id(self, student_id: int):
         try:
+            """Obtiene el grupo donde esta el alumno"""
             logger.info(f"Fetching group for student : {student_id}")
             group = self._repository.get_group_by_student_id(student_id)
             return group
