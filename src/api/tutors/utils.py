@@ -15,7 +15,7 @@ class TutorCsvFile:
 
     def _create_csv_df(self, csv: str):
         """
-        Checks is the columns are the expected ones
+        crea un dataframe a partir de un csv como str
         """
         file = StringIO(csv)
         df = pd.read_csv(file)
@@ -25,7 +25,7 @@ class TutorCsvFile:
 
     def _validate_csv_headers(self, df):
         """
-        Checks is the columns are the expected ones
+        Checkea las columnas del csv
         """
         if list(df.columns.values) != [
             "NOMBRE",
@@ -38,7 +38,7 @@ class TutorCsvFile:
 
     def _check_duplicates(self, df):
         """
-        Checks for duplicated rows
+        Verifica duplicados
         """
         duplicate = df[df.duplicated()]
         if len(duplicate) > 0:
@@ -46,7 +46,7 @@ class TutorCsvFile:
 
     def get_info_as_rows(self):
         """
-        Append a row to a list of rows and return it
+        Arma una lista de filas con la informacion de las columnas del csv
         """
         rows = []
         self._df.apply(
@@ -65,9 +65,11 @@ class TutorCsvFile:
         return rows
 
     def get_tutors_id(self):
+        """Obtiene los ids de los tutores del csv"""
         return list(self._df["DNI"].unique())
 
     def _add_tutor(self, row, tutors):
+        """ Crea tutores a partir de los datos de las columnas del csv"""
         tutors[row["DNI"]] = Tutor(
             id=row["DNI"],
             email=row["MAIL"],
@@ -77,6 +79,7 @@ class TutorCsvFile:
         )
 
     def get_tutors(self) -> dict[str, Tutor]:
+        """Obtiene todos los tutores del csv"""
         tutors = {}
         self._df.apply(lambda row: self._add_tutor(row, tutors), axis=1)
         return tutors

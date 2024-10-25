@@ -1,12 +1,12 @@
 import re
 
+from src.api.auth.hasher import ShaHasher
 from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.groups.repository import GroupRepository
-from src.api.users.models import User, Role
-from src.api.auth.hasher import ShaHasher
+from src.api.periods.exceptions import InvalidPeriod, PeriodDuplicated
 from src.api.tutors.schemas import TutorPeriodResponse, TutorRequest, TutorResponse
 from src.api.tutors.utils import TutorCsvFile
-from src.api.periods.exceptions import InvalidPeriod, PeriodDuplicated
+from src.api.users.models import User, Role
 from src.api.tutors.exceptions import (
     TutorNotFound,
     TutorNotInserted,
@@ -25,10 +25,10 @@ class TutorService:
 
     def _make_tutors(self, rows, hasher: ShaHasher):
         """
-        Instanciates new Users as tutors
-        based on the rows with the necessary
-        information.
-        It also uses the hasher to create a hashed password.
+        Instancia nuevos Usuarios como tutores
+        basandose en las filas con la informacion
+        necesaria.
+        Tambien utiliza el hasher para crear una contraseña cifrada.
         """
         tutors = []
         for i in rows:
@@ -55,11 +55,8 @@ class TutorService:
     def create_tutors_from_csv(
         self, csv: str, period: str, hasher: ShaHasher, user_repository: UserRepository
     ):
+        """Con un archivo csv como cadena, crea nuevos tutores y sobrescribe los existentes."""
         try:
-            """
-            With a csv file as string, it
-            make new tutors and override the existing ones
-            """
             csv_file = TutorCsvFile(csv=csv)
             tutors_ids = csv_file.get_tutors_id()
             tutors_dtos = csv_file.get_tutors()
@@ -114,6 +111,7 @@ class TutorService:
     def add_tutor(
         self, tutor: TutorRequest, hasher: ShaHasher, userRepository: UserRepository
     ):
+        """Crea un tutor y le asocia un cuatrimestre puntual"""
         try:
             new_tutor = User(
                 id=tutor.id,
@@ -142,11 +140,11 @@ class TutorService:
             raise TutorNotInserted("Could not insert a tutor in the database")
 
     def _validate_period(self, period_id: str):
-        """Validates that the period id
-        follows the expected pattern
-        ^[1|2]C20[0-9]{2}$
+        """
+        Valida que el id del cuatrimestre matchee con el
+        patron esperado -> ^[1|2]C20[0-9]{2}$
 
-        Matches cases where 1|2C20xx where xx are numbers from 0-9
+        Matchea casos donde el cuatrimestre es 1|2C20xx donde xx son numeros 0-9
         """
         regex = re.compile("^[1|2]C20[0-9]{2}$")
         if regex.search(period_id) is not None:
@@ -156,7 +154,7 @@ class TutorService:
 
     def add_period_to_tutor(self, tutor_id: int, period_id: str):
         """
-        Assigns an existing period to a tutor.
+        Asigna un tutor a un cuatrimestre dado
         """
         try:
             if self._repository.is_tutor(tutor_id):
@@ -169,8 +167,8 @@ class TutorService:
 
     def get_periods_by_tutor_id(self, tutor_id: int):
         """
-        Returns the list of periods
-        of a tutor based on its id
+        Devuelve la lista de periodos
+        de un tutor basado en su id.
         """
         try:
             return self._repository.get_tutor_by_tutor_id(tutor_id)
@@ -178,9 +176,7 @@ class TutorService:
             raise EntityNotFound(str(e))
 
     def delete_tutor(self, tutor_id: int):
-        """
-        Deletes a tutor by id
-        """
+        """Borra un tutor por id"""
         try:
             return TutorResponse.model_validate(
                 self._repository.delete_tutor_by_id(tutor_id)
@@ -204,7 +200,7 @@ class TutorService:
 
     def get_tutor_period_by_tutor_email(self, period: str, tutor_email: str):
         """
-        Looks up for a tutor based on its email
+        Devuelve un tutor a partir de su email
         """
         try:
             return TutorPeriodResponse.model_validate(
@@ -215,7 +211,7 @@ class TutorService:
 
     def get_tutor_period_by_tutor_id(self, period: str, tutor_id: int) -> TutorPeriod:
         """
-        Looks up for a tutor based on its email
+        Devuelve un tutor a partir de su id
         """
         try:
             return self._repository.get_tutor_period_by_tutor_id(period, tutor_id)
@@ -223,6 +219,7 @@ class TutorService:
             raise EntityNotFound(message=str(e))
 
     def get_tutor_periods_by_period_id(self, period_id: str) -> list[TutorPeriod]:
+        """Devuelve los cuatrimestres de los tutores a partir de un cuatrimestre puntual"""
         try:
             return self._repository.get_tutor_periods_by_periods_id(period_id)
         except TutorNotFound as e:
@@ -231,6 +228,7 @@ class TutorService:
     def get_groups_from_tutor_id(
         self, tutor_id: int, period_id: str, group_repository: GroupRepository
     ):
+        """Devuelve grupos de un tutor"""
         period = self.get_tutor_period_by_tutor_id(period_id, tutor_id)
         groups = group_repository.get_groups_by_period_id(
             tutor_period_id=period.id, load_topic=True
@@ -240,6 +238,7 @@ class TutorService:
     def get_groups_from_reviewer_id(
         self, reviewer_id: int, period_id: str, group_repository: GroupRepository
     ):
+        """Devuelve los grupos de un revisor"""
         try:
             groups = group_repository.get_groups_by_reviewer_id(
                 reviewer_id=reviewer_id, period_id=period_id, load_topic=True
@@ -251,6 +250,7 @@ class TutorService:
     def notify_students(
         self, sender_id: int, group: AssignedGroup, email_sender: str, message: str
     ):
+        """Envia un mail a los alumnos de un grupo con copia al admin"""
         try:
             sender = self._repository.get_tutor_by_tutor_id(sender_id)
             to = group.emails()
@@ -274,7 +274,7 @@ class TutorService:
             raise EntityNotFound(message=str(e))
 
     def get_tutors_with_dates(self, period_id: str):
-        """From a period id, it retrieves all the tutors with their topics"""
+        """Devuelve los tutores con las fechas cargadas"""
         try:
             valid = self._validate_period(period_id)
             if valid:
@@ -288,7 +288,7 @@ class TutorService:
             raise Duplicated(str(e))
 
     def get_evaluators_with_dates(self, period_id: str):
-        """From a period id, it retrieves all the tutors with their topics"""
+        """Devuelve los evaluadores con las fechas cargadas"""
         try:
             valid = self._validate_period(period_id)
             if valid:

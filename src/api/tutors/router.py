@@ -1,7 +1,6 @@
-from typing_extensions import Annotated
-
 from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
 from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.service import AuthenticationService
@@ -29,11 +28,11 @@ from src.api.tutors.schemas import (
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
+from src.api.users.models import Role
+from src.api.users.repository import UserRepository
+from src.api.users.service import UserService
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
-from src.api.users.service import UserService
-from src.api.users.repository import UserRepository
-from src.api.users.models import Role
 
 router = APIRouter(prefix="/tutors")
 
@@ -41,8 +40,7 @@ router = APIRouter(prefix="/tutors")
 @router.post(
     "/upload",
     response_model=TutorList,
-    description="Creates list of tutors based on a csv file",
-    summary="Add csv file",
+    summary="Creates list of tutors based on a csv file",
     tags=["Tutors"],
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "The columns are not correct"},
@@ -63,6 +61,7 @@ async def upload_csv_file(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para cargar tutores a partir de un archivo csv"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -89,7 +88,6 @@ async def upload_csv_file(
 @router.post(
     "",
     response_model=TutorResponse,
-    description="Creates a new tutor",
     summary="Add a new tutor",
     tags=["Tutors"],
     responses={
@@ -107,6 +105,7 @@ async def add_tutor(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para agregar un tutor manualmente"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -126,7 +125,6 @@ async def add_tutor(
 
 @router.delete(
     "/{tutor_id}",
-    description="Deletes a tutor",
     summary="Deletes a tutor based on its id.",
     tags=["Tutors"],
     responses={
@@ -142,6 +140,7 @@ async def delete_tutor(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para borrar un tutor"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -161,7 +160,6 @@ async def delete_tutor(
 @router.post(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
-    description="Add new period for a tutor",
     summary="Add new period",
     tags=["Tutors"],
     status_code=status.HTTP_201_CREATED,
@@ -179,6 +177,7 @@ async def add_period_to_tutor(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para asignar un nuevo cuatrimestre a un tutor"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -199,7 +198,6 @@ async def add_period_to_tutor(
 @router.get(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
-    description="Returns all the periods for tutor_id",
     summary="Get all periods of tutor_id",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
@@ -215,6 +213,7 @@ async def get_tutor_periods(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para obtener todos los cuatrimestre en el que un tutor tutorea"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
@@ -241,7 +240,6 @@ async def get_tutor_periods(
 @router.get(
     "/periods/{period_id}",
     response_model=TutorWithTopicsList,
-    description="Returns the tutors with topics",
     summary="Get all the tutors with their topics based on a period",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
@@ -257,6 +255,7 @@ async def get_tutors_by_period_id(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para obtener los tutores de un cuatrimestre"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -278,7 +277,6 @@ async def get_tutors_by_period_id(
 @router.get(
     "/my-groups",
     response_model=GroupList,
-    description="Returns the groups of a tutor",
     summary="Get all the groups of a tutor based on a period",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
@@ -294,6 +292,7 @@ async def get_groups_by_tutor(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para obtener los grupos de un cuatrimestre del cual uno es tutor"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
@@ -318,7 +317,6 @@ async def get_groups_by_tutor(
 @router.get(
     "/reviewer/my-groups",
     response_model=GroupList,
-    description="Returns the groups that the tutor is their revisor",
     summary="Get all the groups of a tutor based on a period",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
@@ -334,6 +332,7 @@ async def get_groups_by_reviewer_id(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para obtener los grupos de un cuatrimestre del cual uno es revisor"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
@@ -357,7 +356,7 @@ async def get_groups_by_reviewer_id(
 
 @router.post(
     "/notify-group",
-    description="Sends to students and tutor the email notification",
+    summary="Sends to students and tutor the email notification",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
     responses={
@@ -374,6 +373,7 @@ async def notify_students(
     email_sender: Annotated[object, Depends(get_email_sender)],
     group_id: int = Query(...),
 ):
+    """Endpoint para enviar un mail al grupo de estudiantes"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
