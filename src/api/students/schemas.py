@@ -1,9 +1,12 @@
 from pydantic import BaseModel
 from typing import List
+
 from src.api.users.schemas import UserResponse
 
 
 class PersonalInformation(BaseModel):
+    """Schema para modelar la informacion personal de un estudiante"""
+
     id: int
     group_id: int
     form_answered: bool
@@ -14,7 +17,6 @@ class PersonalInformation(BaseModel):
 
 
 class StudentRequest(UserResponse):
-    id: int
-    name: str
-    last_name: str
-    email: str
+    """Schema para modelar un estudiante"""
+
+    ...

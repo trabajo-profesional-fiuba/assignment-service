@@ -1,6 +1,7 @@
 from src.api.auth.hasher import ShaHasher
 from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
+from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
 from src.api.students.schemas import PersonalInformation
 from src.api.students.utils import StudentCsvFile
 from src.api.students.exceptions import (
@@ -8,14 +9,11 @@ from src.api.students.exceptions import (
     StudentNotFound,
     StudentNotInserted,
 )
-
+from src.api.students.models import StudentPeriod
+from src.api.students.repository import StudentRepository
 from src.api.users.models import User, Role
 from src.api.users.repository import UserRepository
 from src.api.users.schemas import UserList, UserResponse
-
-from src.api.exceptions import Duplicated, EntityNotFound, EntityNotInserted, InvalidCsv
-from src.api.students.repository import StudentRepository
-from src.api.students.models import StudentPeriod
 
 
 class StudentService:
@@ -24,6 +22,7 @@ class StudentService:
         self._repository = repository
 
     def _get_csv_rows(self, csv: str):
+        """Obtiene las filas del csv"""
         csv_file = StudentCsvFile(csv=csv)
         return csv_file.get_info_as_rows()
 
@@ -48,6 +47,7 @@ class StudentService:
     def create_students_from_string(
         self, csv: str, hasher: ShaHasher, repository: UserRepository, period: str
     ):
+        """Crea a partir de un csv como string studiantes"""
         try:
             rows = self._get_csv_rows(csv)
             students, student_periods = self._get_students_and_periods(
@@ -64,6 +64,7 @@ class StudentService:
             raise EntityNotInserted(str(e))
 
     def get_students_by_ids(self, ids: list[int]):
+        """Devuelve una lista de estudiante a partir de una lista de ids"""
         try:
             if len(list(set(ids))) != len(list(ids)):
                 raise StudentDuplicated("Query params udis contain duplicates")
@@ -93,7 +94,7 @@ class StudentService:
         group_repository: GroupRepository,
         student_repository: StudentRepository,
     ):
-
+        """ A partir de un id, recolecta la informacion necesaria del estudiante respecto al cuatrimestre"""
         form_answers = form_repository.get_answers_by_user_id(id)
 
         form_answered = len(form_answers) > 0
