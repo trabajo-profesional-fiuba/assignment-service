@@ -1,8 +1,10 @@
-from typing import List
 from pydantic import BaseModel, ConfigDict, RootModel
+from typing import List
 
 
 class UserResponse(BaseModel):
+    """Schema de respuesta representando un usuario"""
+
     id: int
     name: str
     last_name: str
@@ -23,6 +25,8 @@ class UserResponse(BaseModel):
 
 
 class UserList(RootModel):
+    """Lista de respuestas de usuarios"""
+
     root: List[UserResponse]
 
     def __iter__(self):

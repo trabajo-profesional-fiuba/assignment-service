@@ -14,7 +14,7 @@ class PeriodRepository:
         self.Session = sess
 
     def _order_clause(self, order):
-        """ Define el orden de busqueda ascendente o descendente"""
+        """Define el orden de busqueda ascendente o descendente"""
         if order == "ASC":
             return asc(Period.created_at)
         elif order == "DESC":
@@ -23,7 +23,7 @@ class PeriodRepository:
             raise ValueError("Invalid order direction. Use 'ASC' or 'DESC'.")
 
     def add_period(self, period: Period) -> Period:
-        """ Agrega un cuatrimestre a la tabla"""
+        """Agrega un cuatrimestre a la tabla"""
         try:
             with self.Session() as session:
                 session.add(period)
@@ -36,7 +36,7 @@ class PeriodRepository:
             raise PeriodDuplicated(message="Period already exist")
 
     def get_all_periods(self, order: str) -> list[Period]:
-        """ Devuelve todos los cuatrimestres ordenados segun la condicion"""
+        """Devuelve todos los cuatrimestres ordenados segun la condicion"""
         with self.Session() as session:
             order_clause = self._order_clause(order)
             results = session.query(Period).order_by(order_clause).all()
@@ -52,7 +52,7 @@ class PeriodRepository:
         return period
 
     def update(self, period_id: str, attributes: dict):
-        """ Actualiza los atributos de un cuatrimestre particular"""
+        """Actualiza los atributos de un cuatrimestre particular"""
         stmt = (
             update(Period)
             .where(Period.id == period_id)

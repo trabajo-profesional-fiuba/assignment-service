@@ -44,7 +44,7 @@ async def add_period(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
-    """ Endpoint para agregar un nuevo cuatrimestre"""
+    """Endpoint para agregar un nuevo cuatrimestre"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -77,7 +77,7 @@ async def get_periods(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     order: str = Query(pattern="^(ASC|DESC)$", default="DESC"),
 ):
-    """ Endpoint para obtener todos los cuatrimestres"""
+    """Endpoint para obtener todos los cuatrimestres"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -109,7 +109,7 @@ async def get_period_by_id(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
-    """ Endpoint para obtener un cuatrimestre particular"""
+    """Endpoint para obtener un cuatrimestre particular"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_multiple_role(token)
