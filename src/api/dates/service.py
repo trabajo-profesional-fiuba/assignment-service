@@ -124,3 +124,12 @@ class DateSlotsService:
         except Exception as e:
             logger.error(f"Could not update tutor slots because of: {str(e)}")
             raise InvalidDate(str(e))
+
+    def assign_date(self, date: datetime):
+        """ Marca una fecha como ya asignada """
+        try:
+            attributes = {"assigned": True}
+            self._repository.assign_date(date, attributes)
+        except Exception as e:
+            logger.error(f"Could not update tutor slots because of: {str(e)}")
+            raise InvalidDate(str(e))

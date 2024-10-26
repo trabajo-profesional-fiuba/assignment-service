@@ -198,3 +198,13 @@ class DateSlotRepository:
         with self.Session() as session:
             session.execute(stmt)
             session.commit()
+
+    def assign_date(self, date: datetime, attributes: dict):
+        stmt = (
+            update(DateSlot)
+            .filter(DateSlot.slot == date)
+            .values(**attributes)
+        )
+        with self.Session() as session:
+            session.execute(stmt)
+            session.commit()

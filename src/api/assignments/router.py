@@ -278,6 +278,7 @@ async def update_assignments(
                 evaluator_id, date, "evaluator"
             )
             group_service.assign_date(group_id, date)
+            dates_service.assign_date(date)
 
         return Response(status_code=status.HTTP_202_ACCEPTED)
     except Exception as e:
