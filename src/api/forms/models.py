@@ -5,8 +5,12 @@ from src.config.database.base import Base
 
 class FormPreferences(Base):
     """
-    A FormPreference is a answer that is send by a student
-    when the period started
+    un FormPreferences es una fila que posee una respuesta individual.
+
+    Si un grupo manda una respuesta y en ese grupo son 3 integrantes, entonces
+    se generan 3 filas con topics answer_id, topic_1,2,3 repetidos y cambia el
+    id y el user_id
+
     """
 
     __tablename__ = "form_preferences"
@@ -24,4 +28,5 @@ class FormPreferences(Base):
         Integer, ForeignKey("topics.id", ondelete="CASCADE"), nullable=False
     )
 
+    # Relaciones
     student = relationship("User", lazy="noload")

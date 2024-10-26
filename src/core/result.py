@@ -8,14 +8,12 @@ from src.api.groups.schemas import (
     AssignmentResult,
 )
 from src.core.date_slots import DateSlot
-from src.core.group import AssignedGroup, UnassignedGroup
+from src.core.group import UnassignedGroup
 from src.core.topic import Topic
 from src.core.tutor import Tutor
 
 
 class GroupTutorTopicAssignment:
-    """Represents the assigment result"""
-
     def __init__(self, group: UnassignedGroup, tutor: Tutor, topic: Topic) -> None:
         self.group = group
         self.tutor = tutor

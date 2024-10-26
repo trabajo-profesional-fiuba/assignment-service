@@ -1,8 +1,9 @@
 from datetime import timedelta
+
 from src.api.dates.exceptions import InvalidDate
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
-from src.config.logging import logger
 from src.api.dates.schemas import DateSlotRequestList
+from src.config.logging import logger
 
 
 class DateSlotsService:
@@ -11,10 +12,10 @@ class DateSlotsService:
         self._repository = repository
 
     def _create_slots_from_ranges(self, ranges):
-        HOURS = 60 * 60
+        """Dado dos rangos, crea slots individuales por hora"""
+        HOURS = 3600
         slots = list()
         for i in ranges:
-            # Convert to datetime objects
             start = i.start
             end = i.end
             hours_diff = (end - start).seconds // HOURS
@@ -25,6 +26,7 @@ class DateSlotsService:
         return slots
 
     def add_slots(self, slot_ranges, period):
+        """Agrega nuevas filas de slots asociadas a un cuatrimestre"""
         try:
             slots = self._create_slots_from_ranges(slot_ranges)
             slots_to_save = [{"period_id": period, "slot": slot} for slot in slots]
@@ -36,6 +38,7 @@ class DateSlotsService:
             raise InvalidDate(str(e))
 
     def add_group_slots(self, group_id, slot_ranges):
+        """Agrega nuevas filas de slots asociadas a un grupo"""
         try:
             slots = self._create_slots_from_ranges(slot_ranges)
             slots_to_save = [{"group_id": group_id, "slot": slot} for slot in slots]
@@ -47,6 +50,7 @@ class DateSlotsService:
             raise InvalidDate(str(e))
 
     def add_tutor_slots(self, tutor_id, period, slot_ranges):
+        """Agrega nuevas filas de slots asociadas a un tutor y cuatrimestre"""
         try:
             slots = self._create_slots_from_ranges(slot_ranges)
             slots_to_save = [
@@ -61,29 +65,36 @@ class DateSlotsService:
             raise InvalidDate(str(e))
 
     def get_slots(self, period: str):
+        """Obtiene todos los slots disponibles"""
         return self._repository.get_slots_by_period(period)
 
     def get_tutors_slots_by_id(self, tutor_id: int, period: str):
+        """Obtiene todos los slots de un tutor en un cuatrimestre"""
         return self._repository.get_tutor_slots_by_id(tutor_id, period)
 
     def get_groups_slots_by_id(self, group_id: int):
+        """Obtiene todos los de un grupo"""
         return self._repository.get_groups_slots_by_id(group_id)
 
     def sync_date_slots(self, slot_ranges: DateSlotRequestList, period: str):
+        """Sobreescribe los slots disponibles"""
         try:
             slots = self._create_slots_from_ranges(slot_ranges)
             slots_to_save = [{"period_id": period, "slot": slot} for slot in slots]
             self._repository.sync_date_slots(slots_to_save, period)
+
             return slots_to_save
         except Exception as e:
             logger.error(f"Could not update slots because of: {str(e)}")
             raise InvalidDate(str(e))
 
     def sync_group_slots(self, slot_ranges: DateSlotRequestList, group_id: int):
+        """Sobreescribe los slots de un grupo"""
         try:
             slots = self._create_slots_from_ranges(slot_ranges)
             slots_to_save = [{"group_id": group_id, "slot": slot} for slot in slots]
-            updated_slots = self._repository.sync_group_slots(slots_to_save, group_id)
+            self._repository.sync_group_slots(slots_to_save, group_id)
+
             return slots_to_save
         except Exception as e:
             logger.error(f"Could not update group slots because of: {str(e)}")
@@ -92,15 +103,14 @@ class DateSlotsService:
     def sync_tutor_slots(
         self, slot_ranges: DateSlotRequestList, tutor_id: int, period: str
     ):
+        """Sobreescribe los slots de un tutor en un cuatrimestre"""
         try:
             slots = self._create_slots_from_ranges(slot_ranges)
             slots_to_save = [
                 {"tutor_id": tutor_id, "slot": slot, "period_id": period}
                 for slot in slots
             ]
-            updated_slots = self._repository.sync_tutor_slots(
-                slots_to_save, tutor_id, period
-            )
+            self._repository.sync_tutor_slots(slots_to_save, tutor_id, period)
             return slots_to_save
         except Exception as e:
             logger.error(f"Could not update tutor slots because of: {str(e)}")

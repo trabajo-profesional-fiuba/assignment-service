@@ -24,10 +24,10 @@ def upgrade() -> None:
     op.add_column("groups", sa.Column("period_id", sa.String(), nullable=True))
     op.create_foreign_key(None, "groups", "periods", ["period_id"], ["id"])
 
-    # update existing groups
+    # Actualizo los grupos existentes
     op.execute("UPDATE groups SET period_id = '2C2024' WHERE period_id IS NULL")
 
-    # modify column so it doesn't allow null values
+    # No queremos null en el period_id
     op.alter_column("groups", "period_id", existing_type=sa.String(), nullable=False)
     # ### end Alembic commands ###
 

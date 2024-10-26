@@ -1,13 +1,13 @@
 # =============================================================================
-# IMPORTANT: This Python module includes all dependencies related to groups.
-# It is not intended to contain classes; instead, it should include functions
-# to be imported. Ensure to follow this structure to maintain consistency and
-# functionality across projects.
+# IMPORTANTE: Este modulo de Python incluye todas las dependencias.
+# No esta destinado a contener clases; en su lugar, debe incluir funciones
+# para ser importadas.
+# Asegurate de seguir esta estructura para mantener la consistencia
 # =============================================================================
 
 
-from src.core.email_client import SendGridEmailClient
 from src.config.config import api_config
+from src.core.email_client import SendGridEmailClient
 
 
 def get_email_sender():

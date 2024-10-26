@@ -1,14 +1,13 @@
 from fastapi import APIRouter, BackgroundTasks, Response, status, Depends
 from sqlalchemy.orm import Session
-from typing_extensions import Annotated
 
 from src.api.auth.hasher import ShaHasher, get_hasher
 from src.api.auth.jwt import JwtResolver, JwtEncoded, get_jwt_resolver
-from src.api.auth.schemas import PasswordResetRequest, RequestForm
 from src.api.auth.schemas import oauth2_scheme
-
+from src.api.auth.schemas import PasswordResetRequest, RequestForm
 from src.api.auth.service import AuthenticationService
 from src.api.groups.dependencies import get_email_sender
+from typing_extensions import Annotated
 from src.api.users.exceptions import (
     InvalidPasswordReset,
     UserNotFound,
@@ -16,9 +15,7 @@ from src.api.users.exceptions import (
 )
 from src.api.users.repository import UserRepository
 from src.api.users.service import UserService
-
 from src.config.database.database import get_db
-
 
 router = APIRouter(tags=["Authentication"])
 
@@ -27,14 +24,6 @@ router = APIRouter(tags=["Authentication"])
     "/connect",
     response_model=JwtEncoded,
     summary="Authenticate User and Generate JWT Token",
-    description="""This endpoint is used for user authentication.
-    By submitting valid credentials (such as a username and password) in the
-    request body, you can obtain a JWT (JSON Web Token) for accessing protected
-    resources.
-    If the credentials are correct, a JWT token will be issued and returned in
-    the response.
-    If the credentials are incorrect, an error response will be generated.
-    This token should be used in subsequent requests to access secure endpoints.""",
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {
@@ -53,7 +42,7 @@ async def get_access_token(
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
 ) -> JwtEncoded:
-
+    """Autentica el usuario y crea un token JWT de acceso"""
     try:
         email = form_data.username
         hashed_password = hasher.hash(form_data.password)
@@ -94,7 +83,7 @@ async def reset_password(
     email_sender: Annotated[object, Depends(get_email_sender)],
     background_tasks: BackgroundTasks,
 ) -> JwtEncoded:
-
+    """Endpoint para resetear la contraseña del usuario enviando un mail como tarea en async"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         jwt = auth_service.assert_multiple_role(token)

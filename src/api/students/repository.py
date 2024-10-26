@@ -2,13 +2,13 @@ from sqlalchemy import exc, select
 from sqlalchemy.orm import Session
 
 from src.api.groups.models import Group
-from src.api.topics.models import Topic
-from src.api.tutors.models import TutorPeriod
-from src.api.periods.models import Period
-from src.api.users.models import User, Role
 from src.api.periods.exceptions import PeriodDuplicated
+from src.api.periods.models import Period
 from src.api.students.exceptions import StudentNotFound, StudentPeriodNotInserted
 from src.api.students.models import StudentPeriod
+from src.api.topics.models import Topic
+from src.api.tutors.models import TutorPeriod
+from src.api.users.models import User, Role
 
 
 class StudentRepository:
@@ -17,6 +17,7 @@ class StudentRepository:
         self.Session = sess
 
     def get_students(self):
+        """Devuelve todos los estudiantes"""
         with self.Session() as session:
             students = session.query(User).filter(User.role == Role.STUDENT).all()
             for student in students:
@@ -25,6 +26,7 @@ class StudentRepository:
         return students
 
     def get_students_by_ids(self, ids: list[int]):
+        """Devuelve todos los estudiantes dado una lista de ids"""
         with self.Session() as session:
             students = (
                 session.query(User)
@@ -38,6 +40,7 @@ class StudentRepository:
         return students
 
     def get_student_info(self, id: int):
+        """Devuelve informacion de un estudiante a partir de su id"""
         with self.Session() as session:
             student_info = (
                 session.query(
@@ -57,6 +60,7 @@ class StudentRepository:
         return student_info
 
     def get_teammates(self, id: int, group_id: int):
+        """Devuelve los compañeros de grupo de un estudiante"""
         with self.Session() as session:
             teammates = (
                 session.query(User)
@@ -69,6 +73,7 @@ class StudentRepository:
         return teammates
 
     def add_student_period(self, student_period: StudentPeriod) -> StudentPeriod:
+        """Agrega un cuatrimestre a un estudiante"""
         try:
             with self.Session() as session:
                 session.add(student_period)
@@ -79,6 +84,7 @@ class StudentRepository:
             raise PeriodDuplicated(message="Period can't be assigned to student")
 
     def get_period_by_student_id(self, student_id: int) -> Period:
+        """Devuelve todos los cuatrimestres de un estudiante"""
         with self.Session() as session:
             student_period = (
                 session.query(StudentPeriod)
@@ -92,6 +98,8 @@ class StudentRepository:
     def add_student_periods(
         self, student_periods: list[StudentPeriod]
     ) -> list[StudentPeriod]:
+        """Agrega una lista de cuatrimestres relacionados a estudiantes"""
+
         try:
             with self.Session() as session:
                 session.add_all(student_periods)
@@ -103,6 +111,7 @@ class StudentRepository:
             raise PeriodDuplicated(message=f"{e}")
 
     def upsert_student_periods(self, student_periods: list[StudentPeriod]):
+        """Inserta o Actualiza la lista de cuatrimestres de estudiantes"""
         try:
             with self.Session() as session:
                 student_ids = {sp.student_id for sp in student_periods}

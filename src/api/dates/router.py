@@ -10,15 +10,11 @@ from src.api.dates.repository import DateSlotRepository
 from src.api.dates.schemas import DateSlotRequestList, DateSlotResponseList
 from src.api.dates.service import DateSlotsService
 from src.api.exceptions import ServerError
-
 from src.api.groups.repository import GroupRepository
 from src.api.users.exceptions import InvalidCredentials
-
 from src.api.utils.response_builder import ResponseBuilder
-
 from src.config.database.database import get_db
 from src.config.logging import logger
-
 
 router = APIRouter(prefix="/dates", tags=["Dates"])
 
@@ -53,6 +49,7 @@ async def add_dates(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Agrega los slots disponibles en un cuatrimestre puntual"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -101,6 +98,7 @@ async def add_groups_dates(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     group_id: int = Query(...),
 ):
+    """Agrega los slots seleccionados por un grupo"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_in_group(token, group_id, GroupRepository(session))
@@ -149,6 +147,7 @@ async def add_tutors_dates(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Agrega los slots seleccionados por un tutor en un cuatrimestre puntual"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         jwt = auth_service.assert_tutor_rol(token)
@@ -189,6 +188,7 @@ async def get_available_slots(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Obtiene todos los slots disponibles en un cuatrimestre puntual"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_multiple_role(token)
@@ -227,6 +227,7 @@ async def get_slots_by_tutor_id(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Obtiene todos los slots de un tutor en un cuatrimestre puntual"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token, tutor_id)
@@ -264,6 +265,7 @@ async def get_slots_by_group_id(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Obtiene todos los slots de un grupo"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_in_group(token, group_id, GroupRepository(session))
@@ -310,6 +312,7 @@ async def sync_date_slots(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Sobre escribe los slots disponibles"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -359,6 +362,7 @@ async def sync_group_slots(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Sobrescribe los slots de un grupo"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_in_group(token, group_id, GroupRepository(session))
@@ -406,6 +410,7 @@ async def sync_tutor_slots(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Sobreescribe los slots de un tutor en un cuatrimestre puntual"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         jwt = auth_service.assert_tutor_rol(token)

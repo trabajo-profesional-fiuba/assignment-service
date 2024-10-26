@@ -10,7 +10,7 @@ class DateSlotRepository:
         self.Session = sess
 
     def add_date_slot(self, date_slot: DateSlot):
-
+        """Agrega una nueva fecha a la tabla"""
         with self.Session() as session:
             session.add(date_slot)
             session.commit()
@@ -23,6 +23,7 @@ class DateSlotRepository:
     def add_bulk(
         self, model: DateSlot | GroupDateSlot | TutorDateSlot, data: list[dict]
     ) -> list[dict]:
+        """Dependiendo el modelo, agrega una lista de filas a la correspondiente tabla"""
         with self.Session() as session:
             result = session.execute(insert(model).returning(model), data)
             session.commit()
@@ -35,6 +36,7 @@ class DateSlotRepository:
         return saved_data
 
     def get_slots_by_period(self, period: str):
+        """Obtiene todos los slots por cuatrimestre"""
         with self.Session() as session:
             slots = session.query(DateSlot).filter(DateSlot.period_id == period).all()
             for slot in slots:
@@ -43,6 +45,7 @@ class DateSlotRepository:
         return slots
 
     def get_tutor_slots_by_id(self, tutor_id: int, period: str):
+        """Obtiene todos los slots de un tutor por cuatrimestre"""
         with self.Session() as session:
             slots = (
                 session.query(TutorDateSlot)
@@ -58,6 +61,7 @@ class DateSlotRepository:
         return slots
 
     def get_groups_slots_by_id(self, group_id: int):
+        """Obtiene todos los slots de un grupo"""
         with self.Session() as session:
             slots = (
                 session.query(GroupDateSlot)
@@ -72,9 +76,7 @@ class DateSlotRepository:
         return slots
 
     def delete_date_slots(self, slots_to_delete: list[dict], period: str):
-        """
-        Deletes date slots within a given period.
-        """
+        """Borra los slots de un cuatrimestre"""
         with self.Session() as session:
             delete_stmt = delete(DateSlot).where(
                 DateSlot.period_id == period,
@@ -84,9 +86,7 @@ class DateSlotRepository:
             session.commit()
 
     def sync_date_slots(self, slots_to_update: list[dict], period: str):
-        """
-        Deletes existing slots that are not in updated list and add the new ones.
-        """
+        """Borra aquellos slots que no estan en la lista y agrega los que faltan en un cuatrimestre"""
         with self.Session() as session:
             # Retrieve existing slots
             existing_slots = session.query(DateSlot).all()
@@ -109,9 +109,7 @@ class DateSlotRepository:
                 self.add_bulk(DateSlot, new_slots)
 
     def delete_group_slots(self, slots_to_delete: list[dict], group_id: int):
-        """
-        Deletes group slots from a given group id.
-        """
+        """Borra los slots de un grupo"""
         with self.Session() as session:
             delete_stmt = delete(GroupDateSlot).where(
                 and_(
@@ -125,9 +123,7 @@ class DateSlotRepository:
             session.commit()
 
     def sync_group_slots(self, slots_to_update: list[dict], group_id: int):
-        """
-        Deletes existing slots that are not in updated list and add the new ones.
-        """
+        """Borra aquellos slots de un grupo que no estan en la lista y agrega los que faltan"""
         with self.Session() as session:
             # Retrieve existing slots
             existing_slots = session.query(GroupDateSlot).all()
@@ -152,26 +148,20 @@ class DateSlotRepository:
     def delete_tutor_slots(
         self, slots_to_delete: list[dict], tutor_id: int, period: str
     ):
-        """
-        Deletes tutor slots from a given tutor id and period.
-        """
+        """Borra todos los slots de un tutor en un cuatrimestre especifico"""
         with self.Session() as session:
             delete_stmt = delete(TutorDateSlot).where(
                 and_(
                     TutorDateSlot.period_id == period,
                     TutorDateSlot.tutor_id == tutor_id,
-                    TutorDateSlot.slot.in_(
-                        [slot for slot, tutor_id, period in slots_to_delete]
-                    ),
+                    TutorDateSlot.slot.in_([slot for slot, _, _ in slots_to_delete]),
                 )
             )
             session.execute(delete_stmt)
             session.commit()
 
     def sync_tutor_slots(self, slots_to_update: list[dict], tutor_id: int, period: str):
-        """
-        Deletes existing slots that are not in updated list and add the new ones.
-        """
+        """Borra aquellos slots de un tutor que no estan en la lista y agrega los que faltan en un cuatrimestre"""
         with self.Session() as session:
             # Retrieve existing slots
             existing_slots = session.query(TutorDateSlot).all()

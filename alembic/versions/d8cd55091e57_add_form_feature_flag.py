@@ -20,11 +20,11 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Get the current database inspector
+    # Get del inspector de la db
     inspector = sa.inspect(op.get_bind())
     table_names = inspector.get_table_names()
 
-    # Check if the table already exists
+    # Check si las bases existen
     if "categories" not in table_names:
         op.create_table(
             "categories",

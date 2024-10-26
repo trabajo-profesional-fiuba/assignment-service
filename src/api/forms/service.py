@@ -26,7 +26,7 @@ class FormService:
     def add_answers(self, form_preference: FormPreferencesRequest):
         try:
             """
-            Adds a new set of answers to the repository.
+            Agrega una respuesta a sus integrantes del formulario
             """
             cleaned_user_ids = list(
                 filter(
@@ -65,15 +65,16 @@ class FormService:
 
     def delete_answers_by_answer_id(self, answer_id: datetime):
         """
-        Deletes answers from the repository based on the provided answer ID.
+        Borra una respuesta en base a un id
         """
         answers = self._repository.get_answers_by_answer_id(answer_id)
         if len(answers) == 0:
             raise EntityNotFound(f"Answer id '{answer_id}' does not exists.")
         return self._repository.delete_answers_by_answer_id(answer_id)
 
+    # FIXME - Deberia hacerlo el mapper
     def _make_topic(self, topic):
-        """Make a Topic based on a Topic Orm Object."""
+        """A partir de un Topic como schema lo transforma en Topic para db"""
         id = topic.id
         name = topic.name
         category = topic.category.name
@@ -81,9 +82,9 @@ class FormService:
         return topic
 
     def _transform_topics(self, topic_repository: TopicRepository) -> dict:
-        """Builds a dictionary of name: Topic with all the topics from the
-        database.
-        The Topic object are not ORM objects.
+        """
+        Crea un diccionario clave valor asociando el nombre del tema
+        con su correspondiente objeto a partir de un get a la db
         """
         topics = topic_repository.get_topics()
         topcis_as_dict = dict()
@@ -95,11 +96,11 @@ class FormService:
 
     def get_answers(self, topic_repository: TopicRepository):
         """
-        Retrieves answers from the repository, processes the data to group students
-        by their answers, and returns a formatted response.
+        Recupera respuestas del repositorio, procesa los datos para agrupar a los estudiantes
+        según sus respuestas y devuelve una respuesta formateada.
 
-        Returns a list of dictionaries, each representing an answer with its associated
-        students and topics, with duplicate topics removed.
+        Devuelve una lista de diccionarios, cada uno representando una respuesta con sus estudiantes
+        y temas asociados, eliminando los temas duplicados.
         """
         db_answers = self._repository.get_answers()
         topics = self._transform_topics(topic_repository)
@@ -127,7 +128,7 @@ class FormService:
 
     def get_answers_by_user_id(self, user_id, topic_repository: TopicRepository):
         """
-        Retrieves answers from one user based on his id
+        Devuelve las respuestas de un grupo por id
         """
         answers = self._repository.get_answers_by_user_id(user_id)
         topics = self._transform_topics(topic_repository)
