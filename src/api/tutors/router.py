@@ -382,7 +382,7 @@ async def notify_students(
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
 
-        group_mapper = GroupMapper(TutorMapper())
+        group_mapper = GroupMapper()
         group = group_mapper.map_model_to_assigned_group(
             group_repository.get_group_by_id(
                 group_id,

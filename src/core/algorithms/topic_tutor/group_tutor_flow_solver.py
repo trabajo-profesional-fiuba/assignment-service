@@ -1,8 +1,3 @@
-"""
-Module providing the assignment flow algorithm that solves the assignment
-of groups to topics and tutors.
-"""
-
 from typing import Optional
 import networkx as nx
 
@@ -14,9 +9,6 @@ from src.core.tutor import Tutor
 
 
 class GroupTutorFlowSolver:
-    """
-    A solver for assigning groups to topics and tutors using a flow-based algorithm.
-    """
 
     def __init__(
         self,
