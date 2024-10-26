@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from src.api.topics.exceptions import CategoryNotFound
 from src.api.topics.models import Category, Topic, TopicTutorPeriod
 from src.api.tutors.models import TutorPeriod
@@ -9,9 +10,8 @@ class TopicRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    """ Add a list of categories and detached them from the session"""
-
     def add_categories(self, categories: list[Category]):
+        """Agrega una lista de Categorias a la tabla"""
         with self.Session() as session:
             session.add_all(categories)
             session.commit()
@@ -21,6 +21,7 @@ class TopicRepository:
         return categories
 
     def add_topics(self, topics: list[Topic]):
+        """Agrega una lista de temas a la tabla"""
         with self.Session() as session:
             session.add_all(topics)
             session.commit()
@@ -33,6 +34,7 @@ class TopicRepository:
         return topics
 
     def add_topic_with_category(self, topic: Topic, category_name: str):
+        """Agrega un tema y su categoria asociada"""
         with self.Session() as session:
             category = session.query(Category).filter_by(name=category_name).first()
             if not category:
@@ -48,9 +50,8 @@ class TopicRepository:
 
         return topic
 
-    """ Get all the topics"""
-
     def get_topics(self):
+        """Devuelve todos los temas"""
         with self.Session() as session:
             topics = session.query(Topic).all()
 
@@ -60,18 +61,17 @@ class TopicRepository:
 
         return topics
 
-    """ Get all the categories"""
-
     def get_categories(self):
+        """Devuelve todos las categorias"""
+
         with self.Session() as session:
             categories = session.query(Category).all()
             session.expunge_all()
 
         return categories
 
-    """ Add a category and detached it from the session"""
-
     def add_category(self, category: Category):
+        """Agrega una categoria"""
         with self.Session() as session:
             session.add(category)
             session.commit()
@@ -79,9 +79,8 @@ class TopicRepository:
             session.expunge(category)
         return category
 
-    """ Add a topic and detached it from the session"""
-
     def add_topic(self, topic: Topic):
+        """Agrega un tema"""
         with self.Session() as session:
             session.add(topic)
             session.commit()
@@ -91,9 +90,8 @@ class TopicRepository:
             session.expunge(topic)
         return topic
 
-    """ Get a topic based on the name and detached it from the session"""
-
     def get_topic_by_name(self, name: str):
+        """Devuelve tema a partir del nombre"""
         with self.Session() as session:
             topic = session.query(Topic).filter(Topic.name == name).first()
             if topic:
@@ -101,6 +99,7 @@ class TopicRepository:
         return topic
 
     def get_topic_by_id(self, id: int):
+        """Devuelve tema por id"""
         with self.Session() as session:
             topic = session.query(Topic).filter(Topic.id == id).first()
             if topic:
@@ -108,12 +107,14 @@ class TopicRepository:
         return topic
 
     def delete_topics(self):
+        """Borra todas las categorias que no son default y en cascada los temas"""
         with self.Session() as session:
             session.query(Category).filter(Category.name != "default").delete()
             session.query(Topic).delete()
             session.commit()
 
     def get_topics_by_period_id(self, period_id):
+        """Devuelve todas las categorias de un cuatrimestre particular"""
         with self.Session() as session:
             topics = (
                 session.query(Topic)

@@ -2,16 +2,15 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from src.api.assignments.router import router as assignment_router
 from src.api.auth.router import router as auth_router
+from src.api.dates.router import router as dates_router
 from src.api.forms.router import router as form_router
 from src.api.groups.router import router as group_router
+from src.api.periods.router import router as period_router
 from src.api.students.router import router as student_router
 from src.api.topics.router import router as topic_router
 from src.api.tutors.router import router as tutor_router
-from src.api.periods.router import router as period_router
-from src.api.assignments.router import router as assignment_router
-from src.api.dates.router import router as dates_router
-
 from src.config.config import api_config
 from src.config.database.database import init_default_values
 from src.config.logging import logger
@@ -19,36 +18,23 @@ from src.config.logging import logger
 
 api_description = """
 
-## Group 54 - Final Project
+## Group 54 - Trabajo Profesional
 
-The Assignment Management API is designed to optimize the allocation of resources and
-scheduling within educational projects. Key functionalities include:
+The Assignment Management API fue diseñado para optimizar las diferentes asignaciones que se producen 
+durante el cuatrimestre de la cursada.
 
-The API, Assignment Management is design to optimize the allocation of resources and
-scheduling within educational projects. Key functionalities include:
+Ademas, a través de sus diferentes endpoints se puede crear cuatrimestres, crear grupos, realizar seguimiento,
+enviar notificaciones por mail y mucho mas
 
-- Group Assignments: Divide individuals to incomplete student groups.
+Posee tres asignaciones principales
 
-- Topic and Tutor Assignments: Assign relevant topics and tutors to student
-groups.
+1. Asignacion de estudiantes a grupos incompletos
+2. Asignacion de grupos a temas y tutores
+3. Asignacion de grupos a fechas de exposicion.
 
-- Presentation Scheduling: Set and manage presentation dates for each group.
+Para realizar estas asignaciones, se utilizan algoritmos de programacion lineal y redes de flujo.
 
-This API is crucial for matching group members, topics, and presentation
-slots, ensuring effective project organization and execution.
-
-**Key Entities**:
-- Students
-- Groups
-- Tutors
-- Topics
-- Categories
-- Period
-
-Interact with these entities through a series of dedicated API endpoints tailored to
-facilitate smooth and effective assignments.
-
-## Contributors
+## Desarrolladores
 - Celeste Dituro       - cdituro@fi.uba.ar
 - Victoria Abril Lopez - vlopez@fi.uba.ar
 - Iván Lautaro Pfaab   - ipfaab@fi.uba.ar

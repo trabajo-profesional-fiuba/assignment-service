@@ -1,5 +1,5 @@
-from sqlalchemy.orm import Session
 from sqlalchemy import exc, select, update
+from sqlalchemy.orm import Session
 
 from src.api.exceptions import Duplicated
 from src.api.students.exceptions import StudentDuplicated, StudentNotInserted
@@ -14,6 +14,7 @@ class UserRepository:
         self.Session = sess
 
     def _add_users(self, new_users: list[User]):
+        """Agrega una lista de usuarios"""
         with self.Session() as session:
             session.add_all(new_users)
             session.commit()
@@ -24,6 +25,7 @@ class UserRepository:
         return new_users
 
     def add_user(self, new_user: User):
+        """Agrega un usuario"""
         try:
             with self.Session() as session:
                 session.add(new_user)
@@ -35,6 +37,7 @@ class UserRepository:
             raise Duplicated("User duplicated")
 
     def add_tutors(self, tutors: list[User]):
+        """Agrega una lista de tutores"""
         try:
             return self._add_users(tutors)
         except exc.IntegrityError:
@@ -43,6 +46,7 @@ class UserRepository:
             raise TutorNotInserted("Could not insert a tutor in the database")
 
     def add_students(self, students: list[User]):
+        """Agrega una lista de estudiantes"""
         try:
             return self._add_users(students)
         except exc.IntegrityError:
@@ -51,6 +55,7 @@ class UserRepository:
             raise StudentNotInserted("Could not insert a student in the database")
 
     def upsert_students(self, students: list[User]):
+        """A partir de una lista de estudiantes, actualiza los existentes e inserta los que no estabanP"""
         try:
             with self.Session() as session:
                 student_ids = [student.id for student in students]
@@ -96,22 +101,26 @@ class UserRepository:
             raise StudentNotInserted("Could not insert a student in the database")
 
     def delete_students(self):
+        """Borra todos los estudiantes"""
         with self.Session() as session:
             session.query(User).filter(User.role == Role.STUDENT).delete()
             session.commit()
 
     def delete_tutors(self):
+        """Borra todos los tutores"""
         with self.Session() as session:
             session.query(User).filter(User.role == Role.TUTOR).delete()
             session.commit()
 
     def get_tutors(self):
+        """Obtiene todos los tutores"""
         with self.Session() as session:
             tutors = session.query(User).filter(User.role == Role.TUTOR).all()
             session.expunge_all()
         return tutors
 
     def get_tutor_by_id(self, tutor_id: int):
+        """Obtiene un tutor por id"""
         with self.Session() as session:
             tutor = (
                 session.query(User)
@@ -123,6 +132,7 @@ class UserRepository:
         return tutor
 
     def get_user_by_email(self, email: str):
+        """Obtiene un usuario por mail"""
         with self.Session() as session:
             user = session.query(User).filter(User.email == email).one_or_none()
             if not user:
@@ -132,6 +142,7 @@ class UserRepository:
         return user
 
     def get_user_by_id(self, user_id: int):
+        """Obtiene un usuario por id"""
         with self.Session() as session:
             user = session.query(User).filter(User.id == user_id).one_or_none()
             if not user:
@@ -141,6 +152,7 @@ class UserRepository:
         return user
 
     def update_user(self, user_id: int, attributes: dict) -> User:
+        """Actualiza un usuario a partir de su id"""
         with self.Session() as session:
             stmt = update(User).where(User.id == user_id).values(**attributes)
             session.execute(stmt, execution_options={"synchronize_session": False})

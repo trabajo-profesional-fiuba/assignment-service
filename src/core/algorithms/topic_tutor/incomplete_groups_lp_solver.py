@@ -21,13 +21,13 @@ class IncompleteGroupsLPSolver:
 
     def _filter_groups_with_4_students(self):
         """
-        Filters the groups to keep only those with exactly 4 students.
+        Filtra los grupos para mantener solo aquellos con exactamente 4 estudiantes.
         """
         return [group for group in self.groups if len(group.students) == 4]
 
     def filter_groups(self):
         """
-        Filters the groups to keep only those with fewer than 4 students.
+        Filtra los grupos para mantener solo aquellos con menos de 4 estudiantes.
         """
         return [group for group in self.groups if len(group.students) < 4]
 
@@ -199,11 +199,12 @@ class IncompleteGroupsLPSolver:
 
     def _create_group_topic_preferences(self, group_indices):
         """
-        Creates a new GroupTopicPreferences object by combining students and topics
-        from the given group indices.
+        Crea un nuevo objeto GroupTopicPreferences combinando estudiantes y temas
+        de los índices de grupo dados.
 
-        :param group_indices: List of group IDs to merge.
-        :return: A new GroupTopicPreferences object.
+        :param group_indices: Lista de IDs de grupos a combinar.
+        :return: Un nuevo objeto GroupTopicPreferences.
+
         """
         combined_students = []
 
@@ -246,8 +247,9 @@ class IncompleteGroupsLPSolver:
 
     def _merge_remaining_groups(self):
         """
-        Merges the remaining groups into as many teams as possible,
-        ensuring that each merged team has at most 4 students.
+        Combina los grupos restantes en la mayor cantidad de equipos posible,
+        asegurando que cada equipo combinado tenga como máximo 4 estudiantes.
+
         """
         while len(self.remaining_groups) > 1:
             group = self.remaining_groups.pop(0)
@@ -300,10 +302,11 @@ class IncompleteGroupsLPSolver:
 
     def _get_group_by_id(self, id) -> GroupFormAnswer:
         """
-        Retrieves a group by its ID.
+        Recupera un grupo por su ID.
 
-        :param id: The ID of the group.
-        :return: The group corresponding to the ID, or None if not found.
+        :param id: El ID del grupo.
+        :return: El grupo correspondiente al ID, o None si no se encuentra.
+
         """
         for group in self.groups:
             if group.id == id:

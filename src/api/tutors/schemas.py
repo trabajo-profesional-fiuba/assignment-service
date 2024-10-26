@@ -5,7 +5,7 @@ from src.api.users.schemas import UserResponse
 
 
 class TutorPeriodResponse(BaseModel):
-    """Period of tutor"""
+    """Cuatrimestre de un tutor en particular"""
 
     id: int
     period_id: str
@@ -17,25 +17,25 @@ class TutorPeriodResponse(BaseModel):
 
 
 class TutorPeriodWithTopicsResponse(TutorPeriodResponse):
-    """Period of tutor with its topics, just showing the name"""
+    """Cuatrimestre de un tutor en particular con los temas de ese cuatrimestre"""
 
     topics: List[SimpleTopic] = Field(default=[], validation_alias="topics")
 
 
 class TutorResponse(UserResponse):
-    """Tutor representation with the periods inside"""
+    """Tutor con sus cuatrimestres dentro"""
 
     tutor_periods: List[TutorPeriodResponse] = Field(default=[])
 
 
 class TutorResponseWithTopics(UserResponse):
-    """Tutor representation with the periods inside"""
+    """Tutor con sus cuatrimestres  y temas dentro"""
 
     tutor_periods: List[TutorPeriodWithTopicsResponse] = Field(default=[])
 
 
 class TutorList(RootModel):
-    """Default list of tutors"""
+    """Lista de tutores"""
 
     root: List[TutorResponse]
 
@@ -44,7 +44,7 @@ class TutorList(RootModel):
 
 
 class TutorWithTopicsList(RootModel):
-    """List of tutors and their topics"""
+    """Lista de tutores con sus temas"""
 
     root: List[TutorResponseWithTopics]
 
@@ -53,6 +53,8 @@ class TutorWithTopicsList(RootModel):
 
 
 class TutorRequest(BaseModel):
+    """Request de un nuevo tutor"""
+
     id: int
     name: str
     last_name: str
@@ -62,4 +64,6 @@ class TutorRequest(BaseModel):
 
 
 class TutorMessage(BaseModel):
+    """Mensaje de un tutor para enviar por mail"""
+
     body: str
