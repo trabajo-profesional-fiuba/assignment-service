@@ -43,6 +43,7 @@ class TestDateRepository:
         # Assert
         assert date_saved.period_id == date.period_id
         assert date_saved.slot == date.slot
+        assert date_saved.assigned == False
 
     @pytest.mark.integration
     def test_bulk_insert_slot_into_dates(self, tables):
@@ -164,3 +165,5 @@ class TestDateRepository:
         assert len(dates_saved) == 1
         assert dates_saved[0].tutor_id == tutor_id
         assert dates_saved[0].slot == dt.datetime(2024, 10, 15, 10, 0)
+        assert dates_saved[0].assigned == False
+        assert dates_saved[0].tutor_or_evaluator == None

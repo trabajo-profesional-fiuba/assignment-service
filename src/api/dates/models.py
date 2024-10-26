@@ -53,7 +53,7 @@ class TutorDateSlot(Base):
     )
     period_id = Column(String, ForeignKey("periods.id", ondelete="CASCADE"))
     assigned = Column(Boolean, default=False)
-    tutor_or_evaluator = Column(String,nullable=True)
+    tutor_or_evaluator = Column(String, nullable=True)
 
     # relationships
     tutors = relationship("User", back_populates="tutor_dates_slots", lazy="noload")
