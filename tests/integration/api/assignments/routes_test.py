@@ -438,3 +438,68 @@ def test_date_slots_assigment(fastapi, tables):
     data = response.json()
     assert data["status"] == 1
     assert len(data["assigments"]) == 3
+
+
+@pytest.mark.integration
+def test_put_date_assignment_results(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    # tutores y evaluadores
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
+    t_period1 = helper.create_tutor_period("105000", "2C2024")
+    helper.create_evaluator(
+        "Carlos", "Fontela", "103010", "cfontela@fi.uba.ar", "2C2024"
+    )
+
+    # Estudiantes y grupos
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    topic1 = helper.create_topic("TopicCustom")
+
+    group1 = helper.create_group(
+        ids=[105001],
+        tutor_period_id=t_period1.id,
+        topic_id=topic1.id,
+        period_id="2C2024",
+    )
+    period = "2C2024"
+    helper.create_dates(
+        [
+            {"period_id": period, "slot": dt.datetime(2024, 10, 8, 10)},
+        ]
+    )
+    helper.create_group_dates(
+        [
+            {"group_id": group1.id, "slot": dt.datetime(2024, 10, 8, 10)},
+        ]
+    )
+    helper.create_tutor_dates(
+        [
+            {  # tutores
+                "tutor_id": 105000,
+                "slot": dt.datetime(2024, 10, 8, 10),
+                "period_id": period,
+            },
+            {
+                "tutor_id": 103010,
+                "slot": dt.datetime(2024, 10, 8, 10),
+                "period_id": period,
+            },
+        ]
+    )
+
+    admin_token = helper.create_admin_token()
+    body = [
+        {
+            "group_id": group1.id,
+            "tutor_id": 105000,
+            "evaluator_id": 103010,
+            "date": (dt.datetime(2024, 10, 8, 10)).isoformat(),
+        }
+    ]
+    response = fastapi.put(
+        f"{PREFIX}/date-assigment?",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+        json=body,
+    )
+
+    assert response.status_code == status.HTTP_202_ACCEPTED

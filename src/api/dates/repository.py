@@ -1,5 +1,6 @@
+from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import insert, delete, and_, tuple_
+from sqlalchemy import insert, delete, and_, tuple_, update
 
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 
@@ -185,3 +186,15 @@ class DateSlotRepository:
             ]
             if new_slots:
                 self.add_bulk(TutorDateSlot, new_slots)
+
+    def update_tutor_dates(
+        self, tutor_id: int, date: datetime, attributes: dict
+    ):
+        stmt = (
+            update(TutorDateSlot)
+            .filter(TutorDateSlot.tutor_id == tutor_id, TutorDateSlot.slot == date)
+            .values(**attributes)
+        )
+        with self.Session() as session:
+            session.execute(stmt)
+            session.commit()

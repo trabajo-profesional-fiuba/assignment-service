@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from src.api.dates.exceptions import InvalidDate
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
@@ -112,6 +112,15 @@ class DateSlotsService:
             ]
             self._repository.sync_tutor_slots(slots_to_save, tutor_id, period)
             return slots_to_save
+        except Exception as e:
+            logger.error(f"Could not update tutor slots because of: {str(e)}")
+            raise InvalidDate(str(e))
+
+    def assign_tutors_dates(self, tutor_id: int, date: datetime, type: str):
+        """Updatea las fechas de tutores a asignadas con el tipo"""
+        try:
+            attributes = {"assigned": True, "tutor_or_evaluator": type}
+            self._repository.update_tutor_dates(tutor_id, date, attributes)
         except Exception as e:
             logger.error(f"Could not update tutor slots because of: {str(e)}")
             raise InvalidDate(str(e))

@@ -14,7 +14,12 @@ from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService
 from src.api.groups.mapper import GroupMapper
 from src.api.groups.repository import GroupRepository
-from src.api.groups.schemas import AssignmentResult
+from src.api.groups.schemas import (
+    AssignedDateResult,
+    AssignedDateSlotResponse,
+    AssignedDateSlotUpdate,
+    AssignmentResult,
+)
 from src.api.groups.service import GroupService
 from src.api.topics.mapper import TopicMapper
 from src.api.topics.repository import TopicRepository
@@ -26,6 +31,7 @@ from src.api.users.exceptions import InvalidCredentials
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
+from src.core.result import DateSlotsAssignmentResult
 
 router = APIRouter(prefix="/assignments", tags=["Assignments"])
 
@@ -154,9 +160,10 @@ async def assign_group_topic_tutor(
 
 @router.post(
     "/date-assigment",
+    response_model=AssignedDateResult,
     summary="Runs the assignment of assignment dates",
     responses={
-        status.HTTP_202_ACCEPTED: {"description": "Successfully assigned dates"},
+        status.HTTP_200_OK: {"description": "Successfully assigned dates"},
         status.HTTP_400_BAD_REQUEST: {
             "description": "Bad Request due unknown operation"
         },
@@ -177,7 +184,7 @@ async def assign_group_topic_tutor(
     },
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def assign_incomplete_groups(
+async def assign_dates(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
@@ -217,6 +224,62 @@ async def assign_incomplete_groups(
         return ResponseBuilder.build_clear_cache_response(
             assignment_result.to_json(), status.HTTP_200_OK
         )
+    except Exception as e:
+        logger.error(str(e))
+        raise ServerError("Unexpected error happend")
+
+
+@router.put(
+    "/date-assigment",
+    summary="Updates dates relationships",
+    responses={
+        status.HTTP_202_ACCEPTED: {"description": "Successfully updated dates"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unknown operation"
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "User not authorized to perform action"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a \
+                client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+                backend"
+        },
+    },
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def update_assignments(
+    assignments: list[AssignedDateSlotUpdate],
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)]
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        dates_service = DateSlotsService(DateSlotRepository(session))
+        group_service = GroupService(GroupRepository(session))
+
+        for assignment in assignments:
+            date = assignment.date
+            evaluator_id = assignment.evaluator_id
+            tutor_id = assignment.tutor_id
+            group_id = assignment.group_id
+
+            dates_service.assign_tutors_dates(tutor_id, date, "tutor")
+            dates_service.assign_tutors_dates(
+                evaluator_id, date, "evaluator"
+            )
+            group_service.assign_date(group_id, date)
+
+        return Response(status_code=status.HTTP_202_ACCEPTED)
     except Exception as e:
         logger.error(str(e))
         raise ServerError("Unexpected error happend")
