@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, ForeignKey, String
+from sqlalchemy import Column, DateTime, Integer, ForeignKey, String, Boolean, CHAR
 from sqlalchemy.orm import relationship
 
 from src.config.database.base import Base
@@ -9,6 +9,7 @@ class DateSlot(Base):
 
     period_id = Column(String, ForeignKey("periods.id", ondelete="CASCADE"))
     slot = Column(DateTime(timezone=False), primary_key=True)
+    assigned = Column(Boolean, default=False)
 
     # relationships
     period = relationship("Period", back_populates="dates_slots", lazy="noload")
@@ -51,6 +52,8 @@ class TutorDateSlot(Base):
         primary_key=True,
     )
     period_id = Column(String, ForeignKey("periods.id", ondelete="CASCADE"))
+    assigned = Column(Boolean, default=False)
+    tutor_or_evaluator = Column(String,nullable=True)
 
     # relationships
     tutors = relationship("User", back_populates="tutor_dates_slots", lazy="noload")
