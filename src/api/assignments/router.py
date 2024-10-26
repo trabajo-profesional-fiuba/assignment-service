@@ -196,7 +196,7 @@ async def assign_dates(
 
         dates_service = DateSlotsService(DateSlotRepository(session))
         available_dates = DateSlotsMapper.map_model_to_date_slot(
-            dates_service.get_slots(period_id)
+            dates_service.get_slots(period_id, only_available=True)
         )
 
         tutors_service = TutorService(TutorRepository(session))

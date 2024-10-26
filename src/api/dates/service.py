@@ -64,9 +64,9 @@ class DateSlotsService:
             logger.error(f"Could not update period because of: {str(e)}")
             raise InvalidDate(str(e))
 
-    def get_slots(self, period: str):
-        """Obtiene todos los slots disponibles"""
-        return self._repository.get_slots_by_period(period)
+    def get_slots(self, period: str, only_available=False):
+        """Obtiene todos los slots disponibles filtrando por only_available si quiere los asignados tambien o no"""
+        return self._repository.get_slots_by_period(period, only_available)
 
     def get_tutors_slots_by_id(self, tutor_id: int, period: str):
         """Obtiene todos los slots de un tutor en un cuatrimestre"""
@@ -126,7 +126,7 @@ class DateSlotsService:
             raise InvalidDate(str(e))
 
     def assign_date(self, date: datetime):
-        """ Marca una fecha como ya asignada """
+        """Marca una fecha como ya asignada"""
         try:
             attributes = {"assigned": True}
             self._repository.assign_date(date, attributes)

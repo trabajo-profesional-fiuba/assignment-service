@@ -27,7 +27,7 @@ class TestDateRepository:
         helper.create_period(period)
 
         repository = DateSlotRepository(self.Session)
-        dates_saved = repository.get_slots_by_period(period)
+        dates_saved = repository.get_slots_by_period(period, False)
         assert len(dates_saved) == 0
 
     @pytest.mark.integration
@@ -78,7 +78,7 @@ class TestDateRepository:
         repository = DateSlotRepository(self.Session)
         period = "2C2024"
 
-        dates_saved = repository.get_slots_by_period(period)
+        dates_saved = repository.get_slots_by_period(period, False)
         assert len(dates_saved) == 5
 
     @pytest.mark.integration
@@ -96,7 +96,7 @@ class TestDateRepository:
             },
         ]
         repository.sync_date_slots(slots_to_update, period)
-        dates_saved = repository.get_slots_by_period(period)
+        dates_saved = repository.get_slots_by_period(period, False)
         assert len(dates_saved) == 2
 
     @pytest.mark.integration
