@@ -1,5 +1,6 @@
+from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import insert, delete, and_, tuple_
+from sqlalchemy import insert, delete, and_, tuple_, update, select
 
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 
@@ -35,10 +36,16 @@ class DateSlotRepository:
 
         return saved_data
 
-    def get_slots_by_period(self, period: str):
+    def get_slots_by_period(self, period: str, only_available: bool):
         """Obtiene todos los slots por cuatrimestre"""
+        query = select(DateSlot).filter(DateSlot.period_id == period)
         with self.Session() as session:
-            slots = session.query(DateSlot).filter(DateSlot.period_id == period).all()
+            if only_available:
+                query = query.filter(DateSlot.assigned == False)
+                
+            result = session.execute(query)
+            slots = result.scalars().all()
+                
             for slot in slots:
                 session.expunge(slot)
 
@@ -185,3 +192,25 @@ class DateSlotRepository:
             ]
             if new_slots:
                 self.add_bulk(TutorDateSlot, new_slots)
+
+    def update_tutor_dates(
+        self, tutor_id: int, date: datetime, attributes: dict
+    ):
+        stmt = (
+            update(TutorDateSlot)
+            .filter(TutorDateSlot.tutor_id == tutor_id, TutorDateSlot.slot == date)
+            .values(**attributes)
+        )
+        with self.Session() as session:
+            session.execute(stmt)
+            session.commit()
+
+    def assign_date(self, date: datetime, attributes: dict):
+        stmt = (
+            update(DateSlot)
+            .filter(DateSlot.slot == date)
+            .values(**attributes)
+        )
+        with self.Session() as session:
+            session.execute(stmt)
+            session.commit()

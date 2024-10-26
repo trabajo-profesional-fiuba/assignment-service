@@ -23,6 +23,10 @@ def upgrade() -> None:
     op.add_column('dates_slots', sa.Column('assigned', sa.Boolean(), nullable=True))
     op.add_column('tutors_dates_slots', sa.Column('assigned', sa.Boolean(), nullable=True))
     op.add_column('tutors_dates_slots', sa.Column('tutor_or_evaluator', sa.String(), nullable=True))
+
+    # Como ya tenemos data hay que pasarla a False
+    op.execute("UPDATE dates_slots SET assigned = true WHERE assigned IS NULL")
+    op.execute("UPDATE tutors_dates_slots SET assigned = true WHERE assigned IS NULL")
     # ### end Alembic commands ###
 
 
