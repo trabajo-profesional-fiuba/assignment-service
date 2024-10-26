@@ -30,17 +30,20 @@ class SimpleTopic(BaseModel):
 
 class TopicRequest(SimpleTopic):
     """Representa un tema completo"""
+
     category: str
 
 
 class TopicResponse(SimpleTopic):
     """Representa una respuesta de un tema"""
+
     id: int
     category: SimpleCategory = Field(validation_alias="category")
 
 
 class TopicList(RootModel):
     """Representa una lista de temas"""
+
     root: List[TopicResponse]
 
     def __iter__(self):

@@ -7,6 +7,7 @@ from src.core.algorithms.topic_tutor.incomplete_groups_lp_solver import (
 )
 from src.core.result import DateSlotsAssignmentResult, GroupTutorTopicAssignmentResult
 
+
 class AssignmentService:
 
     def assignment_incomplete_groups(self, answers):
@@ -32,7 +33,9 @@ class AssignmentService:
         results = assigment_model.solve()
         return results
 
-    def assignment_dates(self, available_dates, tutors, evaluators, groups) -> DateSlotsAssignmentResult:
+    def assignment_dates(
+        self, available_dates, tutors, evaluators, groups
+    ) -> DateSlotsAssignmentResult:
         """
         Utiliza el algoritmo de programacion lineal de fechas para asignar grupos a fechas de exposicion
         """

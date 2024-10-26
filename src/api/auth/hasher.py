@@ -1,5 +1,6 @@
 import hashlib
 
+
 class ShaHasher:
     def hash(self, message: str) -> str:
         """
@@ -11,7 +12,7 @@ class ShaHasher:
         return sha256_hash.hexdigest()
 
 
-#TODO - Mover todas las dependencias a un mismo .py
+# TODO - Mover todas las dependencias a un mismo .py
 def get_hasher():
     """
     Hasher para injeccion de dependencias

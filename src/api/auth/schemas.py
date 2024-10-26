@@ -25,7 +25,7 @@ class JwtEncoded(BaseModel):
 
 class JwtDecoded(BaseModel):
     """
-    Esquema para representar un JWT cuando está decodificado. 
+    Esquema para representar un JWT cuando está decodificado.
     Algunas reclamaciones se consideran obligatorias, tales como:
 
     - sub: Es el sujeto del Json Web Token.

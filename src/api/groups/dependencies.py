@@ -1,10 +1,9 @@
 # =============================================================================
 # IMPORTANTE: Este modulo de Python incluye todas las dependencias.
 # No esta destinado a contener clases; en su lugar, debe incluir funciones
-# para ser importadas. 
+# para ser importadas.
 # Asegurate de seguir esta estructura para mantener la consistencia
 # =============================================================================
-
 
 
 from src.config.config import api_config

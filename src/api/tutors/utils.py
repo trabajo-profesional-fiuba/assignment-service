@@ -69,7 +69,7 @@ class TutorCsvFile:
         return list(self._df["DNI"].unique())
 
     def _add_tutor(self, row, tutors):
-        """ Crea tutores a partir de los datos de las columnas del csv"""
+        """Crea tutores a partir de los datos de las columnas del csv"""
         tutors[row["DNI"]] = Tutor(
             id=row["DNI"],
             email=row["MAIL"],

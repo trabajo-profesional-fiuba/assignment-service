@@ -19,6 +19,7 @@ from src.config.database.database import get_db
 
 router = APIRouter(tags=["Authentication"])
 
+
 @router.post(
     "/connect",
     response_model=JwtEncoded,
@@ -41,7 +42,7 @@ async def get_access_token(
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
 ) -> JwtEncoded:
-    """ Autentica el usuario y crea un token JWT de acceso"""
+    """Autentica el usuario y crea un token JWT de acceso"""
     try:
         email = form_data.username
         hashed_password = hasher.hash(form_data.password)
@@ -82,7 +83,7 @@ async def reset_password(
     email_sender: Annotated[object, Depends(get_email_sender)],
     background_tasks: BackgroundTasks,
 ) -> JwtEncoded:
-    """ Endpoint para resetear la contraseña del usuario enviando un mail como tarea en async"""
+    """Endpoint para resetear la contraseña del usuario enviando un mail como tarea en async"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         jwt = auth_service.assert_multiple_role(token)

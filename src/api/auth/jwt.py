@@ -4,6 +4,7 @@ from src.api.auth.schemas import JwtDecoded, JwtEncoded
 from src.config.config import api_config
 from src.config.logging import logger
 
+
 class InvalidJwt(Exception):
 
     def __init__(self, message) -> None:
@@ -66,6 +67,7 @@ class JwtResolver:
             logger.error("Invalid Jwt")
             raise InvalidJwt(message=str(e))
 
-#TODO - Moverlo a un archivo .py
+
+# TODO - Moverlo a un archivo .py
 def get_jwt_resolver():
     yield JwtResolver()

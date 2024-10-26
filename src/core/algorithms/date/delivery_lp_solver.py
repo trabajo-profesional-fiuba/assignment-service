@@ -34,7 +34,6 @@ class DeliveryLPSolver:
         Modelo SCIP para resolver el problema.
     """
 
-
     def __init__(
         self,
         groups: list[AssignedGroup] = [],

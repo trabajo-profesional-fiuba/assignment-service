@@ -159,7 +159,6 @@ class GroupTutorLPSolver:
             - assignment_vars: Variables de asignación.
         """
 
-
         for topic in self._topics:
             prob += (
                 lpSum(

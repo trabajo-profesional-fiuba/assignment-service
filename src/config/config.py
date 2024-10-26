@@ -4,7 +4,6 @@ import os
 
 
 class ApiConfiguration:
-
     """
     Clase de Configuración:
 

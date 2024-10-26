@@ -3,6 +3,7 @@ from src.api.admins.schemas import AdminRequest
 from src.api.exceptions import Duplicated
 from src.api.users.models import Role, User
 
+
 class AdminService:
 
     def __init__(self, repository) -> None:

@@ -14,7 +14,7 @@ class TutorMapper:
         self._topic_mapper = TopicMapper()
 
     def map_tutor_period_to_tutors(self, db_periods: list[TutorPeriod]):
-        """ A partir de cuatrimestres de tutores, crean un tutor"""
+        """A partir de cuatrimestres de tutores, crean un tutor"""
         tutors = list()
         for db_period in db_periods:
             db_tutor = db_period.tutor
@@ -35,7 +35,7 @@ class TutorMapper:
     def map_tutor_period_to_tutor(
         self, db_tutor_period: TutorPeriod, topics: list[Topic] = []
     ):
-        """ A partir de un cuatrimestre, crean un tutor"""
+        """A partir de un cuatrimestre, crean un tutor"""
         tutor = None
         if db_tutor_period:
             tutor = Tutor(
@@ -50,7 +50,7 @@ class TutorMapper:
         return tutor
 
     def map_models_to_tutors(self, db_tutors: list[User]):
-        """ A partir de una lista de usuarios desde la bd crea una lista de tutores"""
+        """A partir de una lista de usuarios desde la bd crea una lista de tutores"""
         tutors = list()
         for user in db_tutors:
             period = user.tutor_periods[0]

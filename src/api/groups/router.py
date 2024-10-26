@@ -75,7 +75,7 @@ async def add_group(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
-    """ Endpoint para agregar un nuevo grupo"""
+    """Endpoint para agregar un nuevo grupo"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
@@ -103,7 +103,8 @@ async def add_group(
     except Exception as e:
         raise ServerError(message=str(e))
 
-#region POST Entregas
+
+# region POST Entregas
 @router.post(
     "/{group_id}/initial-project",
     summary="Uploads a file into storage",
@@ -124,7 +125,7 @@ async def post_initial_project(
     email_sender: Annotated[object, Depends(get_email_sender)],
     project_title: str = Query(...),
 ):
-    """ Endpoint para agregar un anteproyecto de un grupo"""
+    """Endpoint para agregar un anteproyecto de un grupo"""
     try:
 
         auth_service = AuthenticationService(jwt_resolver)
@@ -176,7 +177,7 @@ async def post_final_project(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     project_title: str = Query(...),
 ):
-    """ Endpoint para agregar una entrega final de un grupo"""
+    """Endpoint para agregar una entrega final de un grupo"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
@@ -216,7 +217,7 @@ async def post_final_project(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
-    """ Endpoint para agregar una entrega intermedia de un grupo"""
+    """Endpoint para agregar una entrega intermedia de un grupo"""
     try:
         group_repository = GroupRepository(session)
         auth_service = AuthenticationService(jwt_resolver)
@@ -230,7 +231,10 @@ async def post_final_project(
         raise e
     except Exception as e:
         raise ServerError(message=str(e))
-#endregion
+
+
+# endregion
+
 
 @router.get(
     "/",
@@ -261,7 +265,7 @@ async def get_groups(
     load_students: bool = True,
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
-    """ Endpoint para obtener los grupos en un cuatrimestre"""
+    """Endpoint para obtener los grupos en un cuatrimestre"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -332,7 +336,8 @@ async def get_group_by_id(
     except Exception as e:
         raise ServerError(message=str(e))
 
-#region GET Entregas
+
+# region GET Entregas
 @router.get(
     "/{group_id}/initial-project",
     description="Downloads the file for a group in an specific period",
@@ -560,7 +565,10 @@ async def list_initial_projects(
         raise e
     except Exception as e:
         raise ServerError(message=str(e))
-#endregion
+
+
+# endregion
+
 
 @router.put(
     "/",

@@ -54,7 +54,7 @@ class Group(Base):
         nullable=True,
     )
 
-    #Relaciones de los grupos
+    # Relaciones de los grupos
     students: Mapped[List[User]] = relationship(
         secondary=association_table, lazy="subquery"
     )

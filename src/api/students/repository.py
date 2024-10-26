@@ -96,11 +96,10 @@ class StudentRepository:
             raise StudentNotFound("The student id is not registered")
 
     def add_student_periods(
-            
         self, student_periods: list[StudentPeriod]
     ) -> list[StudentPeriod]:
         """Agrega una lista de cuatrimestres relacionados a estudiantes"""
-        
+
         try:
             with self.Session() as session:
                 session.add_all(student_periods)

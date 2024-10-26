@@ -17,6 +17,7 @@ from src.config.database.database import get_db
 
 router = APIRouter(prefix="/admins", tags=["Admins"])
 
+
 @router.post(
     "",
     response_model=UserResponse,

@@ -271,7 +271,7 @@ class TutorRepository:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
 
     def get_tutors_by_period_id_with_dates(self, period_id: str):
-        """Devuelve todos los tutores cargando las fechas que el tutor selecciono """
+        """Devuelve todos los tutores cargando las fechas que el tutor selecciono"""
         with self.Session() as session:
             tutors = (
                 session.query(User)

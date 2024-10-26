@@ -94,7 +94,7 @@ class GroupRepository:
         return groups
 
     def get_groups_without_tutor_and_period(self) -> list[Group]:
-        """ Devuelve los grupos que no tiene ni tutor ni tema asignado"""
+        """Devuelve los grupos que no tiene ni tutor ni tema asignado"""
         with self.Session() as session:
             groups = (
                 session.query(Group)

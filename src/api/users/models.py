@@ -6,6 +6,7 @@ from src.config.database.base import Base
 
 class Role(PyEnum):
     """Roles actuales del sistema"""
+
     STUDENT = "student"
     TUTOR = "tutor"
     ADMIN = "admin"

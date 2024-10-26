@@ -37,7 +37,7 @@ def init_default_values():
         logger.warning("Database engine is not initialized.")
 
 
-#NOTE - Como manejamos migraciones, esta funcion solo debe ser llamada para tests
+# NOTE - Como manejamos migraciones, esta funcion solo debe ser llamada para tests
 def create_tables():
     """Crea todas las tablas"""
     try:
@@ -48,7 +48,8 @@ def create_tables():
         logger.error("An error ocurred during the table creation")
         raise err
 
-#NOTE - Como manejamos migraciones, esta funcion solo debe ser llamada para tests
+
+# NOTE - Como manejamos migraciones, esta funcion solo debe ser llamada para tests
 def drop_tables():
     """Borra todas las tablas"""
     try:
