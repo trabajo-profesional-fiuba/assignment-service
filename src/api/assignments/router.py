@@ -1,6 +1,6 @@
-from typing_extensions import Annotated
 from fastapi import APIRouter, Depends, status, Query, Response
 from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 
 from src.api.assignments.service import AssignmentService
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
@@ -10,14 +10,12 @@ from src.api.dates.maper import DateSlotsMapper
 from src.api.dates.repository import DateSlotRepository
 from src.api.dates.service import DateSlotsService
 from src.api.exceptions import ServerError
-
 from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService
 from src.api.groups.mapper import GroupMapper
 from src.api.groups.repository import GroupRepository
-from src.api.groups.schemas import AssignmentResult, AssignedGroupResponse
+from src.api.groups.schemas import AssignmentResult
 from src.api.groups.service import GroupService
-
 from src.api.topics.mapper import TopicMapper
 from src.api.topics.repository import TopicRepository
 from src.api.topics.service import TopicService
@@ -25,7 +23,6 @@ from src.api.tutors.mapper import TutorMapper
 from src.api.tutors.repository import TutorRepository
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
-
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
@@ -64,6 +61,7 @@ async def assign_incomplete_groups(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint que ejecuta el algoritmo que completa aquellos grupos que no son de a 4"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -77,6 +75,7 @@ async def assign_incomplete_groups(
 
         group_result = service.assignment_incomplete_groups(answers)
         group_service.create_basic_groups(group_result, period_id)
+
         return Response(status_code=status.HTTP_202_ACCEPTED, content="Created")
     except Exception as e:
         logger.error(str(e))

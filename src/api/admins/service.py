@@ -10,6 +10,7 @@ class AdminService:
         self._repository = repository
 
     def add_admin(self, hasher, admin: AdminRequest):
+        """Agrega un nuevo usuario con rol de administrador usando el id como password"""
         try:
             return self._repository.add_user(
                 User(
@@ -21,7 +22,7 @@ class AdminService:
                     role=Role.ADMIN,
                 )
             )
-        except Duplicated:
-            raise Duplicated("Duplicated student")
+        except Duplicated as e:
+            raise e
         except Exception:
             raise AdminNotInserted("Could not insert an admin in the database")

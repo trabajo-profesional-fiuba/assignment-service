@@ -1,8 +1,3 @@
-"""
-Module providing the assignment flow algorithm that solves the assignment
-of groups to topics and tutors.
-"""
-
 from typing import Optional
 import networkx as nx
 
@@ -14,9 +9,6 @@ from src.core.tutor import Tutor
 
 
 class GroupTutorFlowSolver:
-    """
-    A solver for assigning groups to topics and tutors using a flow-based algorithm.
-    """
 
     def __init__(
         self,
@@ -25,25 +17,27 @@ class GroupTutorFlowSolver:
         tutors: Optional[list[Tutor]] = None,
     ):
         """
-        Initializes the solver with the provided groups, topics, and tutors.
+        Inicializa el solucionador con los grupos, temas y tutores proporcionados.
 
         Attributes:
-            groups (list[Group]): A list of group objects to be assigned.
-            tutors (list[Tutor]): A list of tutor objects to be assigned to
-            topics.
+            groups (list[Group]): Una lista de objetos de grupo que se van a asignar.
+            tutors (list[Tutor]): Una lista de objetos de tutor que se van a asignar a
+            temas.
         """
+
         self._groups = groups if groups is not None else []
         self._tutors = tutors if tutors is not None else []
         self._topics = topics if topics is not None else []
 
     def _create_source_groups_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
-        Defines edges from the source node to group nodes.
+        Define las aristas desde el nodo fuente hasta los nodos de grupo.
 
         Returns:
-            list[tuple[str, str, dict[str, int]]]: A list of edges with capacities
-            and costs.
+            list[tuple[str, str, dict[str, int]]]: Una lista de aristas con capacidades
+            y costos.
         """
+
         return [
             (SOURCE_NODE_ID, f"{GROUP_ID}-{group.id}", {"capacity": 1, "cost": 1})
             for group in self._groups
@@ -51,12 +45,13 @@ class GroupTutorFlowSolver:
 
     def _create_groups_topics_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
-        Defines edges from group nodes to topic nodes.
+        Define las aristas desde los nodos de grupo hasta los nodos de tema.
 
         Returns:
-            list[tuple[str, str, dict[str, int]]]: A list of edges with capacities
-            and costs.
+            list[tuple[str, str, dict[str, int]]]: Una lista de aristas con capacidades
+            y costos.
         """
+
         group_topic_edges = []
 
         for group in self._groups:
@@ -76,12 +71,13 @@ class GroupTutorFlowSolver:
 
     def _create_topics_tutors_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
-        Defines edges from topic nodes to tutor nodes.
+        Define las aristas desde los nodos de tema hasta los nodos de tutor.
 
         Returns:
-            list[tuple[str, str, dict[str, int]]]: A list of edges with capacities
-            and costs.
+            list[tuple[str, str, dict[str, int]]]: Una lista de aristas con capacidades
+            y costos.
         """
+
         topic_tutor_edges = []
         for tutor in self._tutors:
             for topic in self._topics:
@@ -101,12 +97,13 @@ class GroupTutorFlowSolver:
 
     def _create_tutors_sink_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
-        Defines edges from tutor nodes to the sink node.
+        Define las aristas desde los nodos de tutor hasta el nodo sumidero.
 
         Returns:
-            list[tuple[str, str, dict[str, int]]]: A list of edges with capacities
-            and costs.
+            list[tuple[str, str, dict[str, int]]]: Una lista de aristas con capacidades
+            y costos.
         """
+
         tutor_sink_edges = [
             (
                 f"{TUTOR_ID}-{tutor.id}",
@@ -119,14 +116,15 @@ class GroupTutorFlowSolver:
 
     def _create_edges(self) -> list[tuple[str, str, dict[str, int]]]:
         """
-        Creates all the edges needed to construct the digraph.
+        Crea todas las aristas necesarias para construir el digrafo.
 
-        The edges connect the source node to group nodes, group nodes to topic nodes,
-        topic nodes to tutor nodes, and tutor nodes to the sink node.
+        Las aristas conectan el nodo fuente a los nodos de grupo, los nodos de grupo a los nodos de tema,
+        los nodos de tema a los nodos de tutor y los nodos de tutor al nodo sumidero.
 
         Returns:
-            list[tuple[str, str, dict[str, int]]]: A list of all edges in the graph.
+            list[tuple[str, str, dict[str, int]]]: Una lista de todas las aristas en el grafo.
         """
+
         source_groups_edges = self._create_source_groups_edges()
         group_topic_edges = self._create_groups_topics_edges()
         topic_tutor_edges = self._create_topics_tutors_edges()
@@ -140,16 +138,17 @@ class GroupTutorFlowSolver:
 
     def _create_graph(self, edges: list[tuple[str, str, dict[str, int]]]) -> nx.DiGraph:
         """
-        Creates a directed graph (digraph) with the given edges, including costs
-        and capacities.
+        Crea un grafo dirigido (digrafo) con las aristas dadas, incluyendo costos
+        y capacidades.
 
         Args:
-            edges (list[tuple[str, str, dict[str, int]]]): The edges to add to
-            the graph.
+            edges (list[tuple[str, str, dict[str, int]]]): Las aristas a agregar al
+            grafo.
 
         Returns:
-            nx.DiGraph: The created directed graph.
+            nx.DiGraph: El grafo dirigido creado.
         """
+
         graph = nx.DiGraph()
         graph.add_edges_from(edges)
         return graph
@@ -186,16 +185,17 @@ class GroupTutorFlowSolver:
 
     def solve(self) -> GroupTutorTopicAssignmentResult:
         """
-        Runs the assignment algorithm to find the maximum flow of
-        minimum cost.
+        Ejecuta el algoritmo de asignación para encontrar el flujo máximo de
+        costo mínimo.
 
-        The algorithm assigns groups to topics and topics to tutors,
-        then computes the optimal flow from the source node to the sink node.
+        El algoritmo asigna grupos a temas y temas a tutores,
+        luego calcula el flujo óptimo desde el nodo fuente hasta el nodo sumidero.
 
         Returns:
-            dict[str, dict[str, int]]: A dictionary representing the flow
-            from each node to its connected nodes.
+            dict[str, dict[str, int]]: Un diccionario que representa el flujo
+            desde cada nodo a sus nodos conectados.
         """
+
         edges = self._create_edges()
         graph = self._create_graph(edges)
         result = nx.max_flow_min_cost(

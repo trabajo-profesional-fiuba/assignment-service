@@ -1,14 +1,11 @@
 from fastapi import APIRouter, status, Depends, UploadFile, Query
-from typing_extensions import Annotated
 from sqlalchemy.orm import Session
-
+from typing_extensions import Annotated
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
-
 from src.api.exceptions import EntityNotFound, InvalidCsv, InvalidFileType, ServerError
-
 from src.api.topics.repository import TopicRepository
 from src.api.topics.schemas import (
     CompleteCategoryResponse,
@@ -18,11 +15,8 @@ from src.api.topics.schemas import (
     TopicResponse,
 )
 from src.api.topics.service import TopicService
-
 from src.api.tutors.repository import TutorRepository
-
 from src.api.users.exceptions import InvalidCredentials
-
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 
@@ -33,7 +27,7 @@ router = APIRouter(prefix="/topics", tags=["Topics"])
 @router.post(
     "/upload",
     response_model=TopicList,
-    description="Creates a list of topics based on a csv file.",
+    summary="Creates a list of topics based on a csv file.",
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully added topics."},
         status.HTTP_400_BAD_REQUEST: {
@@ -55,6 +49,7 @@ async def upload_csv_file(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint obtener subir los temas a partir de un archivo csv"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -83,7 +78,7 @@ async def upload_csv_file(
 @router.get(
     "/",
     response_model=TopicList,
-    description="Get a list of topics.",
+    summary="Get a list of topics.",
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_200_OK: {"description": "Successfully."},
@@ -97,6 +92,7 @@ async def get_topics(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint obtener todos los temas"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
@@ -114,7 +110,7 @@ async def get_topics(
 @router.post(
     "/category",
     response_model=CompleteCategoryResponse,
-    description="Add a new category",
+    summary="Add a new category",
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully."},
@@ -130,6 +126,7 @@ async def add_category(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para agregar una categoria manualmente"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -147,7 +144,7 @@ async def add_category(
 @router.post(
     "/",
     response_model=TopicResponse,
-    description="Add a new topic",
+    summary="Add a new topic",
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully."},
@@ -163,6 +160,7 @@ async def add_topic(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para agregar un tema manualmente"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)

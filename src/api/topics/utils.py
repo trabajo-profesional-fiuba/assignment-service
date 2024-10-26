@@ -16,10 +16,12 @@ class TopicCsvFile:
         return df
 
     def _validate_csv_headers(self, df):
+        """Valida las columnas del csv"""
         if list(df.columns.values) != ["TEMA", "CATEGORIA", "TUTOR", "CAPACIDAD"]:
             raise InvalidCsv("Columns don't match with expected ones.")
 
     def get_info_as_rows(self):
+        """Devuelve una lista con los datos del csv"""
         rows = []
         self._df.apply(
             lambda row: rows.append(
@@ -30,18 +32,18 @@ class TopicCsvFile:
         return rows
 
     def get_categories(self):
+        """Devuelve las categorias sin repetir"""
         categories = self._df["CATEGORIA"].unique()
         return list(categories)
 
     def get_topics(self):
-        """
-        Returns a list of tuples containing [(topic name, category name)]
-        """
+        """Devuelve una tupla de tema,categoria"""
         df_topics_and_categories_only = self._df[["TEMA", "CATEGORIA"]]
         topics_and_cateogories = df_topics_and_categories_only.drop_duplicates()
         return list(topics_and_cateogories.itertuples(index=False, name=None))
 
     def get_topics_by_tutor(self):
+        """Crea un diccionario con los temas y capacidades de los tutores"""
         tutors = {}
         for _, row in self._df.iterrows():
             tutor = row["TUTOR"]

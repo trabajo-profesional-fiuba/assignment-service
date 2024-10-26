@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# Import all the models
+# Import all the models and config
 from src.config.database.models import Base
 from src.config.config import api_config
 
@@ -22,6 +22,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
+# Base.metadata tiene los modelos que importamos de src.config.database.models para trackear los schemas
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
