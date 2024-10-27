@@ -31,6 +31,7 @@ from src.api.users.exceptions import InvalidCredentials
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
+from src.core.date_slots import DateSlot
 from src.core.result import DateSlotsAssignmentResult
 
 router = APIRouter(prefix="/assignments", tags=["Assignments"])
@@ -195,7 +196,7 @@ async def assign_dates(
         auth_service.assert_only_admin(token)
 
         dates_service = DateSlotsService(DateSlotRepository(session))
-        available_dates = DateSlotsMapper.map_model_to_date_slot(
+        available_dates = DateSlotsMapper.map_models_to_date_slots(
             dates_service.get_slots(period_id, only_available=True)
         )
 
@@ -258,7 +259,7 @@ async def update_assignments(
     assignments: list[AssignedDateSlotUpdate],
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)]
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -274,13 +275,69 @@ async def update_assignments(
             group_id = assignment.group_id
 
             dates_service.assign_tutors_dates(tutor_id, date, "tutor")
-            dates_service.assign_tutors_dates(
-                evaluator_id, date, "evaluator"
-            )
+            dates_service.assign_tutors_dates(evaluator_id, date, "evaluator")
             group_service.assign_date(group_id, date)
             dates_service.assign_date(date)
 
         return Response(status_code=status.HTTP_202_ACCEPTED)
+    except Exception as e:
+        logger.error(str(e))
+        raise ServerError("Unexpected error happend")
+
+
+@router.get(
+    "/date-assigment",
+    response_model=list[AssignedDateSlotResponse],
+    summary="Runs all the assignments dates",
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Successfully returns all the asignment date"
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad Request due unknown operation"
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "User not authorized to perform action"
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Some information provided is not in db"
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "description": "Input validation has failed, typically resulting in a \
+                client-facing error response."
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error - Something happened inside the \
+                backend"
+        },
+    },
+    status_code=status.HTTP_200_OK,
+)
+async def get_assigned_dates(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        dates_service = DateSlotsService(DateSlotRepository(session))
+        assigned_dates = dates_service.get_assigned_dates(period_id)
+        assignments = list()
+        for assigned_date in assigned_dates:
+            date = DateSlot(assigned_date[0])
+            assignments.append(
+                AssignedDateSlotResponse(
+                    group_id=assigned_date[3],
+                    tutor_id=assigned_date[2],
+                    evaluator_id=assigned_date[1],
+                    date=date.date,
+                    spanish_date=date.get_spanish_date(),
+                )
+            )
+        return assignments
     except Exception as e:
         logger.error(str(e))
         raise ServerError("Unexpected error happend")

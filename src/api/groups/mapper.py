@@ -43,7 +43,7 @@ class GroupMapper:
             students=students,
             reviewer_id=db_group.reviewer_id,
             topic_assigned=topic,
-            available_dates=self._dates_mapper.map_model_to_date_slot(
+            available_dates=self._dates_mapper.map_models_to_date_slots(
                 db_group.group_dates_slots
             ),
         )
