@@ -55,7 +55,7 @@ class TutorMapper:
         for user in db_tutors:
             period = user.tutor_periods[0]
             topics = self._topic_mapper.map_models_to_topics(period.topics)
-            dates = DateSlotsMapper.map_model_to_date_slot(user.tutor_dates_slots)
+            dates = DateSlotsMapper.map_models_to_date_slots(user.tutor_dates_slots)
             tutor = Tutor(
                 id=user.id,
                 period_id=period.id,

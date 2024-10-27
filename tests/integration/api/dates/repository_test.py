@@ -27,7 +27,7 @@ class TestDateRepository:
         helper.create_period(period)
 
         repository = DateSlotRepository(self.Session)
-        dates_saved = repository.get_slots_by_period(period)
+        dates_saved = repository.get_slots_by_period(period, False)
         assert len(dates_saved) == 0
 
     @pytest.mark.integration
@@ -43,6 +43,7 @@ class TestDateRepository:
         # Assert
         assert date_saved.period_id == date.period_id
         assert date_saved.slot == date.slot
+        assert date_saved.assigned == False
 
     @pytest.mark.integration
     def test_bulk_insert_slot_into_dates(self, tables):
@@ -77,7 +78,7 @@ class TestDateRepository:
         repository = DateSlotRepository(self.Session)
         period = "2C2024"
 
-        dates_saved = repository.get_slots_by_period(period)
+        dates_saved = repository.get_slots_by_period(period, False)
         assert len(dates_saved) == 5
 
     @pytest.mark.integration
@@ -95,7 +96,7 @@ class TestDateRepository:
             },
         ]
         repository.sync_date_slots(slots_to_update, period)
-        dates_saved = repository.get_slots_by_period(period)
+        dates_saved = repository.get_slots_by_period(period, False)
         assert len(dates_saved) == 2
 
     @pytest.mark.integration
@@ -164,3 +165,5 @@ class TestDateRepository:
         assert len(dates_saved) == 1
         assert dates_saved[0].tutor_id == tutor_id
         assert dates_saved[0].slot == dt.datetime(2024, 10, 15, 10, 0)
+        assert dates_saved[0].assigned == False
+        assert dates_saved[0].tutor_or_evaluator == None
