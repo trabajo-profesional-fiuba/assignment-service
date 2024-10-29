@@ -12,9 +12,6 @@ EVALUATOR = 2
 WEEK = 3
 DAY = 4
 HOUR = 5
-MAX_GROUPS_PER_WEEK = 5
-MAX_GROUPS_PER_DAY = 5
-MAX_DIF_EVALUATORS = 5
 
 
 class DeliveryLPSolver:
@@ -40,6 +37,10 @@ class DeliveryLPSolver:
         tutors: list[Tutor] = [],
         evaluators: list[Tutor] = [],
         available_dates: list[DateSlot] = [],
+        max_groups_per_week:int = 5,
+        max_groups_per_day:int = 5,
+        max_dif_evaluators:int = 5,
+
     ):
         """
         Inicializa la clase con los períodos de tutores y fechas.
@@ -60,6 +61,9 @@ class DeliveryLPSolver:
         self._evaluator_day_vars = {}
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
+        self.max_groups_per_week = max_groups_per_week
+        self.max_groups_per_day = max_groups_per_day
+        self.max_dif_evaluators = max_dif_evaluators
 
     def create_decision_variables(self):
         """
@@ -389,7 +393,7 @@ class DeliveryLPSolver:
                     for var in self._decision_variables
                     if var[EVALUATOR] == evaluator.id and var[WEEK] == week
                 )
-                <= MAX_GROUPS_PER_WEEK,
+                <= self.max_groups_per_week,
                 name=f"max-10-groups-week-{EVALUATOR_ID}-{evaluator.id}-{week}",
             )
 
@@ -446,14 +450,14 @@ class DeliveryLPSolver:
                     self._model.addCons(
                         self._evaluator_assignment_vars[evaluator_i.id]
                         - self._evaluator_assignment_vars[evaluator_j.id]
-                        <= MAX_DIF_EVALUATORS,  # Balance threshold
+                        <= self.max_dif_evaluators,  # Balance threshold
                         name=f"balance-{EVALUATOR_ID}-{evaluator_i.id}\
                             -{evaluator_j.id}",
                     )
                     self._model.addCons(
                         self._evaluator_assignment_vars[evaluator_j.id]
                         - self._evaluator_assignment_vars[evaluator_i.id]
-                        <= MAX_DIF_EVALUATORS,  # Balance threshold
+                        <= self.max_dif_evaluators,  # Balance threshold
                         name=f"balance-{EVALUATOR_ID}-{evaluator_j.id}-\
                             {evaluator_i.id}",
                     )
