@@ -123,7 +123,7 @@ class GroupService:
         """Sube el anteproyecto de un grupo a Azure Storage"""
         try:
             group = self._repository.get_group_by_id(group_id)
-            path = f"{group.period_id}/{group.id}/anteproyecto.pdf"
+            path = f"{group.period_id}/{group.id}/initial-project.pdf"
             blob = storage_client.upload(data=data, filename=path, overwrite=True)
             self._repository.update(
                 group_id,
@@ -188,7 +188,7 @@ class GroupService:
     def download_initial_project(self, period: str, group_id: int, storage_client):
         """Descarga el anteproyecto de uun grupo"""
         try:
-            path = f"{period}/{group_id}/anteproyecto.pdf"
+            path = f"{period}/{group_id}/initial-project.pdf"
             file_as_bytes = storage_client.download(path)
             return file_as_bytes
         except Exception as e:
@@ -197,7 +197,7 @@ class GroupService:
 
     def list_initial_project(self, period, storage_client):
         """Lista los anteproyectos"""
-        pattern = f"^{period}\\/[0-9]+\\/anteproyecto\\.pdf$"
+        pattern = f"^{period}\\/[0-9]+\\/initial-project\\.pdf$"
         blobs = storage_client.list_blobs(prefix=period, pattern=pattern)
         blob_details_list = [
             BlobDetails(
