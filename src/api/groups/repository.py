@@ -1,4 +1,4 @@
-from sqlalchemy import func, bindparam, update
+from sqlalchemy import func, bindparam, update, select
 from sqlalchemy.orm import Session, joinedload
 
 from src.api.groups.exceptions import GroupNotFound
@@ -20,6 +20,7 @@ class GroupRepository:
         preferred_topics=[],
         period_id=None,
     ):
+        """Inserta un grupo a partir de los diferentes parametros"""
         with self.Session() as session:
             group = Group(
                 tutor_period_id=tutor_period_id,
@@ -45,6 +46,7 @@ class GroupRepository:
         preferred_topics=[],
         period_id=None,
     ):
+        """Inserta un grupo a partir de los emails de los estudiantes"""
         with self.Session() as session:
             group = Group(
                 tutor_period_id=tutor_period_id,
@@ -63,24 +65,36 @@ class GroupRepository:
 
         return group
 
-    def get_groups(self, period) -> list[Group]:
-        """Returns all groups for a given period"""
+    def get_groups(
+        self,
+        period: str,
+        load_topic=False,
+        load_tutor_period=False,
+        load_period=False,
+        load_students=False,
+        load_dates: bool = False,
+    ) -> list[Group]:
+        """Devuelve los grupos a partir de un cuatrimestre y diferentes filtros"""
         with self.Session() as session:
-            groups = (
-                session.query(Group)
-                .options(
-                    joinedload(Group.topic),
-                    joinedload(Group.tutor_period),
-                    joinedload(Group.period),
-                    joinedload(Group.students),
-                )
-                .filter(Group.period_id == period)
-                .all()
-            )
+            query = session.query(Group)
+
+            if load_topic:
+                query = query.options(joinedload(Group.topic))
+            if load_tutor_period:
+                query = query.options(joinedload(Group.tutor_period))
+            if load_period:
+                query = query.options(joinedload(Group.period))
+            if load_students:
+                query = query.options(joinedload(Group.students))
+            if load_dates:
+                query = query.options(joinedload(Group.group_dates_slots))
+
+            groups = query.filter(Group.period_id == period).all()
             session.expunge_all()
         return groups
 
     def get_groups_without_tutor_and_period(self) -> list[Group]:
+        """Devuelve los grupos que no tiene ni tutor ni tema asignado"""
         with self.Session() as session:
             groups = (
                 session.query(Group)
@@ -93,6 +107,7 @@ class GroupRepository:
         return groups
 
     def get_groups_without_preferred_topics(self) -> list[Group]:
+        """Devuelve todos los grupos que no tengan temas de preferencias"""
         with self.Session() as session:
             groups = (
                 session.query(Group)
@@ -104,53 +119,63 @@ class GroupRepository:
         return groups
 
     def get_groups_learning_path(self, period) -> list[Group]:
-        """Returns all groups learning path information for a given period"""
+        """Devuelve todos los grupos de un cuatrimestre"""
         with self.Session() as session:
             groups = session.query(Group).filter(Group.period_id == period).all()
         return groups
 
-    def bulk_update(self, groups_to_update: list[dict], period: str):
-        stmt = (
-            update(Group)
-            .where(Group.id == bindparam("b_id"))
-            .values(
-                assigned_topic_id=bindparam("b_assigned_topic_id"),
-                tutor_period_id=bindparam("b_tutor_period_id"),
-            )
-        )
-        with self.Session() as session:
-            session.connection().execute(
-                stmt,
-                groups_to_update,
-            )
-            session.commit()
-
     def update(self, group_id, attributes: dict):
+        """Actualiza el group_id a partir de los atributos que sean provistos"""
         stmt = update(Group).where(Group.id == group_id).values(**attributes)
         with self.Session() as session:
             session.execute(stmt)
             session.commit()
 
-    def get_groups_by_period_id(self, tutor_period_id) -> list[Group]:
-        """Returns all groups for a given assigned_tutor_period"""
+    def get_groups_by_period_id(
+        self,
+        tutor_period_id: int,
+        load_topic=False,
+        load_period=False,
+        load_students=False,
+    ) -> list[Group]:
+        """Devuelve todos los grupo basado en un TutorPeriod id"""
         with self.Session() as session:
-            groups = (
-                session.query(Group)
-                .options(
-                    joinedload(Group.topic),
-                    joinedload(Group.tutor_period),
-                    joinedload(Group.period),
-                    joinedload(Group.students),
-                )
-                .filter(Group.tutor_period_id == tutor_period_id)
-                .all()
-            )
+            query = session.query(Group).options(joinedload(Group.tutor_period))
+
+            if load_topic:
+                query = query.options(joinedload(Group.topic))
+            if load_period:
+                query = query.options(joinedload(Group.period))
+            if load_students:
+                query = query.options(joinedload(Group.students))
+
+            groups = query.filter(Group.tutor_period_id == tutor_period_id).all()
+            session.expunge_all()
             session.expunge_all()
         return groups
 
-    def get_group_by_id(self, group_id) -> Group:
+    def get_group_by_id(
+        self,
+        group_id,
+        load_topic=False,
+        load_period=False,
+        load_students=False,
+        load_tutor=False,
+    ) -> Group:
+        """Devuelve el grupo basado en un id"""
+
         with self.Session() as session:
-            group = session.query(Group).filter(Group.id == group_id).one_or_none()
+            query = session.query(Group)
+            if load_topic:
+                query = query.options(joinedload(Group.topic))
+            if load_period:
+                query = query.options(joinedload(Group.period))
+            if load_students:
+                query = query.options(joinedload(Group.students))
+            if load_tutor:
+                query = query.options(joinedload(Group.tutor_period))
+
+            group = query.filter(Group.id == group_id).one_or_none()
             if group is None:
                 raise GroupNotFound(message=f"{group_id} not found in db")
 
@@ -170,3 +195,49 @@ class GroupRepository:
             group = session.query(Group).filter(Group.id == result.id).one_or_none()
             session.expunge(group)
         return group
+
+    def get_groups_by_reviewer_id(
+        self,
+        reviewer_id: int,
+        period_id: str,
+        load_topic=False,
+        load_period=False,
+        load_students=False,
+        load_tutor_period=False,
+    ) -> list[Group]:
+        """Devuelve todos los grupos para un reviewer_id y period_id dados"""
+
+        with self.Session() as session:
+            query = session.query(Group)
+
+            if load_topic:
+                query = query.options(joinedload(Group.topic))
+            if load_tutor_period:
+                query = query.options(joinedload(Group.tutor_period))
+            if load_period:
+                query = query.options(joinedload(Group.period))
+            if load_students:
+                query = query.options(joinedload(Group.students))
+
+            groups = query.filter(
+                Group.period_id == period_id, Group.reviewer_id == reviewer_id
+            ).all()
+            session.expunge_all()
+        return groups
+
+    def student_in_group(self, student_id: int, group_id: int) -> bool:
+        """Indica si el estudiante esta en el grupo"""
+        with self.Session() as session:
+            exists_query = (
+                select()
+                .where(
+                    association_table.c.group_id == group_id,
+                    association_table.c.student_id == student_id,
+                )
+                .exists()
+            )
+
+            query = select(exists_query)
+            result = session.execute(query).scalar()
+
+        return result

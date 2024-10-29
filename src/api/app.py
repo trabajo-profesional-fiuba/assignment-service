@@ -2,54 +2,66 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from src.api.assignments.router import router as assignment_router
 from src.api.auth.router import router as auth_router
+from src.api.dates.router import router as dates_router
 from src.api.forms.router import router as form_router
 from src.api.groups.router import router as group_router
+from src.api.periods.router import router as period_router
 from src.api.students.router import router as student_router
 from src.api.topics.router import router as topic_router
 from src.api.tutors.router import router as tutor_router
 from src.api.periods.router import router as period_router
 from src.api.assignments.router import router as assignment_router
+from src.api.dates.router import router as dates_router
+from src.api.admins.router import router as admins_router
 
 from src.config.config import api_config
-from src.config.database.database import create_tables
+from src.config.database.database import init_default_values
 from src.config.logging import logger
 
 
 api_description = """
 
-## Group 54 - Final Project
+## Group 54 - Trabajo Profesional
 
-The Assignment Management API is designed to optimize the allocation of resources and
-scheduling within educational projects. Key functionalities include:
+The Assignment Management API fue diseñado para optimizar las diferentes asignaciones que se producen 
+durante el cuatrimestre de la cursada.
 
-- **Group Assignments**: Allocate individuals to incomplete student groups.
-- **Topic and Tutor Assignments**: Assign relevant topics and tutors to student
-groups.
-- **Presentation Scheduling**: Set and manage presentation dates for each group.
+Ademas, a través de sus diferentes endpoints se puede crear cuatrimestres, crear grupos, realizar seguimiento,
+enviar notificaciones por mail y mucho mas
 
-This API is crucial for efficiently matching group members, topics, and presentation
-slots, ensuring effective project organization and execution.
+Posee tres asignaciones principales
 
-**Key Entities**:
-- Students
-- Groups
-- Tutors
-- Topics
-- Categories
-- Period
+1. Asignacion de estudiantes a grupos incompletos
+2. Asignacion de grupos a temas y tutores
+3. Asignacion de grupos a fechas de exposicion.
 
-Interact with these entities through a series of dedicated API endpoints tailored to
-facilitate smooth and effective assignments.
+Para realizar estas asignaciones, se utilizan algoritmos de programacion lineal y redes de flujo.
 
-## Contributors
+## Desarrolladores
 - Celeste Dituro       - cdituro@fi.uba.ar
 - Victoria Abril Lopez - vlopez@fi.uba.ar
 - Iván Lautaro Pfaab   - ipfaab@fi.uba.ar
 - Alejo Villores       - avillores@fi.uba.ar
 """
-logger.info("Initializing databases")
-create_tables()
+logger.info("Initializing all the database default values.")
+init_default_values()
+
+# List of routers to add
+routers = [
+    ("authentication", auth_router),
+    ("period", period_router),
+    ("student", student_router),
+    ("tutors", tutor_router),
+    ("topics", topic_router),
+    ("forms", form_router),
+    ("groups", group_router),
+    ("assignments", assignment_router),
+    ("dates", dates_router),
+    ("admins", admins_router),
+]
+
 
 logger.info("Instanciating FastAPI App")
 app = FastAPI(
@@ -60,23 +72,13 @@ app = FastAPI(
     docs_url="/docs",
     root_path="/api",
 )
-logger.info("Adding authentication router")
-app.include_router(auth_router)
-logger.info("Adding period router")
-app.include_router(period_router)
-logger.info("Adding student router")
-app.include_router(student_router)
-logger.info("Adding tutors router")
-app.include_router(tutor_router)
-logger.info("Adding topics router")
-app.include_router(topic_router)
-logger.info("Adding forms router")
-app.include_router(form_router)
-logger.info("Adding groups router")
-app.include_router(group_router)
-logger.info("Adding assigments router")
-app.include_router(assignment_router)
-logger.info("Adding middlewares")
+# Adding routers
+for name, router in routers:
+    logger.info(f"Adding {name} router")
+    app.include_router(router)
+
+
+logger.info("Adding api middlewares")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -90,3 +92,8 @@ app.add_middleware(
 async def root(request: Request):
     docs_url = str(request.base_url) + "docs"
     return RedirectResponse(docs_url)
+
+
+@app.get("/version", description="Returns the current version of the api")
+async def version():
+    return api_config.api_version

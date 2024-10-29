@@ -2,32 +2,23 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 
 """
-In our application, we distinguish between internal and external
-exceptions to streamline error handling and response management.
+En nuestra aplicación, distinguimos entre excepciones internas y externas para agilizar el manejo de errores 
+y la gestión de respuestas.
 
-Internal Exceptions: These exceptions are used within the system's
-runtime environment.
-They are primarily employed for decision-making and controlling
-the flow of the application.
-Internal exceptions typically represent issues or conditions that
-arise during the execution of the system's logic and are not directly
-exposed to the end users.
+Excepciones Internas: Estas excepciones se utilizan dentro del entorno de ejecución del sistema.
+Se emplean principalmente para la toma de decisiones y el control del flujo de la aplicación.
+Las excepciones internas suelen representar problemas o condiciones que surgen durante la ejecución de la lógica del sistema 
+y no se exponen directamente a los usuarios finales.
 
-External Exceptions: These exceptions are designed to be communicated
-as responses to client requests.
-They are often raised by services or controllers to signal specific
-error conditions that affect the client's interaction with the application.
-External exceptions are associated with HTTP status codes and include
-messages that provide context about the error.
-This distinction allows the application to respond to clients with
-meaningful and actionable error information.
+Excepciones Externas: Estas excepciones están diseñadas para ser comunicadas como respuestas a las solicitudes de los clientes.
+A menudo son generadas por servicios o controladores para señalar condiciones de error específicas que 
+afectan la interacción del cliente con la aplicación.
+Las excepciones externas están asociadas con códigos de estado HTTP e incluyen mensajes que proporcionan contexto sobre el error.
+Esta distinción permite que la aplicación responda a los clientes con información de error significativa y procesable.
 
-By separating internal and external exceptions,
-we ensure that internal system issues are handled discreetly while
-providing clear and consistent error responses to clients.
-This approach enhances both the robustness of the system and the clarity of
-communication with users.
-
+Al separar las excepciones internas y externas, nos aseguramos de que los problemas internos del sistema 
+se manejen discretamente mientras se proporcionan respuestas de error claras y consistentes a los clientes.
+Este enfoque mejora tanto la robustez del sistema como la claridad de la comunicación con los usuarios.
 """
 
 

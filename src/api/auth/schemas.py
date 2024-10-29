@@ -6,16 +6,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="connect")
 
 
 class RequestForm(OAuth2PasswordRequestForm):
-    pass
+    """Encapsula OAuth2PasswordRequestForm en una clase interna"""
+
+    ...
 
 
 class JwtEncoded(BaseModel):
     """
-    Schema to represent a Jwt encoded,
-    the fields that this jwt contains are the actual token as
-    the access token and the token type which is now Jwt
+    Esquema para representar un JWT codificado
+    Los campos que este JWT contiene son el token actual como el token de acceso y el tipo de token que ahora es JWT.
 
-    More information at https://jwt.io/
+    Más información en https://jwt.io/
     """
 
     access_token: str
@@ -24,13 +25,12 @@ class JwtEncoded(BaseModel):
 
 class JwtDecoded(BaseModel):
     """
-    Schema to represent a Jwt when it is decoded.
-    Som claims are considerer obligatory to have
-    such as:
+    Esquema para representar un JWT cuando está decodificado.
+    Algunas reclamaciones se consideran obligatorias, tales como:
 
-    sub - It is the subject of the Json Web Token
-    name - The name of the jwt's owner
-    exp - Expired date as a timestamp
+    - sub: Es el sujeto del Json Web Token.
+    - name: El nombre del propietario del JWT.
+    - exp: Fecha de expiración como una marca de tiempo.
     """
 
     sub: dict
@@ -38,5 +38,6 @@ class JwtDecoded(BaseModel):
     exp: float
 
 
-class Token(BaseModel):
-    token: str
+class PasswordResetRequest(BaseModel):
+    old_password: str
+    new_password: str

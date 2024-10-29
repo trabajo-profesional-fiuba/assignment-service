@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "An assignment service to solve assignment problems"
 authors = ["celedituro <cdituro@fi.uba.ar>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "~3.11.0"
@@ -13,15 +14,17 @@ pulp = "~2.8.0"
 pandas = "~2.2.2"
 python-dotenv = "~1.0.1"
 solver = "~0.0.4"
-fastapi = "~0.111.0"
+fastapi = "~0.115.0"
 sqlalchemy = "~2.0.31"
 psycopg2-binary = "~2.9.9"
 pyscipopt = "~5.1.1"
 uvicorn = "~0.30.1"
-pyjwt = "^2.8.0"
-alembic = "^1.13.2"
-azure-storage-blob = "^12.23.0"
-azure-identity = "^1.17.1"
+pyjwt = "2.8.0"
+alembic = "1.13.2"
+azure-storage-blob = "12.23.0"
+azure-identity = "1.17.1"
+sendgrid = "6.11.0"
+python-multipart = "^0.0.12"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -2,9 +2,12 @@ from pulp import LpProblem, LpVariable, lpSum, LpMaximize, LpBinary, PULP_CBC_CM
 
 from src.constants import GROUP_ID, TOPIC_ID, TUTOR_ID
 from src.core.group import UnassignedGroup
-from src.core.result import GroupTutorAssigmentResult
+from src.core.result import (
+    GroupTutorTopicAssignmentResult,
+    GroupTutorTopicAssignment,
+)
 from src.core.topic import Topic
-from src.core.tutor import SinglePeriodTutor
+from src.core.tutor import Tutor
 
 
 class GroupTutorLPSolver:
@@ -12,30 +15,32 @@ class GroupTutorLPSolver:
         self,
         groups: list[UnassignedGroup],
         topics: list[Topic],
-        tutors: list[SinglePeriodTutor],
+        tutors: list[Tutor],
         balance_limit,
     ):
         """
-        Constructor of the class.
+        Constructor de la clase.
 
         Args:
-            - groups: list of groups.
-            - tutors: list of tutors.
-            - topics: list of topics.
+            - groups: lista de grupos.
+            - tutors: lista de tutores.
+            - topics: lista de temas.
+            - balance_limit: diferencia máxima entre los grupos asociados a un tutor.
+
         """
         self._groups = groups
         self._topics = topics
         self._tutors = tutors
         self._balance_limit = balance_limit
 
-    def _create_decision_variables(self):
+    def _create_decision_variables(self) -> dict:
         """
-        Create decision variables.
+        Crea variables de decisión.
 
-        It iterates through each combination of groups, topics, and tutors,
-        creating a binary decision variable for each combination.
+        Itera a través de cada combinación de grupos, temas y tutores,
+        creando una variable de decisión binaria para cada combinación.
 
-        Returns a dictionary of decision variables.
+        Devuelve un diccionario de variables de decisión.
         """
         assignment_vars = {}
         for group in self._groups:
@@ -49,21 +54,22 @@ class GroupTutorLPSolver:
                     )
         return assignment_vars
 
-    def _create_optimization_problem(self):
+    def _create_optimization_problem(self) -> LpProblem:
         """
-        Create the optimization problem.
+        Crea el problema de optimización.
 
-        Returns an instance of the optimization problem.
+        Devuelve una instancia del problema de optimización.
         """
         return LpProblem("GroupAssignment", LpMaximize)
 
-    def _add_objective_function(self, prob, assignment_vars):
+    def _add_objective_function(self, prob: LpProblem, assignment_vars: dict):
         """
-        Add the objective function to the optimization problem.
+        Agrega la función objetivo al problema de optimización.
 
         Args:
-            - prob: Instance of the optimization problem.
-            - assignment_vars: Assignment variables.
+            - prob: Instancia del problema de optimización.
+            - assignment_vars: Variables de asignación.
+
         """
         topic_scores = {
             (group.id, topic.id): 0 for group in self._groups for topic in self._topics
@@ -112,13 +118,13 @@ class GroupTutorLPSolver:
             for topic in tutor.topics
         )
 
-    def _add_constraints(self, prob, assignment_vars):
+    def _add_constraints(self, prob: LpProblem, assignment_vars: dict):
         """
-        Add constraints for the linear programming algorithm.
+        Agrega restricciones para el algoritmo de programación lineal.
 
         Args:
-            - prob: Instance of the optimization problem.
-            - assignment_vars: Assignment variables.
+            - prob: Instancia del problema de optimización.
+            - assignment_vars: Variables de asignación.
         """
         self._add_group_assignment_constraints(prob, assignment_vars)
         self._add_topic_capacity_constraints(prob, assignment_vars)
@@ -127,12 +133,13 @@ class GroupTutorLPSolver:
 
     def _add_group_assignment_constraints(self, prob, assignment_vars):
         """
-        Add constraints for group assignments.
+        Agrega restricciones para las asignaciones de grupos.
 
         Args:
-            - prob: Instance of the optimization problem.
-            - assignment_vars: Assignment variables.
+            - prob: Instancia del problema de optimización.
+            - assignment_vars: Variables de asignación.
         """
+
         for group in self._groups:
             prob += (
                 lpSum(
@@ -145,11 +152,11 @@ class GroupTutorLPSolver:
 
     def _add_topic_capacity_constraints(self, prob, assignment_vars):
         """
-        Add constraints for topic capacities.
+        Agrega restricciones para las capacidades de los temas.
 
         Args:
-            - prob: Instance of the optimization problem.
-            - assignment_vars: Assignment variables.
+            - prob: Instancia del problema de optimización.
+            - assignment_vars: Variables de asignación.
         """
 
         for topic in self._topics:
@@ -165,14 +172,14 @@ class GroupTutorLPSolver:
 
     def _add_tutor_capacity_constraints(self, prob, assignment_vars):
         """
-        Add constraints for tutor capacities.
+        Agrega restricciones para las capacidades de los tutores.
 
         Args:
-            - prob: Instance of the optimization problem.
-            - assignment_vars: Assignment variables.
+            - prob: Instancia del problema de optimización.
+            - assignment_vars: Variables de asignación.
         """
+
         for tutor in self._tutors:
-            print(tutor.capacity)
             assigned_topics = [topic.id for topic in tutor.topics]
             prob += (
                 lpSum(
@@ -185,14 +192,15 @@ class GroupTutorLPSolver:
 
     def _add_balance_constraints(self, prob, assignment_vars):
         """
-        Add constraints to balance the number of groups assigned to each tutor.
+        Agrega restricciones para equilibrar el número de grupos asignados a cada tutor.
 
         Args:
-            - prob: Instance of the optimization problem.
-            - assignment_vars: Assignment variables.
-            - max_difference: The maximum allowed difference in the number of groups
-            assigned to any two tutors.
+            - prob: Instancia del problema de optimización.
+            - assignment_vars: Variables de asignación.
+            - max_difference: La diferencia máxima permitida en el número de grupos
+            asignados a cualquier par de tutores.
         """
+
         for tutor_1 in self._tutors:
             for tutor_2 in self._tutors:
                 if tutor_1.id != tutor_2.id:
@@ -222,49 +230,51 @@ class GroupTutorLPSolver:
                         )
                     ) <= self._balance_limit
 
-    def _solve_optimization_problem(self, prob):
+    def _solve_optimization_problem(
+        self, prob: LpProblem
+    ) -> list[GroupTutorTopicAssignment]:
         """
-        Solve the optimization problem.
+        Resuelve el problema de optimización.
 
         Args:
-            - prob: Instance of the optimization problem.
+            - prob: Instancia del problema de optimización.
 
-        Returns a list of selected variables and the list of created groups.
+        Devuelve una lista de variables seleccionadas y la lista de grupos creados.
         """
+
         prob.solve(PULP_CBC_CMD(msg=0))
 
-        result_variables = []
-        groups_result = []
+        result = GroupTutorTopicAssignmentResult(status=prob.status, assignments=[])
+        if prob.status > 0:
+            for var in prob.variables():
+                if var.varValue == 1:
+                    # Extraer el id del grupo, tutor y topic del nombre de la variable
+                    group_id, tutor_id, topic_id = self._parse_variable_name(var.name)
 
-        for var in prob.variables():
-            print(var.name, var.varValue)
-            if var.varValue == 1:
-                result_variables.append(var)
+                    # Asignar el tutor al grupo
+                    group = self._get_group_by_id(group_id)
+                    tutor = self._get_tutor_by_id(tutor_id)
 
-                # Extraer el id del grupo, tutor y topic del nombre de la variable
-                group_id, tutor_id, topic_id = self._parse_variable_name(var.name)
+                    topic = self._get_topic_by_id(topic_id)
+                    assignment = GroupTutorTopicAssignment(
+                        group=group, tutor=tutor, topic=topic
+                    )
 
-                # Asignar el tutor al grupo
-                tutor = self._get_tutor_by_id(tutor_id)
+                    result.add_assignment(assignment)
 
-                # Asignar el topic al grupo
-                topic = self._get_topic_by_id(topic_id)
-                group = GroupTutorAssigmentResult(id=group_id, tutor=tutor, topic=topic)
-
-                groups_result.append(group)
-
-        return groups_result
+        return result
 
     def _parse_variable_name(self, name):
         """
-        Parse the variable name to extract the group_id, tutor_id, and topic_id.
-        Assumes the format of the variable name is 'Assignment_group_1_tutor_1_topic_1'.
+        Analiza el nombre de la variable para extraer el group_id, tutor_id y topic_id.
+        Se asume que el formato del nombre de la variable es 'Assignment_group_1_tutor_1_topic_1'.
 
         Args:
-            - name: The name of the variable.
+            - name: El nombre de la variable.
 
-        Returns a tuple of (group_id, tutor_id, topic_id).
+        Devuelve una tupla de (group_id, tutor_id, topic_id).
         """
+
         parts = name.split("_")
         group_id = int(parts[2])
         tutor_id = int(parts[4])
@@ -273,39 +283,52 @@ class GroupTutorLPSolver:
 
     def _get_tutor_by_id(self, tutor_id):
         """
-        Get the tutor instance by its id.
+        Obtiene la instancia del tutor por su id.
 
         Args:
-            - tutor_id: The id of the tutor.
+            - tutor_id: El id del tutor.
 
-        Returns the tutor instance.
+        Devuelve la instancia del tutor.
         """
+
         return next(tutor for tutor in self._tutors if tutor.id == tutor_id)
 
     def _get_topic_by_id(self, topic_id):
         """
-        Get the list of topics by their ids.
+        Obtiene la lista de temas por sus ids.
 
         Args:
-            - topic_ids: A list of topic ids.
+            - topic_ids: Una lista de ids de temas.
 
-        Returns a list of Topic instances.
+        Devuelve una lista de instancias de Topic.
         """
-        for topic in self._topics:
-            if topic.id == topic_id:
-                return topic
 
-    def solve(self):
+        return next(topic for topic in self._topics if topic.id == topic_id)
+
+    def _get_group_by_id(self, group_id):
         """
-        Solve the optimization problem using the linear programming method.
+        Obtiene la instancia del grupo por su id.
 
         Args:
-            - groups: list of groups.
-            - tutors: list of tutors.
-            - topics: list of topics.
+            - group_id: El id del grupo.
 
-        Returns a dictionary that represents the result of the assignment.
+        Devuelve la instancia del grupo.
         """
+
+        return next(group for group in self._groups if group.id == group_id)
+
+    def solve(self) -> GroupTutorTopicAssignmentResult:
+        """
+        Resuelve el problema de optimización utilizando el método de programación lineal.
+
+        Args:
+            - groups: lista de grupos.
+            - tutors: lista de tutores.
+            - topics: lista de temas.
+
+        Devuelve un diccionario que representa el resultado de la asignación.
+        """
+
         assignment_vars = self._create_decision_variables()
         prob = self._create_optimization_problem()
         self._add_objective_function(prob, assignment_vars)

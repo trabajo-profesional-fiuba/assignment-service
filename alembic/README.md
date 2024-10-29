@@ -1,53 +1,61 @@
 # Assigment Service API Migrations
 
-Read the [documentation](https://alembic.sqlalchemy.org/en/latest/index.html)!!!
+Para entender como funcionan, las configuraciones y los archivos es **muy** recomendable leer antes la [documentación](https://alembic.sqlalchemy.org/en/latest/index.html).
+Son 15-20min que te van a ahorrar muchos dolores de cabeza
 
-Migrations are process where the schemas of the current database tables are modified. This migrations are run based on a `revision` version which alembic takes to validate the current state of the schema and the changes that needs to do.
+Las migraciones son un proceso en el que se modifican los esquemas (En nuestro caso las clases que estan en los archivos `models.py`) de las tablas actuales de la base de datos.
+Estas migraciones se ejecutan basándose en una versión de `revisión` que Alembic utiliza para validar el estado actual del esquema y los cambios que se deben realizar.
 
 ## Alembic
-Alembic is a database migration tool that works with SQLAlchemy, a popular Python library for interacting with relational databases. Alembic allows you to manage changes to your database schema in a version-controlled way, keeping it in sync with your application code. It is particularly useful for developing applications that use SQLAlchemy models to define the database structure.
+Alembic es una herramienta de migración de bases de datos que trabaja con [SQLAlchemy](https://www.sqlalchemy.org/). Alembic te permite gestionar cambios en el esquema de tu base de datos por versiones.
 
-Alembic can be though as git, with this tool you can think revisions as git commits. Then, alembic can upgrade, downgrade and create new revisions to keep a version control of the database schema.
+Alembic se puede considerar como **git**; con esta herramienta, podes pensar en las revisiones como commits de git. Así, Alembic puede actualizar, retroceder y crear nuevas revisiones para mantener un control de versiones del esquema de la base de datos.
 
-### Commands
+### Comandos
 
 ```
 alembic revision -m "Add new table"
 ```
-This command generates a new database migration. You can also use ```alembic revision --autogenerate -m "Add new table"``` after modifying models file to autogenerate a default revision by alembic, which can be customized.
+Este comando genera una nueva migración de base de datos. También podes usar ```alembic revision --autogenerate -m "Agregar nueva tabla"``` después de modificar el archivo de modelos para que Alembic genere automáticamente una revisión predeterminada, es importante revisarla antes de ejecutarla. 
+
+Aveces alembic proporciona cambios de mas porque comenzamos a usar migraciones luego de cierto tiempo y no desde un primer momento.
 
 ```
 alembic upgrate head
 ```
-This command executes the latest database revision.
+Este comando ejecuta la última revisión de la base de datos.
 
 ```
 alembic downgrade -1.
 ```
-This command rolls back the last applied migration.
+Este comando revierte la última migración aplicada.
 
 ```
 alembic current
 ```
-This command shows the current revision(s) of the database.
+Este comando muestra la(s) revisión(es) actual(es) de la base de datos.
 
 ```
 alembic history
 ```
-This command shows the revision history.
+Este comando muestra el historial de revisiones.
+
 
 ```
 alembic edit
 ```
-This command opens the current revision script in an editor.
+Este comando abre el vscode para editar la revision
 
 ```
-alembic merge
+alembic merge r1 r2
 ```
-This command creates a new migration script by merging two or more revisions.
+Este comando mergea dos revisiones en una. En la [documentacion](https://alembic.sqlalchemy.org/en/latest/branches.html) detalla como y cuando trabajar con este caso 
 
-### Configuration
+### Configuracion
 
-The alembic.ini file contains various configuration options such as the database URL, migration script location, and other settings. These options can be customized according to your project requirements.
+El archivo alembic.ini tiene la configuracion de las migraciones. Lo mas importante es la URL a la base que apunta y el `Base` que toma para "trackear" los cambios de modelos
 
-Currently, [autogenerating](https://alembic.sqlalchemy.org/en/latest/autogenerate.html) is enabled so that devs can avoid doing the migrations manually. For more info read the documentation of [what alembic autogeneration can detect](https://alembic.sqlalchemy.org/en/latest/autogenerate.html#what-does-autogenerate-detect-and-what-does-it-not-detect)
+Actualmente, [la autogeneración](https://alembic.sqlalchemy.org/en/latest/autogenerate.html) está habilitada para que los desarrolladores puedan evitar hacer las migraciones manualmente.Igualmente, revisalas para comprobar que esten bien los cambio
+
+Para más información, consulta la documentación sobre [qué puede detectar la autogeneración de Alembic](https://alembic.sqlalchemy.org/en/latest/autogenerate.html#what-does-autogenerate-detect-and-what-does-it-not-detect).
+

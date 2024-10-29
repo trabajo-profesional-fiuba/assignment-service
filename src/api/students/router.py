@@ -1,25 +1,20 @@
-from fastapi.responses import JSONResponse
-from typing_extensions import Annotated
 from fastapi import APIRouter, UploadFile, Depends, status, Query
 from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
-
 from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
-
 from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
 from src.api.students.repository import StudentRepository
 from src.api.students.schemas import PersonalInformation, StudentRequest
 from src.api.students.service import StudentService
-
 from src.api.users.exceptions import InvalidCredentials
 from src.api.users.repository import UserRepository
 from src.api.users.schemas import UserList, UserResponse
-
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
@@ -30,7 +25,7 @@ router = APIRouter(prefix="/students", tags=["Students"])
 @router.post(
     "/upload",
     response_model=UserList,
-    description="Creates list of students based on a csv file",
+    summary="Creates list of students based on a csv file",
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {"description": "Students were created"},
@@ -46,6 +41,7 @@ async def upload_csv_file(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para crear una lista de estudiantes a partir de un archivo csv"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -65,7 +61,7 @@ async def upload_csv_file(
     except (Duplicated, InvalidFileType, EntityNotFound) as e:
         logger.error(f"Error while uploading csv, message: {str(e)}")
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -74,7 +70,7 @@ async def upload_csv_file(
 @router.get(
     "/",
     response_model=UserList,
-    description="Returns list of students based on user_ids",
+    summary="Returns list of students based on user_ids",
     responses={
         status.HTTP_404_NOT_FOUND: {
             "description": "Uid is not present inside the database"
@@ -90,6 +86,7 @@ async def get_students_by_ids(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     user_ids: list[int] = Query(default=[]),
 ):
+    """Endpoint para obtener todos los estudiantes o que matchen con una lista de ids"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
@@ -99,7 +96,7 @@ async def get_students_by_ids(
         logger.info("Retrieve all students by ids.")
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise e
@@ -108,7 +105,7 @@ async def get_students_by_ids(
 @router.get(
     "/info/me",
     response_model=PersonalInformation,
-    description="Returns students info based on token",
+    summary="Returns students info based on token",
     responses={
         status.HTTP_404_NOT_FOUND: {
             "description": "Id is not present inside the database"
@@ -122,6 +119,7 @@ async def get_student_info(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para obtener informacion del estudiante logeado"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
@@ -139,7 +137,7 @@ async def get_student_info(
         logger.info("Retrieve student info by id.")
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise e
@@ -148,7 +146,6 @@ async def get_student_info(
 @router.post(
     "",
     response_model=UserResponse,
-    description="Creates a new student",
     summary="Add a new student",
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Student schema is not correct"},
@@ -165,6 +162,7 @@ async def add_student(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para agregar un estudiante manualmente"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -177,7 +175,7 @@ async def add_student(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))

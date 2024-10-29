@@ -8,12 +8,6 @@ class Topic:
 
     @property
     def id(self) -> str:
-        """
-        Get the identifier of the topic.
-
-        Returns:
-            str: The identifier of the topic.
-        """
         return self._id
 
     @property

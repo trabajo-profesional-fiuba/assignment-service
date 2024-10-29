@@ -1,7 +1,9 @@
 import pyscipopt as scip
-from src.core.algorithms.adapters.result_context import ResultContext
 from src.constants import DATE_ID, EVALUATOR_ID, GROUP_ID, TUTOR_ID
+from src.core.date_slots import DateSlot
 from src.core.delivery_date import DeliveryDate
+from src.core.group import AssignedGroup
+from src.core.result import DateSlotAssignment, DateSlotsAssignmentResult
 from src.core.tutor import Tutor
 
 GROUP = 0
@@ -17,184 +19,187 @@ MAX_DIF_EVALUATORS = 5
 
 class DeliveryLPSolver:
     """
-    Class to solve the problem of assigning evaluators to groups
-    using linear programming.
+    Clase para resolver el problema de asignar evaluadores a grupos
+    utilizando programación lineal.
 
     Attributes:
     -----------
     _evaluators : list
-        List of available evaluators.
+        Lista de evaluadores disponibles.
     _decision_variables : dict
-        Decision variables for the assignment.
+        Variables de decisión para la asignación.
     _evaluator_day_vars : dict
-        Variables to minimize the attendance days of evaluators.
+        Variables para minimizar los días de asistencia de los evaluadores.
     _model : scip.Model
-        SCIP model to solve the problem.
+        Modelo SCIP para resolver el problema.
     """
 
     def __init__(
-        self, tutor_periods: list[Tutor] = [], adapter=None, available_dates=[]
+        self,
+        groups: list[AssignedGroup] = [],
+        tutors: list[Tutor] = [],
+        evaluators: list[Tutor] = [],
+        available_dates: list[DateSlot] = [],
     ):
         """
-        Initializes the class with tutor_periods and dates.
+        Inicializa la clase con los períodos de tutores y fechas.
 
         Parameters:
         -----------
         available_dates : list
-            List of available dates.
+            Lista de fechas disponibles.
         tutor_periods : list
-            List of tutors.
+            Lista de tutores.
         """
-        self._evaluators = self.create_evaluators(tutor_periods)
-        self._tutors = self.get_tutors(tutor_periods)
-        self._groups = self.get_all_groups(tutor_periods)
+
+        self._evaluators = evaluators
+        self._tutors = tutors
+        self._groups = groups
         self._available_dates = available_dates
-        self._adapter = adapter
         self._decision_variables = {}
         self._evaluator_day_vars = {}
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
 
-    def get_tutors(self, tutor_periods: list[Tutor] = []):
-        tutors = list(filter(lambda x: not x.is_evaluator(), tutor_periods))
-        return tutors
-
-    def get_all_groups(self, tutor_periods: list[Tutor] = []):
-        groups = []
-        for t in tutor_periods:
-            groups += t.groups
-        return groups
-
-    def create_evaluators(self, tutor_periods: list[Tutor] = []):
-        evaluators = list(filter(lambda x: x.is_evaluator(), tutor_periods))
-        return evaluators
-
     def create_decision_variables(self):
         """
-        Creates decision variables for the assignment of evaluators to groups.
+        Crea variables de decisión para la asignación de evaluadores a grupos.
 
-        This function iterates over each group and evaluator, determining the
-        possible dates where the group and its tutors can meet with the evaluator.
-        For each valid combination of group, tutor, evaluator, and date, it
-        creates a decision variable to represent whether the evaluator is assigned
-        to the group on that date.
+        Esta función itera sobre cada grupo y evaluador, determinando las
+        fechas posibles en las que el grupo y sus tutores pueden reunirse con el evaluador.
+        Para cada combinación válida de grupo, tutor, evaluador y fecha, se
+        crea una variable de decisión para representar si el evaluador está asignado
+        al grupo en esa fecha.
         """
+
         for tutor in self._tutors:
-            for group in tutor.groups:
-                group_tutor_possible_dates = self._find_common_dates(group, tutor)
-                for evaluator in self._evaluators:
-                    self._create_evaluator_decision_variables(
-                        group, tutor, evaluator, group_tutor_possible_dates
-                    )
+            for group in self._groups:
+                if group.tutor_id() == tutor.id:
+                    group_tutor_possible_dates = self._find_common_dates(group, tutor)
+                    for evaluator in self._evaluators:
+                        self._create_evaluator_decision_variables(
+                            group, tutor, evaluator, group_tutor_possible_dates
+                        )
 
-    def _find_common_dates(self, group, tutor):
+    def _find_common_dates(self, group: AssignedGroup, tutor: Tutor):
         """
-        Finds common dates available for all tutors in the group.
+        Encuentra fechas comunes disponibles para todos los tutores en el grupo.
 
         Parameters:
         -----------
         group : Group
-            The group needing an evaluator.
+            El grupo que necesita un evaluador.
         tutor : TutorPeriod
-            The tutor associated with the group.
+            El tutor asociado con el grupo.
 
         Returns:
         --------
         list
-            List of tuples representing common dates (week, day, hour).
+            Lista de tuplas que representan fechas comunes (semana, día, hora).
         """
+
         return [
-            (date.week, date.day, date.hour)
-            for date in group.available_dates
-            if any(
-                t_date.week == date.week
-                and t_date.day == date.day
-                and date.hour == t_date.hour
-                for t_date in tutor.available_dates
-            )
+            (g_date.get_week(), g_date.get_day_of_week(), g_date.get_hour())
+            for g_date in group.available_dates
+            if any(t_date.date == g_date.date for t_date in tutor.available_dates)
         ]
 
     def _create_evaluator_decision_variables(
-        self, group, tutor, evaluator, group_tutor_possible_dates
+        self,
+        group: AssignedGroup,
+        tutor: Tutor,
+        evaluator: Tutor,
+        group_tutor_possible_dates: list[tuple[int, int, int]],
     ):
         """
-        Creates decision variables for an evaluator's possible assignments.
+        Crea variables de decisión para las posibles asignaciones de un evaluador.
 
-        For each combination of group, evaluator, and possible date, it creates
-        decision variables indicating whether the evaluator is assigned to the
-        group on that date. It also creates day variables for both evaluators and
-        tutors to track the days they are assigned.
+        Para cada combinación de grupo, evaluador y fecha posible, crea
+        variables de decisión que indican si el evaluador está asignado al
+        grupo en esa fecha. También crea variables de día para los evaluadores y
+        tutores para rastrear los días en los que están asignados.
 
         Parameters:
         -----------
         group : Group
-            The group needing an evaluator.
+            El grupo que necesita un evaluador.
         tutor : TutorPeriod
-            The tutor associated with the group.
+            El tutor asociado con el grupo.
         evaluator : Evaluator
-            The evaluator being considered for assignment.
+            El evaluador considerado para la asignación.
         group_tutors_possible_dates : list
-            List of dates (week, day, hour) where the group and tutors can meet.
+            Lista de fechas (semana, día, hora) en las que el grupo y los tutores pueden reunirse.
         """
-        group_tutor_evaluator_possible_dates = [
-            (week, day, hour)
-            for (week, day, hour) in group_tutor_possible_dates
-            for e_date in evaluator.available_dates
-            if day == e_date.day and week == e_date.week and hour == e_date.hour
-        ]
 
-        if group_tutor_evaluator_possible_dates:
-            if evaluator.id != tutor.id:
+        if evaluator.id != tutor.id:
+            group_tutor_evaluator_possible_dates = [
+                (week, day, hour)
+                for (week, day, hour) in group_tutor_possible_dates
+                for e_date in evaluator.available_dates
+                if day == e_date.get_day_of_week()
+                and week == e_date.get_week()
+                and hour == e_date.get_hour()
+            ]
+            if group_tutor_evaluator_possible_dates:
                 for week, day, hour in group_tutor_evaluator_possible_dates:
                     self._create_decision_variable(
                         group, tutor.id, evaluator, week, day, hour
                     )
                     self._create_evaluator_day_variable(evaluator, week, day)
 
-    def _create_decision_variable(self, group, tutor_id, evaluator, week, day, hour):
+    def _create_decision_variable(
+        self,
+        group: AssignedGroup,
+        tutor_id: int,
+        evaluator: Tutor,
+        week: int,
+        day: int,
+        hour: int,
+    ):
         """
-        Creates a single decision variable for a specific assignment.
+        Crea una única variable de decisión para una asignación específica.
 
-        This function creates a binary decision variable indicating whether a
-        particular evaluator is assigned to a group on a specific date.
+        Esta función crea una variable de decisión binaria que indica si un
+        evaluador particular está asignado a un grupo en una fecha específica.
 
         Parameters:
         -----------
         group : Group
-            The group needing an evaluator.
+            El grupo que necesita un evaluador.
         tutor_id : int
-            ID of the tutor associated with the group.
+            ID del tutor asociado con el grupo.
         evaluator : TutorPeriod
-            The evaluator being considered for assignment.
+            El evaluador considerado para la asignación.
         week : int
-            The week number of the assignment.
+            El número de semana de la asignación.
         day : int
-            The day of the week of the assignment.
+            El día de la semana de la asignación.
         hour : int
-            The hour of the day of the assignment.
+            La hora del día de la asignación.
         """
-        var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor_id}-{EVALUATOR_ID}-\
-            {evaluator.id}-{DATE_ID}-{week}-{day}-{hour}"
+
+        var_name = f"{GROUP_ID}-{group.id}-{TUTOR_ID}-{tutor_id}-{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}-{hour}"
         self._decision_variables[
             (group.id, tutor_id, evaluator.id, week, day, hour)
         ] = self._model.addVar(var_name, vtype="B", obj=0, lb=0, ub=1)
 
     def _create_evaluator_day_variable(self, evaluator, week, day):
         """
-        Creates a day variable for an evaluator.
+        Crea una variable de día para un evaluador.
 
-        This function creates a binary variable indicating whether an evaluator
-        is assigned to any group on a specific day.
+        Esta función crea una variable binaria que indica si un evaluador
+        está asignado a algún grupo en un día específico.
 
         Parameters:
         -----------
         evaluator : Evaluator
-            The evaluator being considered.
+            El evaluador considerado.
         week : int
-            The week number of the assignment.
+            El número de semana de la asignación.
         day : int
-            The day of the week of the assignment.
+            El día de la semana de la asignación.
         """
+
         if (evaluator.id, week, day) not in self._evaluator_day_vars:
             day_var_name = f"{EVALUATOR_ID}-{evaluator.id}-{DATE_ID}-{week}-{day}"
             self._evaluator_day_vars[(evaluator.id, week, day)] = self._model.addVar(
@@ -203,26 +208,29 @@ class DeliveryLPSolver:
 
     def add_group_assignment_constraints(self):
         """
-        Adds group assignment constraints to the model.
+        Agrega restricciones de asignación de grupos al modelo.
         """
+
         for tutor in self._tutors:
-            for group in tutor.groups:
-                self._add_unique_date_constraint(group, tutor)
-                self._add_assignment_constraints(group)
+            for group in self._groups:
+                if group.tutor_id() == tutor.id:
+                    self._add_unique_date_constraint(group, tutor)
+                    self._add_assignment_constraints(group)
 
     def _add_unique_date_constraint(self, group, tutor):
         """
-        Adds a constraint to ensure each group is assigned to a unique date.
-        Group unique date variables: group-id-date-week-day-hour
+        Agrega una restricción para asegurar que cada grupo esté asignado a una fecha única.
+        Variables de fecha única del grupo: group-id-date-week-day-hour
 
         Parameters:
         -----------
         group : Group
-            A group that needs an evaluator.
+            Un grupo que necesita un evaluador.
         """
+
         group_possible_dates = [
             (week, day, hour)
-            for (g, t, e, week, day, hour) in self._decision_variables
+            for (g, _, _, week, day, hour) in self._decision_variables
             if g == group.id
         ]
         if group_possible_dates:
@@ -236,24 +244,26 @@ class DeliveryLPSolver:
 
     def _create_group_date_variables(self, group, group_possible_dates, tutor):
         """
-        Creates date variables for a group.
+        Crea variables de fecha para un grupo.
 
-        This function creates binary variables for each possible date
-        a group can be assigned to ensure they are mutually exclusive.
+        Esta función crea variables binarias para cada fecha posible
+        a la que un grupo puede ser asignado para asegurar que sean mutuamente exclusivas.
 
         Parameters:
         -----------
         group : Group
-            The group needing an evaluator.
+            El grupo que necesita un evaluador.
         group_possible_dates : list
-            List of possible dates (week, day, hour) for the group.
+            Lista de fechas posibles (semana, día, hora) para el grupo.
         tutor : TutorPeriod
-            The tutor associated with the group.
+            El tutor asociado con el grupo.
+
         Returns:
         --------
         dict
-            Dictionary of created date variables.
+            Diccionario de variables de fecha creadas.
         """
+
         group_date_vars = {}
         for date in group_possible_dates:
             group_date_var = self._model.addVar(
@@ -295,13 +305,14 @@ class DeliveryLPSolver:
 
     def _add_assignment_constraints(self, group):
         """
-        Adds constraints to ensure each group is assigned to only one evaluator.
+        Agrega restricciones para asegurar que cada grupo esté asignado a un solo evaluador.
 
         Parameters:
         -----------
         group : Group
-            A group that needs an evaluator.
+            Un grupo que necesita un evaluador.
         """
+
         variables = [
             self._decision_variables[var]
             for var in self._decision_variables
@@ -315,8 +326,9 @@ class DeliveryLPSolver:
 
     def add_unique_group_per_date_constraint(self):
         """
-        Adds the constraint that each date can have only one group assigned.
+        Agrega la restricción de que cada fecha puede tener solo un grupo asignado.
         """
+
         dates = set(
             (week, day, hour) for _, _, _, week, day, hour in self._decision_variables
         )
@@ -333,8 +345,9 @@ class DeliveryLPSolver:
 
     def add_evaluator_minimization_constraints(self):
         """
-        Adds constraints to minimize evaluator's attendance days.
+        Agrega restricciones para minimizar los días de asistencia de los evaluadores.
         """
+
         for evaluator_id, week, day in self._evaluator_day_vars:
             self._model.addCons(
                 self._evaluator_day_vars[(evaluator_id, week, day)]
@@ -350,23 +363,25 @@ class DeliveryLPSolver:
 
     def add_evaluator_group_assignment_constraints(self):
         """
-        Adds constraints to ensure evaluators are assigned all
-        groups present on a given day, up to a maximum of 5 groups per week.
+        Agrega restricciones para asegurar que los evaluadores estén asignados a todos
+        los grupos presentes en un día dado, hasta un máximo de 5 grupos por semana.
         """
+
         for evaluator in self._evaluators:
             self._add_weekly_group_limit_constraint(evaluator)
 
-    def _add_weekly_group_limit_constraint(self, evaluator):
+    def _add_weekly_group_limit_constraint(self, evaluator: Tutor):
         """
-        Adds a constraint to limit the number of groups assigned to
-        an evaluator per week.
+        Agrega una restricción para limitar el número de grupos asignados a
+        un evaluador por semana.
 
         Parameters:
         -----------
         evaluator : Evaluator
-            An evaluator available for assignment.
+            Un evaluador disponible para la asignación.
         """
-        weeks = set(date.week for date in self._available_dates)
+
+        weeks = set(date.get_week() for date in self._available_dates)
         for week in weeks:
             self._model.addCons(
                 scip.quicksum(
@@ -380,9 +395,10 @@ class DeliveryLPSolver:
 
     def define_objective(self):
         """
-        Defines the objective of minimizing the number of days
-        evaluators and tutors attend.
+        Define el objetivo de minimizar el número de días
+        en que los evaluadores y tutores asisten.
         """
+
         self._model.setObjective(
             scip.quicksum(
                 week * self._evaluator_day_vars[(evaluator_id, week, day)]
@@ -393,8 +409,9 @@ class DeliveryLPSolver:
 
     def create_auxiliary_variables(self):
         """
-        Creates auxiliary variables for the number of assignments per evaluator.
+        Crea variables auxiliares para el número de asignaciones por evaluador.
         """
+
         self._evaluator_assignment_vars = {}
         for evaluator in self._evaluators:
             var_name = f"{EVALUATOR_ID}-{evaluator.id}-assignments"
@@ -404,8 +421,9 @@ class DeliveryLPSolver:
 
     def add_assignment_count_constraints(self):
         """
-        Adds constraints to count the number of assignments per evaluator.
+        Agrega restricciones para contar el número de asignaciones por evaluador.
         """
+
         for evaluator in self._evaluators:
             self._model.addCons(
                 self._evaluator_assignment_vars[evaluator.id]
@@ -419,8 +437,9 @@ class DeliveryLPSolver:
 
     def add_balance_constraints(self):
         """
-        Adds constraints to balance the workload among evaluators.
+        Agrega restricciones para equilibrar la carga de trabajo entre los evaluadores.
         """
+
         for i, evaluator_i in enumerate(self._evaluators):
             for j, evaluator_j in enumerate(self._evaluators):
                 if i < j:
@@ -454,13 +473,14 @@ class DeliveryLPSolver:
 
     def solve(self):
         """
-        Solves the linear programming model.
+        Resuelve el modelo de programación lineal.
 
         Returns:
         --------
         list
-            List of activated decision variables.
+            Lista de variables de decisión activadas.
         """
+
         self.create_decision_variables()
         self.create_auxiliary_variables()
 
@@ -473,71 +493,42 @@ class DeliveryLPSolver:
         self.define_objective()
         self._model.optimize()
 
+        results = DateSlotsAssignmentResult(status=-1, assignments=[])
         if self._model.getStatus() == "optimal":
-            return self._get_results()
-        else:
-            return None
+            return self._get_results(results)
 
-    def _get_results(self):
+        return results
+
+    def _get_results(self, results: DateSlotsAssignmentResult):
         """
-        Retrieves and prints the results from the solver.
+        Recupera e imprime los resultados del solucionador.
 
         Returns:
         --------
         list
-            List of activated decision variables.
+            Lista de variables de decisión activadas.
         """
-        print("Status:", self._model.getStatus())
-        print("Optimal objective value:", self._model.getObjVal())
 
-        result = []
         rounded_decision_vars = {
             var: round(self._model.getVal(self._decision_variables[var]))
             for var in self._decision_variables
         }
-        rounded_evaluator_day_vars = {
-            var: round(self._model.getVal(self._evaluator_day_vars[var]))
-            for var in self._evaluator_day_vars
-        }
 
-        print("Activated decision variables:")
+        results.status = 1
         for var in rounded_decision_vars:
             if rounded_decision_vars[var] > 0:
-                print(
-                    f"Variable {var} \
-                    (Group, Tutor, Evaluator, Week, Day, Hour): {var}",
-                    "val:",
-                    self._model.getVal(self._decision_variables[var]),
+                group_id, tutor_id, evaluator_id, week, day, hour = var
+                date = next(
+                    dt
+                    for dt in self._available_dates
+                    if dt.is_same_date(week, day, hour)
                 )
-                # FIXME: no olvidarnos de los subtitutos, (pondria un bool para
-                # calcularlos o no)
-                # substitue = self._find_substitutes_on_date(
-                #     DeliveryDate(var[WEEK], var[DAY], var[HOUR]),
-                #     var[EVALUATOR],
-                #     var[TUTOR],
-                # )
-                result.append(
-                    (
-                        f"{GROUP_ID}-{var[GROUP]}",
-                        f"{EVALUATOR_ID}-{var[EVALUATOR]}",
-                        f"{DATE_ID}-{var[WEEK]}-{var[DAY]}-{var[HOUR]}",
-                    )
+                assignment = DateSlotAssignment(
+                    group_id=group_id,
+                    tutor_id=tutor_id,
+                    evaluator_id=evaluator_id,
+                    date=date,
                 )
+                results.add_assignment(assignment)
 
-                group_id, _, _, week, day, hour = var
-                group = next(g for g in self._groups if g.id == group_id)
-                group.assign_date(DeliveryDate(week, day, hour))
-
-        print("\nAdditional activated variables (Evaluator, Week, Day):")
-        for var in rounded_evaluator_day_vars:
-            if rounded_evaluator_day_vars[var] > 0:
-                print(f"Additional variable {var}")
-
-        result_context = ResultContext(
-            type="linear",
-            result=result,
-        )
-
-        assignment_result = self._adapter.adapt_results(result_context)
-
-        return assignment_result
+        return results

@@ -1,7 +1,6 @@
-from typing_extensions import Annotated
-
 from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
 from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.service import AuthenticationService
@@ -12,12 +11,15 @@ from src.api.exceptions import (
     InvalidFileType,
     ServerError,
 )
+from src.api.groups.dependencies import get_email_sender
+from src.api.groups.mapper import GroupMapper
 from src.api.groups.repository import GroupRepository
 from src.api.groups.schemas import GroupList
+from src.api.tutors.mapper import TutorMapper
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
-from src.api.users.repository import UserRepository
 from src.api.tutors.schemas import (
+    TutorMessage,
     TutorRequest,
     TutorResponse,
     TutorList,
@@ -26,11 +28,11 @@ from src.api.tutors.schemas import (
 from src.api.auth.hasher import get_hasher, ShaHasher
 from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
+from src.api.users.models import Role
+from src.api.users.repository import UserRepository
+from src.api.users.service import UserService
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
-from src.api.users.service import UserService
-from src.api.users.repository import UserRepository
-from src.api.users.models import Role
 
 router = APIRouter(prefix="/tutors")
 
@@ -38,8 +40,7 @@ router = APIRouter(prefix="/tutors")
 @router.post(
     "/upload",
     response_model=TutorList,
-    description="Creates list of tutors based on a csv file",
-    summary="Add csv file",
+    summary="Creates list of tutors based on a csv file",
     tags=["Tutors"],
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "The columns are not correct"},
@@ -60,6 +61,7 @@ async def upload_csv_file(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para cargar tutores a partir de un archivo csv"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -77,7 +79,7 @@ async def upload_csv_file(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidCsv, EntityNotFound, Duplicated, InvalidFileType) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -86,7 +88,6 @@ async def upload_csv_file(
 @router.post(
     "",
     response_model=TutorResponse,
-    description="Creates a new tutor",
     summary="Add a new tutor",
     tags=["Tutors"],
     responses={
@@ -104,6 +105,7 @@ async def add_tutor(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para agregar un tutor manualmente"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -115,7 +117,7 @@ async def add_tutor(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except Duplicated as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -123,7 +125,6 @@ async def add_tutor(
 
 @router.delete(
     "/{tutor_id}",
-    description="Deletes a tutor",
     summary="Deletes a tutor based on its id.",
     tags=["Tutors"],
     responses={
@@ -139,6 +140,7 @@ async def delete_tutor(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para borrar un tutor"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -149,7 +151,7 @@ async def delete_tutor(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_202_ACCEPTED)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -158,7 +160,6 @@ async def delete_tutor(
 @router.post(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
-    description="Add new period for a tutor",
     summary="Add new period",
     tags=["Tutors"],
     status_code=status.HTTP_201_CREATED,
@@ -176,6 +177,7 @@ async def add_period_to_tutor(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para asignar un nuevo cuatrimestre a un tutor"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -187,7 +189,7 @@ async def add_period_to_tutor(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (Duplicated, EntityNotFound) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -196,7 +198,6 @@ async def add_period_to_tutor(
 @router.get(
     "/{tutor_id}/periods",
     response_model=TutorResponse,
-    description="Returns all the periods for tutor_id",
     summary="Get all periods of tutor_id",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
@@ -212,6 +213,7 @@ async def get_tutor_periods(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para obtener todos los cuatrimestre en el que un tutor tutorea"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
@@ -229,7 +231,7 @@ async def get_tutor_periods(
         return ResponseBuilder.build_private_cache_response(response)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -238,7 +240,6 @@ async def get_tutor_periods(
 @router.get(
     "/periods/{period_id}",
     response_model=TutorWithTopicsList,
-    description="Returns the tutors with topics",
     summary="Get all the tutors with their topics based on a period",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
@@ -254,6 +255,7 @@ async def get_tutors_by_period_id(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para obtener los tutores de un cuatrimestre"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -266,7 +268,7 @@ async def get_tutors_by_period_id(
         return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -275,7 +277,6 @@ async def get_tutors_by_period_id(
 @router.get(
     "/my-groups",
     response_model=GroupList,
-    description="Returns the groups of a tutor",
     summary="Get all the groups of a tutor based on a period",
     tags=["Tutors"],
     status_code=status.HTTP_200_OK,
@@ -291,6 +292,7 @@ async def get_groups_by_tutor(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para obtener los grupos de un cuatrimestre del cual uno es tutor"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_tutor_rol(token)
@@ -306,7 +308,99 @@ async def get_groups_by_tutor(
         return ResponseBuilder.build_private_cache_response(groups)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.get(
+    "/reviewer/my-groups",
+    response_model=GroupList,
+    summary="Get all the groups of a tutor based on a period",
+    tags=["Tutors"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def get_groups_by_reviewer_id(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    """Endpoint para obtener los grupos de un cuatrimestre del cual uno es revisor"""
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+        tutor_id = auth_service.get_user_id(token)
+
+        service = TutorService(TutorRepository(session))
+        group_repository = GroupRepository(session)
+
+        groups = GroupList.model_validate(
+            service.get_groups_from_reviewer_id(tutor_id, period_id, group_repository)
+        )
+
+        return ResponseBuilder.build_private_cache_response(groups)
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.post(
+    "/notify-group",
+    summary="Sends to students and tutor the email notification",
+    tags=["Tutors"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def notify_students(
+    body: TutorMessage,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    email_sender: Annotated[object, Depends(get_email_sender)],
+    group_id: int = Query(...),
+):
+    """Endpoint para enviar un mail al grupo de estudiantes"""
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+        tutor_id = auth_service.get_user_id(token)
+
+        service = TutorService(TutorRepository(session))
+        group_repository = GroupRepository(session)
+
+        group_mapper = GroupMapper()
+        group = group_mapper.map_model_to_assigned_group(
+            group_repository.get_group_by_id(
+                group_id,
+                load_topic=True,
+                load_period=False,
+                load_students=True,
+                load_tutor=True,
+            )
+        )
+
+        response = service.notify_students(tutor_id, group, email_sender, body.body)
+        if response == 202:
+            return "Emails sent succesfully"
+        else:
+            raise Exception("Something happend while sending emails")
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))

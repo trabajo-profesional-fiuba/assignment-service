@@ -1,7 +1,6 @@
-from typing_extensions import Annotated
-
 from fastapi import APIRouter, Depends, status, Query, Path
 from sqlalchemy.orm import Session
+from typing_extensions import Annotated
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.service import AuthenticationService
@@ -19,20 +18,18 @@ from src.api.periods.schemas import (
 )
 from src.api.auth.schemas import oauth2_scheme
 from src.api.periods.exceptions import InvalidPeriod
-from src.api.utils.response_builder import ResponseBuilder
-from src.config.database.database import get_db
 from src.api.periods.repository import PeriodRepository
 from src.api.periods.service import PeriodService
+from src.api.utils.response_builder import ResponseBuilder
+from src.config.database.database import get_db
 
-router = APIRouter(prefix="/periods")
+router = APIRouter(prefix="/periods", tags=["Periods"])
 
 
 @router.post(
     "/",
     response_model=PeriodResponse,
-    description="Creates a new period",
     summary="Add a new period",
-    tags=["Periods"],
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Period schema is not correct"},
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
@@ -47,16 +44,18 @@ async def add_period(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para agregar un nuevo cuatrimestre"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
+
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.add_period(period))
 
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except (InvalidPeriod, Duplicated) as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -65,9 +64,7 @@ async def add_period(
 @router.get(
     "/",
     response_model=PeriodList,
-    description="Returns all the periods",
     summary="Get all periods",
-    tags=["Periods"],
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
@@ -80,15 +77,16 @@ async def get_periods(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     order: str = Query(pattern="^(ASC|DESC)$", default="DESC"),
 ):
+    """Endpoint para obtener todos los cuatrimestres"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
-        service = PeriodService(PeriodRepository(session))
 
+        service = PeriodService(PeriodRepository(session))
         res = PeriodList.model_validate(service.get_all_periods(order))
 
         return ResponseBuilder.build_private_cache_response(res)
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -97,9 +95,7 @@ async def get_periods(
 @router.get(
     "/{period_id}",
     response_model=PeriodResponse,
-    description="Returns a given period information",
     summary="Get a given period information",
-    tags=["Periods"],
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
@@ -113,18 +109,18 @@ async def get_period_by_id(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
+    """Endpoint para obtener un cuatrimestre particular"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
+        auth_service.assert_multiple_role(token)
 
         service = PeriodService(PeriodRepository(session))
-
         res = PeriodResponse.model_validate(service.get_period_by_id(period_id))
 
         return ResponseBuilder.build_private_cache_response(res)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
@@ -134,8 +130,6 @@ async def get_period_by_id(
     "/",
     response_model=PeriodResponse,
     summary="Update a period",
-    description="""This endpoint updates a period """,
-    tags=["Periods"],
     responses={
         status.HTTP_201_CREATED: {"description": "Successfully updated period"},
         status.HTTP_400_BAD_REQUEST: {
@@ -161,6 +155,7 @@ async def update_period(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Endpoint para actualizar un cuatrimestre puntual"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -171,7 +166,7 @@ async def update_period(
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except EntityNotFound as e:
         raise e
-    except InvalidJwt as e:
+    except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(message=str(e))

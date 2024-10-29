@@ -2,6 +2,7 @@ from datetime import datetime
 from fastapi import APIRouter, status, Depends
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
+
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
@@ -32,8 +33,7 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
 
 @router.post(
     "/answers",
-    description="This endpoint creates topic preferences answers for sender\
-        and students from its group if it belongs to one.",
+    description="This endpoint creates answers for sender and group members",
     response_model=FormPreferencesList,
     responses={
         status.HTTP_201_CREATED: {
@@ -56,6 +56,7 @@ async def add_answers(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Agrega una nueva respuesta del formulario de armado de grupos y seleccion de temas"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
@@ -87,8 +88,7 @@ async def add_answers(
 
 @router.get(
     "/answers",
-    description="This endpoint return all topic preferences answers grouped by answer \
-        id.",
+    summary="This endpoint return all answers grouped by answer id.",
     response_model=GroupAnswerList,
     responses={
         status.HTTP_200_OK: {
@@ -103,6 +103,7 @@ async def get_answers(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Obtiene todas las respuestas del formulario de armado de grupos y seleccion de temas"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
@@ -129,7 +130,7 @@ async def get_answers(
 
 @router.get(
     "/answers/{user_id}",
-    description="This endpoint return all topic preferences answers of a user by id",
+    summary="This endpoint return all topic preferences answers of a user by id",
     response_model=UserAnswerList,
     responses={
         status.HTTP_200_OK: {
@@ -147,6 +148,7 @@ async def get_answers_by_user_id(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     user_id: int,
 ):
+    """Obtiene todas las respuestas de un alumno"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
@@ -163,7 +165,7 @@ async def get_answers_by_user_id(
 
 @router.delete(
     "/answers/{answer_id}",
-    description="This endpoint deletes answers by answer id.",
+    summary="This endpoint deletes answers by answer id.",
     responses={
         status.HTTP_200_OK: {
             "description": "Successfully deleted answers by answer id."
@@ -178,6 +180,7 @@ async def delete_answer(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
 ):
+    """Borra una respuesta por id"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)

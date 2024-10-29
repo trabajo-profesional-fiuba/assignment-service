@@ -1,11 +1,12 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import exc, exists
 
-from src.api.tutors.models import TutorPeriod
+from src.api.dates.models import TutorDateSlot
 from src.api.periods.exceptions import PeriodDuplicated
-from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
 from src.api.topics.exceptions import TopicNotFound
 from src.api.topics.models import Topic, TopicTutorPeriod
+from src.api.tutors.exceptions import TutorNotFound, TutorPeriodNotFound
+from src.api.tutors.models import TutorPeriod
 from src.api.users.models import User, Role
 
 
@@ -15,6 +16,7 @@ class TutorRepository:
         self.Session = sess
 
     def is_tutor(self, tutor_id) -> bool:
+        """indica si un id es tutor (un admin tambien puede ser tutor)"""
         with self.Session() as session:
             exists = (
                 session.query(User)
@@ -25,6 +27,7 @@ class TutorRepository:
             return True if exists else False
 
     def add_tutor_periods(self, tutor_periods: list[TutorPeriod]):
+        """Agrega una lista de cuatrimetres particulares de tutores"""
         try:
             with self.Session() as session:
                 for period in tutor_periods:
@@ -40,6 +43,7 @@ class TutorRepository:
             raise PeriodDuplicated(message=f"{e}")
 
     def add_tutor_period_with_capacity(self, tutor_period: TutorPeriod):
+        """Agrega cuatrimetre particulara un tutor"""
         try:
             with self.Session() as session:
                 session.add(tutor_period)
@@ -51,6 +55,7 @@ class TutorRepository:
             raise PeriodDuplicated(message=f"{e}")
 
     def get_tutor_by_tutor_id(self, tutor_id) -> User:
+        """Devuelve un tutor a partir de su id"""
         with self.Session() as session:
             tutor = (
                 session.query(User)
@@ -65,6 +70,7 @@ class TutorRepository:
         return tutor
 
     def get_tutor_period_by_tutor_email(self, period, tutor_email) -> TutorPeriod:
+        """Devuelve el cuatrimestre particulares de un tutor a partir de su mail"""
         with self.Session() as session:
             tutor_period = (
                 session.query(TutorPeriod)
@@ -83,6 +89,7 @@ class TutorRepository:
         return tutor_period
 
     def get_tutor_period_by_tutor_id(self, period, tutor_id) -> TutorPeriod:
+        """Devuelve el cuatrimestre particulares de un tutor"""
         with self.Session() as session:
             tutor_period = (
                 session.query(TutorPeriod)
@@ -101,6 +108,7 @@ class TutorRepository:
         return tutor_period
 
     def get_tutor_periods_by_periods_id(self, period_id) -> list[TutorPeriod]:
+        """Devuelve los cuatrimestres particulares de los tutores a partir de un cuatrimestre"""
         with self.Session() as session:
             tutor_periods = (
                 session.query(TutorPeriod).filter(TutorPeriod.period_id == period_id)
@@ -117,6 +125,7 @@ class TutorRepository:
         topics: list[Topic],
         capacities: list[int],
     ):
+        """Agrega una relacion tutor-tema-cuatrimestre"""
         with self.Session() as session:
             topic_tutor_periods = []
             tutor = session.query(User).filter(User.email == tutor_email).first()
@@ -156,6 +165,7 @@ class TutorRepository:
             raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
 
     def get_tutors(self):
+        """Devuelve todos los tutores"""
         with self.Session() as session:
             tutors = (
                 session.query(User)
@@ -168,6 +178,7 @@ class TutorRepository:
     def get_topic_tutor_period(
         self, topic_id: int, tutor_period_id: int
     ) -> TutorPeriod:
+        """Devuelve la asociacion de tema-tutor-cuatrimestre"""
         with self.Session() as session:
 
             topic_exists = session.query(exists().where(Topic.id == topic_id)).scalar()
@@ -193,6 +204,7 @@ class TutorRepository:
         return topic_tutor_period
 
     def delete_tutor_by_id(self, tutor_id):
+        """Borra tutores por id"""
         with self.Session() as session:
             tutor = (
                 session.query(User)
@@ -208,6 +220,7 @@ class TutorRepository:
         return tutor
 
     def delete_tutors_periods_by_period_id(self, period_id):
+        """Elimina todos los cuatrimestres de los tutores a partir de un cuatrimestre"""
         with self.Session() as session:
             session.query(TutorPeriod).filter(
                 TutorPeriod.period_id == period_id
@@ -215,6 +228,7 @@ class TutorRepository:
             session.commit()
 
     def get_tutors_by_period_id(self, period_id):
+        """Devuelve todos los tutores de un cuatrimestre puntual"""
         with self.Session() as session:
             tutors = (
                 session.query(User)
@@ -235,6 +249,7 @@ class TutorRepository:
         return tutors
 
     def remove_tutor_periods_by_tutor_ids(self, period_id, tutors_ids):
+        """Elimina cuatrimestres asociados a ids de tutores"""
         with self.Session() as session:
             session.query(TutorPeriod).filter(
                 TutorPeriod.period_id == period_id
@@ -242,6 +257,7 @@ class TutorRepository:
             session.commit()
 
     def add_tutor_period(self, tutor_id, period_id) -> TutorPeriod:
+        """Agrega un cuatrimestre a un tutor"""
         try:
             with self.Session() as session:
                 period_obj = TutorPeriod(period_id=period_id, tutor_id=tutor_id)
@@ -253,3 +269,40 @@ class TutorRepository:
             return tutor
         except exc.IntegrityError:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
+
+    def get_tutors_by_period_id_with_dates(self, period_id: str):
+        """Devuelve todos los tutores cargando las fechas que el tutor selecciono"""
+        with self.Session() as session:
+            tutors = (
+                session.query(User)
+                .join(TutorPeriod)
+                .filter(TutorPeriod.period_id == period_id)
+                .join(TutorDateSlot)
+                .filter(TutorDateSlot.period_id == period_id)
+                .options(joinedload(User.tutor_periods))
+                .options(joinedload(User.tutor_dates_slots))
+                .all()
+            )
+            session.expunge_all()
+        return tutors
+
+    def get_evaluators_by_period_id_with_dates(self, period_id: str):
+        """
+        Devuelve todos los tutores que son tambien evaluadores en un cuatrimestre particular
+        cargando las fechas que el tutor selecciono
+        """
+        with self.Session() as session:
+            evaluators = (
+                session.query(User)
+                .join(TutorPeriod)
+                .filter(
+                    TutorPeriod.period_id == period_id, TutorPeriod.is_evaluator == True
+                )
+                .join(TutorDateSlot)
+                .filter(TutorDateSlot.period_id == period_id)
+                .options(joinedload(User.tutor_periods))
+                .options(joinedload(User.tutor_dates_slots))
+                .all()
+            )
+            session.expunge_all()
+        return evaluators

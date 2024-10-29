@@ -17,13 +17,6 @@ association_table = Table(
 
 
 class Group(Base):
-    """
-    Schema of a group for a table in the database
-    it contains the necessary fields and relationships that
-    a group needs to have, for example, its topic, the id which the group
-    belongs, etc.
-    """
-
     __tablename__ = "groups"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
@@ -37,23 +30,37 @@ class Group(Base):
     )
     pre_report_date = Column(DateTime(timezone=False))
     pre_report_approved = Column(Boolean, default=False)
+    pre_report_title = Column(String(100), nullable=True)
     intermediate_assigment_date = Column(DateTime(timezone=False))
     intermediate_assigment_approved = Column(Boolean, default=False)
+    intermediate_assigment = Column(String(250), nullable=True)
     final_report_approved = Column(Boolean, default=False)
+    final_report_title = Column(String(100), nullable=True)
+    final_report_date = Column(DateTime(timezone=False))
     exhibition_date = Column(DateTime(timezone=False))
-    """ postgresql.ARRAY is a dialect specif datatype for postgres sql
-        if in the future the db changes, this should be refactored using a
-        different approach.
-        This field is supposed to contain 3 ids topics ids. No foreing key is
-        needed as these keys will no be used for join operations so is better
-        to skip the relationship config.
+    """
+    postgresql.ARRAY es un tipo de dato especifico del dialecto para PostgreSQL.
+    Si en el futuro la base de datos cambia, esto deberia ser refactorizado usando
+    un enfoque diferente.
+    Este campo esta destinado a contener 3 IDs de temas. No se necesita clave foranea
+    ya que estas claves no se usaran para operaciones de JOIN, por lo que es mejor
+    omitir la configuracion de la relacion.
     """
     preferred_topics = Column(postgresql.ARRAY(Integer, dimensions=1), default=[])
     period_id = Column(String, ForeignKey("periods.id"))
+    reviewer_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
 
+    # Relaciones de los grupos
     students: Mapped[List[User]] = relationship(
         secondary=association_table, lazy="subquery"
     )
     topic = relationship("Topic", back_populates="groups", lazy="noload")
     tutor_period = relationship("TutorPeriod", back_populates="groups", lazy="noload")
     period = relationship("Period", back_populates="groups", lazy="noload")
+    group_dates_slots = relationship(
+        "GroupDateSlot", back_populates="groups", lazy="noload"
+    )

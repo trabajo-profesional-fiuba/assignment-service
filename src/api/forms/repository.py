@@ -7,7 +7,6 @@ from src.api.students.exceptions import StudentNotFound
 from src.api.topics.exceptions import TopicNotFound
 from src.api.topics.models import Topic
 from src.api.users.models import User, Role
-
 from src.config.logging import logger
 from src.core.student_form_answer import StudentFormAnswer
 
@@ -18,7 +17,7 @@ class FormRepository:
         self.Session = sess
 
     def _verify_topics(self, session, topic_names: list[str]):
-
+        """Verifica que los nombres de los temas coincidan con nombres cargados"""
         topics = session.query(Topic).filter(Topic.name.in_(topic_names)).all()
         topic_id_map = {topic.name: topic.id for topic in topics}
 
@@ -31,6 +30,7 @@ class FormRepository:
         return ids
 
     def _verify_users_exists(self, session, user_ids: list[int]):
+        """Verifica que el alumno exista"""
         users = session.query(User).filter(User.id.in_(user_ids)).all()
 
         if len(users) != len(user_ids):
@@ -44,6 +44,7 @@ class FormRepository:
                 )
 
     def _verify_answer(self, session, topics_id: list[int], user_ids: list[int]):
+        """Verifica que no haya respuesta duplicada"""
         topic_1_id, topic_2_id, topic_3_id = topics_id
         answers = (
             session.query(FormPreferences)
@@ -62,6 +63,7 @@ class FormRepository:
     def add_answers(
         self, answers: list[StudentFormAnswer], topics: list[str], user_ids: list[int]
     ):
+        """Agrega una fila en la tabla de FormPreferences"""
         with self.Session() as session:
             topic_ids = self._verify_topics(session, topics)
             self._verify_users_exists(session, user_ids)
@@ -82,11 +84,13 @@ class FormRepository:
         return answers
 
     def delete_answers_by_answer_id(self, answer_id: datetime):
+        """Borra una respuesta de un grupo"""
         with self.Session() as session:
             with session.begin():
                 session.query(FormPreferences).filter_by(answer_id=answer_id).delete()
 
     def get_answers_by_answer_id(self, answer_id: datetime):
+        """Obtiene la respuesta por answer_id"""
         with self.Session() as session:
             answers = (
                 session.query(FormPreferences)
@@ -99,6 +103,7 @@ class FormRepository:
         return answers
 
     def get_answers_by_user_id(self, user_id):
+        """Obtiene todas las respuestas de un alumnos"""
         with self.Session() as session:
             answers = (
                 session.query(
@@ -118,6 +123,7 @@ class FormRepository:
         return answers
 
     def get_answers(self):
+        """Obtiene todas las respuestas"""
         with self.Session() as session:
             answers = (
                 session.query(

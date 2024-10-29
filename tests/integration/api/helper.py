@@ -1,4 +1,6 @@
 from src.api.auth.jwt import JwtResolver
+from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
+from src.api.dates.repository import DateSlotRepository
 from src.api.forms.repository import FormRepository
 from src.api.groups.repository import GroupRepository
 from src.api.topics.models import Category, Topic
@@ -34,6 +36,7 @@ class ApiHelper:
         self._form_repository = FormRepository(self.Session)
         self._student_repository = StudentRepository(self.Session)
         self._period_repository = PeriodRepository(self.Session)
+        self._dates_repository = DateSlotRepository(self.Session)
 
     def create_period(self, period: str):
         self._period_repository.add_period(Period(id=period))
@@ -67,6 +70,28 @@ class ApiHelper:
         periods = self._tutor_repository.add_tutor_periods([period])
         return periods[0]
 
+    def create_evaluator(
+        self,
+        name: str,
+        last_name: str,
+        id: str,
+        email: str,
+        period_id: str,
+    ):
+        evaluator = User(
+            id=int(id),
+            name=name,
+            last_name=last_name,
+            email=email,
+            password=self.hasher.hash(str(id)),
+            role=Role.TUTOR,
+        )
+
+        period = TutorPeriod(tutor_id=id, period_id=period_id, is_evaluator=True)
+        self._user_repository.add_tutors([evaluator])
+        _ = self._tutor_repository.add_tutor_periods([period])
+        return evaluator
+
     def get_tutor_by_tutor_id(self, tutor_id):
         return self._tutor_repository.get_tutor_by_tutor_id(tutor_id)
 
@@ -81,7 +106,7 @@ class ApiHelper:
         token = jwt.create_token(sub, "admin")
         return token
 
-    def create_student_token(self, id: int = 1):
+    def create_student_token(self, id: int = 2):
         sub = {
             "id": id,
             "name": "student",
@@ -169,3 +194,16 @@ class ApiHelper:
             period_id=period_id,
             topic_id=topic_id,
         )
+
+    def assign_reviewer(self, reviewer_id: int, group_id: int):
+        attributes = {"reviewer_id": reviewer_id}
+        self._groups_repository.update(group_id, attributes=attributes)
+
+    def create_dates(self, slots: list[dict]):
+        self._dates_repository.add_bulk(DateSlot, slots)
+
+    def create_group_dates(self, slots: list[dict]):
+        self._dates_repository.add_bulk(GroupDateSlot, slots)
+
+    def create_tutor_dates(self, slots: list[dict]):
+        self._dates_repository.add_bulk(TutorDateSlot, slots)

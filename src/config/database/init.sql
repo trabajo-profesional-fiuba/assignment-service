@@ -1,3 +1,13 @@
+/*=================================================================================
+Este script se utiliza para inializar algunos valores por default
+Como una categoria y crear un admin.
+
+Este script crea un "superadmin" por default, lo cual DEBE MODIFICARSE LA CONTRASEÑA
+una vez que la aplicacion se encuentra en produccion para evitar problemas de 
+seguridad en la aplicacion
+
+===================================================================================*/
+
 INSERT INTO categories (name) VALUES ('default') ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO public.users (
