@@ -38,7 +38,6 @@ class DeliveryLPSolver:
         evaluators: list[Tutor] = [],
         available_dates: list[DateSlot] = [],
         max_groups_per_week:int = 5,
-        max_groups_per_day:int = 5,
         max_dif_evaluators:int = 5,
 
     ):
@@ -62,7 +61,6 @@ class DeliveryLPSolver:
         self._model = scip.Model()
         self._model.setIntParam("display/verblevel", 0)
         self.max_groups_per_week = max_groups_per_week
-        self.max_groups_per_day = max_groups_per_day
         self.max_dif_evaluators = max_dif_evaluators
 
     def create_decision_variables(self):

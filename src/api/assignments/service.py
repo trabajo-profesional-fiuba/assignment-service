@@ -40,7 +40,6 @@ class AssignmentService:
         evaluators,
         groups,
         max_groups_per_week,
-        max_groups_per_day,
         max_dif_evaluators,
     ) -> DateSlotsAssignmentResult:
         """
@@ -53,7 +52,6 @@ class AssignmentService:
             tutors=tutors,
             evaluators=evaluators,
             max_groups_per_week=max_groups_per_week,
-            max_groups_per_day=max_groups_per_day,
             max_dif_evaluators=max_dif_evaluators,
         )
         results = assigment_model.solve()

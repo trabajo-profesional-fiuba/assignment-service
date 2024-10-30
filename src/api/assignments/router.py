@@ -191,7 +191,6 @@ async def assign_dates(
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
     max_groups_per_week: int = Query(default=5, gt=0),
-    max_groups_per_day: int = Query(default=5, gt=0),
     max_dif_evaluators: int = Query(default=5, gt=0),
 ):
     try:
@@ -227,7 +226,6 @@ async def assign_dates(
             evaluators,
             groups,
             max_groups_per_week,
-            max_groups_per_day,
             max_dif_evaluators,
         )
 
