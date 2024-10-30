@@ -1,6 +1,7 @@
 import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content, HtmlContent
 from src.config.logging import logger
+from src.config.config import api_config
 from src.core.group import AssignedGroup
 
 
@@ -84,6 +85,6 @@ class SendGridEmailClient:
 
         Gracias.
         """
-        cc = ["avillores@fi.uba.ar"]
+        cc = api_config.cc_emails
 
         self._send_mail(to, subject, email_body, cc)
