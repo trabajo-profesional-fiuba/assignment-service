@@ -430,7 +430,7 @@ def test_date_slots_assigment(fastapi, tables):
 
     admin_token = helper.create_admin_token()
     response = fastapi.post(
-        f"{PREFIX}/date-assigment?period_id=2C2024",
+        f"{PREFIX}/date-assigment?period_id=2C2024&max_groups_per_week=5",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
 

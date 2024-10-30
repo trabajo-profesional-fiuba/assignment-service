@@ -189,7 +189,9 @@ async def assign_dates(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+    period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+    max_groups_per_week: int = Query(default=5, gt=0),
+    max_dif_evaluators: int = Query(default=5, gt=0),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -219,7 +221,12 @@ async def assign_dates(
 
         service = AssignmentService()
         assignment_result = service.assignment_dates(
-            available_dates, tutors, evaluators, groups
+            available_dates,
+            tutors,
+            evaluators,
+            groups,
+            max_groups_per_week,
+            max_dif_evaluators,
         )
 
         return ResponseBuilder.build_clear_cache_response(
