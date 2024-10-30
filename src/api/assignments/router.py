@@ -6,7 +6,7 @@ from src.api.assignments.service import AssignmentService
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
-from src.api.dates.maper import DateSlotsMapper
+from src.api.dates.mapper import DateSlotsMapper
 from src.api.dates.repository import DateSlotRepository
 from src.api.dates.service import DateSlotsService
 from src.api.exceptions import ServerError

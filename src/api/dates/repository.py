@@ -51,7 +51,7 @@ class DateSlotRepository:
 
         return slots
 
-    def get_tutor_slots_by_id(self, tutor_id: int, period: str):
+    def get_tutor_slots_by_id(self, tutor_id: int, period: str) -> list[TutorDateSlot]:
         """Obtiene todos los slots de un tutor por cuatrimestre"""
         with self.Session() as session:
             slots = (
@@ -212,12 +212,12 @@ class DateSlotRepository:
             session.commit()
 
     def get_assigned_dates(self):
-        """ Las asignaciones dadas entre tutor,  """
+        """Las asignaciones dadas entre tutor,"""
         TutorDateSlotAlias = aliased(TutorDateSlot)
         EvaluatorDateSlotAlias = aliased(TutorDateSlot)
         query = (
             select(
-                DateSlot.slot.label('date'),
+                DateSlot.slot.label("date"),
                 EvaluatorDateSlotAlias.tutor_id.label("evaluator_id"),
                 TutorDateSlotAlias.tutor_id.label("tutor_id"),
                 GroupDateSlot.group_id,
@@ -226,8 +226,8 @@ class DateSlotRepository:
             .join(EvaluatorDateSlotAlias, DateSlot.slot == EvaluatorDateSlotAlias.slot)
             .join(GroupDateSlot, DateSlot.slot == GroupDateSlot.slot)
             .where(DateSlot.assigned == True)
-            .where(EvaluatorDateSlotAlias.tutor_or_evaluator == 'evaluator')
-            .where(TutorDateSlotAlias.tutor_or_evaluator == 'tutor')
+            .where(EvaluatorDateSlotAlias.tutor_or_evaluator == "evaluator")
+            .where(TutorDateSlotAlias.tutor_or_evaluator == "tutor")
         )
         with self.Session() as session:
             result = session.execute(query)

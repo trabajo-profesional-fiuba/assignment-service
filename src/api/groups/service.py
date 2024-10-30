@@ -249,8 +249,8 @@ class GroupService:
             logger.error(f"Could not found group because of: {str(e)}")
             raise EntityNotFound(message=str(e))
 
-    def assign_date(self,group_id:int, date: datetime):
-        """ Asigna una fecha a un grupo"""
+    def assign_date(self, group_id: int, date: datetime):
+        """Asigna una fecha a un grupo"""
         try:
             self._repository.update(
                 group_id,

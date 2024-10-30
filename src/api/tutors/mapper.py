@@ -1,4 +1,4 @@
-from src.api.dates.maper import DateSlotsMapper
+from src.api.dates.mapper import DateSlotsMapper
 from src.api.topics.mapper import TopicMapper
 from src.api.tutors.models import TutorPeriod
 from src.api.users.models import User
