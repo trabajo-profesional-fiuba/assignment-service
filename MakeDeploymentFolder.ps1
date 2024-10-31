@@ -15,16 +15,6 @@ Param(
     $Enviroment
 )
 
-function Dos2Unix {
-
-    $filePath = "start_app.sh"
-    $fileContent = Get-Content -Raw -Path $filePath
-
-    $fileContent = $fileContent -replace "`r", ""
-
-    Set-Content -Path $filePath -Value $fileContent
-}
-
 function InstallAndExportDependencies {
     Write-Host "Locking dependencies with Poetry..."
     Invoke-Expression -Command "poetry lock"
@@ -75,6 +65,6 @@ function MakeFolder {
 }
 
 
-#Dos2Unix
+
 InstallAndExportDependencies
 MakeFolder $Enviroment
