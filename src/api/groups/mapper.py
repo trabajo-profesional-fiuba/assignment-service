@@ -1,4 +1,4 @@
-from src.api.dates.maper import DateSlotsMapper
+from src.api.dates.mapper import DateSlotsMapper
 from src.api.topics.mapper import TopicMapper
 from src.api.tutors.mapper import TutorMapper
 from src.core.group import AssignedGroup, UnassignedGroup

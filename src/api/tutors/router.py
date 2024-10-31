@@ -4,6 +4,9 @@ from typing_extensions import Annotated
 
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.service import AuthenticationService
+from src.api.dates.mapper import DateSlotsMapper
+from src.api.dates.repository import DateSlotRepository
+from src.api.dates.schemas import DateSlotResponseList
 from src.api.exceptions import (
     Duplicated,
     EntityNotFound,
@@ -19,6 +22,7 @@ from src.api.tutors.mapper import TutorMapper
 from src.api.tutors.service import TutorService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.tutors.schemas import (
+    TutorAssignedDates,
     TutorMessage,
     TutorRequest,
     TutorResponse,
@@ -398,6 +402,49 @@ async def notify_students(
             return "Emails sent succesfully"
         else:
             raise Exception("Something happend while sending emails")
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.get(
+    "/assigned-dates",
+    response_model=TutorAssignedDates,
+    summary="Get all the assgined of a tutor based on a period",
+    tags=["Tutors"],
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_404_NOT_FOUND: {"description": "Period not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+)
+async def assigned_dates(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+):
+    """Endpoint para obtener los grupos de un cuatrimestre del cual uno es revisor"""
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_tutor_rol(token)
+        tutor_id = auth_service.get_user_id(token)
+
+        service = TutorService(TutorRepository(session))
+
+        dates = service.get_assigned_dates(
+            period_id, tutor_id, DateSlotRepository(session)
+        )
+        tutor_dates = dates[0]
+        evaluator_dates = dates[1]
+
+        return TutorAssignedDates(
+            tutor_dates=tutor_dates, evaluator_dates=evaluator_dates
+        )
     except EntityNotFound as e:
         raise e
     except InvalidJwt:

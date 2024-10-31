@@ -216,6 +216,8 @@ async def post_final_project(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    background_tasks: BackgroundTasks,
+    email_sender: Annotated[object, Depends(get_email_sender)],
 ):
     """Endpoint para agregar una entrega intermedia de un grupo"""
     try:
@@ -225,6 +227,14 @@ async def post_final_project(
 
         group_service = GroupService(group_repository)
         group_service.upload_intermediate_project(group_id, link.url)
+
+        group_mapper = GroupMapper()
+        group = group_mapper.map_model_to_assigned_group(
+            group_service.get_group_by_id(group_id, True, True)
+        )
+        background_tasks.add_task(
+            email_sender.notify_attachement, group, "Entrega Intermedia"
+        )
     except InvalidJwt as e:
         raise InvalidCredentials("Invalid Authorization")
     except EntityNotFound as e:

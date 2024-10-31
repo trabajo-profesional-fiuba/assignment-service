@@ -430,7 +430,7 @@ def test_date_slots_assigment(fastapi, tables):
 
     admin_token = helper.create_admin_token()
     response = fastapi.post(
-        f"{PREFIX}/date-assigment?period_id=2C2024",
+        f"{PREFIX}/date-assigment?period_id=2C2024&max_groups_per_week=5",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
 
@@ -573,7 +573,7 @@ def test_get_date_assignment_results(fastapi, tables):
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert data[0]['group_id'] == group1.id
-    assert data[0]['tutor_id'] == 105000
-    assert data[0]['evaluator_id'] == 103010
-    assert data[0]['date'] == (dt.datetime(2024, 10, 8, 10)).isoformat()
+    assert data[0]["group_id"] == group1.id
+    assert data[0]["tutor_id"] == 105000
+    assert data[0]["evaluator_id"] == 103010
+    assert data[0]["date"] == (dt.datetime(2024, 10, 8, 10)).isoformat()

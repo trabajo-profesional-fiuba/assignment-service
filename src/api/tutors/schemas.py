@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 from typing import List
+from src.api.dates.schemas import DateSlotResponseList
 from src.api.topics.schemas import SimpleTopic
 from src.api.users.schemas import UserResponse
 
@@ -67,3 +68,10 @@ class TutorMessage(BaseModel):
     """Mensaje de un tutor para enviar por mail"""
 
     body: str
+
+
+class TutorAssignedDates(BaseModel):
+    """Esquema que representa las dos listas de fechas asignadas al tutor"""
+
+    tutor_dates: DateSlotResponseList = Field(default=[])
+    evaluator_dates: DateSlotResponseList = Field(default=[])

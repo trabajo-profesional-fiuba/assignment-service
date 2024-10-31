@@ -12,6 +12,6 @@ if __name__ == "__main__":
     logger.warning(f"Server running with workers: {workers}")
 
     try:
-        uvicorn.run("src.api.app:app", host=host, port=port,workers=workers )
+        uvicorn.run("src.api.app:app", host=host, port=port, workers=workers)
     except KeyboardInterrupt:
         logger.warning("Server stopped mannualy")

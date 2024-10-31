@@ -59,6 +59,7 @@ class AssignedDateSlotResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class AssignedDateSlotUpdate(BaseModel):
     """Representa una asignacion de fechas hacia un grupo"""
 
