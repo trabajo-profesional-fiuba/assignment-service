@@ -136,7 +136,6 @@ class StudentService:
         personal_information.topic = student_info_db.topic_name
         personal_information.teammates = list(map(lambda x: x.email, teammates))
         personal_information.group_number = student_info_db.group_number
-        
 
         return personal_information
 

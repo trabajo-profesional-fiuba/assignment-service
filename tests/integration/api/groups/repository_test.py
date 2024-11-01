@@ -281,6 +281,7 @@ def test_add_new_group_with_three_topics_using_service(tables):
     assert all(t in expected_topics for t in group.preferred_topics)
     assert group.group_number == group.id
 
+
 @pytest.mark.integration
 def test_add_student_cannot_be_with_one_that_is_not_a_user_using_service(tables):
     repository = GroupRepository(Session)

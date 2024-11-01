@@ -30,7 +30,7 @@ class GroupRepository:
                 tutor_period_id=tutor_period_id,
                 assigned_topic_id=topic_id,
                 preferred_topics=preferred_topics,
-                period_id=period_id
+                period_id=period_id,
             )
             group.students = students
             session.add(group)
@@ -41,7 +41,7 @@ class GroupRepository:
             session.commit()
             session.refresh(group)
             session.expunge(group)
-            
+
         return group
 
     def add_group_having_emails(
@@ -67,7 +67,7 @@ class GroupRepository:
             session.add(group)
             session.commit()
             session.refresh(group)
-            
+
             group.group_number = group.id
             session.commit()
             session.expunge(group)

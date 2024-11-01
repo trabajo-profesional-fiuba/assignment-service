@@ -37,9 +37,8 @@ class DeliveryLPSolver:
         tutors: list[Tutor] = [],
         evaluators: list[Tutor] = [],
         available_dates: list[DateSlot] = [],
-        max_groups_per_week:int = 5,
-        max_dif_evaluators:int = 5,
-
+        max_groups_per_week: int = 5,
+        max_dif_evaluators: int = 5,
     ):
         """
         Inicializa la clase con los períodos de tutores y fechas.
