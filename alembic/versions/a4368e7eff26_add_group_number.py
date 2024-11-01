@@ -8,7 +8,7 @@ Create Date: 2024-11-01 09:48:38.014590
 from typing import Sequence, Union
 
 from alembic import op
-from pytest import Session
+from sqlalchemy.orm import sessionmaker
 import sqlalchemy as sa
 
 
@@ -24,17 +24,18 @@ def upgrade() -> None:
     op.add_column('groups', sa.Column('group_number', sa.Integer(), nullable=True))
     # Bind the session to the connection
     bind = op.get_bind()
-    session = Session(bind=bind)
-
-    # Update the group_number to match the id
-    groups = session.execute(sa.select([sa.table('groups')])).fetchall()
-    for group in groups:
-        session.execute(
-            sa.update(sa.table('group'))
-            .where(sa.table('group').c.id == group.id)
-            .values(group_number=group.id)
-        )
-    session.commit()
+    
+    Session = sessionmaker(bind=bind)
+    with Session() as session:
+        # Update the group_number to match the id
+        groups = session.execute(sa.select(sa.column('id')).select_from(sa.table('groups'))).fetchall()
+        for group in groups:
+            session.execute(
+                sa.update(sa.table('groups'))  # Ensure table name is consistent
+                .where(sa.table('groups').c.id == group.id)  # Use the correct table reference
+                .values(group_number=group.id)
+            )
+        session.commit()
     # ### end Alembic commands ###
 
 
