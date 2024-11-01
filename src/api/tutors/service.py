@@ -17,6 +17,7 @@ from src.api.tutors.exceptions import (
 from src.api.tutors.models import TutorPeriod
 from src.api.users.repository import UserRepository
 from src.core.group import AssignedGroup
+from src.config.config import api_config
 
 
 class TutorService:
@@ -265,7 +266,7 @@ class TutorService:
                 subject = "Tienes un nuevo mensaje de tu tutor"
 
             body = f"Mensaje:\n\n{message}\n\nGracias"
-            cc = "avillores@fi.uba.ar"
+            cc = api_config.cc_emails
             response = email_sender.send_emails(
                 to=to, subject=subject, body=body, cc=cc
             )

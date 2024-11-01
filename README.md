@@ -4,66 +4,63 @@
 
 > _What problem are we trying to solve?_
 
-An assignment service designed to solve assignment problems such as:
+The Assignment Management API fue diseñado para optimizar las diferentes asignaciones que se producen 
+durante el cuatrimestre de la cursada.
 
-- Assign people or person to an incomplete group of students.
-- Assign topic and tutors to groups of students.
-- Assign presentation dates to groups of students.
+Ademas, a través de sus diferentes endpoints se puede crear cuatrimestres, crear grupos, realizar seguimiento,
+enviar notificaciones por mail y mucho mas
 
-This service is the most important part of the project. It is responsable for assigning as good as possible 
-the members for incomplete groups, topics for groups and the dates which each group will be presenting its
-final project to the evaluators.
+Posee tres asignaciones principales
 
-Also, the interaction through this features are made by an API that has a serie of endpoints related to differents entities that interact inside the model.
+1. Asignacion de estudiantes a grupos incompletos
+2. Asignacion de grupos a temas y tutores
+3. Asignacion de grupos a fechas de exposicion.
 
-**Important Entities**
-- Students
-- Groups
-- Tutors
-- Topics
-- Categories
+Para realizar estas asignaciones, se utilizan algoritmos de programacion lineal y redes de flujo.
 
-We think that each tutor contains what we call _Periods_, in each period, the tutor has different groups, capacity and topics that the tutor can bring. Also, a tutor can be an evaluator in a specific period.
-
-A tutor can be present in one period but the following be ausent.
+## Collaborators
+- Celeste Dituro       - cdituro@fi.uba.ar
+- Victoria Abril Lopez - vlopez@fi.uba.ar
+- Iván Lautaro Pfaab   - ipfaab@fi.uba.ar
+- Alejo Villores       - avillores@fi.uba.ar
 
 # Installation 
 
-For this project is necessary to have  installed ``Python 3.11.*`` and ``Poetry (version 1.8.3)`` for dependency manganment.
+Es necesario para este proyecto, tener instalado ``Python 3.11.*`` y ``Poetry (version 1.8.3)`` para un correcto manejo de dependencias y entornos virtuales.
 
-You can find how to install python in this [link](https://www.python.org/downloads/release/python-3110/)
+Podes instalar python en el siguiente [link](https://www.python.org/downloads/release/python-3110/)
 
 ## Dependencies
 
-This project uses [Poetry](https://python-poetry.org/) for managing dependencies. Poetry simplifies the process of dependency management by providing a single tool for installing and managing project dependencies. 
+Para las dependencias del projecto se utiliza [Poetry](https://python-poetry.org/) . 
 
-To ensure that your environment is properly set up, follow the installation instructions below.
+Segui las intrucciones para saber si instalaste correctamente la herramienta
 
 ```bash
 $ poetry --version
 
 Poetry (version 1.8.3)
 ```
-Poetry creates a virtual enviroment where it handles all the dependencies, this avoid us to install them in our computer and having issues with versions.
-Because we are using a virtual enviroment, the python interpreter has to be changed in order to execute poetry commands without invoking poetry.
+Poetry crea un entorno virtual donde maneja todas las dependencias, esto evita que las instalemos en nuestra computadora y tengamos problemas con las versiones. Debido a que estamos usando un entorno virtual, el interprete de python tiene que ser cambiado para ejecutar comandos de poetry sin invocar poetry
 
-If you are using vscode as you editor you can add the interpreter doing
-![interpreter](docs/image.png)
+Si estas usando `vscode` como editor de texto, te recomentamos cambiar el interpreter de python
+![interpreter](docs/interpreter.png)
 
-Then select the one that is from poetry 
-![alt text](docs/image-1.png)
+Y seleccionando el python que se encuentra de el entorno virtual de poetry.
+![alt text](docs/python11.png)
 
-Well done! Now you can run commands like `pytest` instead of `poetry run pytest`
+
+De esta manera, ya dentro del entorno virtual podras correr `pytest` en vez de `poetry run pytest`
 
 ## Development
 
-In order to start the development, make sure you are following the [code guidelines](https://github.com/trabajo-profesional-fiuba/.github/blob/main/profile/code_guidelines.md)
+A la hora de desarrollar, es necesario mantener una consistencia, para eso hemos realizado unos [code guidelines](https://github.com/trabajo-profesional-fiuba/.github/blob/main/profile/code_guidelines.md) que proponen una 
 
-Remember to create a `.env.development` following the `.env.example` file. Ask to another dev for shared credentials
+Es necesario descargar los archivos `.env.development` verificando que este consistente con `.env.example`. Los desarrolladores deberian tener las credenciales
 
 ## Docker
 
-To run the backend service using [Docker](https://docs.docker.com/), run the following command in the terminal:
+Para correr el servicio de backend unsando [Docker](https://docs.docker.com/)
 
 ```bash
 docker compose -f docker-compose.dev.yml up  --build -d
@@ -78,9 +75,7 @@ docker compose -f docker-compose.dev.yml down -v
 
 ## Run Tests Locally
 
-To run tests using Poetry, run the following commands in your terminal:
-
-**Notice:** You need to have `docker installed`
+**Notice:** Tenes que tener instalado `docker` para poder levantar una imagen de PostgresSQL
 
 ```bash
 # if you want to start a postgres db using Docker
@@ -90,7 +85,7 @@ To run tests using Poetry, run the following commands in your terminal:
 .\InitTestDatabase.ps1 -StopDatabase
 ```
 
-> **Ensure that the PostgreSQL container is running beforehand, as the integration tests require access to the PostgreSQL database.**
+> **Asegurate de que el contenedor de PostgreSQL este en funcionamiento de antemano, ya que las pruebas de integracion requieren acceso a la base de datos PostgreSQL.**
 
 ```bash
 poetry run pytest or just pytest if env is activated.
@@ -98,8 +93,8 @@ poetry run pytest or just pytest if env is activated.
 
 ## Format
 
-For formatting our code, the team chose to use [black](https://black.readthedocs.io/en/stable/index.html)
-To format code using Poetry, run the following command in your terminal:
+Para formatear nuestro código, el equipo eligió usar [black](https://black.readthedocs.io/en/stable/index.html). 
+Para formatear el código usando Poetry, ejecuta el siguiente comando en tu terminal:
 
 ```bash
 poetry run black . or just black . if env is activated.
@@ -107,16 +102,47 @@ poetry run black . or just black . if env is activated.
 
 ## Check format
 
-To check format code using Poetry, run the following command in your terminal:
-
+Para validar que el formato es el esperado
 ```bash
 poetry run flake8 or just flake8 is env is activated.
 ```
 
 ## Database and migrations
 
-This section can be found at [Migrations](https://github.com/trabajo-profesional-fiuba/assignment-service/blob/main/alembic/README.md)
-### Deploy
+Esta seccion se puede encontrar en [Migrations](https://github.com/trabajo-profesional-fiuba/assignment-service/blob/main/alembic/README.md)
 
-run before deploying
-sed -i -e 's/\r$//'
+## Deploy
+
+Los despiegues de los entornos de `staging` y `prod` se encuentran en [Microsoft Azure](https://portal.azure.com/#home). En el tenemos dos servidores de linux
+![alt text](docs/servers.png)
+
+**ASP-fiubatpp-8afd** Es lo que conocemos como ``prod``.Posee 2 aplicaciones y actualmente corre en un pricing plan de *P0v3*.
+
+**test-linux** Es lo que conocemos como ``staging``.Posee 1 aplicacion y actualmente corre en un pricing plan de *F1*(Free Tier).
+
+![alt text](docs/appservices.png)
+
+### Como deployamos?
+
+Primero en una terminal linux, como puede ser ``Git bash`` corremos el comando 
+```bash
+sed -i -e 's/\r$//' start_app.sh
+```
+Esto lo corremos porque si estamos trabajando con Windows, git cambia los LF -> CRLF,
+
+Luego creamos la carpeta de Build ejecutando el ``Powershell``
+```cmd
+.\MakeDeploymentFolder.ps1 -Enviroment staging|prod
+```
+
+Una vez que la carpeta se cree deployamos (Actualmente el proceso es manual por el plan de subscripcion que se tiene). Utilizando el plugin de Azure 
+
+![alt text](docs/image.png)
+
+Seleccionamos el App Service correspondiente
+
+![alt text](docs/image-1.png)
+
+Deploy Web App y elegimos la carpeta ``Build``
+
+![alt text](docs/image-2.png)
