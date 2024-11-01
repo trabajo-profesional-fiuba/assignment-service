@@ -85,6 +85,7 @@ def test_add_new_group_with_tutor_and_topic(tables):
     assert group.tutor_period_id == tutor_period_id
     assert group.assigned_topic_id == topic_id
     assert group.period_id == period_id
+    assert group.group_number == group.id
 
 
 @pytest.mark.integration
@@ -117,6 +118,7 @@ def test_add_new_group_without_tutor_and_topic(tables):
     assert ids == uids
     assert group.tutor_period is None
     assert group.topic is None
+    assert group.group_number == group.id
 
 
 @pytest.mark.integration
@@ -161,6 +163,7 @@ def test_add_new_group_with_tutor_but_no_topic(tables):
     assert ids == uids
     assert group.tutor_period_id == period_id
     assert group.topic is None
+    assert group.group_number == group.id
 
 
 @pytest.mark.integration
@@ -192,6 +195,7 @@ def test_add_new_group_with_three_topics(tables):
 
     assert ids == uids
     assert len(group.preferred_topics) == 3
+    assert group.group_number == group.id
     assert all(t in expected_topics for t in group.preferred_topics)
 
 
@@ -241,6 +245,7 @@ def test_add_new_group_with_tutor_and_topic_using_service(tables):
     assert ids == uids
     assert group.tutor_period_id == tutor_period_id
     assert group.assigned_topic_id == topic_id
+    assert group.group_number == group.id
 
 
 @pytest.mark.integration
@@ -274,7 +279,7 @@ def test_add_new_group_with_three_topics_using_service(tables):
     assert ids == uids
     assert len(group.preferred_topics) == 3
     assert all(t in expected_topics for t in group.preferred_topics)
-
+    assert group.group_number == group.id
 
 @pytest.mark.integration
 def test_add_student_cannot_be_with_one_that_is_not_a_user_using_service(tables):
@@ -406,3 +411,4 @@ def test_get_groups_leaning_path(tables):
         assert group.intermediate_assigment_approved is False
         assert group.final_report_approved is False
         assert group.exhibition_date is None
+        assert group.group_number == group.id
