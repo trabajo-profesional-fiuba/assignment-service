@@ -46,6 +46,7 @@ class StudentRepository:
                 session.query(
                     User.id.label("user_id"),
                     Group.id.label("group_id"),
+                    Group.group_number.label("group_number"),
                     Topic.name.label("topic_name"),
                     TutorPeriod.tutor_id.label("tutor_id"),
                 )
