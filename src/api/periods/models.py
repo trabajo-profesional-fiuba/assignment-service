@@ -27,4 +27,6 @@ class Period(Base):
     tutor_dates_slots = relationship(
         "TutorDateSlot", back_populates="period", lazy="noload"
     )
-    form_preferences = relationship("FormPreferences", back_populates="period", lazy="noload")
+    form_preferences = relationship(
+        "FormPreferences", back_populates="period", lazy="noload"
+    )

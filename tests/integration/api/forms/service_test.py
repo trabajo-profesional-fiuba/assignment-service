@@ -74,5 +74,5 @@ def test_get_answers_empty(service, mock_form_repository, mock_topic_repository)
     mock_form_repository.get_answers.return_value = []
     expected_result = []
 
-    result = service.get_answers(mock_topic_repository)
+    result = service.get_answers(mock_topic_repository, "1C2024")
     assert result == expected_result

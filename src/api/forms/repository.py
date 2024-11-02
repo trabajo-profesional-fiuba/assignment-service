@@ -61,7 +61,11 @@ class FormRepository:
             raise Duplicated(message="The answer already exists.")
 
     def add_answers(
-        self, answers: list[StudentFormAnswer], topics: list[str], user_ids: list[int]
+        self,
+        answers: list[StudentFormAnswer],
+        topics: list[str],
+        user_ids: list[int],
+        period,
     ):
         """Agrega una fila en la tabla de FormPreferences"""
         with self.Session() as session:
@@ -75,6 +79,7 @@ class FormRepository:
                     topic_1=topic_ids[0],
                     topic_2=topic_ids[1],
                     topic_3=topic_ids[2],
+                    period_id=period,
                 )
                 session.add(answer)
             session.commit()
@@ -102,7 +107,7 @@ class FormRepository:
 
         return answers
 
-    def get_answers_by_user_id(self, user_id):
+    def get_answers_by_user_id(self, user_id, period):
         """Obtiene todas las respuestas de un alumnos"""
         with self.Session() as session:
             answers = (
@@ -114,7 +119,10 @@ class FormRepository:
                     FormPreferences.topic_3,
                 )
                 .join(User, User.id == FormPreferences.user_id)
-                .filter(FormPreferences.user_id == user_id)
+                .filter(
+                    FormPreferences.user_id == user_id,
+                    FormPreferences.period_id == period,
+                )
                 .all()
             )
             session.expunge_all()
@@ -122,7 +130,7 @@ class FormRepository:
 
         return answers
 
-    def get_answers(self):
+    def get_answers(self, period):
         """Obtiene todas las respuestas"""
         with self.Session() as session:
             answers = (
@@ -134,6 +142,7 @@ class FormRepository:
                     FormPreferences.topic_3,
                 )
                 .join(User, User.id == FormPreferences.user_id)
+                .filter(FormPreferences.period_id == period)
                 .all()
             )
             session.expunge_all()
