@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, status, Depends, UploadFile, Query
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
@@ -91,6 +92,9 @@ async def get_topics(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period: Optional[str] = Query(
+        None, pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]
+    ),
 ):
     """Endpoint obtener todos los temas"""
     try:
@@ -98,7 +102,11 @@ async def get_topics(
         auth_service.assert_student_role(token)
 
         service = TopicService(TopicRepository(session))
-        topics = service.get_topics()
+        if period:
+            topics = service.get_topics_by_period(period)
+            topics = TopicList.model_validate(topics)
+        else:
+            topics = service.get_topics()
 
         return ResponseBuilder.build_private_cache_response(topics)
     except InvalidJwt:
