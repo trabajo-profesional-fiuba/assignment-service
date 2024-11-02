@@ -53,6 +53,7 @@ class AssignedDateSlotResponse(BaseModel):
     """Representa una asignacion de fechas hacia un grupo"""
 
     group_id: int
+    group_number: int
     tutor_id: int
     evaluator_id: int
     date: datetime

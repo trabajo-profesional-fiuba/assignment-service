@@ -212,7 +212,7 @@ class DateSlotRepository:
             session.execute(stmt)
             session.commit()
 
-    def get_assigned_dates(self):
+    def get_assigned_dates(self, period_id):
         """Las asignaciones dadas entre tutor,"""
         TutorDateSlotAlias = aliased(TutorDateSlot)
         EvaluatorDateSlotAlias = aliased(TutorDateSlot)
@@ -222,6 +222,7 @@ class DateSlotRepository:
                 EvaluatorDateSlotAlias.tutor_id.label("evaluator_id"),
                 TutorDateSlotAlias.tutor_id.label("tutor_id"),
                 Group.id.label("group_id"),
+                Group.group_number.label("group_number"),
             )
             .join(TutorDateSlotAlias, DateSlot.slot == TutorDateSlotAlias.slot)
             .join(EvaluatorDateSlotAlias, DateSlot.slot == EvaluatorDateSlotAlias.slot)
@@ -229,6 +230,7 @@ class DateSlotRepository:
             .where(DateSlot.assigned == True)
             .where(EvaluatorDateSlotAlias.tutor_or_evaluator == "evaluator")
             .where(TutorDateSlotAlias.tutor_or_evaluator == "tutor")
+            .where(Group.period_id == period_id)
         )
         with self.Session() as session:
             result = session.execute(query)

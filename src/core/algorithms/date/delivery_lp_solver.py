@@ -524,8 +524,17 @@ class DeliveryLPSolver:
                     for dt in self._available_dates
                     if dt.is_same_date(week, day, hour)
                 )
+                group_number = next(
+                    (
+                        group.group_number
+                        for group in self._groups
+                        if group.id == group_id
+                    ),
+                    0,
+                )
                 assignment = DateSlotAssignment(
                     group_id=group_id,
+                    group_number=group_number,
                     tutor_id=tutor_id,
                     evaluator_id=evaluator_id,
                     date=date,
