@@ -78,10 +78,10 @@ class ApiConfiguration:
     @property
     def email_key(self) -> str:
         return self.config("EMAIL_API_KEY", cast=str)
-    
+
     @property
-    def cc_emails(self) ->str:
-        return list(self.config("CC_EMAILS", cast=CommaSeparatedStrings,default=[]))
+    def cc_emails(self) -> str:
+        return list(self.config("CC_EMAILS", cast=CommaSeparatedStrings, default=[]))
 
     def set_env(self, key: str, value):
         environ[key.to_upper()] = value

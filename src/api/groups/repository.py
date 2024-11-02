@@ -1,4 +1,4 @@
-from sqlalchemy import func, bindparam, update, select
+from sqlalchemy import func, bindparam, update, select, insert
 from sqlalchemy.orm import Session, joinedload
 
 from src.api.groups.exceptions import GroupNotFound
@@ -22,20 +22,26 @@ class GroupRepository:
     ):
         """Inserta un grupo a partir de los diferentes parametros"""
         with self.Session() as session:
+            students = session.query(User).filter(User.id.in_(ids)).all()
+            if len(students) != len(ids):
+                raise StudentNotFound(message="Some ids are not in database")
+
             group = Group(
                 tutor_period_id=tutor_period_id,
                 assigned_topic_id=topic_id,
                 preferred_topics=preferred_topics,
                 period_id=period_id,
             )
-            students = session.query(User).filter(User.id.in_(ids)).all()
             group.students = students
-            if len(students) != len(ids):
-                raise StudentNotFound(message="Some ids are not in database")
             session.add(group)
             session.commit()
             session.refresh(group)
+
+            group.group_number = group.id
+            session.commit()
+            session.refresh(group)
             session.expunge(group)
+
         return group
 
     def add_group_having_emails(
@@ -48,19 +54,22 @@ class GroupRepository:
     ):
         """Inserta un grupo a partir de los emails de los estudiantes"""
         with self.Session() as session:
+            students = session.query(User).filter(User.email.in_(emails)).all()
+            if len(students) != len(emails):
+                raise StudentNotFound(message="Some ids are not in database")
             group = Group(
                 tutor_period_id=tutor_period_id,
                 assigned_topic_id=topic_id,
                 preferred_topics=preferred_topics,
                 period_id=period_id,
             )
-            students = session.query(User).filter(User.email.in_(emails)).all()
             group.students = students
-            if len(students) != len(emails):
-                raise StudentNotFound(message="Some ids are not in database")
             session.add(group)
             session.commit()
             session.refresh(group)
+
+            group.group_number = group.id
+            session.commit()
             session.expunge(group)
 
         return group

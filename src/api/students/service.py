@@ -113,6 +113,7 @@ class StudentService:
             id=id,
             form_answered=form_answered,
             group_id=0,
+            group_number=0,
             tutor="",
             topic="",
             teammates=[],
@@ -134,6 +135,7 @@ class StudentService:
         personal_information.tutor = f"{tutor.name} {tutor.last_name}"
         personal_information.topic = student_info_db.topic_name
         personal_information.teammates = list(map(lambda x: x.email, teammates))
+        personal_information.group_number = student_info_db.group_number
 
         return personal_information
 
