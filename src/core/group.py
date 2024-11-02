@@ -24,7 +24,7 @@ class Group:
 
     @property
     def group_number(self) -> str:
-        return self._id
+        return self._group_number
 
 
 class UnassignedGroup(Group):
