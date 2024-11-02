@@ -578,6 +578,7 @@ def test_get_date_assignment_results(fastapi, tables):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data[0]["group_id"] == group1.id
+    assert data[0]["group_number"] == group1.id
     assert data[0]["tutor_id"] == 105000
     assert data[0]["evaluator_id"] == 103010
     assert data[0]["date"] == (dt.datetime(2024, 10, 8, 10)).isoformat()

@@ -338,6 +338,7 @@ async def get_assigned_dates(
             assignments.append(
                 AssignedDateSlotResponse(
                     group_id=assigned_date[3],
+                    group_number=assigned_date[4],
                     tutor_id=assigned_date[2],
                     evaluator_id=assigned_date[1],
                     date=date.date,

@@ -12,16 +12,19 @@ if TYPE_CHECKING:
 class Group:
 
     def __init__(
-        self,
-        id: int,
-        students: Optional[List[Student]] = None,
+        self, id: int, students: Optional[List[Student]] = None, group_number: int = 0
     ) -> None:
         self._id = id
         self._students = students if students is not None else []
+        self._group_number = group_number
 
     @property
     def id(self) -> str:
         return self._id
+
+    @property
+    def group_number(self) -> str:
+        return self._group_number
 
 
 class UnassignedGroup(Group):
@@ -32,8 +35,9 @@ class UnassignedGroup(Group):
         id: int,
         students: Optional[List[Student]] = None,
         topics: Optional[List[Topic]] = None,
+        group_number: int = 0,
     ) -> None:
-        super().__init__(id=id, students=students)
+        super().__init__(id=id, students=students, group_number=group_number)
         self._topics = topics if topics is not None else []
 
     @property
@@ -59,8 +63,9 @@ class AssignedGroup(Group):
         topic_assigned: Optional[Topic] = None,
         students: Optional[List[Student]] = None,
         reviewer_id: Optional[int] = None,
+        group_number: int = 0,
     ) -> None:
-        super().__init__(id=id, students=students)
+        super().__init__(id=id, students=students, group_number=group_number)
         self._tutor = tutor
         self._available_dates = available_dates if available_dates is not None else []
         self._assigned_date = None

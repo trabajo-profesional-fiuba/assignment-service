@@ -136,4 +136,4 @@ class DateSlotsService:
 
     def get_assigned_dates(self, period_id):
         """Busca las fechas asignadas realizando joins"""
-        return self._repository.get_assigned_dates()
+        return self._repository.get_assigned_dates(period_id)
