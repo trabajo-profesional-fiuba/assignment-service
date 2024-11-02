@@ -47,7 +47,7 @@ class StudentRepository:
 
         return students
 
-    def get_student_info(self, id: int):
+    def get_student_info(self, id: int, period):
         """Devuelve informacion de un estudiante a partir de su id"""
         with self.Session() as session:
             student_info = (
@@ -63,6 +63,7 @@ class StudentRepository:
                 .join(Group.topic)
                 .join(Group.tutor_period)
                 .where(User.id == id)
+                .where(Group.period_id == period)
                 .one_or_none()
             )
 

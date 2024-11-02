@@ -115,12 +115,15 @@ class GroupRepository:
 
         return groups
 
-    def get_groups_without_preferred_topics(self) -> list[Group]:
+    def get_groups_without_preferred_topics(self, period) -> list[Group]:
         """Devuelve todos los grupos que no tengan temas de preferencias"""
         with self.Session() as session:
             groups = (
                 session.query(Group)
-                .filter(func.cardinality(Group.preferred_topics) == 0)
+                .filter(
+                    func.cardinality(Group.preferred_topics) == 0,
+                    Group.period_id == period,
+                )
                 .all()
             )
             session.expunge_all()

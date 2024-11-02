@@ -27,7 +27,7 @@ class FormPreferences(Base):
     topic_3 = Column(
         Integer, ForeignKey("topics.id", ondelete="CASCADE"), nullable=False
     )
-    period_id = Column(String, ForeignKey("periods.id",ondelete="CASCADE"))
+    period_id = Column(String, ForeignKey("periods.id", ondelete="CASCADE"))
 
     # Relaciones
     student = relationship("User", lazy="noload")

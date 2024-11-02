@@ -93,15 +93,15 @@ class StudentService:
         repository: UserRepository,
         group_repository: GroupRepository,
         student_repository: StudentRepository,
-        period,
     ):
         """A partir de un id, recolecta la informacion necesaria del estudiante respecto al cuatrimestre"""
+        period = student_repository.get_period_by_student_id(id).period_id
         form_answers = form_repository.get_answers_by_user_id(id, period)
 
         form_answered = len(form_answers) > 0
 
         groups_without_preferred_topics = (
-            group_repository.get_groups_without_preferred_topics()
+            group_repository.get_groups_without_preferred_topics(period)
         )
         student_in_groups_without_preferred_topics = False
 
@@ -118,13 +118,13 @@ class StudentService:
             tutor="",
             topic="",
             teammates=[],
-            period_id=student_repository.get_period_by_student_id(id).period_id,
+            period_id=period,
         )
 
         if (not student_in_groups_without_preferred_topics) and (not form_answered):
             return personal_information
 
-        student_info_db = self._repository.get_student_info(id)
+        student_info_db = self._repository.get_student_info(id, period)
 
         if student_info_db is None:
             return personal_information

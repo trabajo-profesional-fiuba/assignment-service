@@ -119,7 +119,6 @@ async def get_student_info(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para obtener informacion del estudiante logeado"""
     try:
@@ -134,7 +133,6 @@ async def get_student_info(
             UserRepository(session),
             GroupRepository(session),
             StudentRepository(session),
-            period,
         )
 
         logger.info("Retrieve student info by id.")
