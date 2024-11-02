@@ -114,7 +114,9 @@ async def add_groups_dates(
             slots_added = service.add_group_slots(group_id, slots)
 
             res = DateSlotResponseList.model_validate(slots_added)
-            return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
+            return ResponseBuilder.build_clear_cache_response(
+                res, status.HTTP_201_CREATED
+            )
         else:
             raise Exception("Submit group periods is not enable")
     except InvalidDate as e:
@@ -169,7 +171,9 @@ async def add_tutors_dates(
             slots_added = service.add_tutor_slots(tutor_id, period, slots)
 
             res = DateSlotResponseList.model_validate(slots_added)
-            return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
+            return ResponseBuilder.build_clear_cache_response(
+                res, status.HTTP_201_CREATED
+            )
         else:
             raise Exception("Submit tutor periods is not enable")
 
@@ -335,7 +339,7 @@ async def sync_date_slots(
         slots_added = service.sync_date_slots(slots, period)
         logger.info("Slots already updated")
         res = DateSlotResponseList.model_validate(slots_added)
-        
+
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
     except InvalidDate as e:
         raise e
@@ -380,7 +384,7 @@ async def sync_group_slots(
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_in_group(token, group_id, GroupRepository(session))
-    
+
         period_service = PeriodService(PeriodRepository(session))
         period_db = period_service.get_period_by_id(period)
 
@@ -391,7 +395,9 @@ async def sync_group_slots(
             logger.info(f"Updates all slots from group id: {group_id}")
 
             res = DateSlotResponseList.model_validate(slots)
-            return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
+            return ResponseBuilder.build_clear_cache_response(
+                res, status.HTTP_201_CREATED
+            )
         else:
             raise Exception("Ovewrride groups periods is not enable")
     except InvalidJwt:
@@ -446,7 +452,9 @@ async def sync_tutor_slots(
             slots_added = service.sync_tutor_slots(slots, tutor_id, period)
 
             res = DateSlotResponseList.model_validate(slots_added)
-            return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
+            return ResponseBuilder.build_clear_cache_response(
+                res, status.HTTP_201_CREATED
+            )
         else:
             raise Exception("Ovewrride tutors periods is not enable")
     except InvalidJwt:

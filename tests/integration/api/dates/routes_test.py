@@ -121,7 +121,7 @@ def test_period_needs_to_exits(fastapi, tables):
 def test_add_group_dates(fastapi, tables):
     # Arrange
     helper = ApiHelper()
-    helper.create_period("2C2024",presentation_dates_available=True)
+    helper.create_period("2C2024", presentation_dates_available=True)
     helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
     period = helper.create_tutor_period("105000", "2C2024")
     helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
@@ -177,7 +177,7 @@ def test_add_group_dates(fastapi, tables):
 def test_add_tutor_dates(fastapi, tables):
     # Arrange
     helper = ApiHelper()
-    helper.create_period("2C2024",presentation_dates_available=True)
+    helper.create_period("2C2024", presentation_dates_available=True)
     helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
     helper.create_tutor_period("105000", "2C2024")
     tutor_token = helper.create_tutor_token(105000)
@@ -419,7 +419,7 @@ def test_get_tutor_dates_by_id(fastapi, tables):
 def test_get_group_dates_by_id(fastapi, tables):
     # Arrange
     helper = ApiHelper()
-    helper.create_period("2C2024",presentation_dates_available=True)
+    helper.create_period("2C2024", presentation_dates_available=True)
     helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
     period = helper.create_tutor_period("105000", "2C2024")
     helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")

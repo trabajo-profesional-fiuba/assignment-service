@@ -221,7 +221,7 @@ class DateSlotRepository:
                 DateSlot.slot.label("date"),
                 EvaluatorDateSlotAlias.tutor_id.label("evaluator_id"),
                 TutorDateSlotAlias.tutor_id.label("tutor_id"),
-                Group.id.label('group_id'),
+                Group.id.label("group_id"),
             )
             .join(TutorDateSlotAlias, DateSlot.slot == TutorDateSlotAlias.slot)
             .join(EvaluatorDateSlotAlias, DateSlot.slot == EvaluatorDateSlotAlias.slot)

@@ -579,7 +579,6 @@ def test_get_date_assignment_results(fastapi, tables):
     assert data[0]["date"] == (dt.datetime(2024, 10, 8, 10)).isoformat()
 
 
-
 @pytest.mark.integration
 def test_get_date_assignment_multiple_results(fastapi, tables):
     helper = ApiHelper()
@@ -596,7 +595,6 @@ def test_get_date_assignment_multiple_results(fastapi, tables):
     helper.create_student("Alejo", "B", "105002", "avillores@fi.uba.ar")
     topic1 = helper.create_topic("TopicCustom")
     topic2 = helper.create_topic("TopicCustom2")
-
 
     group1 = helper.create_group(
         ids=[105001],
@@ -616,7 +614,7 @@ def test_get_date_assignment_multiple_results(fastapi, tables):
     helper.create_dates(
         [
             {"period_id": period, "slot": dt.datetime(2024, 10, 8, 10)},
-            {"period_id": period, "slot": dt.datetime(2024, 11, 8, 10)}
+            {"period_id": period, "slot": dt.datetime(2024, 11, 8, 10)},
         ]
     )
     helper.create_group_dates(
@@ -663,14 +661,13 @@ def test_get_date_assignment_multiple_results(fastapi, tables):
             "tutor_id": 105000,
             "evaluator_id": 103010,
             "date": (dt.datetime(2024, 11, 8, 10)).isoformat(),
-        }
+        },
     ]
     response = fastapi.put(
         f"{PREFIX}/date-assigment",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
         json=body,
     )
-
 
     response = fastapi.get(
         f"{PREFIX}/date-assigment?period_id=2C2024",

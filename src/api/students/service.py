@@ -155,8 +155,11 @@ class StudentService:
                     email=student.email,
                     password=hasher.hash(str(student.id)),
                     role=Role.STUDENT,
-                ))
-            self._repository.add_student_periods([StudentPeriod(period_id=period, student_id=user.id)])
+                )
+            )
+            self._repository.add_student_periods(
+                [StudentPeriod(period_id=period, student_id=user.id)]
+            )
             return user
         except Duplicated:
             raise Duplicated("Duplicated student")
