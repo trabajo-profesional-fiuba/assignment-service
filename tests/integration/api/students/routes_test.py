@@ -100,7 +100,7 @@ def test_get_student_by_ids(fastapi, tables):
     # Act
     response = fastapi.get(
         f"{PREFIX}/",
-        params={"user_ids": ["105001", "105002"]},
+        params={"user_ids": ["105001", "105002"], "period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
@@ -117,7 +117,7 @@ def test_get_wrongs_student_by_ids_response_404(fastapi, tables):
     # Act
     response = fastapi.get(
         f"{PREFIX}/",
-        params={"user_ids": ["1", "2"]},
+        params={"user_ids": ["1", "2"], "period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
@@ -132,7 +132,7 @@ def test_get_duplicate_student_by_ids_response_409(fastapi, tables):
     # Act
     response = fastapi.get(
         f"{PREFIX}/",
-        params={"user_ids": ["1", "1"]},
+        params={"user_ids": ["1", "1"], "period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
@@ -153,12 +153,15 @@ def test_get_all_students(fastapi, tables):
     _ = fastapi.post(
         f"{PREFIX}/upload",
         files=files,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
     # Act
     response = fastapi.get(
-        f"{PREFIX}/", headers={"Authorization": f"Bearer {token.access_token}"}
+        f"{PREFIX}/",
+        params={"period": "2C2024"},
+        headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
     # Assert
@@ -268,6 +271,7 @@ def test_create_student(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}",
         json=student,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == 201
@@ -291,6 +295,7 @@ def test_create_duplicated_student(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}",
         json=student,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == 201
@@ -302,6 +307,7 @@ def test_create_duplicated_student(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}",
         json=student,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == 409
@@ -322,6 +328,7 @@ def test_create_student_with_invalid_token(fastapi, tables):
     response = fastapi.post(
         f"{PREFIX}",
         json=student,
+        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == 401

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, aliased
 from sqlalchemy import insert, delete, and_, tuple_, update, select
 
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
+from src.api.groups.models import Group
 
 
 class DateSlotRepository:
@@ -220,11 +221,11 @@ class DateSlotRepository:
                 DateSlot.slot.label("date"),
                 EvaluatorDateSlotAlias.tutor_id.label("evaluator_id"),
                 TutorDateSlotAlias.tutor_id.label("tutor_id"),
-                GroupDateSlot.group_id,
+                Group.id.label("group_id"),
             )
             .join(TutorDateSlotAlias, DateSlot.slot == TutorDateSlotAlias.slot)
             .join(EvaluatorDateSlotAlias, DateSlot.slot == EvaluatorDateSlotAlias.slot)
-            .join(GroupDateSlot, DateSlot.slot == GroupDateSlot.slot)
+            .join(Group, DateSlot.slot == Group.exhibition_date)
             .where(DateSlot.assigned == True)
             .where(EvaluatorDateSlotAlias.tutor_or_evaluator == "evaluator")
             .where(TutorDateSlotAlias.tutor_or_evaluator == "tutor")

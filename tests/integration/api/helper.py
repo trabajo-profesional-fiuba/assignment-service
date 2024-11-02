@@ -38,8 +38,8 @@ class ApiHelper:
         self._period_repository = PeriodRepository(self.Session)
         self._dates_repository = DateSlotRepository(self.Session)
 
-    def create_period(self, period: str):
-        self._period_repository.add_period(Period(id=period))
+    def create_period(self, period: str, **kwards):
+        self._period_repository.add_period(Period(id=period, **kwards))
 
     def create_tutor(self, name: str, last_name: str, id: str, email: str):
         tutor = User(

@@ -85,6 +85,7 @@ async def get_students_by_ids(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     user_ids: list[int] = Query(default=[]),
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para obtener todos los estudiantes o que matchen con una lista de ids"""
     try:
@@ -92,7 +93,7 @@ async def get_students_by_ids(
         auth_service.assert_student_role(token)
 
         service = StudentService(StudentRepository(session))
-        res = service.get_students_by_ids(user_ids)
+        res = service.get_students_by_ids(user_ids, period)
         logger.info("Retrieve all students by ids.")
 
         return ResponseBuilder.build_private_cache_response(res)
@@ -161,6 +162,7 @@ async def add_student(
     student: StudentRequest,
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para agregar un estudiante manualmente"""
     try:
@@ -169,7 +171,7 @@ async def add_student(
         service = StudentService(StudentRepository(session))
 
         res = UserResponse.model_validate(
-            service.add_student(student, hasher, UserRepository(session))
+            service.add_student(student, hasher, UserRepository(session), period)
         )
 
         return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)

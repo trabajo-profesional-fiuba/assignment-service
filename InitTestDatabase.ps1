@@ -1,6 +1,9 @@
 Param(
     [switch]
-    $StopDatabase
+    $StopDatabase,
+
+    [switch]
+    $ApplyMigrations
 )
 
 function IsDockerInstalledAndRunning() {
@@ -45,6 +48,12 @@ if (IsDockerInstalledAndRunning) {
         docker ps
     
         Write-Host -ForegroundColor Cyan "URL Connection: $postgresUrl"
+
+        if ($ApplyMigrations) {
+            Write-Host "Applying migrations to the database"
+            Start-Sleep -Seconds 3
+            Invoke-Expression -Command "alembic upgrade head"
+        }
     }
     else {
         Write-Host "Stopping and removing PostgreSQL 15 container..."

@@ -9,6 +9,7 @@ class PersonalInformation(BaseModel):
 
     id: int
     group_id: int
+    group_number: int
     form_answered: bool
     tutor: str
     topic: str

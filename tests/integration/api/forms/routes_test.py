@@ -689,7 +689,10 @@ def test_delete_answers_with_success(fastapi, tables, topics, students, tutors):
     # validate that students are not deleted when deleting answers
     response = fastapi.get(
         f"{STUDENT_PREFIX}/",
-        params={"user_ids": ["105285", "105286", "105287", "105288"]},
+        params={
+            "user_ids": ["105285", "105286", "105287", "105288"],
+            "period": "1C2024",
+        },
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
