@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, Query, status, Depends
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
@@ -55,6 +55,7 @@ async def add_answers(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Agrega una nueva respuesta del formulario de armado de grupos y seleccion de temas"""
     try:
@@ -62,7 +63,7 @@ async def add_answers(
         auth_service.assert_student_role(token)
 
         service = FormService(FormRepository(session))
-        answers_saved = service.add_answers(answers)
+        answers_saved = service.add_answers(answers, period)
 
         res = FormPreferencesList.model_validate(
             [
@@ -102,13 +103,15 @@ async def get_answers(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Obtiene todas las respuestas del formulario de armado de grupos y seleccion de temas"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
+
         service = FormService(FormRepository(session))
-        answers = service.get_answers(TopicRepository(session))
+        answers = service.get_answers(TopicRepository(session), period)
         response = list()
         for answer in answers:
             response.append(
@@ -147,13 +150,14 @@ async def get_answers_by_user_id(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     user_id: int,
+    period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Obtiene todas las respuestas de un alumno"""
     try:
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_student_role(token)
         service = FormService(FormRepository(session))
-        res = service.get_answers_by_user_id(user_id, TopicRepository(session))
+        res = service.get_answers_by_user_id(user_id, TopicRepository(session), period)
 
         return ResponseBuilder.build_private_cache_response(res)
     except InvalidJwt:

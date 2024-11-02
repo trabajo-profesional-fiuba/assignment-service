@@ -93,9 +93,10 @@ class StudentService:
         repository: UserRepository,
         group_repository: GroupRepository,
         student_repository: StudentRepository,
+        period,
     ):
         """A partir de un id, recolecta la informacion necesaria del estudiante respecto al cuatrimestre"""
-        form_answers = form_repository.get_answers_by_user_id(id)
+        form_answers = form_repository.get_answers_by_user_id(id, period)
 
         form_answered = len(form_answers) > 0
 

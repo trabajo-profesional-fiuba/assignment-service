@@ -44,8 +44,8 @@ def test_resolve_assignment_of_incomplete_groups(fastapi, tables):
     helper.add_tutor_to_topic(
         "2C2024", "email@fi.uba.ar", ["t1", "t2", "t3", "t4"], [1, 1, 1, 1]
     )
-    helper.register_answer([105285, 105286], ["t1", "t2", "t3"])
-    helper.register_answer([105287, 105288], ["t4", "t2", "t3"])
+    helper.register_answer([105285, 105286], ["t1", "t2", "t3"], "2C2024")
+    helper.register_answer([105287, 105288], ["t4", "t2", "t3"], "2C2024")
     admin_token = helper.create_admin_token()
 
     response = fastapi.post(
@@ -116,6 +116,7 @@ def test_resolve_assignment_of_incomplete_groups_more_answers(fastapi, tables):
             "Data Structures and Algorithms",
             "Version Control with Git",
         ],
+        "2C2024",
     )
     helper.register_answer(
         [100003, 100004, 100005, 100006],
@@ -124,6 +125,7 @@ def test_resolve_assignment_of_incomplete_groups_more_answers(fastapi, tables):
             "Data Structures and Algorithms",
             "Version Control with Git",
         ],
+        "2C2024",
     )
     helper.register_answer(
         [100007, 100008, 100009],
@@ -132,6 +134,7 @@ def test_resolve_assignment_of_incomplete_groups_more_answers(fastapi, tables):
             "Database Management Systems",
             "Version Control with Git",
         ],
+        "2C2024",
     )
     helper.register_answer(
         [100010],
@@ -140,6 +143,7 @@ def test_resolve_assignment_of_incomplete_groups_more_answers(fastapi, tables):
             "Version Control with Git",
             "Introduction to Python",
         ],
+        "2C2024",
     )
     admin_token = helper.create_admin_token()
 

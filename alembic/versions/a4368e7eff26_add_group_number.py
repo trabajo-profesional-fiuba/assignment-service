@@ -30,8 +30,6 @@ def upgrade() -> None:
     groups_table = sa.table("groups", sa.column("id"), sa.column("group_number"))
 
     with Session() as session:
-        # Update the group_number to match the id
-        print(len(sa.table("groups").columns))
         groups = session.execute(sa.select(groups_table.c.id)).fetchall()
         for group in groups:
             session.execute(
