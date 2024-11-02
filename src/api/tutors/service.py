@@ -318,3 +318,9 @@ class TutorService:
         )
 
         return (tutor_dates, evaluators_dates)
+
+    def make_evaluator(self, period_id, tutor_id):
+        """Hace evaluador a un tutor en un cuatrimestre dado"""
+        self._repository.update_tutor_period(
+            period_id, tutor_id, {"is_evaluator": True}
+        )

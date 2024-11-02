@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, Depends, status, Query, Path
+from fastapi import APIRouter, Response, UploadFile, Depends, status, Query, Path
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
@@ -447,6 +447,38 @@ async def assigned_dates(
         )
     except EntityNotFound as e:
         raise e
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+@router.post(
+    "/evaluator",
+    summary="Make a tutor an evaluator for one tutor period",
+    tags=["Tutors"],
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_409_CONFLICT: {"description": "Duplicated tutor"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def make_evaluator(
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+    tutor_id: int =Query(...),
+):
+    """Endpoint para agregar un tutor manualmente"""
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        service = TutorService(TutorRepository(session))
+        service.make_evaluator(period_id,tutor_id)
+     
+        return Response(status=status.HTTP_202_ACCEPTED)
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import exc, exists
+from sqlalchemy import exc, exists, update
 
 from src.api.dates.models import TutorDateSlot
 from src.api.periods.exceptions import PeriodDuplicated
@@ -317,3 +317,14 @@ class TutorRepository:
             )
             session.expunge_all()
         return evaluators
+
+    def update_tutor_period(self, period_id, tutor_id, attributes: dict):
+        """Actualiza el cuatrimestre del tutor a partir de los atributos que sean provistos"""
+        stmt = (
+            update(TutorPeriod)
+            .where(TutorPeriod.tutor_id == tutor_id, TutorPeriod.period_id == period_id)
+            .values(**attributes)
+        )
+        with self.Session() as session:
+            session.execute(stmt)
+            session.commit()
