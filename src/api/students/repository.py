@@ -16,22 +16,30 @@ class StudentRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def get_students(self):
+    def get_students(self, period_id: str):
         """Devuelve todos los estudiantes"""
         with self.Session() as session:
-            students = session.query(User).filter(User.role == Role.STUDENT).all()
+            students = (
+                session.query(User)
+                .join(StudentPeriod, StudentPeriod.student_id == User.id)
+                .filter(User.role == Role.STUDENT)
+                .filter(StudentPeriod.period_id == period_id)
+                .all()
+            )
             for student in students:
                 session.expunge(student)
 
         return students
 
-    def get_students_by_ids(self, ids: list[int]):
+    def get_students_by_ids(self, ids: list[int], period_id: str):
         """Devuelve todos los estudiantes dado una lista de ids"""
         with self.Session() as session:
             students = (
                 session.query(User)
+                .join(StudentPeriod, StudentPeriod.student_id == User.id)
                 .filter(User.id.in_(ids))
                 .filter(User.role == Role.STUDENT)
+                .filter(StudentPeriod.period_id == period_id)
                 .all()
             )
             for student in students:

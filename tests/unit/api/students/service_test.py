@@ -57,7 +57,7 @@ class TestStudentService:
 
         mocker.patch.object(repo, "get_students_by_ids", return_value=students)
         service = StudentService(repo)
-        response = service.get_students_by_ids([12345, 54321, 11111])
+        response = service.get_students_by_ids([12345, 54321, 11111], '1C2024')
 
         assert all(e in response for e in students)
 
@@ -84,7 +84,7 @@ class TestStudentService:
         service = StudentService(repo)
 
         with pytest.raises(EntityNotFound) as e:
-            _ = service.get_students_by_ids([12345, 54321, 11111])
+            _ = service.get_students_by_ids([12345, 54321, 11111], '1C2024')
             assert str(e) == "11111, is not registered in the database"
 
     @pytest.mark.unit
@@ -95,5 +95,5 @@ class TestStudentService:
         service = StudentService(repo)
 
         with pytest.raises(EntityNotFound) as e:
-            _ = service.get_students_by_ids([1, 2, 3])
+            _ = service.get_students_by_ids([1, 2, 3], '1C2024')
             assert str(e) == "1,2,3 are not registered in the database"
