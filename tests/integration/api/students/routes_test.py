@@ -209,7 +209,9 @@ def test_get_personal_info_without_form_answers(fastapi, tables):
     helper.create_student_period(100, "2C2024")
 
     response = fastapi.get(
-        f"{PREFIX}/info/me", headers={"Authorization": f"Bearer {token.access_token}"}
+        f"{PREFIX}/info/me",
+        params={"period": "2C2024"},
+        headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
     assert response.status_code == 200
@@ -227,10 +229,12 @@ def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables)
     helper.add_tutor_to_topic(
         "2C2024", "email@fi.uba.ar", ["t1", "t2", "t3", "t4"], [1, 1, 1, 1]
     )
-    helper.register_answer([100], ["t1", "t2", "t3"])
+    helper.register_answer([100], ["t1", "t2", "t3"], "2C2024")
 
     response = fastapi.get(
-        f"{PREFIX}/info/me", headers={"Authorization": f"Bearer {token.access_token}"}
+        f"{PREFIX}/info/me",
+        params={"period": "2C2024"},
+        headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
     assert response.status_code == 200
