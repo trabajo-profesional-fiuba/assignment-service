@@ -127,12 +127,12 @@ class FormService:
         return response
 
     def get_answers_by_user_id(
-        self, user_id, topic_repository: TopicRepository, period
+        self, user_id, topic_repository: TopicRepository
     ):
         """
         Devuelve las respuestas de un grupo por id
         """
-        answers = self._repository.get_answers_by_user_id(user_id, period)
+        answers = self._repository.get_answers_by_user_id(user_id)
         topics = self._transform_topics(topic_repository)
         response = []
         if len(answers) != 0:
