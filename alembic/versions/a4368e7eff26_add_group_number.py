@@ -36,9 +36,9 @@ def upgrade() -> None:
             session.execute(
                 sa.update(sa.table("groups"))  # Ensure table name is consistent
                 .where(
-                    sa.table("groups").c.id == group.id
+                    sa.table("groups").c.id == group[0]
                 )  # Use the correct table reference
-                .values(group_number=group.id)
+                .values(group_number=group[0])
             )
         session.commit()
     # ### end Alembic commands ###
