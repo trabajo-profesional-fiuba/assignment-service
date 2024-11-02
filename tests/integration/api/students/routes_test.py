@@ -210,7 +210,6 @@ def test_get_personal_info_without_form_answers(fastapi, tables):
 
     response = fastapi.get(
         f"{PREFIX}/info/me",
-        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 
@@ -233,7 +232,6 @@ def test_get_personal_info_with_form_answers_and_without_groups(fastapi, tables)
 
     response = fastapi.get(
         f"{PREFIX}/info/me",
-        params={"period": "2C2024"},
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
 

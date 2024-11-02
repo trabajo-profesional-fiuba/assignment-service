@@ -126,9 +126,7 @@ class FormService:
 
         return response
 
-    def get_answers_by_user_id(
-        self, user_id, topic_repository: TopicRepository
-    ):
+    def get_answers_by_user_id(self, user_id, topic_repository: TopicRepository):
         """
         Devuelve las respuestas de un grupo por id
         """
