@@ -478,7 +478,7 @@ async def make_evaluator(
         service = TutorService(TutorRepository(session))
         service.make_evaluator(period_id,tutor_id)
      
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status_code=status.HTTP_202_ACCEPTED)
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
