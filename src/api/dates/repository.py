@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, aliased
 from sqlalchemy import insert, delete, and_, tuple_, update, select
 
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
+from src.api.groups.models import Group
 
 
 class DateSlotRepository:
@@ -51,7 +52,7 @@ class DateSlotRepository:
 
         return slots
 
-    def get_tutor_slots_by_id(self, tutor_id: int, period: str):
+    def get_tutor_slots_by_id(self, tutor_id: int, period: str) -> list[TutorDateSlot]:
         """Obtiene todos los slots de un tutor por cuatrimestre"""
         with self.Session() as session:
             slots = (
@@ -211,23 +212,25 @@ class DateSlotRepository:
             session.execute(stmt)
             session.commit()
 
-    def get_assigned_dates(self):
-        """ Las asignaciones dadas entre tutor,  """
+    def get_assigned_dates(self, period_id):
+        """Las asignaciones dadas entre tutor,"""
         TutorDateSlotAlias = aliased(TutorDateSlot)
         EvaluatorDateSlotAlias = aliased(TutorDateSlot)
         query = (
             select(
-                DateSlot.slot.label('date'),
+                DateSlot.slot.label("date"),
                 EvaluatorDateSlotAlias.tutor_id.label("evaluator_id"),
                 TutorDateSlotAlias.tutor_id.label("tutor_id"),
-                GroupDateSlot.group_id,
+                Group.id.label("group_id"),
+                Group.group_number.label("group_number"),
             )
             .join(TutorDateSlotAlias, DateSlot.slot == TutorDateSlotAlias.slot)
             .join(EvaluatorDateSlotAlias, DateSlot.slot == EvaluatorDateSlotAlias.slot)
-            .join(GroupDateSlot, DateSlot.slot == GroupDateSlot.slot)
+            .join(Group, DateSlot.slot == Group.exhibition_date)
             .where(DateSlot.assigned == True)
-            .where(EvaluatorDateSlotAlias.tutor_or_evaluator == 'evaluator')
-            .where(TutorDateSlotAlias.tutor_or_evaluator == 'tutor')
+            .where(EvaluatorDateSlotAlias.tutor_or_evaluator == "evaluator")
+            .where(TutorDateSlotAlias.tutor_or_evaluator == "tutor")
+            .where(Group.period_id == period_id)
         )
         with self.Session() as session:
             result = session.execute(query)

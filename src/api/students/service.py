@@ -63,16 +63,16 @@ class StudentService:
         except StudentNotInserted as e:
             raise EntityNotInserted(str(e))
 
-    def get_students_by_ids(self, ids: list[int]):
+    def get_students_by_ids(self, ids: list[int], period_id: str):
         """Devuelve una lista de estudiante a partir de una lista de ids"""
         try:
             if len(list(set(ids))) != len(list(ids)):
                 raise StudentDuplicated("Query params udis contain duplicates")
 
             if len(ids) > 0:
-                students_db = self._repository.get_students_by_ids(ids)
+                students_db = self._repository.get_students_by_ids(ids, period_id)
             else:
-                students_db = self._repository.get_students()
+                students_db = self._repository.get_students(period_id)
 
             students = UserList.model_validate(students_db)
             udis_from_db = [student.id for student in students]
@@ -95,12 +95,13 @@ class StudentService:
         student_repository: StudentRepository,
     ):
         """A partir de un id, recolecta la informacion necesaria del estudiante respecto al cuatrimestre"""
-        form_answers = form_repository.get_answers_by_user_id(id)
+        period = student_repository.get_period_by_student_id(id).period_id
+        form_answers = form_repository.get_answers_by_user_id(id, period)
 
         form_answered = len(form_answers) > 0
 
         groups_without_preferred_topics = (
-            group_repository.get_groups_without_preferred_topics()
+            group_repository.get_groups_without_preferred_topics(period)
         )
         student_in_groups_without_preferred_topics = False
 
@@ -113,16 +114,17 @@ class StudentService:
             id=id,
             form_answered=form_answered,
             group_id=0,
+            group_number=0,
             tutor="",
             topic="",
             teammates=[],
-            period_id=student_repository.get_period_by_student_id(id).period_id,
+            period_id=period,
         )
 
         if (not student_in_groups_without_preferred_topics) and (not form_answered):
             return personal_information
 
-        student_info_db = self._repository.get_student_info(id)
+        student_info_db = self._repository.get_student_info(id, period)
 
         if student_info_db is None:
             return personal_information
@@ -134,14 +136,19 @@ class StudentService:
         personal_information.tutor = f"{tutor.name} {tutor.last_name}"
         personal_information.topic = student_info_db.topic_name
         personal_information.teammates = list(map(lambda x: x.email, teammates))
+        personal_information.group_number = student_info_db.group_number
 
         return personal_information
 
     def add_student(
-        self, student: UserResponse, hasher: ShaHasher, userRepository: UserRepository
+        self,
+        student: UserResponse,
+        hasher: ShaHasher,
+        userRepository: UserRepository,
+        period: str,
     ):
         try:
-            return userRepository.add_user(
+            user = userRepository.add_user(
                 User(
                     id=student.id,
                     name=student.name,
@@ -151,6 +158,10 @@ class StudentService:
                     role=Role.STUDENT,
                 )
             )
+            self._repository.add_student_periods(
+                [StudentPeriod(period_id=period, student_id=user.id)]
+            )
+            return user
         except Duplicated:
             raise Duplicated("Duplicated student")
         except Exception:

@@ -34,16 +34,25 @@ class AssignmentService:
         return results
 
     def assignment_dates(
-        self, available_dates, tutors, evaluators, groups
+        self,
+        available_dates,
+        tutors,
+        evaluators,
+        groups,
+        max_groups_per_week,
+        max_dif_evaluators,
     ) -> DateSlotsAssignmentResult:
         """
         Utiliza el algoritmo de programacion lineal de fechas para asignar grupos a fechas de exposicion
         """
+
         assigment_model = DeliveryLPSolver(
             groups=groups,
             available_dates=available_dates,
             tutors=tutors,
             evaluators=evaluators,
+            max_groups_per_week=max_groups_per_week,
+            max_dif_evaluators=max_dif_evaluators,
         )
         results = assigment_model.solve()
         return results

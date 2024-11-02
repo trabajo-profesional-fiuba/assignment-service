@@ -1,4 +1,4 @@
-from src.api.dates.maper import DateSlotsMapper
+from src.api.dates.mapper import DateSlotsMapper
 from src.api.topics.mapper import TopicMapper
 from src.api.tutors.mapper import TutorMapper
 from src.core.group import AssignedGroup, UnassignedGroup
@@ -26,6 +26,7 @@ class GroupMapper:
                 topics=[
                     topics_mapped[topic_id] for topic_id in db_group.preferred_topics
                 ],
+                group_number=db_group.group_number,
             )
             for db_group in db_groups
         ]
@@ -46,6 +47,7 @@ class GroupMapper:
             available_dates=self._dates_mapper.map_models_to_date_slots(
                 db_group.group_dates_slots
             ),
+            group_number=db_group.group_number,
         )
 
         return group

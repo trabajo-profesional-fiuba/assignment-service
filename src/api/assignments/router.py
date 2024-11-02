@@ -6,7 +6,7 @@ from src.api.assignments.service import AssignmentService
 from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.schemas import oauth2_scheme
 from src.api.auth.service import AuthenticationService
-from src.api.dates.maper import DateSlotsMapper
+from src.api.dates.mapper import DateSlotsMapper
 from src.api.dates.repository import DateSlotRepository
 from src.api.dates.service import DateSlotsService
 from src.api.exceptions import ServerError
@@ -77,7 +77,7 @@ async def assign_incomplete_groups(
         topic_repository = TopicRepository(session)
         group_service = GroupService(GroupRepository(session))
 
-        answers = form_service.get_answers(topic_repository)
+        answers = form_service.get_answers(topic_repository, period_id)
         service = AssignmentService()
 
         group_result = service.assignment_incomplete_groups(answers)
@@ -189,7 +189,9 @@ async def assign_dates(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
-    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+    period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
+    max_groups_per_week: int = Query(default=5, gt=0),
+    max_dif_evaluators: int = Query(default=5, gt=0),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -219,7 +221,12 @@ async def assign_dates(
 
         service = AssignmentService()
         assignment_result = service.assignment_dates(
-            available_dates, tutors, evaluators, groups
+            available_dates,
+            tutors,
+            evaluators,
+            groups,
+            max_groups_per_week,
+            max_dif_evaluators,
         )
 
         return ResponseBuilder.build_clear_cache_response(
@@ -331,6 +338,7 @@ async def get_assigned_dates(
             assignments.append(
                 AssignedDateSlotResponse(
                     group_id=assigned_date[3],
+                    group_number=assigned_date[4],
                     tutor_id=assigned_date[2],
                     evaluator_id=assigned_date[1],
                     date=date.date,

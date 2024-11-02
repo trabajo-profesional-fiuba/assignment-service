@@ -1,6 +1,7 @@
 import re
 
 from src.api.auth.hasher import ShaHasher
+from src.api.dates.repository import DateSlotRepository
 from src.api.exceptions import Duplicated, EntityNotFound
 from src.api.groups.repository import GroupRepository
 from src.api.periods.exceptions import InvalidPeriod, PeriodDuplicated
@@ -16,6 +17,7 @@ from src.api.tutors.exceptions import (
 from src.api.tutors.models import TutorPeriod
 from src.api.users.repository import UserRepository
 from src.core.group import AssignedGroup
+from src.config.config import api_config
 
 
 class TutorService:
@@ -248,7 +250,7 @@ class TutorService:
             raise EntityNotFound(message=str(e))
 
     def notify_students(
-        self, sender_id: int, group: AssignedGroup, email_sender: str, message: str
+        self, sender_id: int, group: AssignedGroup, email_sender: object, message: str
     ):
         """Envia un mail a los alumnos de un grupo con copia al admin"""
         try:
@@ -264,7 +266,7 @@ class TutorService:
                 subject = "Tienes un nuevo mensaje de tu tutor"
 
             body = f"Mensaje:\n\n{message}\n\nGracias"
-            cc = "avillores@fi.uba.ar"
+            cc = api_config.cc_emails
             response = email_sender.send_emails(
                 to=to, subject=subject, body=body, cc=cc
             )
@@ -302,3 +304,23 @@ class TutorService:
                 )
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
+
+    def get_assigned_dates(
+        self, period_id: str, tutor_id: int, dates_repository: DateSlotRepository
+    ):
+        """Devuelve una tupla con las fechas asignadas como tutor y como evaluador"""
+        dates = dates_repository.get_tutor_slots_by_id(tutor_id, period_id)
+        tutor_dates = list(
+            filter(lambda x: x.tutor_or_evaluator == "tutor" and x.assigned, dates)
+        )
+        evaluators_dates = list(
+            filter(lambda x: x.tutor_or_evaluator == "evaluator" and x.assigned, dates)
+        )
+
+        return (tutor_dates, evaluators_dates)
+
+    def make_evaluator(self, period_id, tutor_id):
+        """Hace evaluador a un tutor en un cuatrimestre dado"""
+        self._repository.update_tutor_period(
+            period_id, tutor_id, {"is_evaluator": True}
+        )

@@ -36,6 +36,7 @@ class AssignedGroupConfirmationRequest(BaseModel):
     pre_report_approved: Optional[bool] = None
     intermediate_assigment_approved: Optional[bool] = None
     final_report_approved: Optional[bool] = None
+    group_number: Optional[int] = None
 
 
 class AssignedGroupResponse(BaseModel):
@@ -52,12 +53,14 @@ class AssignedDateSlotResponse(BaseModel):
     """Representa una asignacion de fechas hacia un grupo"""
 
     group_id: int
+    group_number: int
     tutor_id: int
     evaluator_id: int
     date: datetime
     spanish_date: str
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class AssignedDateSlotUpdate(BaseModel):
     """Representa una asignacion de fechas hacia un grupo"""
@@ -94,6 +97,7 @@ class GroupResponse(BaseModel):
     )
     topic: Optional[TopicResponse]
     reviewer_id: Optional[int]
+    group_number: int
 
     model_config = ConfigDict(from_attributes=True)
 

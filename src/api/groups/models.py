@@ -53,6 +53,7 @@ class Group(Base):
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
     )
+    group_number = Column(Integer)
 
     # Relaciones de los grupos
     students: Mapped[List[User]] = relationship(

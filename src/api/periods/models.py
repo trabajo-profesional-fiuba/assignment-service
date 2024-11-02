@@ -13,6 +13,7 @@ class Period(Base):
     initial_project_active = Column(Boolean, default=False)
     intermediate_project_active = Column(Boolean, default=False)
     final_project_active = Column(Boolean, default=False)
+    presentation_dates_available = Column(Boolean, default=False)
     groups_assignment_completed = Column(Boolean, default=False)
     topics_tutors_assignment_completed = Column(Boolean, default=False)
     presentation_dates_assignment_completed = Column(Boolean, default=False)
@@ -25,4 +26,7 @@ class Period(Base):
     dates_slots = relationship("DateSlot", back_populates="period", lazy="noload")
     tutor_dates_slots = relationship(
         "TutorDateSlot", back_populates="period", lazy="noload"
+    )
+    form_preferences = relationship(
+        "FormPreferences", back_populates="period", lazy="noload"
     )

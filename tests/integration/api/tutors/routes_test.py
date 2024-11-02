@@ -1,7 +1,9 @@
 import pytest
+import datetime as dt
 from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 
+from src.api.groups.dependencies import get_email_sender
 from src.api.tutors.router import router as tutor_router
 from src.api.periods.router import router as period_router
 
@@ -10,6 +12,16 @@ from src.config.database.database import create_tables, drop_tables
 from tests.integration.api.helper import ApiHelper
 
 PREFIX = "/tutors"
+
+
+class MockSendGrid:
+
+    def send_emails(self, to, subject, body, cc=[]):
+        return 202
+
+
+async def override_get_email_sender():
+    yield MockSendGrid()
 
 
 @pytest.fixture(scope="function")
@@ -583,8 +595,8 @@ def test_get_groups_assigned_to_tutor_as_reviewer(fastapi, tables):
 
 
 @pytest.mark.integration
-@pytest.mark.skip
 def test_notify_group_being_their_tutor(fastapi, tables):
+    fastapi.app.dependency_overrides[get_email_sender] = override_get_email_sender
     helper = ApiHelper()
     helper.create_period("1C2025")
     helper.create_tutor("Alejo", "Perez", "105000", "alejovillores@gmail.com")
@@ -616,8 +628,8 @@ def test_notify_group_being_their_tutor(fastapi, tables):
 
 
 @pytest.mark.integration
-@pytest.mark.skip
 def test_notify_group_being_their_reviewer(fastapi, tables):
+    fastapi.app.dependency_overrides[get_email_sender] = override_get_email_sender
     helper = ApiHelper()
     helper.create_period("1C2025")
     helper.create_tutor("Alejo", "Perez", "105000", "alejovillores@gmail.com")
@@ -648,3 +660,60 @@ def test_notify_group_being_their_reviewer(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.integration
+def test_get_my_dates_as_tutor(fastapi, tables):
+    # Arrange
+    helper = ApiHelper()
+    helper.create_period("1C2025")
+    helper.create_tutor("Alejo", "Perez", "105000", "alejovillores@gmail.com")
+    helper.create_tutor_period("105000", "1C2025")
+    helper.create_dates(
+        [
+            {"period_id": "1C2025", "slot": dt.datetime(2024, 10, 8, 10)},
+            {"period_id": "1C2025", "slot": dt.datetime(2024, 10, 9, 14)},
+            {"period_id": "1C2025", "slot": dt.datetime(2024, 10, 12, 10)},
+        ]
+    )
+    helper.create_tutor_dates(
+        [
+            {  # tutores
+                "tutor_id": 105000,
+                "slot": dt.datetime(2024, 10, 8, 10),
+                "period_id": "1C2025",
+                "assigned": True,
+                "tutor_or_evaluator": "tutor",
+            },
+            {
+                "tutor_id": 105000,
+                "slot": dt.datetime(2024, 10, 9, 14),
+                "period_id": "1C2025",
+                "assigned": True,
+                "tutor_or_evaluator": "tutor",
+            },
+            {
+                "tutor_id": 105000,
+                "slot": dt.datetime(2024, 10, 12, 10),
+                "period_id": "1C2025",
+                "assigned": True,
+                "tutor_or_evaluator": "evaluator",
+            },
+        ]
+    )
+    token = helper.create_tutor_token(105000)
+
+    params = {"period_id": "1C2025"}
+
+    # Act
+    response = fastapi.get(
+        f"{PREFIX}/assigned-dates",
+        params=params,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data["tutor_dates"]) == 2
+    assert len(data["evaluator_dates"]) == 1

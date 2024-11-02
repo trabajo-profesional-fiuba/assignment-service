@@ -89,9 +89,15 @@ class GroupTutorTopicAssignmentResult:
 
 class DateSlotAssignment:
     def __init__(
-        self, group_id: int, tutor_id: int, evaluator_id: int, date: DateSlot
+        self,
+        group_id: int,
+        group_number: int,
+        tutor_id: int,
+        evaluator_id: int,
+        date: DateSlot,
     ) -> None:
         self.group_id = group_id
+        self.group_number = group_number
         self.tutor_id = tutor_id
         self.evaluator_id = evaluator_id
         self.date = date
@@ -100,6 +106,7 @@ class DateSlotAssignment:
     def to_json(self):
         return AssignedDateSlotResponse(
             group_id=self.group_id,
+            group_number=self.group_number,
             tutor_id=self.tutor_id,
             evaluator_id=self.evaluator_id,
             date=self.date.date,

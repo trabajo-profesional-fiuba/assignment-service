@@ -38,8 +38,8 @@ class ApiHelper:
         self._period_repository = PeriodRepository(self.Session)
         self._dates_repository = DateSlotRepository(self.Session)
 
-    def create_period(self, period: str):
-        self._period_repository.add_period(Period(id=period))
+    def create_period(self, period: str, **kwards):
+        self._period_repository.add_period(Period(id=period, **kwards))
 
     def create_tutor(self, name: str, last_name: str, id: str, email: str):
         tutor = User(
@@ -153,7 +153,7 @@ class ApiHelper:
     def get_groups(self, period_id):
         return self._groups_repository.get_groups(period=period_id)
 
-    def register_answer(self, ids, topics):
+    def register_answer(self, ids, topics, period):
         today = dt.datetime.today().isoformat()
         all_topics = self._topic_repository.get_topics()
         all_topics_dict = dict()
@@ -168,7 +168,7 @@ class ApiHelper:
                 topics=topics,
             )
             answers.append(answer)
-        self._form_repository.add_answers(answers, topics, ids)
+        self._form_repository.add_answers(answers, topics, ids, period)
 
     def create_student_period(self, student_id: int, period_id: str):
         period = StudentPeriod(period_id=period_id, student_id=student_id)

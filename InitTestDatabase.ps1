@@ -1,6 +1,9 @@
 Param(
     [switch]
-    $StopDatabase
+    $StopDatabase,
+
+    [switch]
+    $ApplyMigrations
 )
 
 function IsDockerInstalledAndRunning() {
@@ -24,6 +27,14 @@ function IsDockerInstalledAndRunning() {
     
     return $false
 }
+function PythonInterpreterInVirtualEnv {
+    $Interpreter = Get-Command python | Select-Object -Property Source
+    if ($Interpreter.Source -match "virtualenvs") {
+        return $true
+    }
+
+    $false
+}
 
 
 if (IsDockerInstalledAndRunning) {
@@ -45,6 +56,17 @@ if (IsDockerInstalledAndRunning) {
         docker ps
     
         Write-Host -ForegroundColor Cyan "URL Connection: $postgresUrl"
+
+        if ($ApplyMigrations) {
+            Write-Host "Applying migrations to the database"
+            Start-Sleep -Seconds 3
+            if (PythonInterpreterInVirtualEnv){
+                Invoke-Expression -Command "alembic upgrade head"
+            }
+            else {
+                Invoke-Expression -Command "poetry alembic upgrade head"
+            }
+        }
     }
     else {
         Write-Host "Stopping and removing PostgreSQL 15 container..."

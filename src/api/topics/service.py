@@ -94,8 +94,6 @@ class TopicService:
             topics = csv_file.get_topics()
             topics_by_tutor = csv_file.get_topics_by_tutor()
 
-            self._repository.delete_topics()
-
             self._add_categories(categories)
             db_topics = self._add_topics(topics)
 

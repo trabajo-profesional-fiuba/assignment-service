@@ -16,22 +16,14 @@ class StudentRepository:
     def __init__(self, sess: Session):
         self.Session = sess
 
-    def get_students(self):
+    def get_students(self, period_id: str):
         """Devuelve todos los estudiantes"""
-        with self.Session() as session:
-            students = session.query(User).filter(User.role == Role.STUDENT).all()
-            for student in students:
-                session.expunge(student)
-
-        return students
-
-    def get_students_by_ids(self, ids: list[int]):
-        """Devuelve todos los estudiantes dado una lista de ids"""
         with self.Session() as session:
             students = (
                 session.query(User)
-                .filter(User.id.in_(ids))
+                .join(StudentPeriod, StudentPeriod.student_id == User.id)
                 .filter(User.role == Role.STUDENT)
+                .filter(StudentPeriod.period_id == period_id)
                 .all()
             )
             for student in students:
@@ -39,13 +31,30 @@ class StudentRepository:
 
         return students
 
-    def get_student_info(self, id: int):
+    def get_students_by_ids(self, ids: list[int], period_id: str):
+        """Devuelve todos los estudiantes dado una lista de ids"""
+        with self.Session() as session:
+            students = (
+                session.query(User)
+                .join(StudentPeriod, StudentPeriod.student_id == User.id)
+                .filter(User.id.in_(ids))
+                .filter(User.role == Role.STUDENT)
+                .filter(StudentPeriod.period_id == period_id)
+                .all()
+            )
+            for student in students:
+                session.expunge(student)
+
+        return students
+
+    def get_student_info(self, id: int, period):
         """Devuelve informacion de un estudiante a partir de su id"""
         with self.Session() as session:
             student_info = (
                 session.query(
                     User.id.label("user_id"),
                     Group.id.label("group_id"),
+                    Group.group_number.label("group_number"),
                     Topic.name.label("topic_name"),
                     TutorPeriod.tutor_id.label("tutor_id"),
                 )
@@ -54,6 +63,7 @@ class StudentRepository:
                 .join(Group.topic)
                 .join(Group.tutor_period)
                 .where(User.id == id)
+                .where(Group.period_id == period)
                 .one_or_none()
             )
 

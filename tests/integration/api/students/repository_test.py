@@ -30,6 +30,9 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_add_students(self, tables):
+        helper = ApiHelper()
+        helper.create_period("2C2025")
+
         student1 = User(
             id=12345,
             name="Juan",
@@ -47,24 +50,30 @@ class TestStudentRepository:
             role=Role.STUDENT,
         )
         students = [student1, student2]
+        periods = [
+            StudentPeriod(period_id="2C2025", student_id=12345),
+            StudentPeriod(period_id="2C2025", student_id=54321),
+        ]
 
         u_repository = UserRepository(self.Session)
         s_repository = StudentRepository(self.Session)
         u_repository.add_students(students)
-        response = s_repository.get_students()
+        s_repository.add_student_periods(periods)
+
+        response = s_repository.get_students("2C2025")
         assert len(response) == 2
 
     @pytest.mark.integration
     def test_no_student_returns_empty_list(self, tables):
         repository = StudentRepository(self.Session)
-        response = repository.get_students_by_ids([1, 2])
+        response = repository.get_students_by_ids([1, 2], "2C2025")
 
         assert response == []
 
     @pytest.mark.integration
     def test_get_student_by_id(self, tables):
         repository = StudentRepository(self.Session)
-        response = repository.get_students_by_ids([12345, 54321])
+        response = repository.get_students_by_ids([12345, 54321], "2C2025")
 
         assert len(response) == 2
 
@@ -83,7 +92,9 @@ class TestStudentRepository:
         u_repository = UserRepository(self.Session)
         _ = u_repository.add_students(students)
         repository = StudentRepository(self.Session)
-        response = repository.get_students_by_ids([12345, 11111])
+        periods = [StudentPeriod(period_id="2C2025", student_id=11111)]
+        repository.add_student_periods(periods)
+        response = repository.get_students_by_ids([12345, 11111], "2C2025")
 
         assert len(response) == 2
 
@@ -102,7 +113,9 @@ class TestStudentRepository:
         u_repository = UserRepository(self.Session)
         _ = u_repository.add_students(students)
         repository = StudentRepository(self.Session)
-        response = repository.get_students()
+        periods = [StudentPeriod(period_id="2C2025", student_id=44444)]
+        repository.add_student_periods(periods)
+        response = repository.get_students("2C2025")
 
         assert len(response) == 4
 
@@ -147,7 +160,13 @@ class TestStudentRepository:
         )
         students = u_repository.upsert_students([student3, student4])
         repository = StudentRepository(self.Session)
-        response = repository.get_students()
+        periods = [
+            StudentPeriod(period_id="2C2025", student_id=121212),
+            StudentPeriod(period_id="2C2025", student_id=131313),
+            StudentPeriod(period_id="2C2025", student_id=141414),
+        ]
+        repository.add_student_periods(periods)
+        response = repository.get_students("2C2025")
 
         student_changed = list(filter(lambda x: x.id == 121212, response))[0]
 
@@ -177,9 +196,6 @@ class TestStudentRepository:
 
     @pytest.mark.integration
     def test_upsert_student_periods(self, tables):
-        helper = ApiHelper()
-        helper.create_period("2C2025")
-
         s_repository = StudentRepository(self.Session)
         periods = [StudentPeriod(period_id="2C2025", student_id=101)]
         s_repository.upsert_student_periods(periods)

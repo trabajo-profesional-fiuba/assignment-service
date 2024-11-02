@@ -1,6 +1,7 @@
 import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content, HtmlContent
 from src.config.logging import logger
+from src.config.config import api_config
 from src.core.group import AssignedGroup
 
 
@@ -73,15 +74,17 @@ class SendGridEmailClient:
 
     def notify_attachement(self, group: AssignedGroup, type_of_attachment: str):
         to = group.emails() + [group.tutor_email()]
-        subject = f"Grupo {group.id} ha subido un nuevo archivo"
+        subject = f"Grupo {group.id} ha subido un nuevo archivo!"
         email_body = f"""
         Hola,
 
-        Este es un mensaje automático para informarte que el grupo {group.id} \
+        Queriamos informarte que el grupo {group.group_number} \
         ha subido su {type_of_attachment} al sistema.
+
+        Dentro del sistema vas a poder visualizar el archivo.
 
         Gracias.
         """
-        cc = "avillores@fi.uba.ar"
+        cc = api_config.cc_emails
 
         self._send_mail(to, subject, email_body, cc)

@@ -134,7 +134,6 @@ class DateSlotsService:
             logger.error(f"Could not update tutor slots because of: {str(e)}")
             raise InvalidDate(str(e))
 
-
-    def get_assigned_dates(self,period_id):
-        """ Busca las fechas asignadas realizando joins """
-        return self._repository.get_assigned_dates()
+    def get_assigned_dates(self, period_id):
+        """Busca las fechas asignadas realizando joins"""
+        return self._repository.get_assigned_dates(period_id)

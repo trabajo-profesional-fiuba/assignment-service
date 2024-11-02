@@ -23,7 +23,7 @@ class FormService:
     def __init__(self, form_repository: FormRepository):
         self._repository = form_repository
 
-    def add_answers(self, form_preference: FormPreferencesRequest):
+    def add_answers(self, form_preference: FormPreferencesRequest, period):
         try:
             """
             Agrega una respuesta a sus integrantes del formulario
@@ -55,7 +55,7 @@ class FormService:
                 answers.append(answer)
 
             answers_saved = self._repository.add_answers(
-                answers, topics, cleaned_user_ids
+                answers, topics, cleaned_user_ids, period
             )
             return answers_saved
         except (StudentNotFound, TopicNotFound, AnswerNotFound) as e:
@@ -94,7 +94,7 @@ class FormService:
 
         return topcis_as_dict
 
-    def get_answers(self, topic_repository: TopicRepository):
+    def get_answers(self, topic_repository: TopicRepository, period):
         """
         Recupera respuestas del repositorio, procesa los datos para agrupar a los estudiantes
         según sus respuestas y devuelve una respuesta formateada.
@@ -102,7 +102,7 @@ class FormService:
         Devuelve una lista de diccionarios, cada uno representando una respuesta con sus estudiantes
         y temas asociados, eliminando los temas duplicados.
         """
-        db_answers = self._repository.get_answers()
+        db_answers = self._repository.get_answers(period)
         topics = self._transform_topics(topic_repository)
 
         response = []
