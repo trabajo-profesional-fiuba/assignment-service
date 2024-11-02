@@ -27,6 +27,14 @@ function IsDockerInstalledAndRunning() {
     
     return $false
 }
+function PythonInterpreterInVirtualEnv {
+    $Interpreter = Get-Command python | Select-Object -Property Source
+    if ($Interpreter.Source -match "virtualenvs") {
+        return $true
+    }
+
+    $false
+}
 
 
 if (IsDockerInstalledAndRunning) {
@@ -52,7 +60,12 @@ if (IsDockerInstalledAndRunning) {
         if ($ApplyMigrations) {
             Write-Host "Applying migrations to the database"
             Start-Sleep -Seconds 3
-            Invoke-Expression -Command "alembic upgrade head"
+            if (PythonInterpreterInVirtualEnv){
+                Invoke-Expression -Command "alembic upgrade head"
+            }
+            else {
+                Invoke-Expression -Command "poetry alembic upgrade head"
+            }
         }
     }
     else {
