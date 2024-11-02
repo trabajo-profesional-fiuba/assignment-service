@@ -77,7 +77,7 @@ async def assign_incomplete_groups(
         topic_repository = TopicRepository(session)
         group_service = GroupService(GroupRepository(session))
 
-        answers = form_service.get_answers(topic_repository)
+        answers = form_service.get_answers(topic_repository, period_id)
         service = AssignmentService()
 
         group_result = service.assignment_incomplete_groups(answers)

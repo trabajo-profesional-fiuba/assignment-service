@@ -12,26 +12,42 @@ class TopicRepository:
 
     def add_categories(self, categories: list[Category]):
         """Agrega una lista de Categorias a la tabla"""
+        categories_saved = list()
         with self.Session() as session:
-            session.add_all(categories)
-            session.commit()
             for category in categories:
-                session.refresh(category)
-                session.expunge(category)
-        return categories
+                exists = (
+                    session.query(Category)
+                    .filter(Category.name == category.name)
+                    .first()
+                )
+                if not exists:
+                    session.add(category)
+                    session.commit()
+                    session.refresh(category)
+                    categories_saved.append(category)
+
+                else:
+                    categories_saved.append(exists)
+            session.expunge_all()
+        return categories_saved
 
     def add_topics(self, topics: list[Topic]):
         """Agrega una lista de temas a la tabla"""
+        topics_saved = list()
         with self.Session() as session:
-            session.add_all(topics)
-            session.commit()
-
             for topic in topics:
-                session.refresh(topic)
-                topic.category
-                session.expunge(topic)
+                topic_db = session.query(Topic).filter(Topic.name == topic.name).first()
+                if topic_db:
+                    session.expunge(topic_db)
+                    topics_saved.append(topic_db)
+                else:
+                    session.add(topic)
+                    session.commit()
+                    session.refresh(topic)
+                    session.expunge(topic)
+                    topics_saved.append(topic)
 
-        return topics
+        return topics_saved
 
     def add_topic_with_category(self, topic: Topic, category_name: str):
         """Agrega un tema y su categoria asociada"""
@@ -54,11 +70,7 @@ class TopicRepository:
         """Devuelve todos los temas"""
         with self.Session() as session:
             topics = session.query(Topic).all()
-
-            for topic in topics:
-                topic.category
-                session.expunge(topic)
-
+            session.expunge_all()
         return topics
 
     def get_categories(self):
@@ -102,8 +114,7 @@ class TopicRepository:
         """Devuelve tema por id"""
         with self.Session() as session:
             topic = session.query(Topic).filter(Topic.id == id).first()
-            if topic:
-                session.expunge(topic)
+            session.expunge_all()
         return topic
 
     def delete_topics(self):
@@ -123,9 +134,6 @@ class TopicRepository:
                 .filter(TutorPeriod.period_id == period_id)
                 .all()
             )
-
-            for topic in topics:
-                topic.category
-                session.expunge(topic)
+            session.expunge_all()
 
         return topics

@@ -12,6 +12,7 @@ from src.api.topics.models import Topic, Category
 from src.api.users.repository import UserRepository
 from src.api.users.models import User, Role
 from src.core.student_form_answer import StudentFormAnswer
+from tests.integration.api.helper import ApiHelper
 
 
 class TestFormRepository:
@@ -50,6 +51,7 @@ class TestFormRepository:
                 answers,
                 ["topic 1", "topic 2", "topic 3"],
                 [105001, 105002, 105003, 105004],
+                "1C2024",
             )
 
     @pytest.mark.integration
@@ -69,10 +71,12 @@ class TestFormRepository:
         user_ids = [105001, 105002, 105003, 105004]
         repository = FormRepository(self.Session)
         with pytest.raises(StudentNotFound):
-            repository.add_answers(answers, topics, user_ids)
+            repository.add_answers(answers, topics, user_ids, "1C2024")
 
     @pytest.mark.integration
     def test_add_answers_with_success(self, tables, today, answers):
+        helper = ApiHelper()
+        helper.create_period("1C2024")
         student_1 = User(
             id=105001,
             name="Juan",
@@ -111,7 +115,7 @@ class TestFormRepository:
         repository = FormRepository(self.Session)
         topics = ["topic 1", "topic 2", "topic 3"]
         user_ids = [105001, 105002, 105003, 105004]
-        result = repository.add_answers(answers, topics, user_ids)
+        result = repository.add_answers(answers, topics, user_ids, "1C2024")
         assert len(result) == 4
 
     @pytest.mark.integration
@@ -120,7 +124,7 @@ class TestFormRepository:
         topics = ["topic 1", "topic 2", "topic 3"]
         user_ids = [105001, 105002, 105003, 105004]
         with pytest.raises(Duplicated):
-            repository.add_answers(answers, topics, user_ids)
+            repository.add_answers(answers, topics, user_ids, "1C2024")
 
     @pytest.mark.integration
     def test_verify_not_duplicated_answer(self, tables, today):
@@ -148,7 +152,10 @@ class TestFormRepository:
 
         repository = FormRepository(self.Session)
         response = repository.add_answers(
-            answers, ["topic 1", "topic 2", "topic 3"], [105001, 105002, 105005]
+            answers,
+            ["topic 1", "topic 2", "topic 3"],
+            [105001, 105002, 105005],
+            "1C2024",
         )
         assert len(response) == 3
 
@@ -171,7 +178,10 @@ class TestFormRepository:
 
         repository = FormRepository(self.Session)
         response = repository.add_answers(
-            answers, ["topic 2", "topic 3", "topic 1"], [105001, 105002, 105003, 105004]
+            answers,
+            ["topic 2", "topic 3", "topic 1"],
+            [105001, 105002, 105003, 105004],
+            "1C2024",
         )
         response = repository.get_answers_by_answer_id(today)
         assert len(response) == 4
@@ -182,7 +192,7 @@ class TestFormRepository:
     @pytest.mark.integration
     def test_get_answers_with_success(self, tables, today):
         repository = FormRepository(self.Session)
-        response = repository.get_answers()
+        response = repository.get_answers("1C2024")
         assert len(response) == 7
 
     @pytest.mark.integration
@@ -210,21 +220,27 @@ class TestFormRepository:
             ),
         ]
 
-        repository.add_answers(answers, ["topic 2", "topic 3", "topic 1"], [101010])
+        repository.add_answers(
+            answers, ["topic 2", "topic 3", "topic 1"], [101010], "1C2024"
+        )
         today = dt.datetime.today().isoformat()
         answers = [
             StudentFormAnswer(
                 id=101010, answer_id=today, topics=["topic 2", "topic 3", "topic 1"]
             )
         ]
-        repository.add_answers(answers, ["topic 4", "topic 5", "topic 6"], [101010])
+        repository.add_answers(
+            answers, ["topic 4", "topic 5", "topic 6"], [101010], "1C2024"
+        )
         today = dt.datetime.today().isoformat()
         answers = [
             StudentFormAnswer(
                 id=101010, answer_id=today, topics=["topic 1", "topic 2", "topic 4"]
             ),
         ]
-        repository.add_answers(answers, ["topic 1", "topic 2", "topic 4"], [101010])
+        repository.add_answers(
+            answers, ["topic 1", "topic 2", "topic 4"], [101010], "1C2024"
+        )
 
-        answers = repository.get_answers_by_user_id(101010)
+        answers = repository.get_answers_by_user_id(101010, "1C2024")
         assert len(answers) == 3

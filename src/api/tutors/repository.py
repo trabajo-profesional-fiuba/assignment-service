@@ -146,20 +146,31 @@ class TutorRepository:
                             )
                             .first()
                         )
-                        topic_tutor_period = TopicTutorPeriod(
-                            topic_id=topic.id,
-                            tutor_period_id=tutor_period.id,
-                            capacity=capacities[idx],
+                        topic_tutor_period_exists = (
+                            session.query(TopicTutorPeriod)
+                            .filter(
+                                TopicTutorPeriod.tutor_period_id == tutor_period.id,
+                                TopicTutorPeriod.topic_id == topic.id,
+                            )
+                            .first()
                         )
-                        session.add(topic_tutor_period)
-                        topic_tutor_periods.append(topic_tutor_period)
-
+                        if topic_tutor_period_exists:
+                            topic_tutor_period_exists.capacity = capacities[idx]
+                            topic_tutor_periods.append(topic_tutor_period_exists)
+                        else:
+                            topic_tutor_period = TopicTutorPeriod(
+                                topic_id=topic.id,
+                                tutor_period_id=tutor_period.id,
+                                capacity=capacities[idx],
+                            )
+                            session.add(topic_tutor_period)
+                            topic_tutor_periods.append(topic_tutor_period)
                     session.commit()
 
                     for topic_tutor_period in topic_tutor_periods:
                         session.refresh(topic_tutor_period)
-                        session.expunge(topic_tutor_period)
 
+                    session.expunge_all()
                     return topic_tutor_periods
                 raise TutorPeriodNotFound(f"Tutor '{tutor_email}' has no period.")
             raise TutorNotFound(f"Tutor '{tutor_email}' not found.")
