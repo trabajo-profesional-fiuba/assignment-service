@@ -663,12 +663,42 @@ def test_notify_group_being_their_reviewer(fastapi, tables):
 
 
 @pytest.mark.integration
-def test_get_my_dates_as_tutor(fastapi, tables):
+def test_get_my_dates_as_tutor_and_evaluator(fastapi, tables):
     # Arrange
     helper = ApiHelper()
     helper.create_period("1C2025")
+    # Tutores
     helper.create_tutor("Alejo", "Perez", "105000", "alejovillores@gmail.com")
-    helper.create_tutor_period("105000", "1C2025")
+    period = helper.create_tutor_period("105000", "1C2025")
+    helper.create_tutor("Celeste", "D", "105111", "cdituro@gmail.com")
+    period2 = helper.create_tutor_period("105111", "1C2025")
+    # Estudiantes y grupos
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    helper.create_student("Ivan", "B", "105002", "ipfaab@fi.uba.ar")
+    helper.create_student("Joaquin", "C", "105003", "joagomez@fi.uba.ar")
+    topic = helper.create_topic("TopicCustom")
+    _ = helper.create_group(
+        ids=[105001],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="1C2025",
+        assigned_date=dt.datetime(2024, 10, 8, 10),
+    )
+    _ = helper.create_group(
+        ids=[105002],
+        tutor_period_id=period.id,
+        topic_id=topic.id,
+        period_id="1C2025",
+        assigned_date=dt.datetime(2024, 10, 9, 14),
+    )
+    _ = helper.create_group(
+        ids=[105003],
+        tutor_period_id=period2.id,
+        topic_id=topic.id,
+        period_id="1C2025",
+        assigned_date=dt.datetime(2024, 10, 12, 10),
+    )
+    # Fechas de tutores
     helper.create_dates(
         [
             {"period_id": "1C2025", "slot": dt.datetime(2024, 10, 8, 10)},
@@ -678,7 +708,7 @@ def test_get_my_dates_as_tutor(fastapi, tables):
     )
     helper.create_tutor_dates(
         [
-            {  # tutores
+            {
                 "tutor_id": 105000,
                 "slot": dt.datetime(2024, 10, 8, 10),
                 "period_id": "1C2025",
@@ -717,3 +747,6 @@ def test_get_my_dates_as_tutor(fastapi, tables):
     data = response.json()
     assert len(data["tutor_dates"]) == 2
     assert len(data["evaluator_dates"]) == 1
+    assert data["tutor_dates"][0]["group_number"] == 1
+    assert data["tutor_dates"][1]["group_number"] == 2
+    assert data["evaluator_dates"][0]["group_number"] == 3

@@ -237,3 +237,20 @@ class DateSlotRepository:
             assignments = result.fetchall()
 
         return assignments
+
+    def get_tutors_assigned_dates(self, tutor_id, period_id):
+        """Obtiene todos los slots asiganados de un tutor  por cuatrimestre"""
+        with self.Session() as session:
+            slots = (
+                session.query(TutorDateSlot, Group.group_number)
+                .join(Group, Group.exhibition_date == TutorDateSlot.slot)
+                .filter(
+                    TutorDateSlot.tutor_id == tutor_id,
+                    TutorDateSlot.period_id == period_id,
+                    TutorDateSlot.assigned == True,
+                )
+                .all()
+            )
+            session.expunge_all()
+
+        return slots

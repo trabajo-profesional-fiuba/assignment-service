@@ -6,7 +6,7 @@ from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
 from src.api.auth.service import AuthenticationService
 from src.api.dates.mapper import DateSlotsMapper
 from src.api.dates.repository import DateSlotRepository
-from src.api.dates.schemas import DateSlotResponseList
+from src.api.dates.schemas import DateSlotResponse, DateSlotResponseList
 from src.api.exceptions import (
     Duplicated,
     EntityNotFound,
@@ -435,12 +435,16 @@ async def assigned_dates(
         tutor_id = auth_service.get_user_id(token)
 
         service = TutorService(TutorRepository(session))
-
         dates = service.get_assigned_dates(
             period_id, tutor_id, DateSlotRepository(session)
         )
-        tutor_dates = dates[0]
-        evaluator_dates = dates[1]
+
+        tutor_dates = [
+            DateSlotResponse(slot=row[0].slot, group_number=row[1]) for row in dates[0]
+        ]
+        evaluator_dates = [
+            DateSlotResponse(slot=row[0].slot, group_number=row[1]) for row in dates[1]
+        ]
 
         return TutorAssignedDates(
             tutor_dates=tutor_dates, evaluator_dates=evaluator_dates
@@ -451,6 +455,7 @@ async def assigned_dates(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
+
 
 @router.post(
     "/evaluator",
@@ -468,7 +473,7 @@ async def make_evaluator(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
-    tutor_id: int =Query(...),
+    tutor_id: int = Query(...),
 ):
     """Endpoint para agregar un tutor manualmente"""
     try:
@@ -476,8 +481,8 @@ async def make_evaluator(
         auth_service.assert_only_admin(token)
 
         service = TutorService(TutorRepository(session))
-        service.make_evaluator(period_id,tutor_id)
-     
+        service.make_evaluator(period_id, tutor_id)
+
         return Response(status_code=status.HTTP_202_ACCEPTED)
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
