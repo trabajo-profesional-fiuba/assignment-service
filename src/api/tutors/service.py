@@ -309,12 +309,10 @@ class TutorService:
         self, period_id: str, tutor_id: int, dates_repository: DateSlotRepository
     ):
         """Devuelve una tupla con las fechas asignadas como tutor y como evaluador"""
-        dates = dates_repository.get_tutor_slots_by_id(tutor_id, period_id)
-        tutor_dates = list(
-            filter(lambda x: x.tutor_or_evaluator == "tutor" and x.assigned, dates)
-        )
+        dates = dates_repository.get_tutors_assigned_dates(tutor_id, period_id)
+        tutor_dates = list(filter(lambda x: x[0].tutor_or_evaluator == "tutor", dates))
         evaluators_dates = list(
-            filter(lambda x: x.tutor_or_evaluator == "evaluator" and x.assigned, dates)
+            filter(lambda x: x[0].tutor_or_evaluator == "evaluator", dates)
         )
 
         return (tutor_dates, evaluators_dates)

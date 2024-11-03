@@ -24,7 +24,7 @@ class DateSlotResponse(BaseModel):
 
     slot: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra="allow")
 
 
 class DateSlotResponseList(RootModel):
