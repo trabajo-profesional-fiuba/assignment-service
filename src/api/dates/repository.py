@@ -4,6 +4,7 @@ from sqlalchemy import insert, delete, and_, tuple_, update, select
 
 from src.api.dates.models import DateSlot, GroupDateSlot, TutorDateSlot
 from src.api.groups.models import Group
+from src.api.topics.models import Topic
 
 
 class DateSlotRepository:
@@ -242,8 +243,9 @@ class DateSlotRepository:
         """Obtiene todos los slots asiganados de un tutor  por cuatrimestre"""
         with self.Session() as session:
             slots = (
-                session.query(TutorDateSlot, Group.group_number)
+                session.query(TutorDateSlot, Group.group_number, Topic.name)
                 .join(Group, Group.exhibition_date == TutorDateSlot.slot)
+                .join(Topic, Topic.id == Group.assigned_topic_id)
                 .filter(
                     TutorDateSlot.tutor_id == tutor_id,
                     TutorDateSlot.period_id == period_id,

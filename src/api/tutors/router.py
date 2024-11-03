@@ -440,10 +440,12 @@ async def assigned_dates(
         )
 
         tutor_dates = [
-            DateSlotResponse(slot=row[0].slot, group_number=row[1]) for row in dates[0]
+            DateSlotResponse(slot=row[0].slot, group_number=row[1], topic=row[2])
+            for row in dates[0]
         ]
         evaluator_dates = [
-            DateSlotResponse(slot=row[0].slot, group_number=row[1]) for row in dates[1]
+            DateSlotResponse(slot=row[0].slot, group_number=row[1], topic=row[2])
+            for row in dates[1]
         ]
 
         return TutorAssignedDates(

@@ -750,3 +750,6 @@ def test_get_my_dates_as_tutor_and_evaluator(fastapi, tables):
     assert data["tutor_dates"][0]["group_number"] == 1
     assert data["tutor_dates"][1]["group_number"] == 2
     assert data["evaluator_dates"][0]["group_number"] == 3
+    assert data["tutor_dates"][0]["topic"] == "TopicCustom"
+    assert data["tutor_dates"][1]["topic"] == "TopicCustom"
+    assert data["evaluator_dates"][0]["topic"] == "TopicCustom"
