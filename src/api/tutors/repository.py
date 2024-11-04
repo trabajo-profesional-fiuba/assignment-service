@@ -219,7 +219,7 @@ class TutorRepository:
         with self.Session() as session:
             tutor = (
                 session.query(User)
-                .filter(User.role == Role.TUTOR and User.id == tutor_id)
+                .filter(User.role == Role.TUTOR, User.id == tutor_id)
                 .first()
             )
             if not tutor:

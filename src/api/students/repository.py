@@ -157,3 +157,19 @@ class StudentRepository:
             raise StudentPeriodNotInserted(
                 "Could not insert student periods in the database"
             )
+
+    def delete_student_by_id(self, student_id):
+        """Borra alumno por id"""
+        with self.Session() as session:
+            student = (
+                session.query(User)
+                .filter(User.role == Role.STUDENT, User.id == student_id)
+                .first()
+            )
+            if not student:
+                raise StudentNotFound(f"Student with id: {student_id} not exists")
+
+            session.delete(student)
+            session.commit()
+
+        return student

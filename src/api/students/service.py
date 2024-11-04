@@ -166,3 +166,9 @@ class StudentService:
             raise Duplicated("Duplicated student")
         except Exception:
             raise StudentNotInserted("Could not insert a student in the database")
+
+    def delete_student(self, student_id):
+        try:
+            self._repository.delete_student_by_id(student_id)
+        except StudentNotFound as e:
+            raise EntityNotFound(str(e))

@@ -12,7 +12,7 @@ association_table = Table(
     "groups_students",
     Base.metadata,
     Column("group_id", ForeignKey("groups.id", ondelete="CASCADE")),
-    Column("student_id", ForeignKey("users.id"), primary_key=True),
+    Column("student_id", ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
 )
 
 

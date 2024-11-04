@@ -295,6 +295,7 @@ def test_add_topics_withot_csv_file(fastapi, tables):
         "category": {"name": "Fake"},
     }
 
+
 @pytest.mark.integration
 def test_delete_topic_by_id(fastapi, tables):
     helper = ApiHelper()
@@ -318,7 +319,7 @@ def test_delete_topic_by_id(fastapi, tables):
     )
 
     assert response.status_code == status.HTTP_202_ACCEPTED
-    
+
     response = fastapi.get(
         f"{PREFIX}",
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
