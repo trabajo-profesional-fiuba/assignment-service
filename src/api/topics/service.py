@@ -1,4 +1,5 @@
 from src.api.exceptions import EntityNotFound
+from src.api.topics.exceptions import TopicNotFound
 from src.api.topics.models import Topic, Category
 from src.api.topics.repository import TopicRepository
 from src.api.topics.schemas import TopicList, TopicRequest, TopicResponse
@@ -139,3 +140,11 @@ class TopicService:
             Topic(name=topic_req.name), topic_req.category
         )
         return topic
+
+    def delete_topic(self, topic_id: int):
+        """Elimina un tema con sus referencias"""
+        try:
+            topic = self._repository.delete_topic(topic_id)
+            return topic
+        except TopicNotFound as e:
+            raise EntityNotFound(str(e))

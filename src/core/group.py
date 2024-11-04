@@ -64,7 +64,7 @@ class AssignedGroup(Group):
         students: Optional[List[Student]] = None,
         reviewer_id: Optional[int] = None,
         group_number: int = 0,
-        assigned_date: Optional[DateSlot] =None
+        assigned_date: Optional[DateSlot] = None,
     ) -> None:
         super().__init__(id=id, students=students, group_number=group_number)
         self._tutor = tutor
@@ -80,11 +80,11 @@ class AssignedGroup(Group):
     @property
     def available_dates(self) -> list[DateSlot]:
         return self._available_dates
-    
+
     @property
     def assigned_date(self) -> DateSlot:
         return self._assigned_date
-    
+
     def emails(self) -> list[str]:
         return [student.email for student in self._students]
 

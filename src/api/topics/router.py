@@ -181,3 +181,39 @@ async def add_topic(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
+
+
+@router.delete(
+    "/{topic_id}",
+    response_model=TopicResponse,
+    summary="Deletes topic by id",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_201_CREATED: {"description": "Successfully."},
+        status.HTTP_404_NOT_FOUND: {"description": "Topic not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error."
+        },
+    },
+)
+async def add_topic(
+    topic_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    """Endpoint para borrar un tema manualmente"""
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        service = TopicService(TopicRepository(session))
+        topic_deleted = service.delete_topic(topic_id)
+
+        return TopicResponse.model_validate(topic_deleted)
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except EntityNotFound as e:
+        raise e
+    except Exception as e:
+        raise ServerError(str(e))

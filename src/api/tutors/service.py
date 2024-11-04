@@ -279,7 +279,9 @@ class TutorService:
         try:
             valid = self._validate_period(period_id)
             if valid:
-                tutors = self._repository.get_tutors_by_period_id_with_available_dates(period_id)
+                tutors = self._repository.get_tutors_by_period_id_with_available_dates(
+                    period_id
+                )
                 return tutors
             else:
                 raise InvalidPeriod(
@@ -293,8 +295,10 @@ class TutorService:
         try:
             valid = self._validate_period(period_id)
             if valid:
-                evaluators = self._repository.get_evaluators_by_period_id_with_available_dates(
-                    period_id
+                evaluators = (
+                    self._repository.get_evaluators_by_period_id_with_available_dates(
+                        period_id
+                    )
                 )
                 return evaluators
             else:
