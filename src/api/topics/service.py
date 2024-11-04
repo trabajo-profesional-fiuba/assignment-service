@@ -144,7 +144,6 @@ class TopicService:
     def delete_topic(self, topic_id: int):
         """Elimina un tema con sus referencias"""
         try:
-            topic = self._repository.delete_topic(topic_id)
-            return topic
+            self._repository.delete_topic(topic_id)
         except TopicNotFound as e:
             raise EntityNotFound(str(e))

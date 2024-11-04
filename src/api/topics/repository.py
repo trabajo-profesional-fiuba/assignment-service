@@ -140,6 +140,6 @@ class TopicRepository:
             if topic_to_delete is None:
                 raise TopicNotFound(f"Topic {topic_id} not found")
 
+            topic_to_delete.category
             session.delete(topic_to_delete)
             session.commit()
-            return topic_to_delete

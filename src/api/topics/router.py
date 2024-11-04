@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, status, Depends, UploadFile, Query
+from fastapi import APIRouter, Response, status, Depends, UploadFile, Query
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
@@ -185,11 +185,10 @@ async def add_topic(
 
 @router.delete(
     "/{topic_id}",
-    response_model=TopicResponse,
     summary="Deletes topic by id",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_202_ACCEPTED,
     responses={
-        status.HTTP_201_CREATED: {"description": "Successfully."},
+        status.HTTP_202_ACCEPTED: {"description": "Successfully."},
         status.HTTP_404_NOT_FOUND: {"description": "Topic not found"},
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
             "description": "Internal Server Error."
@@ -208,9 +207,9 @@ async def add_topic(
         auth_service.assert_only_admin(token)
 
         service = TopicService(TopicRepository(session))
-        topic_deleted = service.delete_topic(topic_id)
+        service.delete_topic(topic_id)
 
-        return TopicResponse.model_validate(topic_deleted)
+        return Response(status_code=status.HTTP_202_ACCEPTED)
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
     except EntityNotFound as e:
