@@ -46,13 +46,9 @@ class TutorService:
             tutors.append(tutor)
         return tutors
 
-    def _get_existing_ids(self, tutors_ids):
+    def _get_existing_emails(self, tutors_emails):
         tutors = self._repository.get_tutors()
-        existing_tutors_id = []
-        for tutor in tutors:
-            if tutor.id in tutors_ids:
-                existing_tutors_id.append(tutor.id)
-        return existing_tutors_id
+        return [tutor.email for tutor in tutors if tutor.email in tutors_emails]
 
     def create_tutors_from_csv(
         self, csv: str, period: str, hasher: ShaHasher, user_repository: UserRepository
@@ -60,18 +56,18 @@ class TutorService:
         """Con un archivo csv como cadena, crea nuevos tutores y sobrescribe los existentes."""
         try:
             csv_file = TutorCsvFile(csv=csv)
-            tutors_ids = csv_file.get_tutors_id()
+            tutors_emails = csv_file.get_tutors_emails()
             tutors_dtos = csv_file.get_tutors()
-            existing_tutors_id = self._get_existing_ids(tutors_ids)
+            existing_tutors_emails = self._get_existing_emails(tutors_emails)
 
-            remaining_ids = list(
-                filter(lambda x: x not in existing_tutors_id, tutors_ids)
+            remaining_emails = list(
+                filter(lambda x: x not in existing_tutors_emails, tutors_emails)
             )
 
             tutor_periods = []
             tutors = []
-            for id in remaining_ids:
-                tutor_dto = tutors_dtos[id]
+            for email in remaining_emails:
+                tutor_dto = tutors_dtos[email]
                 tutor = User(
                     id=int(tutor_dto.id),
                     name=tutor_dto.name,
@@ -82,8 +78,8 @@ class TutorService:
                 )
                 tutors.append(tutor)
 
-            for id in tutors_ids:
-                tutor_dto = tutors_dtos[id]
+            for email in tutors_emails:
+                tutor_dto = tutors_dtos[email]
                 tutor_periods.append(
                     TutorPeriod(
                         period_id=period,
@@ -95,10 +91,13 @@ class TutorService:
             user_repository.add_tutors(tutors)
 
             # Clean if the tutor already contains a period asociated
-            if len(existing_tutors_id) > 0:
-                self._repository.remove_tutor_periods_by_tutor_ids(
-                    period, existing_tutors_id
-                )
+            if len(existing_tutors_emails) > 0:
+                ids = [
+                    tutor.id
+                    for email, tutor in tutors_dtos.items()
+                    if email in existing_tutors_emails
+                ]
+                self._repository.remove_tutor_periods_by_tutor_ids(period, ids)
 
             # Add new periods
             self._repository.add_tutor_periods(tutor_periods)

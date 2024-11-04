@@ -124,6 +124,7 @@ async def assign_group_topic_tutor(
     method: str = Query(pattern="^(lp|flow)$", default="lp"),
 ):
     try:
+        """Ejecuta el algoritmo de grupos, temas y tutores aplicando un metodo preferido"""
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
 
@@ -194,6 +195,7 @@ async def assign_dates(
     max_dif_evaluators: int = Query(default=5, gt=0),
 ):
     try:
+        """Resuelve el algoritmo de fechas y grupos"""
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
 
@@ -270,6 +272,7 @@ async def update_assignments(
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
+        """Upsertea los resultados para marcarlos como asignados"""
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
 
@@ -326,6 +329,7 @@ async def get_assigned_dates(
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
+        """Devuelve el resultado del algoritmo en un cuatrimestre dado"""
         auth_service = AuthenticationService(jwt_resolver)
         auth_service.assert_only_admin(token)
 
