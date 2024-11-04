@@ -445,6 +445,48 @@ def test_date_slots_assigment(fastapi, tables):
 
 
 @pytest.mark.integration
+def test_put_date_assignment_results_does_upsert_if_date_does_no_exists(
+    fastapi, tables
+):
+    helper = ApiHelper()
+    helper.create_period("2C2024")
+    # tutores y evaluadores
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
+    t_period1 = helper.create_tutor_period("105000", "2C2024")
+    helper.create_evaluator(
+        "Carlos", "Fontela", "103010", "cfontela@fi.uba.ar", "2C2024"
+    )
+
+    # Estudiantes y grupos
+    helper.create_student("Victoria", "A", "105001", "vlopez@fi.uba.ar")
+    topic1 = helper.create_topic("TopicCustom")
+
+    group1 = helper.create_group(
+        ids=[105001],
+        tutor_period_id=t_period1.id,
+        topic_id=topic1.id,
+        period_id="2C2024",
+    )
+    admin_token = helper.create_admin_token()
+    body = [
+        {
+            "group_id": group1.id,
+            "tutor_id": 105000,
+            "evaluator_id": 103010,
+            "date": (dt.datetime(2024, 10, 8, 10)).isoformat(),
+        }
+    ]
+    response = fastapi.put(
+        f"{PREFIX}/date-assigment",
+        params={"period_id": "2C2024"},
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+        json=body,
+    )
+
+    assert response.status_code == status.HTTP_202_ACCEPTED
+
+
+@pytest.mark.integration
 def test_put_date_assignment_results(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("2C2024")
@@ -502,6 +544,7 @@ def test_put_date_assignment_results(fastapi, tables):
     ]
     response = fastapi.put(
         f"{PREFIX}/date-assigment",
+        params={"period_id": "2C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
         json=body,
     )
@@ -567,6 +610,7 @@ def test_get_date_assignment_results(fastapi, tables):
     ]
     response = fastapi.put(
         f"{PREFIX}/date-assigment",
+        params={"period_id": "2C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
         json=body,
     )
@@ -670,6 +714,7 @@ def test_get_date_assignment_multiple_results(fastapi, tables):
     ]
     response = fastapi.put(
         f"{PREFIX}/date-assigment",
+        params={"period_id": "2C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
         json=body,
     )

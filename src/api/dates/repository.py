@@ -206,11 +206,69 @@ class DateSlotRepository:
             session.execute(stmt)
             session.commit()
 
-    def update_date(self, date: datetime, attributes: dict):
+    def _upsert_tutor(
+        self, session, date: datetime, tutor_id: int, period_id: str, type
+    ):
+        tutor_insert = insert(TutorDateSlot).values(
+            slot=date,
+            assigned=True,
+            period_id=period_id,
+            tutor_id=tutor_id,
+            tutor_or_evaluator=type,
+        )
+        db_tutor = (
+            session.query(TutorDateSlot)
+            .filter(TutorDateSlot.tutor_id == tutor_id, TutorDateSlot.slot == date)
+            .first()
+        )
+        if db_tutor:
+            tutor_update = (
+                update(TutorDateSlot)
+                .filter(TutorDateSlot.tutor_id == tutor_id, TutorDateSlot.slot == date)
+                .values(assigned=True, tutor_or_evaluator=type)
+            )
+            session.execute(tutor_update)
+        else:
+            tutor_insert
+            session.execute(tutor_insert)
+
+    def _upsert_group(self, session, date: datetime, group_id: int):
+        db_group = (
+            session.query(GroupDateSlot)
+            .filter(GroupDateSlot.group_id == group_id, GroupDateSlot.slot == date)
+            .first()
+        )
+        group_insert = insert(GroupDateSlot).values(slot=date, group_id=group_id)
+        if not db_group:
+            session.execute(group_insert)
+
+    def _upsert_date(self, session, date: datetime, period_id: str):
+        db_date = session.query(DateSlot).filter(DateSlot.slot == date).first()
+        if db_date:
+            date_update = (
+                update(DateSlot).filter(DateSlot.slot == date).values(assigned=True)
+            )
+            session.execute(date_update)
+        else:
+            date_insert = insert(DateSlot).values(
+                slot=date, assigned=True, period_id=period_id
+            )
+            session.execute(date_insert)
+
+    def update_date(
+        self,
+        date: datetime,
+        tutor_id: int,
+        evaluator_id: int,
+        group_id: int,
+        period_id: str,
+    ):
         """Updatea basado en la fecha"""
-        stmt = update(DateSlot).filter(DateSlot.slot == date).values(**attributes)
         with self.Session() as session:
-            session.execute(stmt)
+            self._upsert_date(session, date, period_id)
+            self._upsert_tutor(session, date, tutor_id, period_id, "tutor")
+            self._upsert_tutor(session, date, evaluator_id, period_id, "evaluator")
+            self._upsert_group(session, date, group_id)
             session.commit()
 
     def get_assigned_dates(self, period_id):
