@@ -452,6 +452,7 @@ async def assigned_dates(
     except Exception as e:
         raise ServerError(str(e))
 
+
 @router.post(
     "/evaluator",
     summary="Make a tutor an evaluator for one tutor period",
@@ -468,7 +469,7 @@ async def make_evaluator(
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
-    tutor_id: int =Query(...),
+    tutor_id: int = Query(...),
 ):
     """Endpoint para agregar un tutor manualmente"""
     try:
@@ -476,8 +477,8 @@ async def make_evaluator(
         auth_service.assert_only_admin(token)
 
         service = TutorService(TutorRepository(session))
-        service.make_evaluator(period_id,tutor_id)
-     
+        service.make_evaluator(period_id, tutor_id)
+
         return Response(status_code=status.HTTP_202_ACCEPTED)
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")

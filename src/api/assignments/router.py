@@ -267,6 +267,7 @@ async def update_assignments(
     session: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
     jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
         auth_service = AuthenticationService(jwt_resolver)
@@ -281,10 +282,8 @@ async def update_assignments(
             tutor_id = assignment.tutor_id
             group_id = assignment.group_id
 
-            dates_service.assign_tutors_dates(tutor_id, date, "tutor")
-            dates_service.assign_tutors_dates(evaluator_id, date, "evaluator")
+            dates_service.assign_date(date, tutor_id, evaluator_id, group_id, period_id)
             group_service.assign_date(group_id, date)
-            dates_service.assign_date(date)
 
         return Response(status_code=status.HTTP_202_ACCEPTED)
     except Exception as e:
