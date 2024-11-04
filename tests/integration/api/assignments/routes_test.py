@@ -610,6 +610,7 @@ def test_get_date_assignment_results(fastapi, tables):
     ]
     response = fastapi.put(
         f"{PREFIX}/date-assigment",
+        params={"period_id": "2C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
         json=body,
     )
@@ -713,6 +714,7 @@ def test_get_date_assignment_multiple_results(fastapi, tables):
     ]
     response = fastapi.put(
         f"{PREFIX}/date-assigment",
+        params={"period_id": "2C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
         json=body,
     )

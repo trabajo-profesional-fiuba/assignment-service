@@ -48,6 +48,7 @@ class GroupMapper:
                 db_group.group_dates_slots
             ),
             group_number=db_group.group_number,
+            assigned_date=self._dates_mapper.map_datetime_to_date_slot(db_group.exhibition_date)
         )
 
         return group
