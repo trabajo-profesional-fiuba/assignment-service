@@ -187,13 +187,19 @@ class ApiHelper:
         tutor_period_id: int,
         topic_id,
         period_id: str = None,
+        assigned_date=None,
     ):
-        return self._groups_repository.add_group(
+        group = self._groups_repository.add_group(
             ids=ids,
             tutor_period_id=tutor_period_id,
             period_id=period_id,
             topic_id=topic_id,
         )
+        if assigned_date:
+            self._groups_repository.update(
+                group_id=group.id, attributes={"exhibition_date": assigned_date}
+            )
+        return group
 
     def assign_reviewer(self, reviewer_id: int, group_id: int):
         attributes = {"reviewer_id": reviewer_id}

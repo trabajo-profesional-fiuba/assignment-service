@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, status, Depends, UploadFile, Query
+from fastapi import APIRouter, Response, status, Depends, UploadFile, Query
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
@@ -179,5 +179,40 @@ async def add_topic(
         return TopicResponse.model_validate(topic_saved)
     except InvalidJwt:
         raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
+
+
+@router.delete(
+    "/{topic_id}",
+    summary="Deletes topic by id",
+    status_code=status.HTTP_202_ACCEPTED,
+    responses={
+        status.HTTP_202_ACCEPTED: {"description": "Successfully."},
+        status.HTTP_404_NOT_FOUND: {"description": "Topic not found"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Internal Server Error."
+        },
+    },
+)
+async def add_topic(
+    topic_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    """Endpoint para borrar un tema manualmente"""
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        service = TopicService(TopicRepository(session))
+        service.delete_topic(topic_id)
+
+        return Response(status_code=status.HTTP_202_ACCEPTED)
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except EntityNotFound as e:
+        raise e
     except Exception as e:
         raise ServerError(str(e))

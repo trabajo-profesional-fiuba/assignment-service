@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from src.api.students.router import router as student_router
 from src.api.periods.router import router as period_router
+from src.api.groups.router import router as group_router
 from src.config.database.database import create_tables, drop_tables
 
 from tests.integration.api.helper import ApiHelper
@@ -27,6 +28,8 @@ def fastapi():
     app = FastAPI()
     app.include_router(student_router)
     app.include_router(period_router)
+    app.include_router(group_router)
+
     client = TestClient(app)
     yield client
 
@@ -335,3 +338,39 @@ def test_create_student_with_invalid_token(fastapi, tables):
     )
     assert response.status_code == 401
     assert response.json()["detail"] == "Invalid Authorization"
+
+
+@pytest.mark.integration
+def test_remove_student_by_id(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_tutor("Celeste", "Perez", "105123", "cdituro@fi.uba.ar")
+    period = helper.create_tutor_period("105123", "2C2024")
+
+    # Estudiantes y grupos
+    helper.create_student("Victoria", "A", "123456", "vlopez@fi.uba.ar")
+    helper.create_student("Alejo", "B", "78910", "avillores@fi.uba.ar")
+    topic1 = helper.create_topic("TopicCustom")
+    token = helper.create_admin_token()
+
+    helper.create_group(
+        ids=[123456, 78910],
+        tutor_period_id=period.id,
+        topic_id=topic1.id,
+        period_id="2C2024",
+    )
+
+    response = fastapi.delete(
+        f"{PREFIX}/{78910}",
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    params = {"period": "2C2024"}
+    res = fastapi.get(
+        f"/groups/",
+        params=params,
+        headers={"Authorization": f"Bearer {token.access_token}"},
+    )
+    group = res.json()[0]
+
+    assert len(group["students"]) == 1

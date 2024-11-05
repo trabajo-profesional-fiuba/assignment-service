@@ -116,22 +116,21 @@ class DateSlotsService:
             logger.error(f"Could not update tutor slots because of: {str(e)}")
             raise InvalidDate(str(e))
 
-    def assign_tutors_dates(self, tutor_id: int, date: datetime, type: str):
-        """Updatea las fechas de tutores a asignadas con el tipo"""
+    def assign_date(
+        self,
+        date: datetime,
+        tutor_id: int,
+        evaluator_id: int,
+        group_id: int,
+        period_id: str,
+    ):
+        """Marca una fecha para el admin, tutor, evaluador y grupos como ya asignada"""
         try:
-            attributes = {"assigned": True, "tutor_or_evaluator": type}
-            self._repository.update_tutor_dates(tutor_id, date, attributes)
+            self._repository.update_date(
+                date, tutor_id, evaluator_id, group_id, period_id
+            )
         except Exception as e:
-            logger.error(f"Could not update tutor slots because of: {str(e)}")
-            raise InvalidDate(str(e))
-
-    def assign_date(self, date: datetime):
-        """Marca una fecha como ya asignada"""
-        try:
-            attributes = {"assigned": True}
-            self._repository.update_date(date, attributes)
-        except Exception as e:
-            logger.error(f"Could not update tutor slots because of: {str(e)}")
+            logger.error(f"Could not update the dates slots because of: {str(e)}")
             raise InvalidDate(str(e))
 
     def get_assigned_dates(self, period_id):

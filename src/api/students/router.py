@@ -181,3 +181,36 @@ async def add_student(
         raise InvalidCredentials("Invalid Authorization")
     except Exception as e:
         raise ServerError(str(e))
+
+
+@router.delete(
+    "/{student_id}",
+    summary="Deletes a student based on its id.",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"description": "student id not found"},
+        status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Internal server error"},
+    },
+    status_code=status.HTTP_201_CREATED,
+)
+async def delete_student(
+    student_id: int,
+    session: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+):
+    """Endpoint para borrar un tutor"""
+    try:
+        auth_service = AuthenticationService(jwt_resolver)
+        auth_service.assert_only_admin(token)
+
+        service = StudentService(StudentRepository(session))
+        res = service.delete_student(student_id)
+
+        return ResponseBuilder.build_clear_cache_response(res, status.HTTP_201_CREATED)
+    except EntityNotFound as e:
+        raise e
+    except InvalidJwt:
+        raise InvalidCredentials("Invalid Authorization")
+    except Exception as e:
+        raise ServerError(str(e))
