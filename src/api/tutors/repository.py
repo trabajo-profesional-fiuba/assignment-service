@@ -219,7 +219,7 @@ class TutorRepository:
         with self.Session() as session:
             tutor = (
                 session.query(User)
-                .filter(User.role == Role.TUTOR and User.id == tutor_id)
+                .filter(User.role == Role.TUTOR, User.id == tutor_id)
                 .first()
             )
             if not tutor:
@@ -289,7 +289,10 @@ class TutorRepository:
                 .join(TutorPeriod)
                 .filter(TutorPeriod.period_id == period_id)
                 .join(TutorDateSlot)
-                .filter(TutorDateSlot.period_id == period_id, TutorDateSlot.assigned == False)
+                .filter(
+                    TutorDateSlot.period_id == period_id,
+                    TutorDateSlot.assigned == False,
+                )
                 .options(joinedload(User.tutor_periods))
                 .options(joinedload(User.tutor_dates_slots))
                 .all()
@@ -310,7 +313,10 @@ class TutorRepository:
                     TutorPeriod.period_id == period_id, TutorPeriod.is_evaluator == True
                 )
                 .join(TutorDateSlot)
-                .filter(TutorDateSlot.period_id == period_id, TutorDateSlot.assigned == False)
+                .filter(
+                    TutorDateSlot.period_id == period_id,
+                    TutorDateSlot.assigned == False,
+                )
                 .options(joinedload(User.tutor_periods))
                 .options(joinedload(User.tutor_dates_slots))
                 .all()

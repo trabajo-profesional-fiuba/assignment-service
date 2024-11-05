@@ -15,10 +15,10 @@ class DateSlotsMapper:
     def map_model_to_date_slot(date: DateSlotModel):
         """Mapea una  fecha desde la base de datos hacia clase nativas de python"""
         return DateSlot(start_time=date.slot)
-    
+
     @staticmethod
-    def map_datetime_to_date_slot(date:datetime | None):
+    def map_datetime_to_date_slot(date: datetime | None):
         if date:
             return DateSlot(start_time=date)
-        
+
         return None

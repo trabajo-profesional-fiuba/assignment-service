@@ -294,3 +294,34 @@ def test_add_topics_withot_csv_file(fastapi, tables):
         "name": "My custom topic",
         "category": {"name": "Fake"},
     }
+
+
+@pytest.mark.integration
+def test_delete_topic_by_id(fastapi, tables):
+    helper = ApiHelper()
+    helper.create_period("1C2024")
+    helper.create_category("Fake")
+    helper.create_topic("topic1", 2)
+    helper.create_topic("topic2", 2)
+    topic = helper.create_topic("topic3", 2)
+    helper.create_topic("topic4", 2)
+
+    admin_token = helper.create_admin_token()
+
+    response = fastapi.get(
+        f"{PREFIX}",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert len(response.json()) == 4
+    response = fastapi.delete(
+        f"{PREFIX}/{topic.id}",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+
+    assert response.status_code == status.HTTP_202_ACCEPTED
+
+    response = fastapi.get(
+        f"{PREFIX}",
+        headers={"Authorization": f"Bearer {admin_token.access_token}"},
+    )
+    assert len(response.json()) == 3

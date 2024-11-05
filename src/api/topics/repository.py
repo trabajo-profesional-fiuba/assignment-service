@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.api.topics.exceptions import CategoryNotFound
+from src.api.topics.exceptions import CategoryNotFound, TopicNotFound
 from src.api.topics.models import Category, Topic, TopicTutorPeriod
 from src.api.tutors.models import TutorPeriod
 
@@ -117,13 +117,6 @@ class TopicRepository:
             session.expunge_all()
         return topic
 
-    def delete_topics(self):
-        """Borra todas las categorias que no son default y en cascada los temas"""
-        with self.Session() as session:
-            session.query(Category).filter(Category.name != "default").delete()
-            session.query(Topic).delete()
-            session.commit()
-
     def get_topics_by_period_id(self, period_id):
         """Devuelve todas las categorias de un cuatrimestre particular"""
         with self.Session() as session:
@@ -137,3 +130,16 @@ class TopicRepository:
             session.expunge_all()
 
         return topics
+
+    def delete_topic(self, topic_id):
+        with self.Session() as session:
+            topic_to_delete = (
+                session.query(Topic).filter(Topic.id == topic_id).one_or_none()
+            )
+
+            if topic_to_delete is None:
+                raise TopicNotFound(f"Topic {topic_id} not found")
+
+            topic_to_delete.category
+            session.delete(topic_to_delete)
+            session.commit()
