@@ -219,7 +219,7 @@ class TutorRepository:
         with self.Session() as session:
             tutor = (
                 session.query(User)
-                .filter(User.role == Role.TUTOR and User.id == tutor_id)
+                .filter(User.role == Role.TUTOR, User.id == tutor_id)
                 .first()
             )
             if not tutor:
@@ -281,7 +281,7 @@ class TutorRepository:
         except exc.IntegrityError:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
 
-    def get_tutors_by_period_id_with_dates(self, period_id: str):
+    def get_tutors_by_period_id_with_available_dates(self, period_id: str):
         """Devuelve todos los tutores cargando las fechas que el tutor selecciono"""
         with self.Session() as session:
             tutors = (
@@ -289,7 +289,10 @@ class TutorRepository:
                 .join(TutorPeriod)
                 .filter(TutorPeriod.period_id == period_id)
                 .join(TutorDateSlot)
-                .filter(TutorDateSlot.period_id == period_id)
+                .filter(
+                    TutorDateSlot.period_id == period_id,
+                    TutorDateSlot.assigned == False,
+                )
                 .options(joinedload(User.tutor_periods))
                 .options(joinedload(User.tutor_dates_slots))
                 .all()
@@ -297,7 +300,7 @@ class TutorRepository:
             session.expunge_all()
         return tutors
 
-    def get_evaluators_by_period_id_with_dates(self, period_id: str):
+    def get_evaluators_by_period_id_with_available_dates(self, period_id: str):
         """
         Devuelve todos los tutores que son tambien evaluadores en un cuatrimestre particular
         cargando las fechas que el tutor selecciono
@@ -310,7 +313,10 @@ class TutorRepository:
                     TutorPeriod.period_id == period_id, TutorPeriod.is_evaluator == True
                 )
                 .join(TutorDateSlot)
-                .filter(TutorDateSlot.period_id == period_id)
+                .filter(
+                    TutorDateSlot.period_id == period_id,
+                    TutorDateSlot.assigned == False,
+                )
                 .options(joinedload(User.tutor_periods))
                 .options(joinedload(User.tutor_dates_slots))
                 .all()

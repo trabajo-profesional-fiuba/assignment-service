@@ -64,13 +64,13 @@ class TutorCsvFile:
 
         return rows
 
-    def get_tutors_id(self):
+    def get_tutors_emails(self):
         """Obtiene los ids de los tutores del csv"""
-        return list(self._df["DNI"].unique())
+        return list(self._df["MAIL"].unique())
 
     def _add_tutor(self, row, tutors):
         """Crea tutores a partir de los datos de las columnas del csv"""
-        tutors[row["DNI"]] = Tutor(
+        tutors[row["MAIL"]] = Tutor(
             id=row["DNI"],
             email=row["MAIL"],
             name=row["NOMBRE"],

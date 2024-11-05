@@ -45,9 +45,9 @@ class AssignmentService:
         """
         Utiliza el algoritmo de programacion lineal de fechas para asignar grupos a fechas de exposicion
         """
-
+        filtered_groups = list(filter(lambda x: x.assigned_date is None, groups))
         assigment_model = DeliveryLPSolver(
-            groups=groups,
+            groups=filtered_groups,
             available_dates=available_dates,
             tutors=tutors,
             evaluators=evaluators,
