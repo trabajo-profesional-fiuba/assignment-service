@@ -4,8 +4,7 @@ from typing_extensions import Annotated
 
 from src.api.assignments.service import AssignmentService
 from src.api.auth.dependencies import authorization
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.jwt import InvalidJwt
 from src.api.auth.service import AuthenticationService
 from src.api.dates.mapper import DateSlotsMapper
 from src.api.dates.repository import DateSlotRepository
@@ -33,7 +32,7 @@ from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
 from src.config.logging import logger
 from src.core.date_slots import DateSlot
-from src.core.result import DateSlotsAssignmentResult
+
 
 router = APIRouter(prefix="/assignments", tags=["Assignments"])
 

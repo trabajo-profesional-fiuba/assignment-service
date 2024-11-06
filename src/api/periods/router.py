@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, status, Query, Path
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
+from src.api.auth.dependencies import authorization
+from src.api.auth.jwt import InvalidJwt
 from src.api.auth.service import AuthenticationService
 from src.api.exceptions import (
     Duplicated,
@@ -16,7 +17,6 @@ from src.api.periods.schemas import (
     PeriodList,
     UpdatePeriodRequest,
 )
-from src.api.auth.schemas import oauth2_scheme
 from src.api.periods.exceptions import InvalidPeriod
 from src.api.periods.repository import PeriodRepository
 from src.api.periods.service import PeriodService
@@ -41,13 +41,12 @@ router = APIRouter(prefix="/periods", tags=["Periods"])
 async def add_period(
     session: Annotated[Session, Depends(get_db)],
     period: PeriodRequest,
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para agregar un nuevo cuatrimestre"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_only_admin(authorization['token'])
 
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.add_period(period))
@@ -73,14 +72,13 @@ async def add_period(
 )
 async def get_periods(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     order: str = Query(pattern="^(ASC|DESC)$", default="DESC"),
 ):
     """Endpoint para obtener todos los cuatrimestres"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_only_admin(authorization['token'])
 
         service = PeriodService(PeriodRepository(session))
         res = PeriodList.model_validate(service.get_all_periods(order))
@@ -105,14 +103,13 @@ async def get_periods(
 )
 async def get_period_by_id(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para obtener un cuatrimestre particular"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_multiple_role(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_multiple_role(authorization['token'])
 
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.get_period_by_id(period_id))
@@ -152,13 +149,12 @@ async def get_period_by_id(
 async def update_period(
     period: UpdatePeriodRequest,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para actualizar un cuatrimestre puntual"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_only_admin(authorization['token'])
 
         period_service = PeriodService(PeriodRepository(session))
         res = period_service.update(period)

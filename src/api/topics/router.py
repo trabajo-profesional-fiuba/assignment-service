@@ -3,8 +3,8 @@ from fastapi import APIRouter, Response, status, Depends, UploadFile, Query
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.dependencies import authorization
+from src.api.auth.jwt import InvalidJwt
 from src.api.auth.service import AuthenticationService
 from src.api.exceptions import EntityNotFound, InvalidCsv, InvalidFileType, ServerError
 from src.api.topics.repository import TopicRepository
@@ -46,14 +46,13 @@ router = APIRouter(prefix="/topics", tags=["Topics"])
 async def upload_csv_file(
     file: UploadFile,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint obtener subir los temas a partir de un archivo csv"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_only_admin(authorization['token'])
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
@@ -90,16 +89,15 @@ async def upload_csv_file(
 )
 async def get_topics(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period: Optional[str] = Query(
         None, pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]
     ),
 ):
     """Endpoint obtener todos los temas"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_student_role(authorization['token'])
 
         service = TopicService(TopicRepository(session))
         if period:
@@ -131,13 +129,12 @@ async def get_topics(
 async def add_category(
     category: SimpleCategory,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para agregar una categoria manualmente"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_only_admin(authorization['token'])
 
         service = TopicService(TopicRepository(session))
         category_saved = service.add_category(category.name)
@@ -165,13 +162,12 @@ async def add_category(
 async def add_topic(
     topic: TopicRequest,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para agregar un tema manualmente"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_only_admin(authorization['token'])
 
         service = TopicService(TopicRepository(session))
         topic_saved = service.add_topic(topic)
@@ -198,13 +194,12 @@ async def add_topic(
 async def add_topic(
     topic_id: int,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para borrar un tema manualmente"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_only_admin(authorization['token'])
 
         service = TopicService(TopicRepository(session))
         service.delete_topic(topic_id)

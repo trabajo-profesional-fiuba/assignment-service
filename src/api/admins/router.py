@@ -4,9 +4,9 @@ from typing_extensions import Annotated
 
 from src.api.admins.schemas import AdminRequest
 from src.api.admins.service import AdminService
+from src.api.auth.dependencies import authorization
 from src.api.auth.hasher import get_hasher, ShaHasher
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.jwt import InvalidJwt
 from src.api.auth.service import AuthenticationService
 from src.api.exceptions import Duplicated, ServerError
 from src.api.users.exceptions import InvalidCredentials
@@ -34,13 +34,12 @@ async def add_admin(
     admin: AdminRequest,
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para crear un nuevo administrador siendo administrador"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service.assert_only_admin(authorization['token'])
         service = AdminService(UserRepository(session))
 
         res = UserResponse.model_validate(service.add_admin(hasher, admin))
