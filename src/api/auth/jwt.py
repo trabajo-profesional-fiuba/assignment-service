@@ -70,4 +70,4 @@ class JwtResolver:
 
 # TODO - Moverlo a un archivo .py
 def get_jwt_resolver():
-    yield JwtResolver()
+    return JwtResolver()
