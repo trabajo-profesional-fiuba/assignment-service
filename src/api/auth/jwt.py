@@ -66,8 +66,3 @@ class JwtResolver:
         except Exception as e:
             logger.error("Invalid Jwt")
             raise InvalidJwt(message=str(e))
-
-
-# TODO - Moverlo a un archivo .py
-def get_jwt_resolver():
-    return JwtResolver()

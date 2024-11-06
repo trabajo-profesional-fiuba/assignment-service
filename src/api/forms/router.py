@@ -21,8 +21,7 @@ from src.api.exceptions import (
     Duplicated,
     ServerError,
 )
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.jwt import InvalidJwt
 from src.api.auth.service import AuthenticationService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.utils.response_builder import ResponseBuilder
@@ -59,8 +58,8 @@ async def add_answers(
 ):
     """Agrega una nueva respuesta del formulario de armado de grupos y seleccion de temas"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_student_role(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
 
         service = FormService(FormRepository(session))
         answers_saved = service.add_answers(answers, period)
@@ -106,8 +105,8 @@ async def get_answers(
 ):
     """Obtiene todas las respuestas del formulario de armado de grupos y seleccion de temas"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = FormService(FormRepository(session))
         answers = service.get_answers(TopicRepository(session), period)
@@ -148,8 +147,8 @@ async def delete_answer(
 ):
     """Borra una respuesta por id"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = FormService(FormRepository(session))
         res = service.delete_answers_by_answer_id(answer_id)
 

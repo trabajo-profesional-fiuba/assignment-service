@@ -65,8 +65,8 @@ async def upload_csv_file(
 ):
     """Endpoint para cargar tutores a partir de un archivo csv"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         # Check if content-type is a text/csv
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided")
@@ -108,8 +108,8 @@ async def add_tutor(
 ):
     """Endpoint para agregar un tutor manualmente"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = TutorService(TutorRepository(session))
         res = TutorResponse.model_validate(
             service.add_tutor(tutor, hasher, UserRepository(session))
@@ -142,8 +142,8 @@ async def delete_tutor(
 ):
     """Endpoint para borrar un tutor"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         res = service.delete_tutor(tutor_id)
@@ -178,8 +178,8 @@ async def add_period_to_tutor(
 ):
     """Endpoint para asignar un nuevo cuatrimestre a un tutor"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = TutorService(TutorRepository(session))
         res = TutorResponse.model_validate(
             service.add_period_to_tutor(tutor_id, period_id)
@@ -213,10 +213,10 @@ async def get_tutor_periods(
 ):
     """Endpoint para obtener todos los cuatrimestre en el que un tutor tutorea"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
 
-        user_id = auth_service.get_user_id(authorization['token'])
+        user_id = auth_service.get_user_id(authorization["token"])
         user_service = UserService(UserRepository(session))
         user = user_service.get_user_by_id(user_id)
         if user.role == Role.TUTOR:
@@ -254,8 +254,8 @@ async def get_tutors_by_period_id(
 ):
     """Endpoint para obtener los tutores de un cuatrimestre"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = TutorService(TutorRepository(session))
 
         res = TutorWithTopicsList.model_validate(
@@ -290,9 +290,9 @@ async def get_groups_by_tutor(
 ):
     """Endpoint para obtener los grupos de un cuatrimestre del cual uno es tutor"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
-        tutor_id = auth_service.get_user_id(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
+        tutor_id = auth_service.get_user_id(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
@@ -329,9 +329,9 @@ async def get_groups_by_reviewer_id(
 ):
     """Endpoint para obtener los grupos de un cuatrimestre del cual uno es revisor"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
-        tutor_id = auth_service.get_user_id(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
+        tutor_id = auth_service.get_user_id(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
@@ -369,9 +369,9 @@ async def notify_students(
 ):
     """Endpoint para enviar un mail al grupo de estudiantes"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
-        tutor_id = auth_service.get_user_id(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
+        tutor_id = auth_service.get_user_id(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
@@ -419,9 +419,9 @@ async def assigned_dates(
 ):
     """Endpoint para obtener los grupos de un cuatrimestre del cual uno es revisor"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
-        tutor_id = auth_service.get_user_id(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
+        tutor_id = auth_service.get_user_id(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         dates = service.get_assigned_dates(
@@ -467,8 +467,8 @@ async def make_evaluator(
 ):
     """Endpoint para agregar un tutor manualmente"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         service.make_evaluator(period_id, tutor_id)

@@ -69,8 +69,8 @@ async def assign_incomplete_groups(
 ):
     """Endpoint que ejecuta el algoritmo que completa aquellos grupos que no son de a 4"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         form_service = FormService(FormRepository(session))
         topic_repository = TopicRepository(session)
@@ -123,8 +123,8 @@ async def assign_group_topic_tutor(
 ):
     try:
         """Ejecuta el algoritmo de grupos, temas y tutores aplicando un metodo preferido"""
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         topic_service = TopicService(TopicRepository(session))
         topic_mapper = TopicMapper()
@@ -193,8 +193,8 @@ async def assign_dates(
 ):
     try:
         """Resuelve el algoritmo de fechas y grupos"""
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         dates_service = DateSlotsService(DateSlotRepository(session))
         available_dates = DateSlotsMapper.map_models_to_date_slots(
@@ -269,8 +269,8 @@ async def update_assignments(
 ):
     try:
         """Upsertea los resultados para marcarlos como asignados"""
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         dates_service = DateSlotsService(DateSlotRepository(session))
         group_service = GroupService(GroupRepository(session))
@@ -325,8 +325,8 @@ async def get_assigned_dates(
 ):
     try:
         """Devuelve el resultado del algoritmo en un cuatrimestre dado"""
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         dates_service = DateSlotsService(DateSlotRepository(session))
         assigned_dates = dates_service.get_assigned_dates(period_id)

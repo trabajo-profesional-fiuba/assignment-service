@@ -51,8 +51,8 @@ async def upload_csv_file(
 ):
     """Endpoint obtener subir los temas a partir de un archivo csv"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided.")
         content = (await file.read()).decode("utf-8")
@@ -96,8 +96,8 @@ async def get_topics(
 ):
     """Endpoint obtener todos los temas"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_student_role(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
 
         service = TopicService(TopicRepository(session))
         if period:
@@ -133,8 +133,8 @@ async def add_category(
 ):
     """Endpoint para agregar una categoria manualmente"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = TopicService(TopicRepository(session))
         category_saved = service.add_category(category.name)
@@ -166,8 +166,8 @@ async def add_topic(
 ):
     """Endpoint para agregar un tema manualmente"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = TopicService(TopicRepository(session))
         topic_saved = service.add_topic(topic)
@@ -198,8 +198,8 @@ async def add_topic(
 ):
     """Endpoint para borrar un tema manualmente"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = TopicService(TopicRepository(session))
         service.delete_topic(topic_id)

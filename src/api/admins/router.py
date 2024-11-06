@@ -38,8 +38,8 @@ async def add_admin(
 ):
     """Endpoint para crear un nuevo administrador siendo administrador"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = AdminService(UserRepository(session))
 
         res = UserResponse.model_validate(service.add_admin(hasher, admin))

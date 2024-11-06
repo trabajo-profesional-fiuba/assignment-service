@@ -45,8 +45,8 @@ async def add_period(
 ):
     """Endpoint para agregar un nuevo cuatrimestre"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.add_period(period))
@@ -77,8 +77,8 @@ async def get_periods(
 ):
     """Endpoint para obtener todos los cuatrimestres"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = PeriodService(PeriodRepository(session))
         res = PeriodList.model_validate(service.get_all_periods(order))
@@ -108,8 +108,8 @@ async def get_period_by_id(
 ):
     """Endpoint para obtener un cuatrimestre particular"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_multiple_role(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_multiple_role(authorization["token"])
 
         service = PeriodService(PeriodRepository(session))
         res = PeriodResponse.model_validate(service.get_period_by_id(period_id))
@@ -153,8 +153,8 @@ async def update_period(
 ):
     """Endpoint para actualizar un cuatrimestre puntual"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         period_service = PeriodService(PeriodRepository(session))
         res = period_service.update(period)

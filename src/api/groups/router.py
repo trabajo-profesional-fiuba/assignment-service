@@ -76,8 +76,8 @@ async def add_group(
 ):
     """Endpoint para agregar un nuevo grupo"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_student_role(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
 
         tutor_service = TutorService(TutorRepository(session))
         topic_service = TopicService(TopicRepository(session))
@@ -126,8 +126,8 @@ async def post_initial_project(
     """Endpoint para agregar un anteproyecto de un grupo"""
     try:
 
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_student_role(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
 
         container_name = api_config.container
         access_key = api_config.storage_access_key
@@ -176,8 +176,8 @@ async def post_final_project(
 ):
     """Endpoint para agregar una entrega final de un grupo"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_student_role(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
 
         container_name = api_config.container
         access_key = api_config.storage_access_key
@@ -218,8 +218,10 @@ async def post_final_project(
     """Endpoint para agregar una entrega intermedia de un grupo"""
     try:
         group_repository = GroupRepository(session)
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_student_in_group(authorization['token'], group_id, group_repository)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_in_group(
+            authorization["token"], group_id, group_repository
+        )
 
         group_service = GroupService(group_repository)
         group_service.upload_intermediate_project(group_id, link.url)
@@ -272,8 +274,8 @@ async def get_groups(
 ):
     """Endpoint para obtener los grupos en un cuatrimestre"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         group_service = GroupService(GroupRepository(session))
 
@@ -316,11 +318,11 @@ async def get_group_by_id(
 ):
     try:
         group_service = GroupService(GroupRepository(session))
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
 
-        is_student = auth_service.is_student(authorization['token'])
+        is_student = auth_service.is_student(authorization["token"])
         if is_student:
-            jwt_token = auth_service.assert_student_role(authorization['token'])
+            jwt_token = auth_service.assert_student_role(authorization["token"])
             student_id = auth_service.get_user_id(jwt_token)
 
             group = group_service.get_group_by_student_id(student_id)
@@ -360,8 +362,8 @@ async def download_group_initial_project(
 ):
     try:
 
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
 
         container_name = api_config.container
         access_key = api_config.storage_access_key
@@ -402,8 +404,8 @@ async def list_initial_projects(
 ):
     try:
 
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         container_name = api_config.container
         access_key = api_config.storage_access_key
@@ -442,8 +444,8 @@ async def gets_intermediate_assigment(
 ):
     try:
 
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
 
         group_service = GroupService(GroupRepository(session))
         return CompleteGroupResponse.model_validate(
@@ -472,8 +474,8 @@ async def gets_intermediate_assigment(
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
 
         group_service = GroupService(GroupRepository(session))
         return GroupStatesList.model_validate(group_service.get_groups(period))
@@ -501,8 +503,8 @@ async def download_group_final_project(
 ):
     try:
 
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
 
         container_name = api_config.container
         access_key = api_config.storage_access_key
@@ -543,8 +545,8 @@ async def list_initial_projects(
 ):
     try:
 
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         container_name = api_config.container
         access_key = api_config.storage_access_key
@@ -600,8 +602,8 @@ async def update_groups(
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_tutor_rol(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
 
         group_service = GroupService(GroupRepository(session))
         groups_updated = group_service.update(groups, period)

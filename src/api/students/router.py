@@ -42,8 +42,8 @@ async def upload_csv_file(
 ):
     """Endpoint para crear una lista de estudiantes a partir de un archivo csv"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided")
@@ -87,8 +87,8 @@ async def get_students_by_ids(
 ):
     """Endpoint para obtener todos los estudiantes o que matchen con una lista de ids"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_student_role(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
 
         service = StudentService(StudentRepository(session))
         res = service.get_students_by_ids(user_ids, period)
@@ -119,9 +119,9 @@ async def get_student_info(
 ):
     """Endpoint para obtener informacion del estudiante logeado"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_student_role(authorization['token'])
-        id = auth_service.get_user_id(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
+        id = auth_service.get_user_id(authorization["token"])
 
         service = StudentService(StudentRepository(session))
         res = service.get_personal_info_by_id(
@@ -162,8 +162,8 @@ async def add_student(
 ):
     """Endpoint para agregar un estudiante manualmente"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = StudentService(StudentRepository(session))
 
         res = UserResponse.model_validate(
@@ -196,8 +196,8 @@ async def delete_student(
 ):
     """Endpoint para borrar un tutor"""
     try:
-        auth_service = AuthenticationService(authorization['jwt_resolver'])
-        auth_service.assert_only_admin(authorization['token'])
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = StudentService(StudentRepository(session))
         res = service.delete_student(student_id)
