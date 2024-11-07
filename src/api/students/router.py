@@ -2,9 +2,9 @@ from fastapi import APIRouter, UploadFile, Depends, status, Query
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
+from src.api.auth.dependencies import authorization
 from src.api.auth.hasher import get_hasher, ShaHasher
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.jwt import InvalidJwt
 from src.api.auth.service import AuthenticationService
 from src.api.exceptions import Duplicated, EntityNotFound, InvalidFileType, ServerError
 from src.api.forms.repository import FormRepository
@@ -37,14 +37,13 @@ async def upload_csv_file(
     file: UploadFile,
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para crear una lista de estudiantes a partir de un archivo csv"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided")
@@ -82,15 +81,14 @@ async def upload_csv_file(
 )
 async def get_students_by_ids(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     user_ids: list[int] = Query(default=[]),
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para obtener todos los estudiantes o que matchen con una lista de ids"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
 
         service = StudentService(StudentRepository(session))
         res = service.get_students_by_ids(user_ids, period)
@@ -117,14 +115,13 @@ async def get_students_by_ids(
 )
 async def get_student_info(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para obtener informacion del estudiante logeado"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
-        id = auth_service.get_user_id(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
+        id = auth_service.get_user_id(authorization["token"])
 
         service = StudentService(StudentRepository(session))
         res = service.get_personal_info_by_id(
@@ -160,14 +157,13 @@ async def add_student(
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
     student: StudentRequest,
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para agregar un estudiante manualmente"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = StudentService(StudentRepository(session))
 
         res = UserResponse.model_validate(
@@ -196,13 +192,12 @@ async def add_student(
 async def delete_student(
     student_id: int,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para borrar un tutor"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = StudentService(StudentRepository(session))
         res = service.delete_student(student_id)

@@ -34,7 +34,8 @@ class Student:
 
 class StudentMapper:
 
-    def map_models_to_students(self, users: list[User]) -> list[Student]:
+    @staticmethod
+    def map_models_to_students(users: list[User]) -> list[Student]:
         students = [
             Student(
                 id=user.id, email=user.email, name=user.name, last_name=user.last_name
