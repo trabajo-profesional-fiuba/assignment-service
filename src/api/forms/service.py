@@ -125,27 +125,3 @@ class FormService:
             response = list(answers.values())
 
         return response
-
-    def get_answers_by_user_id(self, user_id, topic_repository: TopicRepository):
-        """
-        Devuelve las respuestas de un grupo por id
-        """
-        answers = self._repository.get_answers_by_user_id(user_id)
-        topics = self._transform_topics(topic_repository)
-        response = []
-        if len(answers) != 0:
-
-            for db_answer in answers:
-                topic_1 = topics[db_answer.topic_1]
-                topic_2 = topics[db_answer.topic_2]
-                topic_3 = topics[db_answer.topic_3]
-                response.append(
-                    UserAnswerResponse(
-                        answer_id=db_answer.answer_id,
-                        email=db_answer.email,
-                        topic_1=topic_1.name,
-                        topic_2=topic_2.name,
-                        topic_3=topic_3.name,
-                    )
-                )
-        return response
