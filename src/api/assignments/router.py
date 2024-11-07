@@ -127,20 +127,17 @@ async def assign_group_topic_tutor(
         auth_service.assert_only_admin(authorization["token"])
 
         topic_service = TopicService(TopicRepository(session))
-        topic_mapper = TopicMapper()
-        topics = topic_mapper.map_models_to_topics(
+        topics = TopicMapper.map_models_to_topics(
             topic_service.get_topics_by_period(period_id)
         )
 
         tutors_service = TutorService(TutorRepository(session))
-        tutors_mapper = TutorMapper()
-        tutors = tutors_mapper.map_tutor_period_to_tutors(
+        tutors = TutorMapper.map_tutor_period_to_tutors(
             tutors_service.get_tutor_periods_by_period_id(period_id)
         )
 
         group_service = GroupService(GroupRepository(session))
-        group_mapper = GroupMapper()
-        groups = group_mapper.map_models_to_unassigned_groups(
+        groups = GroupMapper.map_models_to_unassigned_groups(
             group_service.get_goups_without_tutor_and_topic(), topics
         )
 
@@ -211,8 +208,7 @@ async def assign_dates(
         )
 
         group_service = GroupService(GroupRepository(session))
-        group_mapper = GroupMapper()
-        groups = group_mapper.map_models_to_assigned_groups(
+        groups = GroupMapper.map_models_to_assigned_groups(
             group_service.get_groups(
                 period=period_id, load_tutor_period=True, load_dates=True
             ),

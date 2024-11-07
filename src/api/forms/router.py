@@ -10,7 +10,6 @@ from src.api.forms.schemas import (
     FormPreferencesResponse,
     GroupAnswerList,
     GroupAnswerResponse,
-    UserAnswerList,
 )
 from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService

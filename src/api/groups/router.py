@@ -135,13 +135,12 @@ async def post_initial_project(
             container=container_name, access_key=access_key
         )
         content_as_bytes = await file.read()
-        group_mapper = GroupMapper()
         group_service = GroupService(GroupRepository(session))
         group_service.upload_initial_project(
             group_id, project_title, content_as_bytes, az_client
         )
 
-        group = group_mapper.map_model_to_assigned_group(
+        group = GroupMapper.map_model_to_assigned_group(
             group_service.get_group_by_id(group_id, True, True)
         )
         background_tasks.add_task(
@@ -226,8 +225,7 @@ async def post_final_project(
         group_service = GroupService(group_repository)
         group_service.upload_intermediate_project(group_id, link.url)
 
-        group_mapper = GroupMapper()
-        group = group_mapper.map_model_to_assigned_group(
+        group = GroupMapper.map_model_to_assigned_group(
             group_service.get_group_by_id(group_id, True, True)
         )
         background_tasks.add_task(

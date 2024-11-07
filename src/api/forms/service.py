@@ -5,10 +5,10 @@ from src.api.exceptions import EntityNotFound
 from src.api.forms.exceptions import AnswerNotFound
 from src.api.forms.schemas import (
     FormPreferencesRequest,
-    UserAnswerResponse,
 )
 from src.api.students.exceptions import StudentNotFound
 from src.api.topics.exceptions import TopicNotFound
+from src.api.topics.mapper import TopicMapper
 from src.api.topics.repository import TopicRepository
 
 from src.config.logging import logger
@@ -26,7 +26,10 @@ class FormService:
     def add_answers(self, form_preference: FormPreferencesRequest, period):
         try:
             """
-            Agrega una respuesta a sus integrantes del formulario
+            Agrega una respuesta a sus integrantes del formulario.
+
+            A partir de un envio, forma 4 respuestas, una para cada integrante del equipo.
+            De esta manera podemos tener repetidos, gente en varias respuestas y demas.
             """
             cleaned_user_ids = list(
                 filter(
@@ -72,15 +75,6 @@ class FormService:
             raise EntityNotFound(f"Answer id '{answer_id}' does not exists.")
         return self._repository.delete_answers_by_answer_id(answer_id)
 
-    # FIXME - Deberia hacerlo el mapper
-    def _make_topic(self, topic):
-        """A partir de un Topic como schema lo transforma en Topic para db"""
-        id = topic.id
-        name = topic.name
-        category = topic.category.name
-        topic = Topic(id=id, title=name, category=category)
-        return topic
-
     def _transform_topics(self, topic_repository: TopicRepository) -> dict:
         """
         Crea un diccionario clave valor asociando el nombre del tema
@@ -89,7 +83,7 @@ class FormService:
         topics = topic_repository.get_topics()
         topcis_as_dict = dict()
         for orm_topic in topics:
-            topic = self._make_topic(orm_topic)
+            topic = TopicMapper.map_model_to_topic(orm_topic)
             topcis_as_dict[topic.id] = topic
 
         return topcis_as_dict
