@@ -5,10 +5,10 @@ from src.api.exceptions import EntityNotFound
 from src.api.forms.exceptions import AnswerNotFound
 from src.api.forms.schemas import (
     FormPreferencesRequest,
-    UserAnswerResponse,
 )
 from src.api.students.exceptions import StudentNotFound
 from src.api.topics.exceptions import TopicNotFound
+from src.api.topics.mapper import TopicMapper
 from src.api.topics.repository import TopicRepository
 
 from src.config.logging import logger
@@ -26,7 +26,10 @@ class FormService:
     def add_answers(self, form_preference: FormPreferencesRequest, period):
         try:
             """
-            Agrega una respuesta a sus integrantes del formulario
+            Agrega una respuesta a sus integrantes del formulario.
+
+            A partir de un envio, forma 4 respuestas, una para cada integrante del equipo.
+            De esta manera podemos tener repetidos, gente en varias respuestas y demas.
             """
             cleaned_user_ids = list(
                 filter(
@@ -72,15 +75,6 @@ class FormService:
             raise EntityNotFound(f"Answer id '{answer_id}' does not exists.")
         return self._repository.delete_answers_by_answer_id(answer_id)
 
-    # FIXME - Deberia hacerlo el mapper
-    def _make_topic(self, topic):
-        """A partir de un Topic como schema lo transforma en Topic para db"""
-        id = topic.id
-        name = topic.name
-        category = topic.category.name
-        topic = Topic(id=id, title=name, category=category)
-        return topic
-
     def _transform_topics(self, topic_repository: TopicRepository) -> dict:
         """
         Crea un diccionario clave valor asociando el nombre del tema
@@ -89,7 +83,7 @@ class FormService:
         topics = topic_repository.get_topics()
         topcis_as_dict = dict()
         for orm_topic in topics:
-            topic = self._make_topic(orm_topic)
+            topic = TopicMapper.map_model_to_topic(orm_topic)
             topcis_as_dict[topic.id] = topic
 
         return topcis_as_dict
@@ -124,28 +118,4 @@ class FormService:
 
             response = list(answers.values())
 
-        return response
-
-    def get_answers_by_user_id(self, user_id, topic_repository: TopicRepository):
-        """
-        Devuelve las respuestas de un grupo por id
-        """
-        answers = self._repository.get_answers_by_user_id(user_id)
-        topics = self._transform_topics(topic_repository)
-        response = []
-        if len(answers) != 0:
-
-            for db_answer in answers:
-                topic_1 = topics[db_answer.topic_1]
-                topic_2 = topics[db_answer.topic_2]
-                topic_3 = topics[db_answer.topic_3]
-                response.append(
-                    UserAnswerResponse(
-                        answer_id=db_answer.answer_id,
-                        email=db_answer.email,
-                        topic_1=topic_1.name,
-                        topic_2=topic_2.name,
-                        topic_3=topic_3.name,
-                    )
-                )
         return response

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, BackgroundTasks, Response, status, Depends
 from sqlalchemy.orm import Session
 
+from src.api.auth.dependencies import authorization, get_jwt_resolver
 from src.api.auth.hasher import ShaHasher, get_hasher
-from src.api.auth.jwt import JwtResolver, JwtEncoded, get_jwt_resolver
-from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.jwt import JwtResolver, JwtEncoded
 from src.api.auth.schemas import PasswordResetRequest, RequestForm
 from src.api.auth.service import AuthenticationService
 from src.api.groups.dependencies import get_email_sender
@@ -76,17 +76,16 @@ async def get_access_token(
 )
 async def reset_password(
     password_request: PasswordResetRequest,
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
+    authorization: Annotated[dict, Depends(authorization)],
     email_sender: Annotated[object, Depends(get_email_sender)],
     background_tasks: BackgroundTasks,
 ) -> JwtEncoded:
     """Endpoint para resetear la contraseña del usuario enviando un mail como tarea en async"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        jwt = auth_service.assert_multiple_role(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        jwt = auth_service.assert_multiple_role(authorization["token"])
         user_id = auth_service.get_user_id(jwt)
 
         old_password = hasher.hash(password_request.old_password)

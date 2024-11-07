@@ -37,27 +37,6 @@ class FormPreferencesList(RootModel):
         return iter(self.root)
 
 
-class UserAnswerResponse(BaseModel):
-    """Respuesta de un usuario"""
-
-    answer_id: datetime
-    email: str
-    topic_1: str
-    topic_2: str
-    topic_3: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class UserAnswerList(RootModel):
-    """Lista de respuestas de un usuario"""
-
-    root: List[UserAnswerResponse]
-
-    def __iter__(self):
-        return iter(self.root)
-
-
 class GroupAnswerResponse(BaseModel):
     """Respuestas de un grupo"""
 
