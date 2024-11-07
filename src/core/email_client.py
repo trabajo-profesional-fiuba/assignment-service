@@ -25,6 +25,10 @@ class SendGridEmailClient:
                 f"Sendgrid send email had a problem, the response code status is: \
                 {response.status_code}"
             )
+    
+    def _filter_receivers(self, tos, ccs):
+        """ Controlo que no haya un cc en los to, sino sendgrid falla """
+        return [cc for cc in ccs if cc not in tos]
 
     def send_mail(self, mail: Mail):
         sg = self._get_api_client()
@@ -66,6 +70,7 @@ class SendGridEmailClient:
         mail = Mail(from_email, to_emails, subject, content)
 
         if len(cc) != 0:
+            cc = self._filter_receivers(to, cc)
             mail.cc = cc
 
         response = self.send_mail(mail)
@@ -85,6 +90,6 @@ class SendGridEmailClient:
 
         Gracias.
         """
-        cc = api_config.cc_emails
+        cc = self._filter_receivers(to, api_config.cc_emails)
 
         self._send_mail(to, subject, email_body, cc)

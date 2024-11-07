@@ -3,13 +3,13 @@ from fastapi import APIRouter, Query, status, Depends
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
+from src.api.auth.dependencies import authorization
 from src.api.forms.schemas import (
     FormPreferencesRequest,
     FormPreferencesList,
     FormPreferencesResponse,
     GroupAnswerList,
     GroupAnswerResponse,
-    UserAnswerList,
 )
 from src.api.forms.repository import FormRepository
 from src.api.forms.service import FormService
@@ -20,8 +20,7 @@ from src.api.exceptions import (
     Duplicated,
     ServerError,
 )
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
-from src.api.auth.schemas import oauth2_scheme
+from src.api.auth.jwt import InvalidJwt
 from src.api.auth.service import AuthenticationService
 from src.api.users.exceptions import InvalidCredentials
 from src.api.utils.response_builder import ResponseBuilder
@@ -53,14 +52,13 @@ router = APIRouter(prefix="/forms", tags=["Forms"])
 async def add_answers(
     answers: FormPreferencesRequest,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Agrega una nueva respuesta del formulario de armado de grupos y seleccion de temas"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_student_role(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_student_role(authorization["token"])
 
         service = FormService(FormRepository(session))
         answers_saved = service.add_answers(answers, period)
@@ -101,14 +99,13 @@ async def add_answers(
 )
 async def get_answers(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Obtiene todas las respuestas del formulario de armado de grupos y seleccion de temas"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = FormService(FormRepository(session))
         answers = service.get_answers(TopicRepository(session), period)
@@ -145,13 +142,12 @@ async def get_answers(
 async def delete_answer(
     answer_id: datetime,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Borra una respuesta por id"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = FormService(FormRepository(session))
         res = service.delete_answers_by_answer_id(answer_id)
 

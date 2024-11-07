@@ -7,18 +7,13 @@ from src.core.tutor import Tutor
 
 
 class TutorMapper:
-
-    def __init__(
-        self,
-    ) -> None:
-        self._topic_mapper = TopicMapper()
-
-    def map_tutor_period_to_tutors(self, db_periods: list[TutorPeriod]):
+    @staticmethod
+    def map_tutor_period_to_tutors(db_periods: list[TutorPeriod]):
         """A partir de cuatrimestres de tutores, crean un tutor"""
         tutors = list()
         for db_period in db_periods:
             db_tutor = db_period.tutor
-            topics = self._topic_mapper.map_models_to_topics(db_period.topics)
+            topics = TopicMapper.map_models_to_topics(db_period.topics)
             tutor = Tutor(
                 id=db_tutor.id,
                 period_id=db_period.id,
@@ -32,8 +27,9 @@ class TutorMapper:
 
         return tutors
 
+    @staticmethod
     def map_tutor_period_to_tutor(
-        self, db_tutor_period: TutorPeriod, topics: list[Topic] = []
+        db_tutor_period: TutorPeriod, topics: list[Topic] = []
     ):
         """A partir de un cuatrimestre, crean un tutor"""
         tutor = None
@@ -54,7 +50,7 @@ class TutorMapper:
         tutors = list()
         for user in db_tutors:
             period = user.tutor_periods[0]
-            topics = self._topic_mapper.map_models_to_topics(period.topics)
+            topics = TopicMapper.map_models_to_topics(period.topics)
             dates = DateSlotsMapper.map_models_to_date_slots(user.tutor_dates_slots)
             tutor = Tutor(
                 id=user.id,
