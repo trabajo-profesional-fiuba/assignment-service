@@ -2,9 +2,8 @@ from fastapi import APIRouter, Response, UploadFile, Depends, status, Query, Pat
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 
-from src.api.auth.jwt import InvalidJwt, JwtResolver, get_jwt_resolver
+from src.api.auth.jwt import InvalidJwt
 from src.api.auth.service import AuthenticationService
-from src.api.dates.mapper import DateSlotsMapper
 from src.api.dates.repository import DateSlotRepository
 from src.api.dates.schemas import DateSlotResponse, DateSlotResponseList
 from src.api.exceptions import (
@@ -30,13 +29,13 @@ from src.api.tutors.schemas import (
     TutorWithTopicsList,
 )
 from src.api.auth.hasher import get_hasher, ShaHasher
-from src.api.auth.schemas import oauth2_scheme
 from src.api.tutors.repository import TutorRepository
 from src.api.users.models import Role
 from src.api.users.repository import UserRepository
 from src.api.users.service import UserService
 from src.api.utils.response_builder import ResponseBuilder
 from src.config.database.database import get_db
+from src.api.auth.dependencies import authorization
 
 router = APIRouter(prefix="/tutors")
 
@@ -61,14 +60,13 @@ async def upload_csv_file(
     file: UploadFile,
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para cargar tutores a partir de un archivo csv"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         # Check if content-type is a text/csv
         if file.content_type != "text/csv":
             raise InvalidFileType("CSV file must be provided")
@@ -106,13 +104,12 @@ async def add_tutor(
     hasher: Annotated[ShaHasher, Depends(get_hasher)],
     session: Annotated[Session, Depends(get_db)],
     tutor: TutorRequest,
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para agregar un tutor manualmente"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = TutorService(TutorRepository(session))
         res = TutorResponse.model_validate(
             service.add_tutor(tutor, hasher, UserRepository(session))
@@ -141,13 +138,12 @@ async def add_tutor(
 async def delete_tutor(
     tutor_id: int,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para borrar un tutor"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         res = service.delete_tutor(tutor_id)
@@ -177,14 +173,13 @@ async def delete_tutor(
 async def add_period_to_tutor(
     session: Annotated[Session, Depends(get_db)],
     tutor_id: int,
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period_id: str = Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para asignar un nuevo cuatrimestre a un tutor"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = TutorService(TutorRepository(session))
         res = TutorResponse.model_validate(
             service.add_period_to_tutor(tutor_id, period_id)
@@ -214,15 +209,14 @@ async def add_period_to_tutor(
 async def get_tutor_periods(
     session: Annotated[Session, Depends(get_db)],
     tutor_id: int,
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
 ):
     """Endpoint para obtener todos los cuatrimestre en el que un tutor tutorea"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_tutor_rol(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
 
-        user_id = auth_service.get_user_id(token)
+        user_id = auth_service.get_user_id(authorization["token"])
         user_service = UserService(UserRepository(session))
         user = user_service.get_user_by_id(user_id)
         if user.role == Role.TUTOR:
@@ -255,14 +249,13 @@ async def get_tutor_periods(
 )
 async def get_tutors_by_period_id(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period_id=Path(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para obtener los tutores de un cuatrimestre"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
         service = TutorService(TutorRepository(session))
 
         res = TutorWithTopicsList.model_validate(
@@ -292,15 +285,14 @@ async def get_tutors_by_period_id(
 )
 async def get_groups_by_tutor(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para obtener los grupos de un cuatrimestre del cual uno es tutor"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_tutor_rol(token)
-        tutor_id = auth_service.get_user_id(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
+        tutor_id = auth_service.get_user_id(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
@@ -332,15 +324,14 @@ async def get_groups_by_tutor(
 )
 async def get_groups_by_reviewer_id(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para obtener los grupos de un cuatrimestre del cual uno es revisor"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_tutor_rol(token)
-        tutor_id = auth_service.get_user_id(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
+        tutor_id = auth_service.get_user_id(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
@@ -372,22 +363,19 @@ async def get_groups_by_reviewer_id(
 async def notify_students(
     body: TutorMessage,
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     email_sender: Annotated[object, Depends(get_email_sender)],
     group_id: int = Query(...),
 ):
     """Endpoint para enviar un mail al grupo de estudiantes"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_tutor_rol(token)
-        tutor_id = auth_service.get_user_id(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
+        tutor_id = auth_service.get_user_id(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         group_repository = GroupRepository(session)
-
-        group_mapper = GroupMapper()
-        group = group_mapper.map_model_to_assigned_group(
+        group = GroupMapper.map_model_to_assigned_group(
             group_repository.get_group_by_id(
                 group_id,
                 load_topic=True,
@@ -424,15 +412,14 @@ async def notify_students(
 )
 async def assigned_dates(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para obtener los grupos de un cuatrimestre del cual uno es revisor"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_tutor_rol(token)
-        tutor_id = auth_service.get_user_id(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_tutor_rol(authorization["token"])
+        tutor_id = auth_service.get_user_id(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         dates = service.get_assigned_dates(
@@ -472,15 +459,14 @@ async def assigned_dates(
 )
 async def make_evaluator(
     session: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-    jwt_resolver: Annotated[JwtResolver, Depends(get_jwt_resolver)],
+    authorization: Annotated[dict, Depends(authorization)],
     period_id=Query(pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
     tutor_id: int = Query(...),
 ):
     """Endpoint para agregar un tutor manualmente"""
     try:
-        auth_service = AuthenticationService(jwt_resolver)
-        auth_service.assert_only_admin(token)
+        auth_service = AuthenticationService(authorization["jwt_resolver"])
+        auth_service.assert_only_admin(authorization["token"])
 
         service = TutorService(TutorRepository(session))
         service.make_evaluator(period_id, tutor_id)

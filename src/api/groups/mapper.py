@@ -6,16 +6,8 @@ from src.core.student import StudentMapper
 
 
 class GroupMapper:
-
-    def __init__(
-        self,
-    ) -> None:
-        self._tutor_mapper = TutorMapper()
-        self._student_mapper = StudentMapper()
-        self._topic_mapper = TopicMapper()
-        self._dates_mapper = DateSlotsMapper()
-
-    def map_models_to_unassigned_groups(self, db_groups, topics):
+    @staticmethod
+    def map_models_to_unassigned_groups(db_groups, topics):
         """Convierte desde una lista de grupos desde la bd a una lista de grupos sin asignar"""
         topics_mapped = {topic.id: topic for topic in topics}
 
@@ -33,32 +25,34 @@ class GroupMapper:
 
         return groups
 
-    def map_model_to_assigned_group(self, db_group):
+    @staticmethod
+    def map_model_to_assigned_group(db_group):
         """Convierte desde un de grupos desde la bd a un grupos asignados"""
-        tutor = self._tutor_mapper.map_tutor_period_to_tutor(db_group.tutor_period)
-        students = self._student_mapper.map_models_to_students(db_group.students)
-        topic = self._topic_mapper.map_model_to_topic(db_group.topic)
+        tutor = TutorMapper.map_tutor_period_to_tutor(db_group.tutor_period)
+        students = StudentMapper.map_models_to_students(db_group.students)
+        topic = TopicMapper.map_model_to_topic(db_group.topic)
         group = AssignedGroup(
             id=db_group.id,
             tutor=tutor,
             students=students,
             reviewer_id=db_group.reviewer_id,
             topic_assigned=topic,
-            available_dates=self._dates_mapper.map_models_to_date_slots(
+            available_dates=DateSlotsMapper.map_models_to_date_slots(
                 db_group.group_dates_slots
             ),
             group_number=db_group.group_number,
-            assigned_date=self._dates_mapper.map_datetime_to_date_slot(
+            assigned_date=DateSlotsMapper.map_datetime_to_date_slot(
                 db_group.exhibition_date
             ),
         )
 
         return group
 
-    def map_models_to_assigned_groups(self, db_groups):
+    @staticmethod
+    def map_models_to_assigned_groups(db_groups):
         """Convierte desde una lista de grupos desde la bd a una lista de grupos asignados"""
         groups = list()
         for group in db_groups:
-            groups.append(self.map_model_to_assigned_group(group))
+            groups.append(GroupMapper.map_model_to_assigned_group(group))
 
         return groups
