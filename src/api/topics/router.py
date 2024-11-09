@@ -163,6 +163,7 @@ async def add_topic(
     topic: TopicRequest,
     session: Annotated[Session, Depends(get_db)],
     authorization: Annotated[dict, Depends(authorization)],
+    period: str = Query(None, pattern="^[1|2]C20[0-9]{2}$", examples=["1C2024"]),
 ):
     """Endpoint para agregar un tema manualmente"""
     try:
@@ -170,7 +171,7 @@ async def add_topic(
         auth_service.assert_only_admin(authorization["token"])
 
         service = TopicService(TopicRepository(session))
-        topic_saved = service.add_topic(topic)
+        topic_saved = service.add_topic(period,topic, TutorRepository(session))
 
         return TopicResponse.model_validate(topic_saved)
     except InvalidJwt:
