@@ -277,16 +277,10 @@ class TutorService:
     def get_tutors_with_dates(self, period_id: str):
         """Devuelve los tutores con las fechas cargadas"""
         try:
-            valid = self._validate_period(period_id)
-            if valid:
-                tutors = self._repository.get_tutors_by_period_id_with_available_dates(
-                    period_id
-                )
-                return tutors
-            else:
-                raise InvalidPeriod(
-                    message="Period id should follow patter nC20year, ie. 1C2024"
-                )
+            tutors = self._repository.get_tutors_by_period_id_with_available_dates(
+                period_id=period_id, is_evaluator=False
+            )
+            return tutors
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
 
@@ -296,8 +290,8 @@ class TutorService:
             valid = self._validate_period(period_id)
             if valid:
                 evaluators = (
-                    self._repository.get_evaluators_by_period_id_with_available_dates(
-                        period_id
+                    self._repository.get_tutors_by_period_id_with_available_dates(
+                        period_id=period_id, is_evaluator=True
                     )
                 )
                 return evaluators
