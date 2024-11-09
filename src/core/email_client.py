@@ -79,14 +79,16 @@ class SendGridEmailClient:
 
     def notify_attachement(self, group: AssignedGroup, type_of_attachment: str):
         to = group.emails() + [group.tutor_email()]
-        subject = f"Grupo {group.id} ha subido un nuevo archivo!"
+        subject = f"Grupo {group.id} ha subido una nueva entrega!"
         email_body = f"""
         Hola,
 
-        Queriamos informarte que el grupo {group.group_number} \
+        Queriamos informarte que el grupo {group.group_number} \n
         ha subido su {type_of_attachment} al sistema.
 
         Dentro del sistema vas a poder visualizar el archivo.
+
+        Podes entrar al mismo ingresando a https://fiuba-tpp.azurewebsites.net/
 
         Gracias.
         """
