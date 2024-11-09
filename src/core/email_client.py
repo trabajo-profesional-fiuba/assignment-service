@@ -25,9 +25,9 @@ class SendGridEmailClient:
                 f"Sendgrid send email had a problem, the response code status is: \
                 {response.status_code}"
             )
-    
+
     def _filter_receivers(self, tos, ccs):
-        """ Controlo que no haya un cc en los to, sino sendgrid falla """
+        """Controlo que no haya un cc en los to, sino sendgrid falla"""
         return [cc for cc in ccs if cc not in tos]
 
     def send_mail(self, mail: Mail):
