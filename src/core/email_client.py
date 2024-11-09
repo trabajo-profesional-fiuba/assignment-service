@@ -83,8 +83,7 @@ class SendGridEmailClient:
         email_body = f"""
         Hola,
 
-        Queriamos informarte que el grupo {group.group_number} \n
-        ha subido su {type_of_attachment} al sistema.
+        Queriamos informarte que el grupo {group.group_number} ha subido su {type_of_attachment} al sistema.
 
         Dentro del sistema vas a poder visualizar el archivo.
 
