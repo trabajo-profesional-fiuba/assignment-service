@@ -32,6 +32,8 @@ class TopicRequest(SimpleTopic):
     """Representa un tema completo"""
 
     category: str
+    tutor_email: str
+    capacity: int | None = Field(default=1)
 
 
 class TopicResponse(SimpleTopic):

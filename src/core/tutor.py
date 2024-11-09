@@ -76,6 +76,10 @@ class Tutor:
     def available_dates(self) -> list[DateSlot]:
         return self._available_dates
 
+    @available_dates.setter
+    def available_dates(self, available_dates: list[DateSlot]):
+        self._available_dates = available_dates
+
     def topics_ids(self):
         return [topic.id for topic in self._topics]
 
