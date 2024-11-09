@@ -278,13 +278,21 @@ def test_add_topics_withot_csv_file(fastapi, tables):
     helper = ApiHelper()
     helper.create_period("1C2024")
     helper.create_category("Fake")
+    helper.create_tutor("Celeste", "Perez", "105000", "cdituro@fi.uba.ar")
+    helper.create_tutor_period("105000", "1C2024")
     admin_token = helper.create_admin_token()
 
-    topic_request = {"name": "My custom topic", "category": "Fake"}
+    topic_request = {
+        "name": "My custom topic",
+        "category": "Fake",
+        "tutor_email": "cdituro@fi.uba.ar",
+        "capacity": 2,
+    }
 
     response = fastapi.post(
         f"{PREFIX}",
         json=topic_request,
+        params={"period": "1C2024"},
         headers={"Authorization": f"Bearer {admin_token.access_token}"},
     )
 

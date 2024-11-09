@@ -134,10 +134,13 @@ class TopicService:
         category = self._repository.add_category(Category(name=categoy_name))
         return category
 
-    def add_topic(self, topic_req: TopicRequest):
+    def add_topic(self, period_id, topic_req: TopicRequest, tutor_repository: TutorRepository):
         """Agrega un nuevo tema"""
         topic = self._repository.add_topic_with_category(
             Topic(name=topic_req.name), topic_req.category
+        )
+        tutor_repository.add_topic_tutor_period(
+                period_id, topic_req.tutor_email, [topic], [1]
         )
         return topic
 
