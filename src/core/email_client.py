@@ -25,9 +25,9 @@ class SendGridEmailClient:
                 f"Sendgrid send email had a problem, the response code status is: \
                 {response.status_code}"
             )
-    
+
     def _filter_receivers(self, tos, ccs):
-        """ Controlo que no haya un cc en los to, sino sendgrid falla """
+        """Controlo que no haya un cc en los to, sino sendgrid falla"""
         return [cc for cc in ccs if cc not in tos]
 
     def send_mail(self, mail: Mail):
@@ -79,14 +79,15 @@ class SendGridEmailClient:
 
     def notify_attachement(self, group: AssignedGroup, type_of_attachment: str):
         to = group.emails() + [group.tutor_email()]
-        subject = f"Grupo {group.id} ha subido un nuevo archivo!"
+        subject = f"Grupo {group.id} ha subido una nueva entrega!"
         email_body = f"""
         Hola,
 
-        Queriamos informarte que el grupo {group.group_number} \
-        ha subido su {type_of_attachment} al sistema.
+        Queriamos informarte que el grupo {group.group_number} ha subido su {type_of_attachment} al sistema.
 
         Dentro del sistema vas a poder visualizar el archivo.
+
+        Podes entrar al mismo ingresando a https://fiuba-tpp.azurewebsites.net/
 
         Gracias.
         """

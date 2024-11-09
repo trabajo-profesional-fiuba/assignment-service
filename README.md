@@ -2,6 +2,11 @@
 
 [![codecov](https://codecov.io/gh/trabajo-profesional-fiuba/assignment-service/graph/badge.svg?token=88MT80VD78)](https://codecov.io/gh/trabajo-profesional-fiuba/assignment-service)
 
+### Enviroments
+
+[Staging](https://tpp-g4-fiuba.azurewebsites.net/api/docs)
+[Production](https://staging-api-tpp.azurewebsites.net/api/docs)
+
 > _What problem are we trying to solve?_
 
 The Assignment Management API fue diseñado para optimizar las diferentes asignaciones que se producen 
