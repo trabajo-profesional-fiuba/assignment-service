@@ -102,15 +102,15 @@ class SendGridEmailClient:
         to = group.emails() + [group.tutor_email()]
         subject = f"Grupo {group.group_number} ha subido una nueva entrega!"
         email_body = f"""
-        Hola,
-
-        Queriamos informarte que el grupo {group.group_number} ha subido su {type_of_attachment} al sistema.
-
-        Dentro del sistema vas a poder visualizar el archivo.
-
-        Podes entrar al mismo ingresando a <a href="https://fiuba-tpp.azurewebsites.net/">este enlace</a>.
-
-        Gracias.
+        <p>Hola,</p>
+        
+        <p>Queríamos informarte que el grupo <strong>{group.group_number}</strong> ha subido su <strong>{type_of_attachment}</strong> al sistema.</p>
+        
+        <p>Dentro del sistema vas a poder visualizar el archivo.</p>
+        
+        <p>Puedes entrar al mismo ingresando a <a href="https://fiuba-tpp.azurewebsites.net/">este enlace</a>.</p>
+        
+        <p>Gracias.</p>
         """
         cc = self._filter_receivers(to, api_config.cc_emails)
 
