@@ -77,9 +77,30 @@ class SendGridEmailClient:
         self._log_response(response)
         return response.status_code
 
+    def _send_html_mail(
+        self,
+        to: list[str],
+        subject: str,
+        body: str,
+        cc: list[str] = [],
+    ):
+        from_email = Email(self.sender, name=self.name)
+        to_emails = [To(user) for user in to]
+
+        content = Content("text/html", body)
+        mail = Mail(from_email, to_emails, subject, html_content=content)
+
+        if len(cc) != 0:
+            cc = self._filter_receivers(to, cc)
+            mail.cc = cc
+
+        response = self.send_mail(mail)
+        self._log_response(response)
+        return response.status_code
+
     def notify_attachement(self, group: AssignedGroup, type_of_attachment: str):
         to = group.emails() + [group.tutor_email()]
-        subject = f"Grupo {group.id} ha subido una nueva entrega!"
+        subject = f"Grupo {group.group_number} ha subido una nueva entrega!"
         email_body = f"""
         Hola,
 
@@ -87,10 +108,10 @@ class SendGridEmailClient:
 
         Dentro del sistema vas a poder visualizar el archivo.
 
-        Podes entrar al mismo ingresando a https://fiuba-tpp.azurewebsites.net/
+        Podes entrar al mismo ingresando a <a href="https://fiuba-tpp.azurewebsites.net/">este enlace</a>.
 
         Gracias.
         """
         cc = self._filter_receivers(to, api_config.cc_emails)
 
-        self._send_mail(to, subject, email_body, cc)
+        self._send_html_mail(to, subject, email_body, cc)
