@@ -114,24 +114,25 @@ class TutorService:
     ):
         """Crea un tutor y le asocia un cuatrimestre puntual"""
         try:
-            new_tutor = User(
-                id=tutor.id,
-                name=tutor.name,
-                last_name=tutor.last_name,
-                email=tutor.email,
-                password=hasher.hash(str(tutor.id)),
-                role=Role.TUTOR,
-            )
-
             tutor_period = TutorPeriod(
                 period_id=tutor.period,
                 tutor_id=tutor.id,
                 capacity=tutor.capacity,
             )
+
             if not self._repository.is_tutor(tutor.id):
-                tutor_response = userRepository.add_user(new_tutor)
+                new_tutor = User(
+                    id=tutor.id,
+                    name=tutor.name,
+                    last_name=tutor.last_name,
+                    email=tutor.email,
+                    password=hasher.hash(str(tutor.id)),
+                    role=Role.TUTOR,
+                )
+                userRepository.add_user(new_tutor)
             
             self._repository.add_tutor_period_with_capacity(tutor_period)
+            tutor_response = self._repository.get_tutor_by_tutor_id(tutor.id)
             return tutor_response
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
