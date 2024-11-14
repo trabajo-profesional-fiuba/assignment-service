@@ -449,6 +449,7 @@ def test_create_duplicated_tutor(fastapi, tables):
     helper = ApiHelper()
     token = helper.create_admin_token()
     helper.create_period("1C2024")
+    helper.create_period("1C2025")
 
     tutor = {
         "id": 110001,
@@ -476,7 +477,7 @@ def test_create_duplicated_tutor(fastapi, tables):
         headers={"Authorization": f"Bearer {token.access_token}"},
     )
     assert response.status_code == 409
-    assert response.json()["detail"] == "Duplicated tutor"
+    assert response.json()["detail"] == f"Tutor {110001} already has {'1C2024'} as period"
 
 
 @pytest.mark.integration

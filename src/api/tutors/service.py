@@ -128,9 +128,10 @@ class TutorService:
                 tutor_id=tutor.id,
                 capacity=tutor.capacity,
             )
-            tutor_response = userRepository.add_user(new_tutor)
+            if not self._repository.is_tutor(tutor.id):
+                tutor_response = userRepository.add_user(new_tutor)
+            
             self._repository.add_tutor_period_with_capacity(tutor_period)
-
             return tutor_response
         except PeriodDuplicated as e:
             raise Duplicated(str(e))
