@@ -51,8 +51,8 @@ class TutorRepository:
                 session.expunge(tutor_period)
 
             return tutor_period
-        except exc.IntegrityError as e:
-            raise PeriodDuplicated(message=f"{e}")
+        except Exception as e:
+            raise PeriodDuplicated(message=f"Tutor {tutor_period.tutor_id} already has {tutor_period.period_id} as period")
 
     def get_tutor_by_tutor_id(self, tutor_id) -> User:
         """Devuelve un tutor a partir de su id"""

@@ -171,6 +171,8 @@ async def post_final_project(
     file: UploadFile,
     session: Annotated[Session, Depends(get_db)],
     authorization: Annotated[dict, Depends(authorization)],
+    background_tasks: BackgroundTasks,
+    email_sender: Annotated[object, Depends(get_email_sender)],
     project_title: str = Query(...),
 ):
     """Endpoint para agregar una entrega final de un grupo"""
@@ -187,6 +189,13 @@ async def post_final_project(
         group_service = GroupService(GroupRepository(session))
         group_service.upload_final_project(
             group_id, project_title, content_as_bytes, az_client
+        )
+
+        group = GroupMapper.map_model_to_assigned_group(
+            group_service.get_group_by_id(group_id, True, True)
+        )
+        background_tasks.add_task(
+            email_sender.notify_attachement, group, "Informe final"
         )
         return "File uploaded successfully"
     except InvalidJwt:
@@ -206,7 +215,7 @@ async def post_final_project(
         status.HTTP_401_UNAUTHORIZED: {"description": "Invalid token"},
     },
 )
-async def post_final_project(
+async def post_intermediate_project(
     group_id: int,
     link: IntermediateAssignmentRequest,
     session: Annotated[Session, Depends(get_db)],
