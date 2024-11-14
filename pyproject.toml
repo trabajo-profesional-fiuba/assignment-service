@@ -25,6 +25,7 @@ azure-storage-blob = "12.23.0"
 azure-identity = "1.17.1"
 sendgrid = "6.11.0"
 python-multipart = "^0.0.12"
+starlette="~0.40.0"
 
 
 [tool.poetry.group.dev.dependencies]
