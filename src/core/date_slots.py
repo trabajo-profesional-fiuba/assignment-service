@@ -7,10 +7,10 @@ class DateSlot:
         self.date = start_time
 
     def get_week(self) -> int:
-        return self.date.isoweekday()
+        return self.date.isocalendar()[1]
 
     def get_day_of_week(self) -> int:
-        return self.date.weekday() + 1
+        return self.date.isoweekday()
 
     def get_hour(self) -> int:
         return self.date.hour
