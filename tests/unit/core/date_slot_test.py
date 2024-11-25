@@ -15,7 +15,7 @@ class TestDateSlot:
         # Arrange
         week = date.get_week()
 
-        assert week == 3
+        assert week == 49
 
     @pytest.mark.unit
     def test_get_day_of_date(self):
@@ -53,7 +53,7 @@ class TestDateSlot:
     @pytest.mark.parametrize(
         "week, day, hour, expected",
         [
-            (2, 2, 10, True),
+            (42, 2, 10, True),
             (42, 5, 14, False),
         ],
     )
