@@ -4,8 +4,8 @@
 
 ### Enviroments
 
-[Staging](https://tpp-g4-fiuba.azurewebsites.net/api/docs)
-[Production](https://staging-api-tpp.azurewebsites.net/api/docs)
+[Production](https://tpp-g4-fiuba.azurewebsites.net/api/docs)
+[Staging](https://staging-api-tpp.azurewebsites.net/api/docs)
 
 > _What problem are we trying to solve?_
 
