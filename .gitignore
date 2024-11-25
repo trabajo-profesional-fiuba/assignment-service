@@ -28,3 +28,6 @@ Build
 
 # Test env
 test.db
+
+# Intelij
+.idea
