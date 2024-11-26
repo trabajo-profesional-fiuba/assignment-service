@@ -280,7 +280,7 @@ class TutorService:
         """Devuelve los tutores con las fechas cargadas"""
         try:
             tutors = self._repository.get_tutors_by_period_id_with_available_dates(
-                period_id=period_id, is_evaluator=False
+                period_id=period_id
             )
             return tutors
         except PeriodDuplicated as e:
@@ -292,7 +292,7 @@ class TutorService:
             valid = self._validate_period(period_id)
             if valid:
                 evaluators = (
-                    self._repository.get_tutors_by_period_id_with_available_dates(
+                    self._repository.get_evaluators_by_period_id_with_available_dates(
                         period_id=period_id, is_evaluator=True
                     )
                 )
