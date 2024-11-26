@@ -72,15 +72,28 @@ class DeliveryLPSolver:
         crea una variable de decisión para representar si el evaluador está asignado
         al grupo en esa fecha.
         """
-
         for tutor in self._tutors:
+            # Verificar si el tutor tiene fechas en común con algún evaluador
+            has_common_dates = any(
+                any(t_date.date == e_date.date for t_date in tutor.available_dates)
+                for evaluator in self._evaluators
+                for e_date in evaluator.available_dates
+            )
+
+            # Si no hay fechas en común, asignar todas las fechas disponibles al tutor
+            if not has_common_dates:
+                tutor.available_dates = self._available_dates
+
             for group in self._groups:
                 if group.tutor_id() == tutor.id:
-                    group_tutor_possible_dates = self._find_common_dates(group, tutor)
-                    for evaluator in self._evaluators:
-                        self._create_evaluator_decision_variables(
-                            group, tutor, evaluator, group_tutor_possible_dates
-                        )
+                    if group.available_dates:
+
+                        group_tutor_possible_dates = self._find_common_dates(group, tutor)
+                        if group_tutor_possible_dates:
+                            for evaluator in self._evaluators:
+                                self._create_evaluator_decision_variables(
+                                    group, tutor, evaluator, group_tutor_possible_dates
+                                )
 
     def _find_common_dates(self, group: AssignedGroup, tutor: Tutor):
         """
@@ -481,7 +494,6 @@ class DeliveryLPSolver:
         list
             Lista de variables de decisión activadas.
         """
-
         self.create_decision_variables()
         self.create_auxiliary_variables()
 

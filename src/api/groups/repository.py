@@ -1,4 +1,4 @@
-from sqlalchemy import func, bindparam, update, select, insert
+from sqlalchemy import func, bindparam, update, select, insert, asc
 from sqlalchemy.orm import Session, joinedload
 
 from src.api.groups.exceptions import GroupNotFound
@@ -98,7 +98,7 @@ class GroupRepository:
             if load_dates:
                 query = query.options(joinedload(Group.group_dates_slots))
 
-            groups = query.filter(Group.period_id == period).all()
+            groups = query.filter(Group.period_id == period).order_by(asc(Group.id)).all()
             session.expunge_all()
         return groups
 

@@ -282,6 +282,34 @@ class TutorRepository:
             raise PeriodDuplicated(message="Period can't be assigned to tutor")
 
     def get_tutors_by_period_id_with_available_dates(
+        self, period_id: str
+    ):
+        """Devuelve todos los tutores cargando las fechas que el tutor selecciono"""
+        with self.Session() as session:
+            tutors = (
+                session.query(User)
+                .join(TutorPeriod)
+                .filter(
+                    TutorPeriod.period_id == period_id,
+                )
+                .options(joinedload(User.tutor_periods))
+                .options(joinedload(User.tutor_dates_slots))
+                .all()
+            )
+
+            session.expunge_all()
+
+        # Solo me interesan las fechas sin asignar y de un cuatrimestre puntual
+        for tutor in tutors:
+            tutor.tutor_dates_slots = list(
+                filter(
+                    lambda x: x.period_id == period_id and x.assigned == False,
+                    tutor.tutor_dates_slots,
+                )
+            )
+        return tutors
+    
+    def get_evaluators_by_period_id_with_available_dates(
         self, period_id: str, is_evaluator: bool
     ):
         """Devuelve todos los tutores cargando las fechas que el tutor selecciono"""
