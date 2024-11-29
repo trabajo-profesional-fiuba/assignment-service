@@ -2,7 +2,7 @@ name: Pull Request Github Workflow
 run-name: PR created by @${{ github.actor }} for ${{ github.event.pull_request.head.ref }} 
 on:
     pull_request:
-      types: [opened]
+      types: [opened, synchronize, reopened ]
     workflow_dispatch:
         
 
