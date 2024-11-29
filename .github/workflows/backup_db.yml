@@ -1,4 +1,5 @@
 name: Backup Prod Database
+run-name: Backup number ${{github.run_number}}
 
 on:
     schedule:
