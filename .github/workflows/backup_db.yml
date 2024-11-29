@@ -34,14 +34,14 @@ jobs:
               uses: tj-actions/pg-dump@v3
               with:
                 database_url: "${{ secrets.DB_URL}}"
-                postgresql_version: "15"
-                path: "db-prod-${{ env.TODAY }}.bak" 
+                postgresql_version: "16"
+                path: "backups/db-prod-${{ env.TODAY }}.bak" 
                 options: "-O"
             - name: Upload Backup Artifact
               uses: actions/upload-artifact@v4
               with:
                name: db-prod-${{ env.TODAY }}
-               path: "db-prod-${{ env.TODAY }}.bak" 
+               path: "backups/db-prod-${{ env.TODAY }}.bak" 
                retention-days: 1
 
     # Despues bajo el backup y lo subo a Azure
@@ -50,20 +50,19 @@ jobs:
         runs-on: ubuntu-latest
         env:
             TODAY: ${{ needs.determine_date.outputs.today }}
+            AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
         needs: [determine_date, backup_db]
         steps:
             - name: Download Backup File
               uses: actions/download-artifact@v4
               with:
                 name: db-prod-${{ env.TODAY }}
-                path: "db-prod-${{ env.TODAY }}.bak" 
             
             - name: Upload To Azure Blob Storage
               uses: azure/cli@v2
               with:
                 inlineScript: |
-                    az storage blob upload --file db-prod-${{ env.TODAY }}.bak --blob-url https://fiubastorage.blob.core.windows.net/backups-db --connection-string ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-
+                    az storage blob upload --file db-prod-${{ env.TODAY }}.bak --container-name backups-db --connection-string "${{ env.AZURE_STORAGE_CONNECTION_STRING }}" --name db-prod-${{ env.TODAY }}.bak --overwrite
 
 
     
