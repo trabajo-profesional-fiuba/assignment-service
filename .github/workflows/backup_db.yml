@@ -8,9 +8,8 @@ on:
 
 
 jobs:
-    # Primero definimos la fecha de hoy
-
     determine_date:
+        name: Get today's date
         runs-on: ubuntu-latest
         outputs:
             today: ${{ steps.get-date.outputs.date }}
@@ -21,6 +20,7 @@ jobs:
               run: echo "date=$(date +'%d-%m-%Y')" >> "$GITHUB_OUTPUT"
 
     backup_db:
+        name: Make Prod Db Backup and Upload Artifact
         runs-on: ubuntu-latest
         env:
             TODAY: ${{ needs.determine_date.outputs.today }}
@@ -46,7 +46,7 @@ jobs:
 
     # Despues bajo el backup y lo subo a Azure
     upload_azure_blob:
-        name: Upload to Azure Blob
+        name: Download Artifact and Upload to Azure Blob Storage
         runs-on: ubuntu-latest
         env:
             TODAY: ${{ needs.determine_date.outputs.today }}
