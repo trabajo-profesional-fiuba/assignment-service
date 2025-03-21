@@ -7,7 +7,6 @@ __pycache__/
 /.pytest_cache/
 poetry.lock
 requirements.txt
-
 # vscode
 .vscode
 
