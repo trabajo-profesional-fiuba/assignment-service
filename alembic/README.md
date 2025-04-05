@@ -55,6 +55,7 @@ Este comando mergea dos revisiones en una. En la [documentacion](https://alembic
 
 El archivo alembic.ini tiene la configuracion de las migraciones. Lo mas importante es la URL a la base que apunta y el `Base` que toma para "trackear" los cambios de modelos
 
+##⚠️ Importante ! 
 Actualmente, [la autogeneración](https://alembic.sqlalchemy.org/en/latest/autogenerate.html) está habilitada para que los desarrolladores puedan evitar hacer las migraciones manualmente.Igualmente, revisalas para comprobar que esten bien los cambio
 
 Para más información, consulta la documentación sobre [qué puede detectar la autogeneración de Alembic](https://alembic.sqlalchemy.org/en/latest/autogenerate.html#what-does-autogenerate-detect-and-what-does-it-not-detect).
