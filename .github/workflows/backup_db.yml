@@ -4,7 +4,7 @@ run-name: Backup number ${{github.run_number}}
 on:
     schedule:
         # Cada 10 dias se ejecuta un backup
-        - cron: '0 0 */10 * *'
+        - cron: '0 0 */2 * *'
     workflow_dispatch:
 
 
